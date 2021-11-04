@@ -1,0 +1,95 @@
+/*
+ * Copyright (C) 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+package com.google.cloud.dataproc.templates.util;
+
+public interface TemplateConstants {
+
+  String DEFAULT_PROPERTY_FILE = "template.properties";
+
+  String PROJECT_ID_PROP = "project.id";
+  String BIGTABLE_INSTANCE_ID_PROP = "project.id";
+  String BIGTABLE_OUTPUT_TABLE_NAME_PROP = "bigtable.output.table.name";
+
+  String SPANNER_INSTANCE_ID_PROP = "spanner.id";
+  String SPANNER_DATABASE_ID_PROP = "database.id";
+  String SPANNER_TABLE_ID_PROP = "table.id";
+  String SPANNER_GCS_PATH = "gcs.export.path";
+
+  /**
+   * Column to be used as row key for BigTable. Required for GCSToBigTable template.
+   *
+   * <p>Note: Key column should be present in input data.
+   */
+  String BIGTABLE_KEY_COL_PROP = "bigtable.key.col";
+
+  String BIGTABLE_COL_FAMILY_NAME_PROP = "bigtable.col.family.name";
+
+  String GCS_STAGING_BUCKET_PATH = "gcs.staging.bucket.path";
+
+  // HiveToGCS Template configs.
+
+  // Hive warehouse location.
+  String HIVE_TO_GCS_OUTPUT_PATH_PROP = "hive.gcs.output.path";
+  // Hive warehouse location.
+  String HIVE_TO_GCS_OUTPUT_FORMAT_PROP = "hive.gcs.output.format";
+  String HIVE_TO_GCS_OUTPUT_FORMAT_DEFAULT = "avro";
+  // Hive warehouse location.
+  String HIVE_WAREHOUSE_LOCATION_PROP = "spark.sql.warehouse.dir";
+  // Hive warehouse location.
+  String HIVE_INPUT_TABLE_PROP = "hive.input.table";
+  // Hive warehouse location.
+  String HIVE_INPUT_TABLE_DATABASE_PROP = "hive.input.db";
+  // Optional parameter to pass column name to partition the data while writing it to GCS.
+  String HIVE_PARTITION_COL = "hive.partition.col";
+
+  /** Property values for HiveToBQ */
+  String HIVE_TO_BQ_BIGQUERY_LOCATION = "hivetobq.bigquery.location";
+
+  String HIVE_TO_BQ_INPUT_TABLE_PROP = "hivetobq.input.table";
+  String HIVE_TO_BQ_INPUT_TABLE_DATABASE_PROP = "hivetobq.input.db";
+  String HIVE_TO_BQ_APPEND_MODE = "hivetobq.append.mode";
+  String HIVE_TO_BQ_PARTITION_COL = "hivetobq.partition.col";
+  String HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP = "hivetobq.spark.sql.warehouse.dir";
+
+  /** Property values for WordCount template. */
+  String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";
+
+  String WORD_COUNT_OUTPUT_PATH_PROP = "word.count.output.path";
+  String WORD_COUNT_INPUT_FORMAT_PROP = "word.count.input.format";
+
+  // PubSubToBQ Template configs.
+
+  // Project that contains the input PubSub subscription to be read
+  String PUBSUB_INPUT_PROJECT_ID_PROP = "pubsub.input.project.id";
+  // PubSub subscription name
+  String PUBSUB_INPUT_SUBSCRIPTION_PROP = "pubsub.input.subscription";
+  // Stream timeout
+  String PUBSUB_TIMEOUT_MS_PROP = "pubsub.timeout.ms";
+  // Streaming duration
+  String PUBSUB_STREAMING_DURATION_SECONDS_PROP = "pubsub.streaming.duration.seconds";
+  // Project that contains the output table
+  String PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP = "pubsub.bq.output.project.id";
+  // Big Query output dataset
+  String PUBSUB_BQ_OUTPOUT_DATASET_PROP = "pubsub.bq.output.dataset";
+  // Big Query output table
+  String PUBSUB_BQ_OUTPOUT_TABLE_PROP = "pubsub.bq.output.table";
+
+  /** GCS to Bigquery properties */
+  String GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location";
+
+  String GCS_OUTPUT_DATASET_NAME = "gcs.bigquery.output.dataset";
+  String GCS_OUTPUT_TABLE_NAME = "gcs.bigquery.output.table";
+}

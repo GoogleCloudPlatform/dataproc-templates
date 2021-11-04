@@ -1,0 +1,39 @@
+<configuration>
+  <property name="LOGS_HOME" value="logs"/>
+
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>${LOGS_HOME}/dataproc-template-v0.1.log</file>
+    <append>true</append>
+    <immediateFlush>true</immediateFlush>
+    <encoder>
+      <pattern>%d %p %c{1.} [%t] %m%n</pattern>
+    </encoder>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>dataproc-template-v0.1.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+      <!-- keep 30 days' worth of history capped at 3GB total size -->
+      <maxHistory>30</maxHistory>
+      <totalSizeCap>2GB</totalSizeCap>
+
+    </rollingPolicy>
+  </appender>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern>
+        %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+      </Pattern>
+    </layout>
+  </appender>
+
+  <logger name="com.google.cloud.dataproc.templates" level="debug" additivity="false">
+    <appender-ref ref="CONSOLE"/>
+  </logger>
+
+  ## TODO: Change appender to file before open sourcing.
+  <root level="debug">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+</configuration>
