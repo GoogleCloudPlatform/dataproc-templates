@@ -11,7 +11,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 * [HiveToGCS](src/main/java/com/google/cloud/dataproc/templates/hive/HiveToGCS.java)
 * [PubSubToBigQuery](src/main/java/com/google/cloud/dataproc/templates/pubsub/PubSubToBQ.java)
 * [GCSToBigQuery](src/main/java/com/google/cloud/dataproc/templates/gcs/GCStoBigquery.java)
-* [GCSToSpanner](src/main/java/com/google/cloud/dataproc/templates/databases/SpannerToGCS.java)
+* [SpannerToGCS](src/main/java/com/google/cloud/dataproc/templates/databases/SpannerToGCS.java)
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 
 
@@ -75,25 +75,39 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
     tool. The runtime parameters required by the template can be passed in the
     parameters field via comma-separated list of `paramName=Value`.
 
-    #### Executing Hive to GCS template
+    #### Executing Hive to GCS template. Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
 
     ```
-    bin/start.sh gs://dataproc-templates/jars \
-    gcp-project \
-    gcp-region \
-    network-subnet \
-    persistent-history-server[Optional] \
-    hivetogcs
+    bin/start.sh GCP_PROJECT=<gcp-project-id> \
+   REGION=<region>  \
+   SUBNET=<subnet>   \
+   GCS_STAGING_BUCKET=<gcs-staging-bucket-folder> \
+   HISTORY_SERVER_CLUSTER=<history-server> \
+   TEMPLATE_NAME=HIVETOGCS \
+   --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083
     ```
 
-    #### Executing Spanner to GCS template
+   #### Executing Hive to BigQuery template. Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
 
     ```
-    bin/start.sh gs://dataproc-templates/jars \
-    gcp-project \
-    gcp-region \
-    network-subnet \
-    spannertogcs
+    bin/start.sh GCP_PROJECT=<gcp-project-id> \
+   REGION=<region>  \
+   SUBNET=<subnet>   \
+   GCS_STAGING_BUCKET=<gcs-staging-bucket-folder> \
+   HISTORY_SERVER_CLUSTER=<history-server> \
+   TEMPLATE_NAME=HIVETOBIGQUERY \
+   --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083
+    ```
+
+    #### Executing Spanner to GCS template. Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
+
+    ```
+    bin/start.sh GCP_PROJECT=<gcp-project-id> \
+   REGION=<region>  \
+   SUBNET=<subnet>   \
+   GCS_STAGING_BUCKET=<gcs-staging-bucket-folder> \
+   HISTORY_SERVER_CLUSTER=<history-server> \
+   TEMPLATE_NAME=SPANNERTOGCS
     ```
 
 ## Flow diagram

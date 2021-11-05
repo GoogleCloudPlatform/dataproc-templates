@@ -45,14 +45,21 @@ public class HiveToGCS implements BaseTemplate {
   private String outputFormat;
   private String partitionColumn;
 
+  /**
+   * Spark job to move data from Hive table to GCS bucket. For detailed list of properties refer
+   * "HiveToGCS Template properties." section in resources/template.properties file.
+   *
+   * <p>Usage Instructions bin/start.sh gs://dataproc-templates/jars \ gcp-project \ gcp-region \
+   * network-subnet \ persistent-history-server[Optional] \ hivetogcs
+   */
   public HiveToGCS() {
     outputPath = getProperties().getProperty(HIVE_TO_GCS_OUTPUT_PATH_PROP);
     warehouseLocation = getProperties().getProperty(HIVE_WAREHOUSE_LOCATION_PROP);
     hiveInputTable = getProperties().getProperty(HIVE_INPUT_TABLE_PROP);
     hiveInputDb = getProperties().getProperty(HIVE_INPUT_TABLE_DATABASE_PROP);
     outputFormat =
-        getProperties()
-            .getProperty(HIVE_TO_GCS_OUTPUT_FORMAT_PROP, HIVE_TO_GCS_OUTPUT_FORMAT_DEFAULT);
+            getProperties()
+                    .getProperty(HIVE_TO_GCS_OUTPUT_FORMAT_PROP, HIVE_TO_GCS_OUTPUT_FORMAT_DEFAULT);
     partitionColumn = getProperties().getProperty(HIVE_PARTITION_COL);
   }
 
@@ -60,44 +67,45 @@ public class HiveToGCS implements BaseTemplate {
   public void runTemplate() {
 
     if (StringUtils.isAllBlank(outputPath)
-        || StringUtils.isAllBlank(hiveInputTable)
-        || StringUtils.isAllBlank(hiveInputDb)) {
+            || StringUtils.isAllBlank(hiveInputTable)
+            || StringUtils.isAllBlank(hiveInputDb)) {
       LOGGER.error(
-          "{},{},{} is required parameter. ",
-          HIVE_INPUT_TABLE_PROP,
-          HIVE_INPUT_TABLE_DATABASE_PROP,
-          HIVE_TO_GCS_OUTPUT_PATH_PROP);
+              "{},{},{} is required parameter. ",
+              HIVE_INPUT_TABLE_PROP,
+              HIVE_INPUT_TABLE_DATABASE_PROP,
+              HIVE_TO_GCS_OUTPUT_PATH_PROP);
       throw new IllegalArgumentException(
-          "Required parameters for HiveToGCS not passed. "
-              + "Set mandatory parameter for HiveToGCS template "
-              + "in resources/conf/template.properties file.");
+              "Required parameters for HiveToGCS not passed. "
+                      + "Set mandatory parameter for HiveToGCS template "
+                      + "in resources/conf/template.properties file.");
     }
 
     SparkSession spark = null;
     LOGGER.info(
-        "Starting Hive to GCS spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}",
-        HIVE_TO_GCS_OUTPUT_PATH_PROP,
-        outputPath,
-        HIVE_WAREHOUSE_LOCATION_PROP,
-        warehouseLocation,
-        HIVE_INPUT_TABLE_PROP,
-        hiveInputTable,
-        HIVE_INPUT_TABLE_DATABASE_PROP,
-        hiveInputDb);
+            "Starting Hive to GCS spark job with following parameters:"
+                    + "1. {}:{}"
+                    + "2. {}:{}"
+                    + "3. {}:{}"
+                    + "4. {},{}",
+            HIVE_TO_GCS_OUTPUT_PATH_PROP,
+            outputPath,
+            HIVE_WAREHOUSE_LOCATION_PROP,
+            warehouseLocation,
+            HIVE_INPUT_TABLE_PROP,
+            hiveInputTable,
+            HIVE_INPUT_TABLE_DATABASE_PROP,
+            hiveInputDb);
 
     try {
+      // Confiure spark session to read from hive.
       spark =
-          SparkSession.builder()
-              .appName("Spark HiveToGcs Job")
-              .config(HIVE_WAREHOUSE_LOCATION_PROP, warehouseLocation)
-              .enableHiveSupport()
-              .getOrCreate();
+              SparkSession.builder()
+                      .appName("Spark HiveToGcs Job")
+                      .config(HIVE_WAREHOUSE_LOCATION_PROP, warehouseLocation)
+                      .enableHiveSupport()
+                      .getOrCreate();
 
-      // LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
+      // Read source Hive table.
       Dataset<Row> inputData = spark.table(hiveInputDb + "." + hiveInputTable);
       List<String> cols = Arrays.asList(inputData.columns());
 
@@ -107,6 +115,10 @@ public class HiveToGCS implements BaseTemplate {
 
       DataFrameWriter<Row> writer = inputData.write().format(outputFormat);
 
+      /*
+       * If optional partition column is passed than partition data by partition
+       * column before writing to GCS.
+       * */
       if (StringUtils.isNotBlank(partitionColumn)) {
         LOGGER.info("Partitioning data by :{} cols", partitionColumn);
         writer.partitionBy(partitionColumn);

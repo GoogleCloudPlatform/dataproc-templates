@@ -35,7 +35,6 @@ Help() {
 
 #Parse arguments of type property=value and initialize variable with property name
 parse_arguments() {
-  SET -x
   ARGS=""
   SPARK_ARGS=""
   echo "Arugments passed to script : $*"
