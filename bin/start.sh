@@ -31,10 +31,14 @@ echo_formatted "Spark args are $SPARK_ARGS"
 #Change PWD to root folder for Maven Build
 cd ${PROJECT_ROOT_DIR}
 mvn clean spotless:apply install -DskipTests
+mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./grpc_lb
 
 #Copy jar file to GCS bucket Staging folder
 echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_BUCKET}/${JAR_FILE}"
 gsutil cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_BUCKET}/${JAR_FILE}
+gsutil cp ${PROJECT_ROOT_DIR}/grpc_lb/io/grpc/grpc-grpclb/1.40.1/grpc-grpclb-1.40.1.jar ${GCS_STAGING_BUCKET}/grpc-grpclb-1.40.1.jar
+
+export JAR=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_BUCKET}/grpc-grpclb-1.40.1.jar
 
 echo "Triggering Spark Submit job"
 
