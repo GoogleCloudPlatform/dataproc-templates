@@ -27,15 +27,16 @@ Help() {
    echo "REGION=<value>"
    echo "SUBNET=<value>"
    echo "GCS_STAGING_BUCKET=<value>"
-   echo "HISTORY_SERVER_CLUSTER=<value>"
    echo "TEMPLATE_NAME=<value>"
+   echo
+   echo  "Optional properties"
+   echo  "HISTORY_SERVER_CLUSTER=<value>"
    echo
 }
 
 
 #Parse arguments of type property=value and initialize variable with property name
 parse_arguments() {
-  SET -x
   ARGS=""
   SPARK_ARGS=""
   echo "Arugments passed to script : $*"
@@ -54,7 +55,11 @@ parse_arguments() {
     fi
 
   done
-
+  #If optional properties exist add them as spark arguments
+  if [ ! -z "${HISTORY_SERVER_CLUSTER}" ]
+  then
+    SPARK_ARGS=$SPARK_ARGS$" --history-server-cluster=${HISTORY_SERVER_CLUSTER} "
+    fi
 }
 
 #Verify the variables passed are non-empty
