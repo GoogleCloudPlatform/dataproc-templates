@@ -3,12 +3,12 @@
 General Execution:
 
 ```
-bin/start.sh gs://dataproc-templates/jars/shashank \
-yadavaja-sandbox \
-us-west1 \
-projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1 \
-projects/yadavaja-sandbox/regions/us-west1/clusters/per-hs \
-spannertogcs
+    bin/start.sh GCP_PROJECT=<gcp-project-id> \
+   REGION=<region>  \
+   SUBNET=<subnet>   \
+   GCS_STAGING_BUCKET=<gcs-staging-bucket-folder> \
+   HISTORY_SERVER_CLUSTER=<history-server> \
+   TEMPLATE_NAME=SPANNERTOGCS
 ```
 
 ### Export query results as avro
