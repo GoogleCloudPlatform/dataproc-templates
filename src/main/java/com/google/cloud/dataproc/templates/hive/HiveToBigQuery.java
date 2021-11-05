@@ -54,47 +54,47 @@ public class HiveToBigQuery implements BaseTemplate {
   @Override
   public void runTemplate() {
     if (StringUtils.isAllBlank(bqLocation)
-            || StringUtils.isAllBlank(hiveInputTable)
-            || StringUtils.isAllBlank(warehouseLocation)
-            || StringUtils.isAllBlank(hiveInputDb)) {
+        || StringUtils.isAllBlank(hiveInputTable)
+        || StringUtils.isAllBlank(warehouseLocation)
+        || StringUtils.isAllBlank(hiveInputDb)) {
       LOGGER.error(
-              "{},{},{},{} is required parameter. ",
-              HIVE_TO_BQ_BIGQUERY_LOCATION,
-              HIVE_TO_BQ_INPUT_TABLE_PROP,
-              HIVE_TO_BQ_INPUT_TABLE_DATABASE_PROP,
-              HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP);
+          "{},{},{},{} is required parameter. ",
+          HIVE_TO_BQ_BIGQUERY_LOCATION,
+          HIVE_TO_BQ_INPUT_TABLE_PROP,
+          HIVE_TO_BQ_INPUT_TABLE_DATABASE_PROP,
+          HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP);
       throw new IllegalArgumentException(
-              "Required parameters for HiveToBigQuery not passed. "
-                      + "Set mandatory parameter for HiveToBigQuery template "
-                      + "in resources/conf/template.properties file.");
+          "Required parameters for HiveToBigQuery not passed. "
+              + "Set mandatory parameter for HiveToBigQuery template "
+              + "in resources/conf/template.properties file.");
     }
 
     SparkSession spark = null;
     LOGGER.info(
-            "Starting Hive to BigQuery spark jo;b with following parameters:"
-                    + "1. {}:{}"
-                    + "2. {}:{}"
-                    + "3. {}:{}"
-                    + "4. {},{}"
-                    + "5. {},{}",
-            HIVE_TO_BQ_BIGQUERY_LOCATION,
-            bqLocation,
-            HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP,
-            warehouseLocation,
-            HIVE_TO_BQ_INPUT_TABLE_PROP,
-            hiveInputTable,
-            HIVE_TO_BQ_INPUT_TABLE_DATABASE_PROP,
-            hiveInputDb,
-            HIVE_TO_BQ_APPEND_MODE,
-            bqAppendMode);
+        "Starting Hive to BigQuery spark jo;b with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {},{}"
+            + "5. {},{}",
+        HIVE_TO_BQ_BIGQUERY_LOCATION,
+        bqLocation,
+        HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP,
+        warehouseLocation,
+        HIVE_TO_BQ_INPUT_TABLE_PROP,
+        hiveInputTable,
+        HIVE_TO_BQ_INPUT_TABLE_DATABASE_PROP,
+        hiveInputDb,
+        HIVE_TO_BQ_APPEND_MODE,
+        bqAppendMode);
     try {
       // Initialize Spark session
       spark =
-              SparkSession.builder()
-                      .appName("Spark HiveToBigQuery Job")
-                      .config(HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP, warehouseLocation)
-                      .enableHiveSupport()
-                      .getOrCreate();
+          SparkSession.builder()
+              .appName("Spark HiveToBigQuery Job")
+              .config(HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP, warehouseLocation)
+              .enableHiveSupport()
+              .getOrCreate();
 
       LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
 
@@ -109,12 +109,12 @@ public class HiveToBigQuery implements BaseTemplate {
        */
       // TODO -- Remove using warehouse location for staging data add new property
       inputData
-              .write()
-              .mode(bqAppendMode)
-              .format("bigquery")
-              .option("table", bqLocation)
-              .option("temporaryGcsBucket", (warehouseLocation + "/temp/spark").replace("gs://", ""))
-              .save();
+          .write()
+          .mode(bqAppendMode)
+          .format("bigquery")
+          .option("table", bqLocation)
+          .option("temporaryGcsBucket", (warehouseLocation + "/temp/spark").replace("gs://", ""))
+          .save();
 
       LOGGER.info("HiveToBigQuery job completed.");
       spark.stop();
