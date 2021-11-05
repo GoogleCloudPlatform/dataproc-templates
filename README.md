@@ -25,7 +25,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 
 1. Clone this repository:
 
-        git clone https://github.com/GoogleCloudPlatform/java-docs-samples.git
+        git clone https://github.com/GoogleCloudPlatform/dataproc-templates.git
 
 1. Configure required properties at resources/template.properties
 
