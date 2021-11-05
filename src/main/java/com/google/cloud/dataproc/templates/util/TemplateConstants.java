@@ -88,8 +88,32 @@ public interface TemplateConstants {
   String PUBSUB_BQ_OUTPOUT_TABLE_PROP = "pubsub.bq.output.table";
 
   /** GCS to Bigquery properties */
+  /** GCS to Bigquery properties */
   String GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location";
 
   String GCS_OUTPUT_DATASET_NAME = "gcs.bigquery.output.dataset";
+
+  String GCS_BQ_INPUT_FORMAT = "gcs.bigquery.input.format";
+
   String GCS_OUTPUT_TABLE_NAME = "gcs.bigquery.output.table";
+
+  String GCS_BQ_CSV_FORMAT = "csv";
+
+  String GCS_BQ_AVRO_FORMAT = "avro";
+
+  String GCS_BQ_PRQT_FORMAT = "parquet";
+
+  String GCS_BQ_CSV_HEADER = "header";
+
+  String GCS_BQ_OUTPUT_FORMAT = "com.google.cloud.spark.bigquery";
+
+  String GCS_BQ_CSV_INFOR_SCHEMA = "inferSchema";
+
+  String GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket";
+
+  String GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name";
+
+  String GCS_BQ_OUTPUT = "table";
+
+  String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
 }
