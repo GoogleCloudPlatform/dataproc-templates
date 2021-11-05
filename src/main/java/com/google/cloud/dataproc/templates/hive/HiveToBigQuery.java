@@ -27,16 +27,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Usage Instructions -- export PROJECT=yadavaja-sandbox export REGION=us-west1 export
- * JAR=gs://dataproc-templates/jars/dataproc-templates-2.0-SNAPSHOT.jar,gs://dataproc-templates/jars/bigtable-hbase-2.x-hadoop-1.25.0.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.1.0.jar,gs://dataproc-templates/jars/hbase-client-2.0.6.jar,gs://dataproc-templates/jars/shc-core-1.1.1-2.1-s_2.11.jar,gs://dataproc-templates/jars/hbase-common-2.0.6.jar,gs://dataproc-templates/jars/spark-bigquery-with-dependencies_2.12-0.22.2.jar
- *
- * <p>gcloud beta dataproc batches submit spark \ --project=${PROJECT} \ --region=${REGION} \
- * --subnet projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1 \ --jars=${JAR} \
- * --files=gs://dataproc-templates/conf/core-site.xml,gs://dataproc-templates/conf/hive-site.xml \
- * --properties=spark:spark.hadoop.hive.metastore.uris=thrift://10.218.192.15:9083,spark:spark.hadoop.hive.metastore.warehouse.dir=gs://df-dev-buck/hive/warehouse2,spark:spark.hadoop.javax.jdo.option.ConnectionPassword=hive-password,spark:spark.hadoop.javax.jdo.option.ConnectionDriverName=com.mysql.jdbc.Driver
- * \ --labels job_type=dataproc_template \ --deps-bucket=gs://dataproc-templates \
- * --history-server-cluster=projects/yadavaja-sandbox/regions/us-west1/clusters/per-hs \ --class
- * com.google.cloud.dataproc.templates.main.DataProcTemplate \ -- hivetobigquery
+ * Spark job to move data or/and schema from Hive table to BigQuery. This template can be configured
+ * to run in few different modes. In default mode hivetobq.append.mode is set to ErrorIfExists. This
+ * will cause failure if target BigQuery table already exists. Other possible values for this
+ * property are: 1. Append 2. Overwrite 3. ErrorIfExists 4. Ignore For detailed list of properties
+ * refer "HiveToBQ Template properties" section in resources/template.properties file.
  */
 public class HiveToBigQuery implements BaseTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(HiveToBigQuery.class);

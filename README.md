@@ -11,7 +11,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 * [HiveToGCS](src/main/java/com/google/cloud/dataproc/templates/hive/HiveToGCS.java)
 * [PubSubToBigQuery](src/main/java/com/google/cloud/dataproc/templates/pubsub/PubSubToBQ.java)
 * [GCSToBigQuery](src/main/java/com/google/cloud/dataproc/templates/gcs/GCStoBigquery.java)
-* [GCSToSpanner](src/main/java/com/google/cloud/dataproc/templates/databases/SpannerToGCS.java)
+* [SpannerToGCS](src/main/java/com/google/cloud/dataproc/templates/databases/SpannerToGCS.java)
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 
 
