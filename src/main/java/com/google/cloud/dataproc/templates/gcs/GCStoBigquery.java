@@ -139,7 +139,7 @@ public class GCStoBigquery implements BaseTemplate {
           .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
           .mode(SaveMode.Append)
           .save();
-
+ 
     } catch (Throwable th) {
       LOGGER.error("Exception in GCStoBigquery", th);
       if (Objects.nonNull(spark)) {
