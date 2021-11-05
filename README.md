@@ -7,12 +7,12 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 
 
 ## Templates
-* [HiveToBigQuery](src/main/java/com.google.cloud.dataproc.templates.hive/HiveToBigquery.java)
-* [HiveToGCS](src/main/java/com.google.cloud.dataproc.templates.hive/HiveToGCS.java)
-* [PubSubToBigQuery](src/main/java/com.google.cloud.dataproc.templates.pubsub/PubSubToBQ.java)
-* [GCSToBigQuery](src/main/java/com.google.cloud.dataproc.templates.gcs/GCSToBigquery.java)
-* [GCSToSpanner](src/main/java/com.google.cloud.dataproc.templates.databases/SpannerToGCS.java)
-* [WordCount](src/main/java/com.google.cloud.dataproc.templates.word/WordCount.java)
+* [HiveToBigQuery](src/main/java/com/google/cloud/dataproc/templates/hive/HiveToBigQuery.java)
+* [HiveToGCS](src/main/java/com/google/cloud/dataproc/templates/hive/HiveToGCS.java)
+* [PubSubToBigQuery](src/main/java/com/google/cloud/dataproc/templates/pubsub/PubSubToBQ.java)
+* [GCSToBigQuery](src/main/java/com/google/cloud/dataproc/templates/gcs/GCStoBigquery.java)
+* [GCSToSpanner](src/main/java/com/google/cloud/dataproc/templates/databases/SpannerToGCS.java)
+* [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 
 
 ## Getting Started
@@ -93,7 +93,6 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
     gcp-project \
     gcp-region \
     network-subnet \
-    persistent-history-server[Optional] \
     spannertogcs
     ```
 
