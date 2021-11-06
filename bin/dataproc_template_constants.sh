@@ -17,4 +17,3 @@
 
 
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
-export JAR=file:///usr/lib/spark/external/spark-avro.jar,gs://dataproc-templates/spanner-jars/grpc-grpclb-1.40.1.jar
