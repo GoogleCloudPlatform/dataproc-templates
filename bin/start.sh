@@ -40,6 +40,8 @@ gsutil cp ${PROJECT_ROOT_DIR}/grpc_lb/io/grpc/grpc-grpclb/1.40.1/grpc-grpclb-1.4
 
 export JAR=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_BUCKET}/grpc-grpclb-1.40.1.jar
 
+temporary_fix_for_log_level
+
 echo "Triggering Spark Submit job"
 
 echo "
