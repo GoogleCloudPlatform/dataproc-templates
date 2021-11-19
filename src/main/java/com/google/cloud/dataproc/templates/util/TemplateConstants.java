@@ -116,4 +116,19 @@ public interface TemplateConstants {
   String GCS_BQ_OUTPUT = "table";
 
   String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
+
+  /** S3 to Bigquery properties */
+  String S3_BQ_INPUT_LOCATION = "s3.bigquery.input.location";
+
+  String S3_BQ_ACCESS_KEY_CONFIG_NAME = "fs.s3a.access.key";
+
+  String S3_BQ_ACCESS_KEY = "s3.bq.access.key";
+
+  String S3_BQ_SECRET_KEY_CONFIG_NAME = "fs.s3a.secret.key";
+
+  String S3_BQ_SECRET_KEY = "s3.bq.secret.key";
+
+  String S3_BQ_ENDPOINT_CONFIG_NAME = "fs.s3a.endpoint";
+
+  String S3_BQ_ENDPOINT_CONFIG_VALUE = "s3.amazonaws.com";
 }
