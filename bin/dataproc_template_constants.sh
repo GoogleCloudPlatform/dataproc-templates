@@ -17,3 +17,7 @@
 
 
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
+JOB_TYPE=serverless
+FAILURE_CODE=127
+SERVERLESS_JOB_CODE=serverless
+DATAPROC_JOB_CODE=dataproc

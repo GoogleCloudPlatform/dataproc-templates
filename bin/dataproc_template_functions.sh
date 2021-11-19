@@ -56,7 +56,8 @@ parse_arguments() {
 
   done
   #If optional properties exist add them as spark arguments
-  if [ ! -z "${HISTORY_SERVER_CLUSTER}" ]
+  #Skip adding history server cluster if target is dataproc cluster
+  if [[ ! -z "${HISTORY_SERVER_CLUSTER}" && "${JOB_TYPE}" == "${SERVERLESS_JOB_CODE}" ]]
   then
     SPARK_ARGS=$SPARK_ARGS$" --history-server-cluster=${HISTORY_SERVER_CLUSTER} "
     fi

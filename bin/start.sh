@@ -44,26 +44,65 @@ temporary_fix_for_log_level
 
 echo "Triggering Spark Submit job"
 
-echo "
-   gcloud beta dataproc batches submit spark \
-  --project=${GCP_PROJECT} \
-  --region=${REGION} \
-  --subnet ${SUBNET} \
-  --jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
-  --labels job_type=dataproc_template \
-  --deps-bucket=${GCS_STAGING_BUCKET} \
-  $SPARK_ARGS \
-  --class com.google.cloud.dataproc.templates.main.DataProcTemplate \
-  -- ${TEMPLATE_NAME} $ARGS
-"
+case ${JOB_TYPE} in
 
-gcloud beta dataproc batches submit spark \
---project=${GCP_PROJECT} \
---region=${REGION} \
---subnet ${SUBNET} \
---jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
---labels job_type=dataproc_template \
---deps-bucket=${GCS_STAGING_BUCKET} \
-$SPARK_ARGS \
---class com.google.cloud.dataproc.templates.main.DataProcTemplate \
--- ${TEMPLATE_NAME} $ARGS
+    "dataproc")
+    echo_formatted "
+           gcloud beta dataproc batches submit spark \
+          --project=${GCP_PROJECT} \
+          --region=${REGION} \
+          --cluster ${CLUSTER} \
+          --jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
+          --labels job_type=dataproc_template \
+          $SPARK_ARGS \
+          --class com.google.cloud.dataproc.templates.main.DataProcTemplate \
+          -- ${TEMPLATE_NAME} $ARGS
+        "
+
+        gcloud  dataproc jobs submit spark \
+        --project=${GCP_PROJECT} \
+        --region=${REGION} \
+        --cluster=${CLUSTER} \
+        --jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
+        --labels job_type=dataproc_template \
+        $SPARK_ARGS \
+        --class com.google.cloud.dataproc.templates.main.DataProcTemplate \
+        -- ${TEMPLATE_NAME} $ARGS
+    ;;
+
+    "serverless")
+
+    echo_formatted "
+       gcloud beta dataproc batches submit spark \
+      --project=${GCP_PROJECT} \
+      --region=${REGION} \
+      --subnet ${SUBNET} \
+      --jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
+      --labels job_type=dataproc_template \
+      --deps-bucket=${GCS_STAGING_BUCKET} \
+      $SPARK_ARGS \
+      --class com.google.cloud.dataproc.templates.main.DataProcTemplate \
+      -- ${TEMPLATE_NAME} $ARGS
+    "
+
+    gcloud beta dataproc batches submit spark \
+    --project=${GCP_PROJECT} \
+    --region=${REGION} \
+    --subnet ${SUBNET} \
+    --jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
+    --labels job_type=dataproc_template \
+    --deps-bucket=${GCS_STAGING_BUCKET} \
+    $SPARK_ARGS \
+    --class com.google.cloud.dataproc.templates.main.DataProcTemplate \
+    -- ${TEMPLATE_NAME} $ARGS
+
+    ;;
+
+    *)
+      echo "Unidentified job type"
+      exit ${FAILURE_CODE}
+  esac
+
+
+
+
