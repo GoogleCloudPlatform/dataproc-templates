@@ -21,6 +21,7 @@ Help() {
 # Display Help
    echo "Usage Syntax:"
    echo
+   echo "Running Templates in Serverless Spark:"
    echo "start.sh [property=value]"
    echo "Required properties:"
    echo "GCP_PROJECT=<value>"
@@ -32,6 +33,17 @@ Help() {
    echo  "Optional properties"
    echo  "HISTORY_SERVER_CLUSTER=<value>"
    echo
+   echo "Running Templates in existing dataproc cluster:"
+   echo "start.sh [property=value]"
+   echo "Required properties:"
+   echo "GCP_PROJECT=<value>"
+   echo "CLUSTER=<value>"
+   echo "REGION=<value>"
+   echo "JOB_TYPE=dataproc"
+   echo "GCS_STAGING_BUCKET=<value>"
+   echo "TEMPLATE_NAME=<value>"
+   echo
+
 }
 
 

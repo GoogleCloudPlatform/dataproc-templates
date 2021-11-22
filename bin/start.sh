@@ -23,7 +23,7 @@ PROJECT_ROOT_DIR=${BIN_DIR}/..
 
 #Parse Command Line arguments and check mandatory fields exist
 parse_arguments $*
-check_mandatory_fields GCP_PROJECT REGION SUBNET GCS_STAGING_BUCKET TEMPLATE_NAME
+check_mandatory_fields GCP_PROJECT REGION  GCS_STAGING_BUCKET TEMPLATE_NAME
 
 
 echo_formatted "Spark args are $SPARK_ARGS"
@@ -44,9 +44,12 @@ temporary_fix_for_log_level
 
 echo "Triggering Spark Submit job"
 
+#Run Spark job on existing dataproc cluster or serverless
 case ${JOB_TYPE} in
 
-    "dataproc")
+    ${DATAPROC_JOB_CODE})
+
+    check_mandatory_fields GCP_PROJECT REGION CLUSTER GCS_STAGING_BUCKET TEMPLATE_NAME
     echo_formatted "
            gcloud beta dataproc batches submit spark \
           --project=${GCP_PROJECT} \
@@ -70,7 +73,9 @@ case ${JOB_TYPE} in
         -- ${TEMPLATE_NAME} $ARGS
     ;;
 
-    "serverless")
+    ${SERVERLESS_JOB_CODE})
+
+    check_mandatory_fields GCP_PROJECT REGION SUBNET GCS_STAGING_BUCKET TEMPLATE_NAME
 
     echo_formatted "
        gcloud beta dataproc batches submit spark \
