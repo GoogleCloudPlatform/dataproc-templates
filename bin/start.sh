@@ -47,7 +47,7 @@ echo "Triggering Spark Submit job"
 #Run Spark job on existing dataproc cluster or serverless
 case ${JOB_TYPE} in
 
-    ${DATAPROC_JOB_CODE})
+    ${DATAPROC_ENV})
 
     check_mandatory_fields GCP_PROJECT REGION CLUSTER GCS_STAGING_BUCKET TEMPLATE_NAME
     echo_formatted "
@@ -73,7 +73,7 @@ case ${JOB_TYPE} in
         -- ${TEMPLATE_NAME} $ARGS
     ;;
 
-    ${SERVERLESS_JOB_CODE})
+    ${SERVERLESS_ENV})
 
     check_mandatory_fields GCP_PROJECT REGION SUBNET GCS_STAGING_BUCKET TEMPLATE_NAME
 

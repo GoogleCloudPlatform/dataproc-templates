@@ -149,8 +149,8 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
           TEMPLATE_NAME=GCSTOBIGQUERY
         ```
 ## Executing templates in existing dataproc cluster
-   
-To run the templates against existing cluster specify **JOB_TYPE** as dataporc and provide the **CLUSTER**. Following is an example command to run HIVETOBIGQUERY in existing dataproc cluster. 
+
+To run the templates against existing cluster specify **JOB_TYPE** as dataproc_cluster and provide the **CLUSTER**. Following is an example command to run HIVETOBIGQUERY in existing dataproc cluster.
 
     ```
     bin/start.sh GCP_PROJECT=${PROJECT} \
@@ -158,10 +158,10 @@ To run the templates against existing cluster specify **JOB_TYPE** as dataporc a
     JOB_TYPE=dataproc \
     CLUSTER=${DATA_PROC_CLUSTER_NAME}   \  # Specify name of existing dataproc cluster
     GCS_STAGING_BUCKET=${GCS_STAGING_BUCKET} \
-    TEMPLATE_NAME=GCSTOBIGQUERY   \
-    --properties=spark.hadoop.hive.metastore.uris=hrift://hostname/ip:9083  
+    TEMPLATE_NAME=HIVETOBIGQUERY   \
+    --properties=spark.hadoop.hive.metastore.uris=hrift://hostname/ip:9083
     ```
-   
+
 
 ## Flow diagram
 

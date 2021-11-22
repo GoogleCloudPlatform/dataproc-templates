@@ -18,7 +18,7 @@
 
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
 #Default job type serverless spark
-JOB_TYPE=serverless
+JOB_TYPE=dataproc_serverless
 FAILURE_CODE=127
-SERVERLESS_JOB_CODE=serverless
-DATAPROC_JOB_CODE=dataproc
+SERVERLESS_ENV=dataproc_serverless
+DATAPROC_ENV=dataproc_cluster
