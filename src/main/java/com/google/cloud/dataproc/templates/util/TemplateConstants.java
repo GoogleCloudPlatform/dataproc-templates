@@ -118,7 +118,7 @@ public interface TemplateConstants {
   String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
 
   /** S3 to Bigquery properties */
-  String S3_BQ_INPUT_LOCATION = "s3.bigquery.input.location";
+  String S3_BQ_INPUT_LOCATION = "s3.bq.input.location";
 
   String S3_BQ_ACCESS_KEY_CONFIG_NAME = "fs.s3a.access.key";
 
