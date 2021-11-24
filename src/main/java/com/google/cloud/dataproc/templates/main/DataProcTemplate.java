@@ -21,6 +21,7 @@ import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
+import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.word.WordCount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +84,11 @@ public class DataProcTemplate {
       case SPANNERTOGCS:
         {
           new SpannerToGCS().runTemplate();
+        }
+        break;
+      case S3TOBIGQUERY:
+        {
+          new S3ToBigQuery().runTemplate();
         }
         break;
       default:

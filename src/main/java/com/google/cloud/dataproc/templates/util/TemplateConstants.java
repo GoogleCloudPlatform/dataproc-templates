@@ -116,4 +116,45 @@ public interface TemplateConstants {
   String GCS_BQ_OUTPUT = "table";
 
   String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
+
+  /** S3 to Bigquery properties */
+  String S3_BQ_INPUT_LOCATION = "s3.bq.input.location";
+
+  String S3_BQ_ACCESS_KEY_CONFIG_NAME = "fs.s3a.access.key";
+
+  String S3_BQ_ACCESS_KEY = "s3.bq.access.key";
+
+  String S3_BQ_SECRET_KEY_CONFIG_NAME = "fs.s3a.secret.key";
+
+  String S3_BQ_SECRET_KEY = "s3.bq.secret.key";
+
+  String S3_BQ_ENDPOINT_CONFIG_NAME = "fs.s3a.endpoint";
+
+  String S3_BQ_ENDPOINT_CONFIG_VALUE = "s3.amazonaws.com";
+
+  String S3_BQ_OUTPUT_DATASET_NAME = "s3.bq.output.dataset.name";
+
+  String S3_BQ_OUTPUT_TABLE_NAME = "s3.bq.output.table.name";
+
+  String S3_BQ_LD_TEMP_BUCKET_NAME = "s3.bq.ld.temp.bucket.name";
+
+  String S3_BQ_OUTPUT_FORMAT = "com.google.cloud.spark.bigquery";
+
+  String S3_BQ_HEADER = "header";
+
+  String S3_BQ_OUTPUT = "table";
+
+  String S3_BQ_TEMP_BUCKET = "temporaryGcsBucket";
+
+  String S3_BQ_INPUT_FORMAT = "s3.bq.input.format";
+
+  String S3_BQ_INFER_SCHEMA = "inferSchema";
+
+  String S3_BQ_CSV_FORMAT = "csv";
+
+  String S3_BQ_AVRO_FORMAT = "avro";
+
+  String S3_BQ_PRQT_FORMAT = "parquet";
+
+  String S3_BQ_JSON_FORMAT = "json";
 }
