@@ -22,6 +22,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,10 @@ public class S3ToBigQuery implements BaseTemplate {
   private String inputFileLocation;
   private String accessKey;
   private String accessSecret;
+  private String bigQueryDataset;
+  private String bigQueryTable;
+  private String bqTempBucket;
+  private String inputFileFormat;
 
   public S3ToBigQuery() {
 
@@ -41,6 +46,10 @@ public class S3ToBigQuery implements BaseTemplate {
     inputFileLocation = getProperties().getProperty(S3_BQ_INPUT_LOCATION);
     accessKey = getProperties().getProperty(S3_BQ_ACCESS_KEY);
     accessSecret = getProperties().getProperty(S3_BQ_SECRET_KEY);
+    bigQueryDataset = getProperties().getProperty(S3_BQ_OUTPUT_DATASET_NAME);
+    bigQueryTable = getProperties().getProperty(S3_BQ_OUTPUT_TABLE_NAME);
+    bqTempBucket = getProperties().getProperty(S3_BQ_LD_TEMP_BUCKET_NAME);
+    inputFileFormat = getProperties().getProperty(S3_BQ_INPUT_FORMAT);
   }
 
   @Override
@@ -48,13 +57,21 @@ public class S3ToBigQuery implements BaseTemplate {
     if (StringUtils.isAllBlank(projectID)
         || StringUtils.isAllBlank(inputFileLocation)
         || StringUtils.isAllBlank(accessKey)
-        || StringUtils.isAllBlank(accessSecret)) {
+        || StringUtils.isAllBlank(accessSecret)
+        || StringUtils.isAllBlank(bigQueryDataset)
+        || StringUtils.isAllBlank(bigQueryTable)
+        || StringUtils.isAllBlank(bqTempBucket)
+        || StringUtils.isAllBlank(inputFileFormat)) {
       LOGGER.error(
-          "{},{},{},{} are required parameter. ",
+          "{},{},{},{},{},{},{},{} are required parameter. ",
           PROJECT_ID_PROP,
           S3_BQ_INPUT_LOCATION,
           S3_BQ_ACCESS_KEY,
-          S3_BQ_SECRET_KEY_CONFIG_NAME);
+          S3_BQ_SECRET_KEY_CONFIG_NAME,
+          S3_BQ_OUTPUT_DATASET_NAME,
+          S3_BQ_OUTPUT_TABLE_NAME,
+          S3_BQ_LD_TEMP_BUCKET_NAME,
+          S3_BQ_INPUT_FORMAT);
       throw new IllegalArgumentException(
           "Required parameters for S3toBQ not passed. "
               + "Set mandatory parameter for S3toBQ template "
@@ -66,13 +83,22 @@ public class S3ToBigQuery implements BaseTemplate {
         "Starting S3 to Bigquery spark job with following parameters:"
             + "1. {}:{}"
             + "2. {}:{}"
-            + "3. {}:{}",
+            + "3. {}:{}"
+            + "4. {}:{}"
+            + "5. {}:{}"
+            + "6. {}:{}",
+        PROJECT_ID_PROP,
+        projectID,
         S3_BQ_INPUT_LOCATION,
         inputFileLocation,
-        S3_BQ_ACCESS_KEY,
-        accessKey,
-        S3_BQ_SECRET_KEY_CONFIG_NAME,
-        accessSecret);
+        S3_BQ_OUTPUT_DATASET_NAME,
+        bigQueryDataset,
+        S3_BQ_OUTPUT_TABLE_NAME,
+        bigQueryTable,
+        S3_BQ_LD_TEMP_BUCKET_NAME,
+        bqTempBucket,
+        S3_BQ_INPUT_FORMAT,
+        inputFileFormat);
 
     try {
       spark = SparkSession.builder().appName("S3 to Bigquery load").getOrCreate();
@@ -84,8 +110,45 @@ public class S3ToBigQuery implements BaseTemplate {
           .hadoopConfiguration()
           .set(S3_BQ_ENDPOINT_CONFIG_NAME, S3_BQ_ENDPOINT_CONFIG_VALUE);
 
-      Dataset<Row> inputData = spark.read().text(inputFileLocation);
-      inputData.show();
+      Dataset<Row> inputData = null;
+
+      switch (inputFileFormat) {
+        case GCS_BQ_CSV_FORMAT:
+          inputData =
+              spark
+                  .read()
+                  .format(GCS_BQ_CSV_FORMAT)
+                  .option(S3_BQ_HEADER, true)
+                  .option(S3_BQ_INFER_SCHEMA, true)
+                  .load(inputFileLocation);
+          break;
+        case S3_BQ_AVRO_FORMAT:
+          inputData = spark.read().format(GCS_BQ_AVRO_EXTD_FORMAT).load(inputFileLocation);
+          break;
+        case S3_BQ_PRQT_FORMAT:
+          inputData = spark.read().parquet(inputFileLocation);
+          break;
+        case S3_BQ_JSON_FORMAT:
+          inputData =
+              spark
+                  .read()
+                  .format(S3_BQ_JSON_FORMAT)
+                  .option(S3_BQ_INFER_SCHEMA, true)
+                  .load(inputFileLocation);
+          break;
+        default:
+          throw new IllegalArgumentException(
+              "Currenlty avro, parquet, json and csv are the only supported formats");
+      }
+
+      inputData
+          .write()
+          .format(S3_BQ_OUTPUT_FORMAT)
+          .option(S3_BQ_HEADER, true)
+          .option(S3_BQ_OUTPUT, bigQueryDataset + "." + bigQueryTable)
+          .option(S3_BQ_TEMP_BUCKET, bqTempBucket)
+          .mode(SaveMode.Append)
+          .save();
 
     } catch (Throwable th) {
       LOGGER.error("Exception in S3toBigquery", th);
