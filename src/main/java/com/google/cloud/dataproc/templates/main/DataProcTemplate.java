@@ -16,6 +16,7 @@
 package com.google.cloud.dataproc.templates.main;
 
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
+import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
@@ -89,6 +90,11 @@ public class DataProcTemplate {
       case S3TOBIGQUERY:
         {
           new S3ToBigQuery().runTemplate();
+        }
+        break;
+      case BIGQUERYTOGCS:
+        {
+          new BigQueryToGCS().runTemplate();
         }
         break;
       default:
