@@ -15,25 +15,13 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_AVRO_EXTD_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_AVRO_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_HEADER;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_INFOR_SCHEMA;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_INPUT_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_INPUT_LOCATION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_LD_TEMP_BUCKET_NAME;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_OUTPUT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_OUTPUT_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_PRQT_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_TEMP_BUCKET;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_DATASET_NAME;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_TABLE_NAME;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
-
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import com.google.cloud.dataproc.templates.options.BigQueryOutputOptions;
+import com.google.cloud.dataproc.templates.options.GCSInputOptions;
+import com.google.cloud.dataproc.templates.options.TemplateOptions;
+import com.google.cloud.dataproc.templates.options.TemplateOptionsFactory;
 import java.util.Objects;
-import org.apache.commons.lang3.StringUtils;
+import java.util.Properties;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
@@ -45,98 +33,52 @@ public class GCStoBigquery implements BaseTemplate {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigquery.class);
 
-  private String projectID;
-  private String inputFileLocation;
-  private String bigQueryDataset;
-  private String bigQueryTable;
-  private String inputFileFormat;
-  private String bqTempBucket;
-
-  public GCStoBigquery() {
-
-    projectID = getProperties().getProperty(PROJECT_ID_PROP);
-    inputFileLocation = getProperties().getProperty(GCS_BQ_INPUT_LOCATION);
-    bigQueryDataset = getProperties().getProperty(GCS_OUTPUT_DATASET_NAME);
-    bigQueryTable = getProperties().getProperty(GCS_OUTPUT_TABLE_NAME);
-    inputFileFormat = getProperties().getProperty(GCS_BQ_INPUT_FORMAT);
-    bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
-  }
-
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(projectID)
-        || StringUtils.isAllBlank(inputFileLocation)
-        || StringUtils.isAllBlank(bigQueryDataset)
-        || StringUtils.isAllBlank(bigQueryTable)
-        || StringUtils.isAllBlank(inputFileFormat)
-        || StringUtils.isAllBlank(bqTempBucket)) {
-      LOGGER.error(
-          "{},{},{},{},{},{} are required parameter. ",
-          PROJECT_ID_PROP,
-          GCS_BQ_INPUT_LOCATION,
-          GCS_OUTPUT_DATASET_NAME,
-          GCS_OUTPUT_TABLE_NAME,
-          GCS_BQ_INPUT_FORMAT,
-          GCS_BQ_LD_TEMP_BUCKET_NAME);
-      throw new IllegalArgumentException(
-          "Required parameters for GCStoBQ not passed. "
-              + "Set mandatory parameter for GCStoBQ template "
-              + "in resources/conf/template.properties file.");
-    }
+    Properties props = getProperties();
+    TemplateOptionsFactory<TemplateOptions> optionsFactory =
+        TemplateOptionsFactory.fromProps(props);
+    TemplateOptions options = optionsFactory.create();
+    GCSInputOptions inputOptions = optionsFactory.as(GCSInputOptions.class).create();
+    BigQueryOutputOptions outputOptions = optionsFactory.as(BigQueryOutputOptions.class).create();
+    LOGGER.info("{}", options);
+    LOGGER.info("{}", inputOptions);
+    LOGGER.info("{}", outputOptions);
 
     SparkSession spark = null;
-    LOGGER.info(
-        "Starting GCS to Bigquery spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {}:{}"
-            + "5. {}:{}",
-        GCS_BQ_INPUT_LOCATION,
-        inputFileLocation,
-        GCS_OUTPUT_DATASET_NAME,
-        bigQueryDataset,
-        GCS_OUTPUT_TABLE_NAME,
-        bigQueryTable,
-        GCS_BQ_INPUT_FORMAT,
-        inputFileFormat,
-        GCS_BQ_LD_TEMP_BUCKET_NAME,
-        bqTempBucket);
-
-    LOGGER.info("input format: " + inputFileFormat);
-
     try {
       spark = SparkSession.builder().appName("GCS to Bigquery load").getOrCreate();
 
       Dataset<Row> inputData = null;
 
-      switch (inputFileFormat) {
-        case GCS_BQ_CSV_FORMAT:
+      switch (inputOptions.getFormatEnum()) {
+        case CSV:
           inputData =
               spark
                   .read()
-                  .format(GCS_BQ_CSV_FORMAT)
-                  .option(GCS_BQ_CSV_HEADER, true)
-                  .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
-                  .load(inputFileLocation);
+                  .format("csv")
+                  .option("header", true)
+                  .option("inferSchema", true)
+                  .load(inputOptions.getPath());
           break;
-        case GCS_BQ_AVRO_FORMAT:
-          inputData = spark.read().format(GCS_BQ_AVRO_EXTD_FORMAT).load(inputFileLocation);
+        case AVRO:
+          inputData = spark.read().format("com.databricks.spark.avro").load(inputOptions.getPath());
           break;
-        case GCS_BQ_PRQT_FORMAT:
-          inputData = spark.read().parquet(inputFileLocation);
+        case PARQUET:
+          inputData = spark.read().parquet(inputOptions.getPath());
+          break;
+        case JSON:
+          inputData = spark.read().json(inputOptions.getPath());
           break;
         default:
-          throw new IllegalArgumentException(
-              "Currenlty avro, parquet and csv are the only supported formats");
+          throw new IllegalArgumentException("Format not supported");
       }
 
       inputData
           .write()
-          .format(GCS_BQ_OUTPUT_FORMAT)
-          .option(GCS_BQ_CSV_HEADER, true)
-          .option(GCS_BQ_OUTPUT, bigQueryDataset + "." + bigQueryTable)
-          .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
+          .format("com.google.cloud.spark.bigquery")
+          .option("table", outputOptions.getTable())
+          .option("temporaryGcsBucket", outputOptions.getTemporaryGcsBucket())
           .mode(SaveMode.Append)
           .save();
 
