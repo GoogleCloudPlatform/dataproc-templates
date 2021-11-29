@@ -15,23 +15,17 @@
  */
 package com.google.cloud.dataproc.templates.bigquery;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_AVRO_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_CSV_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_INPUT_TABLE_NAME;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_JSON_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_FORMAT_AVRO;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_FORMAT_CSV;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_FORMAT_JSON;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_FORMAT_PARQUET;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_LOCATION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_PARQUET_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_AVRO_EXTD_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_HEADER;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_INFOR_SCHEMA;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_INPUT_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_INPUT_LOCATION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_LD_TEMP_BUCKET_NAME;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_DATASET_NAME;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_TABLE_NAME;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.Objects;
@@ -83,19 +77,19 @@ public class BigQueryToGCS implements BaseTemplate {
 
       DataFrameWriter<Row> writer = inputData.write();
       switch (outputFileFormat) {
-        case BQ_GCS_CSV_FORMAT:
+        case BQ_GCS_OUTPUT_FORMAT_CSV:
           writer
               .format(GCS_BQ_CSV_FORMAT)
               .option(GCS_BQ_CSV_HEADER, true)
               .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
               .save(outputFileLocation);
           break;
-        case BQ_GCS_JSON_FORMAT:
+        case BQ_GCS_OUTPUT_FORMAT_JSON:
           writer.json(outputFileLocation);
-        case BQ_GCS_AVRO_FORMAT:
+        case BQ_GCS_OUTPUT_FORMAT_AVRO:
           writer.format(GCS_BQ_AVRO_EXTD_FORMAT).save(outputFileLocation);
           break;
-        case BQ_GCS_PARQUET_FORMAT:
+        case BQ_GCS_OUTPUT_FORMAT_PARQUET:
           writer.parquet(outputFileLocation);
           break;
         default:

@@ -158,15 +158,15 @@ public interface TemplateConstants {
   String S3_BQ_JSON_FORMAT = "json";
 
   /** Bigquery to GCS properties */
-  String BQ_GCS_CSV_FORMAT = "csv";
-
-  String BQ_GCS_AVRO_FORMAT = "avro";
-
-  String BQ_GCS_PARQUET_FORMAT = "parquet";
-
-  String BQ_GCS_JSON_FORMAT = "json";
-
   String BQ_GCS_INPUT_TABLE_NAME = "bigquery.gcs.input.table";
+
+  String BQ_GCS_OUTPUT_FORMAT_CSV = "csv";
+
+  String BQ_GCS_OUTPUT_FORMAT_AVRO = "avro";
+
+  String BQ_GCS_OUTPUT_FORMAT_PARQUET = "parquet";
+
+  String BQ_GCS_OUTPUT_FORMAT_JSON = "json";
 
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
 
