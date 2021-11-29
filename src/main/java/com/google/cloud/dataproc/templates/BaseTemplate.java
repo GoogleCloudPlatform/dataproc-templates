@@ -24,6 +24,7 @@ public interface BaseTemplate {
   /** List of all templates. */
   enum TemplateName {
     WORDCOUNT("WORDCOUNT"),
+    GENERIC("GENERIC"),
     HIVETOGCS("HIVETOGCS"),
     PUBSUBTOBQ("PUBSUBTOBQ"),
     SPANNERTOGCS("SPANNERTOGCS"),
