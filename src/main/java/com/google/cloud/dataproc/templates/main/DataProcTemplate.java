@@ -16,6 +16,7 @@
 package com.google.cloud.dataproc.templates.main;
 
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
+import com.google.cloud.dataproc.templates.GenericTemplate;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
@@ -59,6 +60,11 @@ public class DataProcTemplate {
       case WORDCOUNT:
         {
           new WordCount().runTemplate();
+        }
+        break;
+      case GENERIC:
+        {
+          new GenericTemplate().runTemplate();
         }
         break;
       case HIVETOGCS:
