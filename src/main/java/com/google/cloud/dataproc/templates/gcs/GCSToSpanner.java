@@ -84,7 +84,7 @@ public class GCSToSpanner implements BaseTemplate {
           GCS_SPANNER_INPUT_FORMAT);
       throw new IllegalArgumentException(
           "Required parameters for GCSToSpanner not passed. "
-              + "Set mandatory parameter for GCStoBQ template "
+              + "Set mandatory parameter for GCSToSpanner template "
               + "in resources/conf/template.properties file.");
     }
     SaveMode saveMode = SaveMode.valueOf(saveModeString);
