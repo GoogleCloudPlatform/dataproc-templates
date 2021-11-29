@@ -33,10 +33,10 @@ public class TemplateOptionsFactory<T extends BaseOptions> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TemplateOptionsFactory.class);
 
-  private final Map<?, ?> properties;
+  private final Properties properties;
   private final Class<T> optionsClazz;
 
-  public TemplateOptionsFactory(Map<?, ?> properties, Class<T> optionsClazz) {
+  public TemplateOptionsFactory(Properties properties, Class<T> optionsClazz) {
     this.properties = properties;
     this.optionsClazz = optionsClazz;
   }
@@ -49,7 +49,7 @@ public class TemplateOptionsFactory<T extends BaseOptions> {
     return new TemplateOptionsFactory<>(this.properties, optionsClazz);
   }
 
-  Map<?, ?> unscopeProperties(Map<?, ?> properties, String prefix) {
+  public static Properties unscopeProperties(Properties properties, String prefix) {
     if (Strings.isNullOrEmpty(prefix)) {
       return properties;
     }
@@ -98,7 +98,11 @@ public class TemplateOptionsFactory<T extends BaseOptions> {
     Validator validator = factory.getValidator();
     Set<ConstraintViolation<T>> violations = validator.validate(optionsBean);
     for (ConstraintViolation<T> violation : violations) {
-      LOGGER.error("Option violation for: {}; {}; in {}", violation.getPropertyPath(), violation.getMessage(), violation.getRootBeanClass());
+      LOGGER.error(
+          "Option violation for: {}; {}; in {}",
+          violation.getPropertyPath(),
+          violation.getMessage(),
+          violation.getRootBeanClass());
     }
     if (!violations.isEmpty()) {
       throw new IllegalArgumentException(
