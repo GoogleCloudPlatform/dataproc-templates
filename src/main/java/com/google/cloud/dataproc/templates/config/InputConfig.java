@@ -16,13 +16,15 @@
 package com.google.cloud.dataproc.templates.config;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableMap;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.Map;
 
 public class InputConfig {
 
   @NotBlank private String format;
-  private Map<String, String> options;
+  @NotNull private Map<String, String> options = ImmutableMap.of();
   private String path;
 
   public String getPath() {

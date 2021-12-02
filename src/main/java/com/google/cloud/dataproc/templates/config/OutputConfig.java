@@ -16,7 +16,9 @@
 package com.google.cloud.dataproc.templates.config;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableMap;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ public class OutputConfig {
 
   @NotBlank private String format;
   private String path;
-  private Map<String, String> options;
+  @NotNull private Map<String, String> options = ImmutableMap.of();;
 
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
   private String mode;

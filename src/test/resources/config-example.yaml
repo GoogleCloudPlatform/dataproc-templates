@@ -1,0 +1,18 @@
+input:
+  shakespeare:
+    format: bigquery
+    options:
+      table: "bigquery-public-data.samples.shakespeare"
+query:
+  wordspercorpus:
+    sql: >
+      SELECT
+      corpus, count(*) distictwords, sum(word_count) numwords
+      FROM shakespeare
+      GROUP by corpus
+      ORDER BY numwords DESC
+output:
+  wordspercorpus:
+    format: avro
+    path: gs://yadavaja-sandbox-tsell-us/output/wordspercorpus/
+    mode: Overwrite

@@ -13,12 +13,10 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.dataproc.templates.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import javax.management.Query;
 import org.junit.jupiter.api.Test;
 
 class QueryConfigTest {

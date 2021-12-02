@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.apache.arrow.util.Preconditions;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -178,18 +179,23 @@ public class GeneralTemplate {
   public void run() {
     Map<String, InputConfig> inputConfig = config.getInput();
     for (Entry<String, InputConfig> entry : inputConfig.entrySet()) {
+      LOGGER.info("Loading input table {}", entry.getKey());
       Dataset<Row> dataset = read(entry.getValue());
       dataset.createOrReplaceTempView(entry.getKey());
     }
 
     for (Entry<String, QueryConfig> entry : config.getQuery().entrySet()) {
       String sql = entry.getValue().getSql();
+      LOGGER.info("Executing query {}", sql);
       Dataset<Row> dataset = spark.sql(sql);
       dataset.createOrReplaceTempView(entry.getKey());
     }
 
     for (Entry<String, OutputConfig> entry : config.getOutput().entrySet()) {
+      LOGGER.info("Writing output table {}", entry.getKey());
       Dataset<Row> dataset = spark.table(entry.getKey());
+      Preconditions.checkNotNull(
+          dataset, String.format("No matching table for name %s, ", entry.getKey()));
       write(dataset, entry.getValue());
     }
   }

@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.dataproc.templates.config;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,7 +22,6 @@ import java.util.Set;
 import org.apache.spark.sql.SaveMode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class OutputConfigTest {
@@ -55,10 +53,12 @@ class OutputConfigTest {
     OutputConfig outputConfig = new OutputConfig();
     outputConfig.setFormat("someformat");
     outputConfig.setMode("not a valid save mode");
-    Set<ConstraintViolation<OutputConfig>> violations = GeneralTemplateConfig.validate(
-        outputConfig);
+    Set<ConstraintViolation<OutputConfig>> violations =
+        GeneralTemplateConfig.validate(outputConfig);
     assertEquals(1, violations.size());
     assertEquals("mode", violations.iterator().next().getPropertyPath().toString());
-    assertEquals("must match \"Overwrite|ErrorIfExists|Append|Ignore\"", violations.iterator().next().getMessage());
+    assertEquals(
+        "must match \"Overwrite|ErrorIfExists|Append|Ignore\"",
+        violations.iterator().next().getMessage());
   }
 }
