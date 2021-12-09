@@ -56,6 +56,12 @@ public class PropertyUtil {
     return properties;
   }
 
+  /** Helper function to override default properties */
+  public static void registerProperties(Properties properties) {
+    Properties defaults = loadProperties();
+    defaults.putAll(properties);
+  }
+
   /** Print all property key, value pairs to logger at info level. */
   public static void printAllProperties() {
     if (Objects.isNull(properties)) {

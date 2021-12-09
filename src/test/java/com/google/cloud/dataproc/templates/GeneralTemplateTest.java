@@ -51,13 +51,6 @@ public class GeneralTemplateTest {
   }
 
   @Test
-  public void testMainDryRun(@TempDir Path tempDir) throws IOException {
-    Path configPath = Paths.get(tempDir.toString(), "config.yaml");
-    writeConfigYaml(exampleConfig(), configPath);
-    GeneralTemplate.main("--config", configPath.toString(), "--dryrun");
-  }
-
-  @Test
   public void testLoadConfig(@TempDir Path tempDir) throws IOException {
     Path yamlPath = Paths.get(tempDir.toString(), "config.yaml");
     writeConfigYaml(exampleConfig(), yamlPath);

@@ -37,6 +37,8 @@ mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./gr
 echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_BUCKET}/${JAR_FILE}"
 gsutil cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_BUCKET}/${JAR_FILE}
 gsutil cp ${PROJECT_ROOT_DIR}/grpc_lb/io/grpc/grpc-grpclb/1.40.1/grpc-grpclb-1.40.1.jar ${GCS_STAGING_BUCKET}/grpc-grpclb-1.40.1.jar
+gsutil cp ${PROJECT_ROOT_DIR}/grpc_lb/io/grpc/grpc-grpclb/1.40.1/grpc-grpclb-1.40.1.jar ${GCS_STAGING_BUCKET}/grpc-grpclb-1.40.1.jar
+gsutil cp ${PROJECT_ROOT_DIR}/src/test/resources/log4j-spark-driver-template.properties ${GCS_STAGING_BUCKET}/log4j-spark-driver-template.properties
 
 export JAR=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_BUCKET}/grpc-grpclb-1.40.1.jar
 
@@ -51,15 +53,16 @@ case ${JOB_TYPE} in
 
     check_mandatory_fields GCP_PROJECT REGION CLUSTER GCS_STAGING_BUCKET TEMPLATE_NAME
     echo_formatted "
-           gcloud beta dataproc batches submit spark \
+           gcloud dataproc jobs submit spark \
           --project=${GCP_PROJECT} \
           --region=${REGION} \
           --cluster ${CLUSTER} \
           --jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
           --labels job_type=dataproc_template \
+          --files=${GCS_STAGING_BUCKET}/log4j-spark-driver-template.properties \
           $SPARK_ARGS \
           --class com.google.cloud.dataproc.templates.main.DataProcTemplate \
-          -- ${TEMPLATE_NAME} $ARGS
+          -- --template ${TEMPLATE_NAME} $ARGS
         "
 
         gcloud  dataproc jobs submit spark \
@@ -68,9 +71,10 @@ case ${JOB_TYPE} in
         --cluster=${CLUSTER} \
         --jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
         --labels job_type=dataproc_template \
+        --files=${GCS_STAGING_BUCKET}/log4j-spark-driver-template.properties \
         $SPARK_ARGS \
         --class com.google.cloud.dataproc.templates.main.DataProcTemplate \
-        -- ${TEMPLATE_NAME} $ARGS
+        -- --template ${TEMPLATE_NAME} $ARGS
     ;;
 
     ${SERVERLESS_ENV})
@@ -85,9 +89,10 @@ case ${JOB_TYPE} in
       --jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
       --labels job_type=dataproc_template \
       --deps-bucket=${GCS_STAGING_BUCKET} \
+      --files=${GCS_STAGING_BUCKET}/log4j-spark-driver-template.properties
       $SPARK_ARGS \
       --class com.google.cloud.dataproc.templates.main.DataProcTemplate \
-      -- ${TEMPLATE_NAME} $ARGS
+      -- --template ${TEMPLATE_NAME} $ARGS
     "
 
     gcloud beta dataproc batches submit spark \
@@ -97,9 +102,10 @@ case ${JOB_TYPE} in
     --jars=${JAR},${GCS_STAGING_BUCKET}/${JAR_FILE} \
     --labels job_type=dataproc_template \
     --deps-bucket=${GCS_STAGING_BUCKET} \
+    --files=${GCS_STAGING_BUCKET}/log4j-spark-driver-template.properties
     $SPARK_ARGS \
     --class com.google.cloud.dataproc.templates.main.DataProcTemplate \
-    -- ${TEMPLATE_NAME} $ARGS
+    -- --template ${TEMPLATE_NAME} $ARGS
 
     ;;
 

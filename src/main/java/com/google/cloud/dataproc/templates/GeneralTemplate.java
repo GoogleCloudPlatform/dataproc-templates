@@ -44,18 +44,17 @@ import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GeneralTemplate {
+public class GeneralTemplate implements BaseTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GeneralTemplate.class);
 
   public static String CONFIG_FILE_OPTION = "config";
   public static String DRY_RUN_OPTION = "dryrun";
 
-  private final SparkSession spark;
+  private SparkSession spark;
   private final GeneralTemplateConfig config;
 
-  public GeneralTemplate(SparkSession spark, GeneralTemplateConfig config) {
-    this.spark = spark;
+  public GeneralTemplate(GeneralTemplateConfig config) {
     this.config = config;
   }
 
@@ -65,7 +64,14 @@ public class GeneralTemplate {
    *
    * <p>If --dryrun is set, then a guard clause exits before the spark session is created.
    */
-  public static void main(String... args) {
+  @Override
+  public void runTemplate() {
+    try (SparkSession spark = SparkSession.builder().appName("Generic Template").getOrCreate()) {
+      this.run(spark);
+    }
+  }
+
+  public static GeneralTemplate of(String... args) {
     CommandLine cmd = parseArguments(args);
     Path configPath = Paths.get(cmd.getOptionValue(CONFIG_FILE_OPTION));
 
@@ -81,13 +87,7 @@ public class GeneralTemplate {
     if (!violations.isEmpty()) {
       throw new IllegalArgumentException(String.format("Invalid configuration %s", config));
     }
-
-    if (cmd.hasOption(DRY_RUN_OPTION)) {
-      return;
-    }
-    try (SparkSession spark = SparkSession.builder().appName("Generic Template").getOrCreate()) {
-      new GeneralTemplate(spark, config).run();
-    }
+    return new GeneralTemplate(config);
   }
 
   /**
@@ -176,7 +176,8 @@ public class GeneralTemplate {
    * temporary spark sql views. So the queries can query over any input as if it's a table, and the
    * output's key must match an input or query that we wish to write.
    */
-  public void run() {
+  public void run(SparkSession spark) {
+    this.spark = spark;
     Map<String, InputConfig> inputConfig = config.getInput();
     for (Entry<String, InputConfig> entry : inputConfig.entrySet()) {
       LOGGER.info("Loading input table {}", entry.getKey());

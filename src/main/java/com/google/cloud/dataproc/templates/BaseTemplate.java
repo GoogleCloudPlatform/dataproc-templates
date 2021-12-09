@@ -23,23 +23,14 @@ public interface BaseTemplate {
 
   /** List of all templates. */
   enum TemplateName {
-    WORDCOUNT("WORDCOUNT"),
-    GENERIC("GENERIC"),
-    HIVETOGCS("HIVETOGCS"),
-    PUBSUBTOBQ("PUBSUBTOBQ"),
-    SPANNERTOGCS("SPANNERTOGCS"),
-    HIVETOBIGQUERY("HIVETOBIGQUERY"),
-    S3TOBIGQUERY("S3TOBIGQUERY"),
-    GCSTOBIGQUERY("GCSTOBIGQUERY");
-    String name;
-
-    TemplateName(String name) {
-      this.name = name;
-    }
-
-    public String getName() {
-      return this.name;
-    }
+    WORDCOUNT,
+    GENERAL,
+    HIVETOGCS,
+    PUBSUBTOBQ,
+    SPANNERTOGCS,
+    HIVETOBIGQUERY,
+    S3TOBIGQUERY,
+    GCSTOBIGQUERY;
   }
 
   default Properties getProperties() {

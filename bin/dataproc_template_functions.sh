@@ -101,7 +101,7 @@ echo_formatted() {
 
  #Use custom log4j.properties file
 temporary_fix_for_log_level() {
-  log_property_string="--properties=spark.driver.extraJavaOptions=-Dlog4j.configuration=log4j-spark-driver-template.properties"
+  log_property_string="--properties=spark.driver.extraJavaOptions=-Dlog4j.configuration=file:log4j-spark-driver-template.properties"
   if [ -z "${SPARK_ARGS}" ]
          then
             SPARK_ARGS=" ${log_property_string}"

@@ -15,86 +15,116 @@
  */
 package com.google.cloud.dataproc.templates.main;
 
+import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
+import com.google.cloud.dataproc.templates.GeneralTemplate;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
+import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
+import com.google.common.collect.ImmutableMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.function.Function;
+import org.apache.commons.cli.BasicParser;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataProcTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DataProcTemplate.class);
+  private static final String TEMPLATE_NAME = "template";
+
+  /**
+   * Parse command line arguments
+   *
+   * @param args command line arguments
+   * @return parsed arguments
+   */
+  public static CommandLine parseArguments(String... args) {
+    Options options = new Options();
+
+    Option templateOption = new Option(TEMPLATE_NAME, "the name of the template to run");
+    templateOption.setRequired(true);
+    templateOption.setArgs(1);
+    options.addOption(templateOption);
+
+    @SuppressWarnings("AccessStaticViaInstance")
+    Option propertyOption =
+        OptionBuilder.withValueSeparator()
+            .hasArgs(2)
+            .withArgName("property=value")
+            .withLongOpt("prop")
+            .withDescription("Value for given property")
+            .create();
+    options.addOption(propertyOption);
+
+    CommandLineParser parser = new BasicParser();
+    LOGGER.info("Parsing arguments {}", (Object) args);
+    try {
+      return parser.parse(options, args, true);
+    } catch (ParseException e) {
+      throw new IllegalArgumentException(e.getMessage(), e);
+    }
+  }
 
   public static void main(String[] args) {
-    if (args.length < 1) {
-      throw new IllegalArgumentException(
-          "Minimum 1 arguments is required: " + "<template-name> Ex wordcount");
-    }
-    TemplateName template;
-    String templateName = args[0].trim().toUpperCase();
+    CommandLine cmd = parseArguments(args);
+    String templateNameString = cmd.getOptionValue(TEMPLATE_NAME);
+    Properties properties = cmd.getOptionProperties("prop");
+    String[] remainingArgs = cmd.getArgs();
+    LOGGER.info("Template name: {}", templateNameString);
+    LOGGER.info("Properties: {}", properties);
+    LOGGER.info("Remaining args: {}", (Object) remainingArgs);
+    PropertyUtil.registerProperties(properties);
+
+    TemplateName templateName;
     try {
-      template = TemplateName.valueOf(templateName);
+      templateName = TemplateName.valueOf(templateNameString.trim().toUpperCase());
     } catch (IllegalArgumentException ex) {
-      LOGGER.error("Unexpected template name :{}", templateName, ex);
-      throw ex;
+      throw new IllegalArgumentException(String.format("Unexpected template name: %s", templateNameString), ex);
     }
-    LOGGER.info("Running job for {}", template);
-    runSparkJob(template);
+    LOGGER.info("Running job for {}", templateName);
+    runSparkJob(templateName, cmd.getArgs());
   }
+
+  static final Map<TemplateName, Function<String[], BaseTemplate>> templateFactories =
+      ImmutableMap.<TemplateName, Function<String[], BaseTemplate>>builder()
+          .put(TemplateName.WORDCOUNT, (args) -> new WordCount())
+          .put(TemplateName.HIVETOGCS, (args) -> new HiveToGCS())
+          .put(TemplateName.HIVETOBIGQUERY, (args) -> new HiveToBigQuery())
+          .put(TemplateName.PUBSUBTOBQ, (args) -> new PubSubToBQ())
+          .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
+          .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
+          .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
+          .put(TemplateName.GENERAL, GeneralTemplate::of)
+          .build();
 
   /**
    * Run spark job for template.
    *
-   * @param template name of the template.
+   * @param templateName name of the template to execute.
    */
-  static void runSparkJob(TemplateName template) {
+  static void runSparkJob(TemplateName templateName, String[] args) {
     LOGGER.debug("Start API runSparkJob");
-
-    switch (template) {
-      case WORDCOUNT:
-        {
-          new WordCount().runTemplate();
-        }
-        break;
-      case HIVETOGCS:
-        {
-          new HiveToGCS().runTemplate();
-        }
-        break;
-      case PUBSUBTOBQ:
-        {
-          new PubSubToBQ().runTemplate();
-        }
-        break;
-      case HIVETOBIGQUERY:
-        {
-          new HiveToBigQuery().runTemplate();
-        }
-        break;
-      case GCSTOBIGQUERY:
-        {
-          new GCStoBigquery().runTemplate();
-        }
-        break;
-      case SPANNERTOGCS:
-        {
-          new SpannerToGCS().runTemplate();
-        }
-        break;
-      case S3TOBIGQUERY:
-        {
-          new S3ToBigQuery().runTemplate();
-        }
-        break;
-      default:
-        throw new IllegalArgumentException("Unexpected template name :" + template);
+    BaseTemplate template;
+    if (templateFactories.containsKey(templateName)) {
+      template = templateFactories.get(templateName).apply(args);
+    } else {
+      throw new IllegalArgumentException(
+          String.format("Unexpected template name: %s", templateName));
     }
-
+    template.runTemplate();
     LOGGER.debug("End API runSparkJob");
   }
 }
