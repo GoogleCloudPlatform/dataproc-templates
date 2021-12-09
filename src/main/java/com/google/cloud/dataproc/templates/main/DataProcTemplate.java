@@ -17,7 +17,7 @@ package com.google.cloud.dataproc.templates.main;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
-import com.google.cloud.dataproc.templates.GeneralTemplate;
+import com.google.cloud.dataproc.templates.general.GeneralTemplate;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
@@ -43,7 +43,8 @@ import org.slf4j.LoggerFactory;
 public class DataProcTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DataProcTemplate.class);
-  private static final String TEMPLATE_NAME = "template";
+  private static final String TEMPLATE_NAME_OPT = "template";
+  private static final String TEMPLATE_PROPERTY_NAME_OPT = "prop";
 
   /**
    * Parse command line arguments
@@ -54,7 +55,7 @@ public class DataProcTemplate {
   public static CommandLine parseArguments(String... args) {
     Options options = new Options();
 
-    Option templateOption = new Option(TEMPLATE_NAME, "the name of the template to run");
+    Option templateOption = new Option(TEMPLATE_NAME_OPT, "the name of the template to run");
     templateOption.setRequired(true);
     templateOption.setArgs(1);
     options.addOption(templateOption);
@@ -64,7 +65,7 @@ public class DataProcTemplate {
         OptionBuilder.withValueSeparator()
             .hasArgs(2)
             .withArgName("property=value")
-            .withLongOpt("prop")
+            .withLongOpt(TEMPLATE_PROPERTY_NAME_OPT)
             .withDescription("Value for given property")
             .create();
     options.addOption(propertyOption);
@@ -80,8 +81,8 @@ public class DataProcTemplate {
 
   public static void main(String[] args) {
     CommandLine cmd = parseArguments(args);
-    String templateNameString = cmd.getOptionValue(TEMPLATE_NAME);
-    Properties properties = cmd.getOptionProperties("prop");
+    String templateNameString = cmd.getOptionValue(TEMPLATE_NAME_OPT);
+    Properties properties = cmd.getOptionProperties(TEMPLATE_PROPERTY_NAME_OPT);
     String[] remainingArgs = cmd.getArgs();
     LOGGER.info("Template name: {}", templateNameString);
     LOGGER.info("Properties: {}", properties);

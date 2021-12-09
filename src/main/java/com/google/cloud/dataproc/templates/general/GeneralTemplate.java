@@ -13,10 +13,11 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates;
+package com.google.cloud.dataproc.templates.general;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.config.GeneralTemplateConfig;
 import com.google.cloud.dataproc.templates.config.InputConfig;
 import com.google.cloud.dataproc.templates.config.OutputConfig;
