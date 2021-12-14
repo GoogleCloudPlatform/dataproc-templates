@@ -20,8 +20,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
+import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -31,7 +34,18 @@ class DataProcTemplateTest {
   @ParameterizedTest
   @MethodSource("stringValidInputArgs")
   void testRunSparkJobWithValidInputArgs(List<String> args) {
-    DataProcTemplate.main((String[]) args.toArray());
+    DataProcTemplate.main(args.toArray(new String[0]));
+  }
+
+  @Test
+  void testRunSparkWithProperties() {
+    DataProcTemplate.createTemplateAndRegisterProperties(
+        "--template", "GCSTOBIGQUERY",
+        "--templateProperty", "foo=abc",
+        "--templateProperty", "bar=def");
+    // The createTemplate method registers command line properties with PropertyUtil.
+    Assertions.assertEquals("abc", PropertyUtil.getProperties().get("foo"));
+    Assertions.assertEquals("def", PropertyUtil.getProperties().get("bar"));
   }
 
   @ParameterizedTest
@@ -39,24 +53,26 @@ class DataProcTemplateTest {
   void testRunSparkJobWithInValidInputArgs(List<String> args) {
     Exception exception =
         assertThrows(
-            IllegalArgumentException.class, () -> DataProcTemplate.main((String[]) args.toArray()));
-    assertTrue(exception.getMessage().contains("No enum constant"));
+            IllegalArgumentException.class,
+            () ->
+                DataProcTemplate.createTemplateAndRegisterProperties(args.toArray(new String[0])));
+    assertTrue(exception.getMessage().contains("Unexpected template name"));
   }
 
   static Stream<Arguments> stringValidInputArgs() {
     return Stream.of(
-        arguments(asList("HiveToGcs", "b")),
-        arguments(asList("Hivetogcs")),
-        arguments(asList("hivetogcs", " ", "something_else")),
-        arguments(asList("HIVETOGCS")),
-        arguments(asList(" hivetogcs")));
+        arguments(asList("--template", "HiveToGcs", "b")),
+        arguments(asList("--template", "Hivetogcs")),
+        arguments(asList("--template", "hivetogcs", " ", "something_else")),
+        arguments(asList("--template", "HIVETOGCS")),
+        arguments(asList("--template", " hivetogcs")));
   }
 
   static Stream<Arguments> stringInValidOutputArgs() {
     return Stream.of(
-        arguments(asList(" ")),
-        arguments(asList(" hive2gcs")),
-        arguments(asList("hive")),
-        arguments(asList("")));
+        arguments(asList("--template", " ")),
+        arguments(asList("--template", " hive2gcs")),
+        arguments(asList("--template", "hive")),
+        arguments(asList("--template", "")));
   }
 }

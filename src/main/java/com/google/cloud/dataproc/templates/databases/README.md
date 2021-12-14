@@ -3,12 +3,13 @@
 General Execution:
 
 ```
-    bin/start.sh GCP_PROJECT=<gcp-project-id> \
-   REGION=<region>  \
-   SUBNET=<subnet>   \
-   GCS_STAGING_BUCKET=<gcs-staging-bucket-folder> \
-   HISTORY_SERVER_CLUSTER=<history-server> \
-   TEMPLATE_NAME=SPANNERTOGCS
+GCP_PROJECT=<gcp-project-id>
+REGION=<region>  \
+SUBNET=<subnet>   \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+HISTORY_SERVER_CLUSTER=<history-server> \
+bin/start.sh \
+-- --template SPANNERTOGCS
 ```
 
 ### Export query results as avro
