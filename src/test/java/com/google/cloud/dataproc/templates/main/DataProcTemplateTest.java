@@ -48,15 +48,12 @@ class DataProcTemplateTest {
     assertTrue(exception.getMessage().contains("Unexpected template name: "));
   }
 
-
   @Test
   void testRunSparkJobWithoutTemplateOption() {
     Exception exception =
-        assertThrows(
-            IllegalArgumentException.class, () -> DataProcTemplate.main(new String[0]));
+        assertThrows(IllegalArgumentException.class, () -> DataProcTemplate.main(new String[0]));
     assertTrue(exception.getMessage().contains("Missing required option: template"));
   }
-
 
   @Test
   public void testTemplateArg() {
@@ -96,5 +93,4 @@ class DataProcTemplateTest {
         arguments(asList("--template", "hive")),
         arguments(asList("--template", "")));
   }
-
 }

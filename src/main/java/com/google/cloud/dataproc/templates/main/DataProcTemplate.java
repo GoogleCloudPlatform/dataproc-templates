@@ -137,7 +137,7 @@ public class DataProcTemplate {
    * Get template factory and construct template from available template factories
    *
    * @param templateName name of the template to get
-   * @param args         remaining cli args to pass to templates (for those that use them)
+   * @param args remaining cli args to pass to templates (for those that use them)
    * @return the constructed template
    */
   static BaseTemplate createTemplate(TemplateName templateName, String[] args) {
