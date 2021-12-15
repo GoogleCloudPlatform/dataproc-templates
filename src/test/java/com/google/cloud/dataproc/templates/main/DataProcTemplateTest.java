@@ -22,7 +22,9 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Stream;
+import org.apache.commons.cli.CommandLine;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -54,9 +56,37 @@ class DataProcTemplateTest {
     Exception exception =
         assertThrows(
             IllegalArgumentException.class,
-            () ->
-                DataProcTemplate.createTemplateAndRegisterProperties(args.toArray(new String[0])));
-    assertTrue(exception.getMessage().contains("Unexpected template name"));
+            () -> DataProcTemplate.main(args.toArray(new String[0])));
+    assertTrue(exception.getMessage().contains("Unexpected template name: "));
+  }
+
+  @Test
+  void testRunSparkJobWithoutTemplateOption() {
+    Exception exception =
+        assertThrows(IllegalArgumentException.class, DataProcTemplate::main);
+    assertTrue(exception.getMessage().contains("Missing required option: template"));
+  }
+
+  @Test
+  public void testTemplateArg() {
+    CommandLine cmd = DataProcTemplate.parseArguments("--template", "FOO");
+    String template = cmd.getOptionValue("template");
+    Assertions.assertEquals("FOO", template);
+  }
+
+  @Test
+  public void testPropertiesArg() {
+    CommandLine cmd =
+        DataProcTemplate.parseArguments(
+            "--template", "FOO",
+            "--templateProperty", "key1=value1",
+            "--templateProperty", "key2=value2");
+    String template = cmd.getOptionValue("template");
+    Properties properties = cmd.getOptionProperties("templateProperty");
+    Assertions.assertEquals("FOO", template);
+    Assertions.assertFalse(properties.isEmpty());
+    Assertions.assertEquals("value1", properties.get("key1"));
+    Assertions.assertEquals("value2", properties.get("key2"));
   }
 
   static Stream<Arguments> stringValidInputArgs() {
