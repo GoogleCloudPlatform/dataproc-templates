@@ -63,28 +63,37 @@ fi
 
 # Running on an existing dataproc cluster or run on serverless spark
 if [ -n "${CLUSTER}" ]; then
-  SPARK_SUBMIT_COMMAND="gcloud dataproc jobs submit spark"
-else
-  SPARK_SUBMIT_COMMAND="gcloud beta dataproc batches submit spark"
-fi
-
-command=$(cat << EOF
-${SPARK_SUBMIT_COMMAND} \
-    ${OPT_JARS} \
-    ${OPT_PROJECT} \
-    ${OPT_REGION} \
-    ${OPT_LABELS} \
-    ${OPT_DEPS_BUCKET} \
-    ${OPT_FILES} \
-    ${OPT_PROPERTIES} \
-    ${OPT_CLASS} \
-    ${OPT_SUBNET} \
-    ${OPT_CLUSTER} \
-    ${OPT_HISTORY_SERVER_CLUSTER} \
-    ${OPT_METASTORE_SERVICE} \
-    $*
+  command=$(cat << EOF
+  gcloud dataproc jobs submit spark \
+      ${OPT_PROJECT} \
+      ${OPT_REGION} \
+      ${OPT_CLUSTER} \
+      ${OPT_JARS} \
+      ${OPT_LABELS} \
+      ${OPT_FILES} \
+      ${OPT_PROPERTIES} \
+      ${OPT_CLASS} \
+      $*
 EOF
 )
+else
+  command=$(cat << EOF
+  gcloud beta dataproc batches submit spark \
+      ${OPT_PROJECT} \
+      ${OPT_REGION} \
+      ${OPT_JARS} \
+      ${OPT_LABELS} \
+      ${OPT_DEPS_BUCKET} \
+      ${OPT_FILES} \
+      ${OPT_PROPERTIES} \
+      ${OPT_CLASS} \
+      ${OPT_SUBNET} \
+      ${OPT_HISTORY_SERVER_CLUSTER} \
+      ${OPT_METASTORE_SERVICE} \
+      $*
+EOF
+)
+fi
 
 echo "Triggering Spark Submit job"
 echo_formatted "${command}"
