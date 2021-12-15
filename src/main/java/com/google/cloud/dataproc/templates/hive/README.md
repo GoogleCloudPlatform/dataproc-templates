@@ -10,7 +10,13 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 HISTORY_SERVER_CLUSTER=<history-server> \
 bin/start.sh \
 --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
--- --template HIVETOBIGQUERY
+-- --template HIVETOBIGQUERY \
+--templateProperty hivetobq.bigquery.location=<bigquery destination> \
+--templateProperty hivetobq.input.table=<table> \
+--templateProperty hivetobq.input.db=<database> \
+--templateProperty hivetobq.append.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
+--templateProperty hivetobq.partition.col=<value> \
+--templateProperty hivetobq.spark.sql.warehouse.dir=<gcs-path>
 ```
 
 ### Configurable Parameters
@@ -38,7 +44,10 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 HISTORY_SERVER_CLUSTER=<history-server> \
 bin/start.sh \
 --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
--- --template HIVETOGCS
+-- --template HIVETOGCS \
+--templateProperty hive.input.table=<table> \
+--templateProperty hive.input.db=<database> \
+--templateProperty hive.gcs.output.path=<gcs-output-path>
 ```
 
 ### Configurable Parameters
