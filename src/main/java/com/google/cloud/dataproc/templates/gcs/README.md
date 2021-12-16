@@ -9,7 +9,7 @@ SUBNET=<subnet>   \
 GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 HISTORY_SERVER_CLUSTER=<history-server> \
 bin/start.sh \
--- --template GCSTOBIGQUERY
+-- --template GCSTOBIGQUERY \
 --templateProperty project.id=<gcp-project-id> \
 --templateProperty gcs.bigquery.input.location=<gcs path> \
 --templateProperty gcs.bigquery.input.format=<csv|parquet|avro> \
