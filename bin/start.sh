@@ -19,6 +19,9 @@ set -e
 BIN_DIR="$(dirname "$BASH_SOURCE")"
 PROJECT_ROOT_DIR=${BIN_DIR}/..
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
+if [ -z "${JOB_TYPE}" ]; then
+  JOB_TYPE=SERVERLESS
+fi
 
 . ${BIN_DIR}/dataproc_template_functions.sh
 
@@ -28,8 +31,8 @@ check_required_envvar GCS_STAGING_LOCATION
 
 #Change PWD to root folder for Maven Build
 cd ${PROJECT_ROOT_DIR}
-mvn clean spotless:apply install -DskipTests
-mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./grpc_lb
+#mvn clean spotless:apply install -DskipTests
+#mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./grpc_lb
 
 #Copy jar file to GCS bucket Staging folder
 echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_LOCATION}/${JAR_FILE}"
@@ -62,7 +65,9 @@ if [ -n "${METASTORE_SERVICE}" ]; then
 fi
 
 # Running on an existing dataproc cluster or run on serverless spark
-if [ -n "${CLUSTER}" ]; then
+if [ "${JOB_TYPE}" == "CLUSTER" ]; then
+  echo "JOB_TYPE is CLUSTER, so will submit on existing dataproc cluster"
+  check_required_envvar CLUSTER
   command=$(cat << EOF
   gcloud dataproc jobs submit spark \
       ${OPT_PROJECT} \
@@ -76,7 +81,8 @@ if [ -n "${CLUSTER}" ]; then
       $*
 EOF
 )
-else
+elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
+  echo "JOB_TYPE is SERVERLESS, so will submit on serverless spark"
   command=$(cat << EOF
   gcloud beta dataproc batches submit spark \
       ${OPT_PROJECT} \
@@ -93,6 +99,9 @@ else
       $*
 EOF
 )
+else
+  echo "Unknown JOB_TYPE \"${JOB_TYPE}\""
+  exit 1
 fi
 
 echo "Triggering Spark Submit job"

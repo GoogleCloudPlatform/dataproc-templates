@@ -62,8 +62,7 @@ class DataProcTemplateTest {
 
   @Test
   void testRunSparkJobWithoutTemplateOption() {
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, DataProcTemplate::main);
+    Exception exception = assertThrows(IllegalArgumentException.class, DataProcTemplate::main);
     assertTrue(exception.getMessage().contains("Missing required option: template"));
   }
 

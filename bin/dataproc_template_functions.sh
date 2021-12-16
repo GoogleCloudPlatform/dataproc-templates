@@ -39,9 +39,14 @@ Help() {
     export GCP_PROJECT=projectId
     export REGION=us-west1
     export GCS_STAGING_LOCATION=gs://bucket/path
-    # Optional environment variables
+
+    export JOB_TYPE=SERVERLESS|CLUSTER # Defaults to serverless
+
+    # Required environment variables for CLUSTER mode
+    export CLUSTER={clusterId}
+
+    # Optional environment variables for SERVERLESS mode
     export SUBNET=projects/{projectId}/regions/{regionId}/subnetworks/{subnetId}
-    export CLUSTER=projects/{projectId}/regions/{regionId}/clusters/{clusterId}
     export HISTORY_SERVER_CLUSTER=projects/{projectId}/regions/{regionId}/clusters/{clusterId}
     export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{serviceId}
 

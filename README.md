@@ -140,15 +140,15 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 
 ## Executing templates in existing dataproc cluster
 
-To run the templates against existing cluster you must specify the CLUSTER environment variable in
-addition to the required environment variables. Eg:
+To run the templates against existing cluster you must specify the `JOB_TYPE=CLUSTER` and 
+`CLUSTER=<full clusterId>` environment variables. Eg:
     ```
     export PROJECT=my-gcp-project
     export REGION=gcp-region
     export GCS_STAGING_LOCATION=gs://my-bucket/temp
+    export JOB_TYPE=CLUSTER
     export CLUSTER=${DATA_PROC_CLUSTER_NAME}
     bin/start.sh \
-    --properties=spark.hadoop.hive.metastore.uris=thrift://hostname/ip:9083 \
     -- --template HIVETOBIGQUERY
     ```
 
