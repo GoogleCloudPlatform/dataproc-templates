@@ -13,30 +13,25 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates;
+package com.google.cloud.dataproc.templates.config;
 
-import com.google.cloud.dataproc.templates.util.PropertyUtil;
-import java.util.Properties;
+import com.google.common.base.MoreObjects;
+import jakarta.validation.constraints.NotBlank;
 
-/** Base class for Dataproc templates. */
-public interface BaseTemplate {
+public class QueryConfig {
 
-  /** List of all templates. */
-  enum TemplateName {
-    WORDCOUNT,
-    HIVETOGCS,
-    PUBSUBTOBQ,
-    SPANNERTOGCS,
-    HIVETOBIGQUERY,
-    S3TOBIGQUERY,
-    GCSTOBIGQUERY,
-    GENERAL
+  @NotBlank private String sql;
+
+  public String getSql() {
+    return sql;
   }
 
-  default Properties getProperties() {
-    return PropertyUtil.getProperties();
+  public void setSql(String sql) {
+    this.sql = sql;
   }
 
-  /** Executes the template. */
-  void runTemplate();
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this).add("sql", sql).toString();
+  }
 }
