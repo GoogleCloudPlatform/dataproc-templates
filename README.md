@@ -138,6 +138,31 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
         bin/start.sh -- --template GCSTOBIGQUERY
         ```
 
+    1. #### Executing General template.
+       Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/general/README.md) 
+       ```
+        bin/start.sh --files="gs://bucket/path/config.yaml" \
+        -- --template GENERAL --config config.yaml
+        ```
+        With for example `config.yaml`:
+        ```yaml
+        input:
+          shakespeare:
+            format: bigquery
+            options:
+            table: "bigquery-public-data:samples.shakespeare"
+        query:
+          wordcount:
+            sql: "SELECT word, sum(word_count) cnt FROM shakespeare GROUP by word ORDER BY cnt DESC"
+        output:
+          wordcount:
+            format: csv
+            options:
+              header: true
+              path: gs://bucket/output/wordcount/
+            mode: Overwrite
+        ```
+
 ## Executing templates in existing dataproc cluster
 
 To run the templates against existing cluster you must specify the `JOB_TYPE=CLUSTER` and 
