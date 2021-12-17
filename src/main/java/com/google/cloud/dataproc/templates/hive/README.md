@@ -3,13 +3,20 @@
 General Execution:
 
 ```
-bin/start.sh GCP_PROJECT=<gcp-project-id> \
+GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
 SUBNET=<subnet>   \
-GCS_STAGING_BUCKET=<gcs-staging-bucket-folder> \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 HISTORY_SERVER_CLUSTER=<history-server> \
-TEMPLATE_NAME=HIVETOBIGQUERY \
---properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083
+bin/start.sh \
+--properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
+-- --template HIVETOBIGQUERY \
+--templateProperty hivetobq.bigquery.location=<bigquery destination> \
+--templateProperty hivetobq.input.table=<table> \
+--templateProperty hivetobq.input.db=<database> \
+--templateProperty hivetobq.append.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
+--templateProperty hivetobq.partition.col=<value> \
+--templateProperty hivetobq.spark.sql.warehouse.dir=<gcs-path>
 ```
 
 ### Configurable Parameters
@@ -30,13 +37,17 @@ hivetobq.spark.sql.warehouse.dir=<spark-warehouse-directory>
 General Execution:
 
 ```
-bin/start.sh GCP_PROJECT=<gcp-project-id> \
+GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
 SUBNET=<subnet>   \
-GCS_STAGING_BUCKET=<gcs-staging-bucket-folder> \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 HISTORY_SERVER_CLUSTER=<history-server> \
-TEMPLATE_NAME=HIVETOGCS \
---properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083
+bin/start.sh \
+--properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
+-- --template HIVETOGCS \
+--templateProperty hive.input.table=<table> \
+--templateProperty hive.input.db=<database> \
+--templateProperty hive.gcs.output.path=<gcs-output-path>
 ```
 
 ### Configurable Parameters
