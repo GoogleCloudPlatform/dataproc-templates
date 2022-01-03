@@ -6,3 +6,4 @@ target/
 .DS_Store
 logs/
 grpc_lb/
+dependency-reduced-pom.xml
