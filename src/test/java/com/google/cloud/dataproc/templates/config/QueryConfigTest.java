@@ -13,30 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates;
+package com.google.cloud.dataproc.templates.config;
 
-import com.google.cloud.dataproc.templates.util.PropertyUtil;
-import java.util.Properties;
+import static org.junit.jupiter.api.Assertions.*;
 
-/** Base class for Dataproc templates. */
-public interface BaseTemplate {
+import org.junit.jupiter.api.Test;
 
-  /** List of all templates. */
-  enum TemplateName {
-    WORDCOUNT,
-    HIVETOGCS,
-    PUBSUBTOBQ,
-    SPANNERTOGCS,
-    HIVETOBIGQUERY,
-    S3TOBIGQUERY,
-    GCSTOBIGQUERY,
-    GENERAL
+class QueryConfigTest {
+
+  @Test
+  void testValidate() {
+    QueryConfig queryConfig = new QueryConfig();
+    queryConfig.setSql("select * from foobar");
+    assertTrue(GeneralTemplateConfig.validate(queryConfig).isEmpty());
   }
 
-  default Properties getProperties() {
-    return PropertyUtil.getProperties();
+  @Test
+  void testValidateWithoutFormat() {
+    QueryConfig queryConfig = new QueryConfig();
+    assertEquals(1, GeneralTemplateConfig.validate(queryConfig).size());
   }
-
-  /** Executes the template. */
-  void runTemplate();
 }
