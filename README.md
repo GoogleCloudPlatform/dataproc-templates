@@ -150,7 +150,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
           shakespeare:
             format: bigquery
             options:
-            table: "bigquery-public-data:samples.shakespeare"
+              table: "bigquery-public-data:samples.shakespeare"
         query:
           wordcount:
             sql: "SELECT word, sum(word_count) cnt FROM shakespeare GROUP by word ORDER BY cnt DESC"
