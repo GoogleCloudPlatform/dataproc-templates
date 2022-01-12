@@ -140,7 +140,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
         ```
 
     1. #### Executing General template.
-       Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/general/README.md) 
+       Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
        ```
         bin/start.sh --files="gs://bucket/path/config.yaml" \
         -- --template GENERAL --config config.yaml
@@ -166,7 +166,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 
 ## Executing templates in existing dataproc cluster
 
-To run the templates against existing cluster you must specify the `JOB_TYPE=CLUSTER` and 
+To run the templates against existing cluster you must specify the `JOB_TYPE=CLUSTER` and
 `CLUSTER=<full clusterId>` environment variables. Eg:
     ```
     export PROJECT=my-gcp-project
