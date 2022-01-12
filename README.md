@@ -1,3 +1,4 @@
+[![Build Status](http://35.227.235.112/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job)](http://35.227.235.112/job/dataproc-templates-build/job/build-job/)
 # Dataproc Templates
 Dataproc templates are an effort to solve simple, but large, in-Cloud data tasks, including data import/export/backup/restore and bulk API operations. The technology under the hood which makes these operations possible is the serverless spark functionality based on [Google Cloud Dataproc](https://cloud.google.com/dataproc/)  service.
 
@@ -139,7 +140,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
         ```
 
     1. #### Executing General template.
-       Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/general/README.md) 
+       Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
        ```
         bin/start.sh --files="gs://bucket/path/config.yaml" \
         -- --template GENERAL --config config.yaml
@@ -165,7 +166,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 
 ## Executing templates in existing dataproc cluster
 
-To run the templates against existing cluster you must specify the `JOB_TYPE=CLUSTER` and 
+To run the templates against existing cluster you must specify the `JOB_TYPE=CLUSTER` and
 `CLUSTER=<full clusterId>` environment variables. Eg:
     ```
     export PROJECT=my-gcp-project
