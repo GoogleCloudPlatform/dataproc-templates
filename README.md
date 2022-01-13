@@ -1,4 +1,4 @@
-![Build Status](http://35.227.235.112/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job)
+![Build Status](http://35.227.235.112/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job)  
 # Dataproc Templates
 Dataproc templates are an effort to solve simple, but large, in-Cloud data tasks, including data import/export/backup/restore and bulk API operations. The technology under the hood which makes these operations possible is the serverless spark functionality based on [Google Cloud Dataproc](https://cloud.google.com/dataproc/)  service.
 
