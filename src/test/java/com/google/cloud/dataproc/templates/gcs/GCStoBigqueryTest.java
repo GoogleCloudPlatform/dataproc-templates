@@ -15,15 +15,14 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_INPUT_LOCATION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_DATASET_NAME;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_TABLE_NAME;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.stream.Stream;
+import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -37,7 +36,9 @@ public class GCStoBigqueryTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigqueryTest.class);
 
   @BeforeEach
-  void setUp() {}
+  void setUp() {
+    SparkSession spark = SparkSession.builder().master("local").getOrCreate();
+  }
 
   @ParameterizedTest
   @MethodSource("propertyKeys")
