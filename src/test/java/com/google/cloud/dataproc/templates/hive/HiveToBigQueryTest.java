@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.stream.Stream;
+import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,7 +33,9 @@ class HiveToBigQueryTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(HiveToBigQueryTest.class);
 
   @BeforeEach
-  void setUp() {}
+  void setUp() {
+    SparkSession spark = SparkSession.builder().master("local").getOrCreate();
+  }
 
   @ParameterizedTest
   @MethodSource("propertyKeys")

@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.stream.Stream;
+import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,6 +36,7 @@ public class PubSubToBQTest {
     PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP, "some value");
     PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPOUT_DATASET_PROP, "some value");
     PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPOUT_TABLE_PROP, "some value");
+    SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
 
   @ParameterizedTest

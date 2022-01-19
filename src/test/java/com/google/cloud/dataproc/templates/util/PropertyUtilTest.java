@@ -52,4 +52,14 @@ class PropertyUtilTest {
 
     Assertions.assertNull(properties.getProperty("non.existent.prop"));
   }
+
+  @Test
+  void testRegisterProperties() {
+    Properties extraProperties = new Properties();
+    extraProperties.put("addingAnExtraProperty", "Added!");
+    Assertions.assertNull(PropertyUtil.getProperties().get("addingAnExtraProperty"));
+
+    PropertyUtil.registerProperties(extraProperties);
+    Assertions.assertEquals("Added!", PropertyUtil.getProperties().get("addingAnExtraProperty"));
+  }
 }

@@ -15,78 +15,50 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Check if an environment variable is set,
+# takes the name of the environment variable as an argument
+check_required_envvar() {
+  name=$1        # We pass in the variable to check as a string
+  value=${!name} # Indirect expansion to get the value
+  if [ -z "${value}" ]
+  then
+    echo "Required environment variable ${name} is missing"
+    Help && exit 1
+  else
+    echo "${name}=${value}"
+  fi
+}
 
 #Mandatory vs optional  specify
 Help() {
-# Display Help
-   echo "Usage Syntax:"
-   echo
-   echo "Running Templates in Serverless Spark:"
-   echo "start.sh [property=value]"
-   echo "Required properties:"
-   echo "GCP_PROJECT=<value>"
-   echo "REGION=<value>"
-   echo "SUBNET=<value>"
-   echo "GCS_STAGING_BUCKET=<value>"
-   echo "TEMPLATE_NAME=<value>"
-   echo
-   echo  "Optional properties"
-   echo  "HISTORY_SERVER_CLUSTER=<value>"
-   echo
-   echo "Running Templates in existing dataproc cluster:"
-   echo "start.sh [property=value]"
-   echo "Required properties:"
-   echo "GCP_PROJECT=<value>"
-   echo "CLUSTER=<value>"
-   echo "REGION=<value>"
-   echo "JOB_TYPE=dataproc"
-   echo "GCS_STAGING_BUCKET=<value>"
-   echo "TEMPLATE_NAME=<value>"
-   echo
+  # Display Help
+  help_text=$(cat << EndOfMessage
+    Usage:
 
-}
+    # Environment variables
+    export GCP_PROJECT=projectId
+    export REGION=us-west1
+    export GCS_STAGING_LOCATION=gs://bucket/path
 
+    export JOB_TYPE=SERVERLESS|CLUSTER # Defaults to serverless
 
-#Parse arguments of type property=value and initialize variable with property name
-parse_arguments() {
-  ARGS=""
-  SPARK_ARGS=""
-  echo "Arugments passed to script : $*"
-  IFS=' ' read -r -a array <<< "$*"
-  for element in "${array[@]}"
-  do
-    if [[ "$element" == --* ]]
-    then
-     SPARK_ARGS=$SPARK_ARGS$element" "
-    elif [[ "$element" =~ "=" ]]
-    then
-     echo "Set $element"
-     eval "$element"
-     else
-       ARGS=$ARGS:element
-    fi
+    # Required environment variables for CLUSTER mode
+    export CLUSTER={clusterId}
 
-  done
-  #If optional properties exist add them as spark arguments
-  #Skip adding history server cluster if target is dataproc cluster
-  if [[ ! -z "${HISTORY_SERVER_CLUSTER}" && "${JOB_TYPE}" == "${SERVERLESS_JOB_CODE}" ]]
-  then
-    SPARK_ARGS=$SPARK_ARGS$" --history-server-cluster=${HISTORY_SERVER_CLUSTER} "
-    fi
-}
+    # Optional environment variables for SERVERLESS mode
+    export SUBNET=projects/{projectId}/regions/{regionId}/subnetworks/{subnetId}
+    export HISTORY_SERVER_CLUSTER=projects/{projectId}/regions/{regionId}/clusters/{clusterId}
+    export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{serviceId}
 
-#Verify the variables passed are non-empty
-check_mandatory_fields(){
-  var_names=("$@")
-    for var_name in "${var_names[@]}"; do
-        if [ -z "${!var_name}" ]
-         then
-           echo "ERROR: Required property $var_name is missing"
-           echo
-           Help
-           exit 1
-         fi
-    done
+    Usage syntax:
+
+    start.sh [sparkSubmitArgs] -- --template templateName [--templateProperty key=value] [extraArgs]
+
+    eg:
+    start.sh -- --template GCSTOBIGQUERY --templateProperty gcs.bigquery.input.location=gs://bucket/path/ (etc...)
+EndOfMessage
+)
+  echo "${help_text}"
 }
 
 
@@ -97,19 +69,4 @@ echo_formatted() {
   echo $*
   echo
   echo "==============================================================="
-}
-
- #Use custom log4j.properties file
-temporary_fix_for_log_level() {
-  log_property_string="--properties=spark.driver.extraJavaOptions=-Dlog4j.configuration=log4j-spark-driver-template.properties"
-  if [ -z "${SPARK_ARGS}" ]
-         then
-            SPARK_ARGS=" ${log_property_string}"
-           elif [[ "${SPARK_ARGS}" =~ "--properties" ]]
-           then
-             SPARK_ARGS=`echo ${SPARK_ARGS} | sed -e "s/--properties=/${log_property_string},/g"`
-            else
-              SPARK_ARGS=${SPARK_ARGS}" ${log_property_string}"
-           fi
-
 }
