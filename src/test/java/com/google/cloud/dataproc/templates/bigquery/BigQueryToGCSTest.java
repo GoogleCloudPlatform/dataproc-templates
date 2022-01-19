@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.dataproc.templates.bigquery;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_INPUT_TABLE_NAME;
