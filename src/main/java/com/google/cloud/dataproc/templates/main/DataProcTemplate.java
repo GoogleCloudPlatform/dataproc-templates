@@ -55,7 +55,7 @@ public class DataProcTemplate {
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
           .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
-          .put(TemplateName.GCSTOSPANNER, (args) -> new GCSToSpanner())
+          .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";

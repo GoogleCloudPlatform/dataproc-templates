@@ -16,22 +16,25 @@
 
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_SPANNER_INPUT_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_SPANNER_INPUT_LOCATION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_SPANNER_OUTPUT_DATABASE;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_SPANNER_OUTPUT_INSTANCE;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_SPANNER_OUTPUT_PRIMARY_KEY;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_SPANNER_OUTPUT_SAVE_MODE;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_SPANNER_OUTPUT_TABLE;
+import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_INPUT_FORMAT;
+import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_INPUT_LOCATION;
+import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_DATABASE;
+import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_INSTANCE;
+import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_PRIMARY_KEY;
+import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_SAVE_MODE;
+import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_TABLE;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil.ValidationException;
+import jakarta.validation.ConstraintViolation;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SaveMode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -55,8 +58,7 @@ class GCSToSpannerTest {
   @Test
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    GCSToSpanner template = new GCSToSpanner();
-    assertDoesNotThrow(template::runTemplate);
+    assertDoesNotThrow((ThrowingSupplier<GCSToSpanner>) GCSToSpanner::of);
   }
 
   @ParameterizedTest
@@ -64,14 +66,10 @@ class GCSToSpannerTest {
   void runTemplateWithMissingRequiredParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    GCSToSpanner template = new GCSToSpanner();
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, template::runTemplate);
-    assertEquals(
-        "Required parameters for GCSToSpanner not passed. "
-            + "Set mandatory parameter for GCSToSpanner template in "
-            + "resources/conf/template.properties file.",
-        exception.getMessage());
+    ValidationException exception = assertThrows(ValidationException.class, GCSToSpanner::of);
+    assertEquals(1, exception.getViolations().size());
+    ConstraintViolation<?> violation = exception.getViolations().get(0);
+    assertEquals("must not be empty", violation.getMessage());
   }
 
   /**
@@ -84,13 +82,11 @@ class GCSToSpannerTest {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_SAVE_MODE, saveMode);
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_PRIMARY_KEY, "");
-    GCSToSpanner template = new GCSToSpanner();
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, template::runTemplate);
-    assertEquals(
-        "Parameter gcs.spanner.output.primaryKey "
-            + "is required if gcs.spanner.output.saveMode is ErrorIfExists or Overwrite",
-        exception.getMessage());
+    ValidationException exception = assertThrows(ValidationException.class, GCSToSpanner::of);
+    assertEquals(1, exception.getViolations().size());
+    ConstraintViolation<?> violation = exception.getViolations().get(0);
+    assertEquals("primaryKey", violation.getPropertyPath().toString());
+    assertEquals("must not be empty", violation.getMessage());
   }
 
   static Stream<String> requiredPropertyKeys() {

@@ -157,25 +157,4 @@ public interface TemplateConstants {
   String S3_BQ_PRQT_FORMAT = "parquet";
 
   String S3_BQ_JSON_FORMAT = "json";
-
-  /** GCS to Spanner Properties */
-  String GCS_SPANNER_INPUT_FORMAT_AVRO = "avro";
-
-  String GCS_SPANNER_INPUT_FORMAT_AVRO_EXTD = "com.databricks.spark.avro";
-
-  String GCS_SPANNER_INPUT_FORMAT_PARQUET = "parquet";
-
-  String GCS_SPANNER_INPUT_FORMAT = "gcs.spanner.input.format";
-
-  String GCS_SPANNER_INPUT_LOCATION = "gcs.spanner.input.location";
-
-  String GCS_SPANNER_OUTPUT_INSTANCE = "gcs.spanner.output.instance";
-
-  String GCS_SPANNER_OUTPUT_DATABASE = "gcs.spanner.output.database";
-
-  String GCS_SPANNER_OUTPUT_TABLE = "gcs.spanner.output.table";
-
-  String GCS_SPANNER_OUTPUT_SAVE_MODE = "gcs.spanner.output.saveMode";
-
-  String GCS_SPANNER_OUTPUT_PRIMARY_KEY = "gcs.spanner.output.primaryKey";
 }
