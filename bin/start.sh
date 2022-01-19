@@ -31,8 +31,8 @@ check_required_envvar GCS_STAGING_LOCATION
 
 #Change PWD to root folder for Maven Build
 cd ${PROJECT_ROOT_DIR}
-#mvn clean spotless:apply install -DskipTests
-#mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./grpc_lb
+mvn clean spotless:apply install -DskipTests
+mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./grpc_lb
 
 #Copy jar file to GCS bucket Staging folder
 echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_LOCATION}/${JAR_FILE}"
