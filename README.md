@@ -1,3 +1,4 @@
+![Build Status](http://35.227.235.112/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job)
 # Dataproc Templates
 Dataproc templates are an effort to solve simple, but large, in-Cloud data tasks, including data import/export/backup/restore and bulk API operations. The technology under the hood which makes these operations possible is the serverless spark functionality based on [Google Cloud Dataproc](https://cloud.google.com/dataproc/)  service.
 
@@ -72,94 +73,109 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
     Once the template is staged on Google Cloud Storage, it can then be
     executed using the
     [gcloud CLI](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs)
-    tool. The runtime parameters required by the template can be passed in the
-    parameters field via comma-separated list of `paramName=Value`.
-   * Set required variables.
-      ```
-      [Required]
-      export PROJECT=my-gcp-project
-      export REGION=gcp-region
-      export SUBNET=subnet-id (Example projects/<gcp-project>/regions/<region>/subnetworks/test-subnet1)
-      export GCS_STAGING_BUCKET=gs://my-bucket/temp
+    tool.
 
-      [Optional]
-      export HISTORY_SERVER_CLUSTER=permanent-history-server-id (Id of Dataproc cluster running permanent history server to access historic logs. Example projects/<project-id>/regions/<region>/clusters/per-hs)
+    To stage and execute the template, you can use the `start.sh` script. This takes
+    * Environment variables on where and how to deploy the templates
+    * Additional options for `gcloud dataproc jobs submit spark` or `gcloud beta dataproc batches submit spark`
+    * Template options, such as the critical `--template` option which says which template to run and
+      `--templateProperty` options for passing in properties at runtime (as an alternative to setting
+      them in `src/main/resources/template.properties`).
+
+    * Usage syntax:
         ```
-   * Execute required template.
-      ```
-      bin/start.sh GCP_PROJECT=${PROJECT} \
-      REGION=${REGION}  \
-      SUBNET=${SUBNET}   \
-      GCS_STAGING_BUCKET=${GCS_STAGING_BUCKET} \
-      TEMPLATE_NAME=HIVETOGCS \
-      --properties=spark.hadoop.hive.metastore.uris=hrift://hostname/ip:9083
-      ```
-    1. #### Executing Hive to GCS template. Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+        start.sh [submit-spark-options] -- --template templateName [--templateProperty key=value] [extra-template-options]
         ```
-        bin/start.sh GCP_PROJECT=${PROJECT} \
-          REGION=${REGION}  \
-          SUBNET=${SUBNET}   \
-          GCS_STAGING_BUCKET=${GCS_STAGING_BUCKET} \
-          HISTORY_SERVER_CLUSTER=${HISTORY_SERVER_CLUSTER} \ #  [Optional]
-          TEMPLATE_NAME=HIVETOGCS \
-          --properties=spark.hadoop.hive.metastore.uris=hrift://hostname/ip:9083
+
+        For example:
+        ```
+        # Set required environment variables.
+        export PROJECT=my-gcp-project
+        export REGION=gcp-region
+        export GCS_STAGING_LOCATION=gs://my-bucket/temp
+        # Set optional environment variables.
+        export SUBNET=projects/<gcp-project>/regions/<region>/subnetworks/test-subnet1
+        # ID of Dataproc cluster running permanent history server to access historic logs.
+        export HISTORY_SERVER_CLUSTER=projects/<gcp-project>/regions/<region>/clusters/<cluster>
+
+        # The submit spark options must be seperated with a "--" from the template options
+        bin/start.sh \
+        --properties=<spark.something.key>=<value> \
+        --version=... \
+        -- \
+        -- --template <TEMPLATE TYPE>
+        -- --templateProperty <key>=<value>
+        ```
+
+    1. #### Executing Hive to GCS template
+        Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+        ```
+        bin/start.sh \
+        --properties=spark.hadoop.hive.metastore.uris=thrift://hostname/ip:9083
+        -- --template HIVETOGCS
+        ```
+
+    1. #### Executing Hive to BigQuery template
+        Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+        ```
+        bin/start.sh \
+        --properties=spark.hadoop.hive.metastore.uris=thrift://hostname/ip:9083 \
+        -- --template HIVETOBIGQUERY
+        ```
+
+    1. #### Executing Spanner to GCS template.
+        Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
+        ```
+        bin/start.sh -- --template SPANNERTOGCS
+        ```
+
+    1. #### Executing PubSub to BigQuery template.
+        ```
+        bin/start.sh -- --template PUBSUBTOBQ
+        ```
+
+    1. #### Executing GCS to BigQuery template.
+        ```
+        bin/start.sh -- --template GCSTOBIGQUERY
+        ```
+
+    1. #### Executing General template.
+       Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
        ```
-   1. #### Executing Hive to BigQuery template. Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
-
+        bin/start.sh --files="gs://bucket/path/config.yaml" \
+        -- --template GENERAL --config config.yaml
         ```
-       bin/start.sh GCP_PROJECT=${PROJECT} \
-          REGION=${REGION}  \
-          SUBNET=${SUBNET}   \
-          GCS_STAGING_BUCKET=${GCS_STAGING_BUCKET} \
-          HISTORY_SERVER_CLUSTER=${HISTORY_SERVER_CLUSTER} \ #  [Optional]
-          TEMPLATE_NAME=HIVETOBIGQUERY \
-          --properties=spark.hadoop.hive.metastore.uris=hrift://hostname/ip:9083
-        ```
-
-    1. #### Executing Spanner to GCS template. Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
-
-        ```
-       bin/start.sh GCP_PROJECT=${PROJECT} \
-          REGION=${REGION}  \
-          SUBNET=${SUBNET}   \
-          GCS_STAGING_BUCKET=${GCS_STAGING_BUCKET} \
-          HISTORY_SERVER_CLUSTER=${HISTORY_SERVER_CLUSTER} \ #  [Optional]
-          TEMPLATE_NAME=SPANNERTOGCS
-        ```
-
-   1. #### Executing PubSub to BigQuery template.
-
-        ```
-       bin/start.sh GCP_PROJECT=${PROJECT} \
-          REGION=${REGION}  \
-          SUBNET=${SUBNET}   \
-          GCS_STAGING_BUCKET=${GCS_STAGING_BUCKET} \
-          HISTORY_SERVER_CLUSTER=${HISTORY_SERVER_CLUSTER} \ #  [Optional]
-          TEMPLATE_NAME=PUBSUBTOBQ
+        With for example `config.yaml`:
+        ```yaml
+        input:
+          shakespeare:
+            format: bigquery
+            options:
+              table: "bigquery-public-data:samples.shakespeare"
+        query:
+          wordcount:
+            sql: "SELECT word, sum(word_count) cnt FROM shakespeare GROUP by word ORDER BY cnt DESC"
+        output:
+          wordcount:
+            format: csv
+            options:
+              header: true
+              path: gs://bucket/output/wordcount/
+            mode: Overwrite
         ```
 
-   1. #### Executing GCS to BigQuery template.
-
-        ```
-       bin/start.sh GCP_PROJECT=${PROJECT} \
-          REGION=${REGION}  \
-          SUBNET=${SUBNET}   \
-          GCS_STAGING_BUCKET=${GCS_STAGING_BUCKET} \
-          HISTORY_SERVER_CLUSTER=${HISTORY_SERVER_CLUSTER} \ #  [Optional]
-          TEMPLATE_NAME=GCSTOBIGQUERY
-        ```
 ## Executing templates in existing dataproc cluster
 
-To run the templates against existing cluster specify **JOB_TYPE** as dataproc_cluster and provide the **CLUSTER**. Following is an example command to run HIVETOBIGQUERY in existing dataproc cluster.
-
+To run the templates against existing cluster you must specify the `JOB_TYPE=CLUSTER` and
+`CLUSTER=<full clusterId>` environment variables. Eg:
     ```
-    bin/start.sh GCP_PROJECT=${PROJECT} \
-    REGION=${REGION}  \
-    JOB_TYPE=dataproc \
-    CLUSTER=${DATA_PROC_CLUSTER_NAME}   \  # Specify name of existing dataproc cluster
-    GCS_STAGING_BUCKET=${GCS_STAGING_BUCKET} \
-    TEMPLATE_NAME=HIVETOBIGQUERY   \
-    --properties=spark.hadoop.hive.metastore.uris=hrift://hostname/ip:9083
+    export PROJECT=my-gcp-project
+    export REGION=gcp-region
+    export GCS_STAGING_LOCATION=gs://my-bucket/temp
+    export JOB_TYPE=CLUSTER
+    export CLUSTER=${DATA_PROC_CLUSTER_NAME}
+    bin/start.sh \
+    -- --template HIVETOBIGQUERY
     ```
 
 
