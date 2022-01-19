@@ -70,11 +70,7 @@ public class BigQueryToGCS implements BaseTemplate {
     SparkSession spark = null;
     try {
       spark = SparkSession.builder().appName("BigQuery to GCS").getOrCreate();
-      // Load data in from BigQuery. See
-      // https://github.com/GoogleCloudDataproc/spark-bigquery-connector/tree/0.17.3#properties
-      // for option information.
       Dataset<Row> inputData = spark.read().format("bigquery").load(inputTableName);
-
       DataFrameWriter<Row> writer = inputData.write();
       switch (outputFileFormat) {
         case BQ_GCS_OUTPUT_FORMAT_CSV:
@@ -86,6 +82,7 @@ public class BigQueryToGCS implements BaseTemplate {
           break;
         case BQ_GCS_OUTPUT_FORMAT_JSON:
           writer.json(outputFileLocation);
+          break;
         case BQ_GCS_OUTPUT_FORMAT_AVRO:
           writer.format(GCS_BQ_AVRO_EXTD_FORMAT).save(outputFileLocation);
           break;
