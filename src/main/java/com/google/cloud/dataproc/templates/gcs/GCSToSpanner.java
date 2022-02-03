@@ -15,10 +15,10 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
-import com.google.cloud.spanner.jdbc.SpannerJdbcDialect;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;

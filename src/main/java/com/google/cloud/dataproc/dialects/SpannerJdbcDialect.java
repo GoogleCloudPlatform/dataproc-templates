@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Google LLC
+ * Copyright (C) 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.spanner.jdbc;
+package com.google.cloud.dataproc.dialects;
 
 import static org.apache.spark.sql.types.DataTypes.BinaryType;
 import static org.apache.spark.sql.types.DataTypes.BooleanType;
@@ -42,12 +42,23 @@ public class SpannerJdbcDialect extends JdbcDialect {
     return url.toLowerCase().startsWith("jdbc:cloudspanner:");
   }
 
+  /**
+   * Spanner uses backticks to quote column identifiers
+   *
+   * @param column column name
+   * @return column name wrapped in backticks
+   */
   @Override
   public String quoteIdentifier(String column) {
     return "`" + column + "`";
   }
 
-  /** Handle spanner DDL type names, for creating tables when writing to spanner */
+  /**
+   * Handle spanner DDL type names, used when creating tables when writing to spanner
+   *
+   * @param dt Spark SQL data type
+   * @return Jdbc type representing a corresponding Spanner DDL type name
+   */
   public Option<JdbcType> getJDBCType(final DataType dt) {
     if (IntegerType.equals(dt)) {
       return Option.apply(new JdbcType("INT64", 4));

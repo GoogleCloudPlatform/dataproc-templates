@@ -18,8 +18,11 @@ package com.google.cloud.dataproc.templates.gcs;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Strings;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -36,24 +39,43 @@ public class GCSToSpannerConfig {
   public final static String GCS_SPANNER_OUTPUT_SAVE_MODE = "gcs.spanner.output.saveMode";
   public final static String GCS_SPANNER_OUTPUT_PRIMARY_KEY = "gcs.spanner.output.primaryKey";
   public final static String GCS_SPANNER_OUTPUT_BATCH_INSERT_SIZE = "gcs.spanner.output.batchInsertSize";
+  final static ObjectMapper mapper = new ObjectMapper().configure(
+      DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+  @JsonProperty(value = GCS_SPANNER_INPUT_LOCATION)
   @NotEmpty
   private String inputLocation;
+
+  @JsonProperty(value = GCS_SPANNER_INPUT_FORMAT)
   @NotEmpty
   @Pattern(regexp = "avro|parquet")
   private String inputFormat;
+
+  @JsonProperty(value = PROJECT_ID_PROP)
   @NotEmpty
   private String projectId;
+
+  @JsonProperty(value = GCS_SPANNER_OUTPUT_INSTANCE)
   @NotEmpty
   private String instance;
+
+  @JsonProperty(value = GCS_SPANNER_OUTPUT_DATABASE)
   @NotEmpty
   private String database;
+
+  @JsonProperty(value = GCS_SPANNER_OUTPUT_TABLE)
   @NotEmpty
   private String table;
+
+  @JsonProperty(value = GCS_SPANNER_OUTPUT_SAVE_MODE)
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
   private String saveModeString = "ErrorIfExists";
+
+  @JsonProperty(value = GCS_SPANNER_OUTPUT_PRIMARY_KEY)
   @NotEmpty
   private String primaryKey;
+
+  @JsonProperty(value = GCS_SPANNER_OUTPUT_BATCH_INSERT_SIZE)
   @Min(value = 1)
   private long batchInsertSize = 1000;
 
@@ -85,6 +107,7 @@ public class GCSToSpannerConfig {
     return saveModeString;
   }
 
+  @JsonIgnore
   public SaveMode getSaveMode() {
     return SaveMode.valueOf(getSaveModeString());
   }
@@ -113,20 +136,6 @@ public class GCSToSpannerConfig {
   }
 
   public static GCSToSpannerConfig fromProperties(Properties properties) {
-    GCSToSpannerConfig config = new GCSToSpannerConfig();
-    config.inputFormat = properties.getProperty(GCS_SPANNER_INPUT_FORMAT);
-    config.inputLocation = properties.getProperty(GCS_SPANNER_INPUT_LOCATION);
-    config.projectId = properties.getProperty(PROJECT_ID_PROP);
-    config.instance = properties.getProperty(GCS_SPANNER_OUTPUT_INSTANCE);
-    config.database = properties.getProperty(GCS_SPANNER_OUTPUT_DATABASE);
-    config.table = properties.getProperty(GCS_SPANNER_OUTPUT_TABLE);
-    config.saveModeString = properties
-        .getProperty(GCS_SPANNER_OUTPUT_SAVE_MODE, SaveMode.ErrorIfExists.toString());
-    config.primaryKey = properties.getProperty(GCS_SPANNER_OUTPUT_PRIMARY_KEY);
-    if (!Strings.isNullOrEmpty(properties.getProperty(GCS_SPANNER_OUTPUT_BATCH_INSERT_SIZE))) {
-      config.batchInsertSize = Long.parseLong(
-          properties.getProperty(GCS_SPANNER_OUTPUT_BATCH_INSERT_SIZE));
-    }
-    return config;
+    return mapper.convertValue(properties, GCSToSpannerConfig.class);
   }
 }
