@@ -139,6 +139,11 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
         bin/start.sh -- --template GCSTOBIGQUERY
         ```
 
+   1. #### Executing BigQuery to GCS template.
+       ```
+       bin/start.sh -- --template BIGQUERYTOGCS
+       ```
+
     1. #### Executing General template.
        Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
        ```
