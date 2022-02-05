@@ -163,23 +163,28 @@ public class DataProcTemplate {
   }
 
   private static void testTempLocationAccess(TemplateName templateName) {
-    String USER_AGENT_HEADER = "user-agent";
-    String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0/" + templateName;
+    try{
+      String USER_AGENT_HEADER = "user-agent";
+      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0/" + templateName;
 
-    HeaderProvider headerProvider =
-        FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+      HeaderProvider headerProvider =
+              FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
 
-    String projectid = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
-    String stagingBucket = PropertyUtil.getProperties().getProperty(GCS_STAGING_BUCKET_PATH);
+      String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
 
-    Storage storage =
-        StorageOptions.newBuilder()
-            .setProjectId(projectid)
-            .setHeaderProvider(headerProvider)
-            .build()
-            .getService();
+      Storage storage =
+              StorageOptions.newBuilder()
+                      .setProjectId(projectId)
+                      .setHeaderProvider(headerProvider)
+                      .build()
+                      .getService();
 
-    storage.get(stagingBucket);
+      storage.list();
+    }
+    catch (Throwable t){
+      //log exception and ignore
+      LOGGER.error(t.getMessage(), t);
+    }
   }
 
   /**
