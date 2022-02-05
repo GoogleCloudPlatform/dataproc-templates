@@ -181,9 +181,9 @@ public class DataProcTemplate {
 
       storage.list();
     }
-    catch (Throwable t){
-      //log exception and ignore
-      LOGGER.error(t.getMessage(), t);
+    catch (Exception e){
+      //log error message and ignore
+      LOGGER.info("Unable to list GCS Buckets. Error:" + e.getMessage());
     }
   }
 
