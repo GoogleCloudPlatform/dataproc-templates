@@ -15,6 +15,11 @@
  */
 package com.google.cloud.dataproc.templates.main;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_STAGING_BUCKET_PATH;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
+
+import com.google.api.gax.rpc.FixedHeaderProvider;
+import com.google.api.gax.rpc.HeaderProvider;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
@@ -27,6 +32,8 @@ import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Properties;
@@ -144,12 +151,35 @@ public class DataProcTemplate {
       printHelp();
       throw e;
     }
+
+    testTempLocationAccess(templateName);
+
     if (TEMPLATE_FACTORIES.containsKey(templateName)) {
       return TEMPLATE_FACTORIES.get(templateName).apply(remainingArgs);
     } else {
       throw new IllegalArgumentException(
           String.format("Unexpected template name: %s", templateName));
     }
+  }
+
+  private static void testTempLocationAccess(TemplateName templateName) {
+    String USER_AGENT_HEADER = "user-agent";
+    String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0/" + templateName;
+
+    HeaderProvider headerProvider =
+        FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+
+    String projectid = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
+    String stagingBucket = PropertyUtil.getProperties().getProperty(GCS_STAGING_BUCKET_PATH);
+
+    Storage storage =
+        StorageOptions.newBuilder()
+            .setProjectId(projectid)
+            .setHeaderProvider(headerProvider)
+            .build()
+            .getService();
+
+    storage.get(stagingBucket);
   }
 
   /**
