@@ -193,6 +193,7 @@ public class PubSubToBQ implements BaseTemplate {
                       ApiFuture<AppendRowsResponse> future = writer.append(jsonArr);
                       AppendRowsResponse response = future.get();
                     }
+                    writer.close();
                   }
                 });
           }
