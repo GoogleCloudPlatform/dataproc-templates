@@ -92,7 +92,6 @@ public interface TemplateConstants {
   String PUBSUB_BQ_BATCH_SIZE_PROP = "pubsub.bq.batch.size";
 
   /** GCS to Bigquery properties */
-  /** GCS to Bigquery properties */
   String GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location";
 
   String GCS_OUTPUT_DATASET_NAME = "gcs.bigquery.output.dataset";
@@ -161,4 +160,19 @@ public interface TemplateConstants {
   String S3_BQ_PRQT_FORMAT = "parquet";
 
   String S3_BQ_JSON_FORMAT = "json";
+
+  /** Bigquery to GCS properties */
+  String BQ_GCS_INPUT_TABLE_NAME = "bigquery.gcs.input.table";
+
+  String BQ_GCS_OUTPUT_FORMAT_CSV = "csv";
+
+  String BQ_GCS_OUTPUT_FORMAT_AVRO = "avro";
+
+  String BQ_GCS_OUTPUT_FORMAT_PARQUET = "parquet";
+
+  String BQ_GCS_OUTPUT_FORMAT_JSON = "json";
+
+  String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
+
+  String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
 }
