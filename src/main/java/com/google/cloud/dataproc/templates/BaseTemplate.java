@@ -27,6 +27,7 @@ public interface BaseTemplate {
     HIVETOGCS,
     PUBSUBTOBQ,
     SPANNERTOGCS,
+    GCSTOSPANNER,
     HIVETOBIGQUERY,
     S3TOBIGQUERY,
     GCSTOBIGQUERY,

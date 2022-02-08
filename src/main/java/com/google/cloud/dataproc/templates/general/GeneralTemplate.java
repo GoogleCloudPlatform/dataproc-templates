@@ -22,14 +22,13 @@ import com.google.cloud.dataproc.templates.config.GeneralTemplateConfig;
 import com.google.cloud.dataproc.templates.config.InputConfig;
 import com.google.cloud.dataproc.templates.config.OutputConfig;
 import com.google.cloud.dataproc.templates.config.QueryConfig;
-import jakarta.validation.ConstraintViolation;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import org.apache.arrow.util.Preconditions;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -83,11 +82,7 @@ public class GeneralTemplate implements BaseTemplate {
       throw new IllegalArgumentException("Could not load config yaml", e);
     }
     LOGGER.info("Config loaded\n{}", config);
-
-    Set<ConstraintViolation<GeneralTemplateConfig>> violations = config.validate();
-    if (!violations.isEmpty()) {
-      throw new IllegalArgumentException(String.format("Invalid configuration %s", config));
-    }
+    ValidationUtil.validateOrThrow(config);
     return new GeneralTemplate(config);
   }
 

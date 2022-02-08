@@ -16,6 +16,7 @@
 package com.google.cloud.dataproc.templates.config;
 
 import com.google.cloud.dataproc.templates.config.GeneralTemplateConfig.GeneralTemplateConfigAnnotation;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import jakarta.validation.Constraint;
@@ -24,9 +25,6 @@ import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Payload;
 import jakarta.validation.Valid;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.lang.annotation.ElementType;
@@ -37,17 +35,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @GeneralTemplateConfigAnnotation
 public class GeneralTemplateConfig {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GeneralTemplateConfig.class);
-
   @NotEmpty() private Map<String, @Valid InputConfig> input = ImmutableMap.of();
   @NotNull private Map<String, @Valid QueryConfig> query = ImmutableMap.of();;
-  @NotEmpty() private Map<String, @Valid OutputConfig> output = ImmutableMap.of();;
+  @NotEmpty() private Map<String, @Valid OutputConfig> output = ImmutableMap.of();
 
   public Map<String, InputConfig> getInput() {
     return input;
@@ -87,18 +81,7 @@ public class GeneralTemplateConfig {
   }
 
   static <T> Set<ConstraintViolation<T>> validate(T pojo) {
-    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-    Validator validator = factory.getValidator();
-    Set<ConstraintViolation<T>> violations = validator.validate(pojo);
-    for (ConstraintViolation<T> violation : violations) {
-      LOGGER.error(
-          "Violation: {}; {}; in {}",
-          violation.getPropertyPath(),
-          violation.getMessage(),
-          violation.getRootBeanClass());
-    }
-
-    return violations;
+    return ValidationUtil.validate(pojo);
   }
 
   @Constraint(validatedBy = GeneralTemplateConfigValidator.class)

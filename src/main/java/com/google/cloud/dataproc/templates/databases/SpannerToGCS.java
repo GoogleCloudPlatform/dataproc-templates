@@ -15,7 +15,11 @@
  */
 package com.google.cloud.dataproc.templates.databases;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_DATABASE_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_GCS_PATH;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_INSTANCE_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_TABLE_ID_PROP;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.Objects;
