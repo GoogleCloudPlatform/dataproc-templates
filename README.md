@@ -103,8 +103,8 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
         --properties=<spark.something.key>=<value> \
         --version=... \
         -- \
-        -- --template <TEMPLATE TYPE>
-        -- --templateProperty <key>=<value>
+        --template <TEMPLATE TYPE>
+        --templateProperty <key>=<value>
         ```
 
     1. #### Executing Hive to GCS template
