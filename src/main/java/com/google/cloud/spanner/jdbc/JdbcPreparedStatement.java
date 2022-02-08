@@ -32,9 +32,7 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Modified method:createStatement() only, for Spark SQL *
- */
+/** Modified method:createStatement() only, for Spark SQL * */
 
 /** Implementation of {@link PreparedStatement} for Cloud Spanner. */
 class JdbcPreparedStatement extends AbstractJdbcPreparedStatement {

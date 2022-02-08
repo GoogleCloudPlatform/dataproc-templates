@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.dataproc.templates.util;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,7 +47,7 @@ public class ValidationUtil {
    * Validate jakarta.annotations on any pojo
    *
    * @param object Plain old java object to be validated
-   * @param <T>    type
+   * @param <T> type
    * @return Set of violated constraints
    */
   public static <T> Set<ConstraintViolation<T>> validate(T object) {
@@ -57,8 +56,8 @@ public class ValidationUtil {
     Set<ConstraintViolation<T>> violations = validator.validate(object);
     Class<?> clazz = object.getClass();
     for (ConstraintViolation<T> violation : violations) {
-      String annotationValue = getJsonPropertyAnnotationValue(clazz,
-          violation.getPropertyPath().toString());
+      String annotationValue =
+          getJsonPropertyAnnotationValue(clazz, violation.getPropertyPath().toString());
       LOGGER.error(
           "Violation: {} {}; {}; in {}",
           violation.getPropertyPath(),

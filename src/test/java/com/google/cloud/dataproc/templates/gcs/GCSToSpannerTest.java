@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.cloud.dataproc.templates.gcs;
 
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_INPUT_FORMAT;
@@ -90,8 +89,11 @@ class GCSToSpannerTest {
   }
 
   static Stream<String> requiredPropertyKeys() {
-    return Stream.of(GCS_SPANNER_INPUT_LOCATION, GCS_SPANNER_OUTPUT_INSTANCE,
-        GCS_SPANNER_OUTPUT_DATABASE, GCS_SPANNER_OUTPUT_TABLE);
+    return Stream.of(
+        GCS_SPANNER_INPUT_LOCATION,
+        GCS_SPANNER_OUTPUT_INSTANCE,
+        GCS_SPANNER_OUTPUT_DATABASE,
+        GCS_SPANNER_OUTPUT_TABLE);
   }
 
   static Stream<String> requiredPrimaryKeySaveModes() {
