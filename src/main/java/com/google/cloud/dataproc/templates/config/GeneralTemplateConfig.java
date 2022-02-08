@@ -35,19 +35,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @GeneralTemplateConfigAnnotation
 public class GeneralTemplateConfig {
 
-  @NotEmpty()
-  private Map<String, @Valid InputConfig> input = ImmutableMap.of();
-  @NotNull
-  private Map<String, @Valid QueryConfig> query = ImmutableMap.of();
-  ;
-  @NotEmpty()
-  private Map<String, @Valid OutputConfig> output = ImmutableMap.of();
+  @NotEmpty() private Map<String, @Valid InputConfig> input = ImmutableMap.of();
+  @NotNull private Map<String, @Valid QueryConfig> query = ImmutableMap.of();;
+  @NotEmpty() private Map<String, @Valid OutputConfig> output = ImmutableMap.of();
 
   public Map<String, InputConfig> getInput() {
     return input;
@@ -106,8 +100,7 @@ public class GeneralTemplateConfig {
       implements ConstraintValidator<GeneralTemplateConfigAnnotation, GeneralTemplateConfig> {
 
     @Override
-    public void initialize(GeneralTemplateConfigAnnotation constraintAnnotation) {
-    }
+    public void initialize(GeneralTemplateConfigAnnotation constraintAnnotation) {}
 
     @Override
     public boolean isValid(GeneralTemplateConfig value, ConstraintValidatorContext context) {

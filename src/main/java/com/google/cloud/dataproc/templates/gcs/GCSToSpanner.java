@@ -48,8 +48,8 @@ public class GCSToSpanner implements BaseTemplate {
   @Override
   public void runTemplate() {
     try (SparkSession spark = SparkSession.builder().appName("GCS to Spanner").getOrCreate()) {
-      Dataset<Row> dataset = spark.read().format(config.getInputFormat())
-          .load(config.getInputLocation());
+      Dataset<Row> dataset =
+          spark.read().format(config.getInputFormat()).load(config.getInputLocation());
       write(dataset);
     }
   }
@@ -71,8 +71,8 @@ public class GCSToSpanner implements BaseTemplate {
         .option(
             JDBCOptions.JDBC_TXN_ISOLATION_LEVEL(),
             "NONE") // Needed because transaction have a 20,000 mutation limit per commit.
-        .option(JDBCOptions.JDBC_BATCH_INSERT_SIZE(),
-            config.getBatchInsertSize()) // default is 1000
+        .option(
+            JDBCOptions.JDBC_BATCH_INSERT_SIZE(), config.getBatchInsertSize()) // default is 1000
         .option(JDBCOptions.JDBC_DRIVER_CLASS(), SPANNER_JDBC_DRIVER)
         .mode(config.getSaveMode())
         .save();
