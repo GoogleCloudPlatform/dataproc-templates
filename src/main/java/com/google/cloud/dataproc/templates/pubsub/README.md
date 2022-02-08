@@ -16,7 +16,7 @@ bin/start.sh \
 ### Configurable Parameters
 Update Following properties in  [template.properties](../../../../../../../resources/template.properties) file:
 ```
-## Project that contains the input PubSub subscription to be read
+## Project that contains the input Pub/Sub subscription to be read
 pubsub.input.project.id=<pubsub project id>
 ## PubSub subscription name
 pubsub.input.subscription=<pubsub subscription>
@@ -24,10 +24,14 @@ pubsub.input.subscription=<pubsub subscription>
 pubsub.timeout.ms=60000
 ## Streaming duration, how often wil writes to BQ be triggered
 pubsub.streaming.duration.seconds=15
+## Number of streams that will read from Pub/Sub subscription in parallel
+pubsub.total.receivers=5
 ## Project that contains the output table
 pubsub.bq.output.project.id=<pubsub to bq output project id>
-## Big Query output dataset
+## BigQuery output dataset
 pubsub.bq.output.dataset=<bq output dataset>
-## Big Query output table
+## BigQuery output table
 pubsub.bq.output.table=<bq output table>
+## Number of records to be written per message to BigQuery
+pubsub.bq.batch.size=1000
 ```

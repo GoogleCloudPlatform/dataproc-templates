@@ -80,12 +80,16 @@ public interface TemplateConstants {
   String PUBSUB_TIMEOUT_MS_PROP = "pubsub.timeout.ms";
   // Streaming duration
   String PUBSUB_STREAMING_DURATION_SECONDS_PROP = "pubsub.streaming.duration.seconds";
+  // Number of receivers
+  String PUBSUB_TOTAL_RECEIVERS_PROP = "pubsub.total.receivers";
   // Project that contains the output table
   String PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP = "pubsub.bq.output.project.id";
-  // Big Query output dataset
+  // BigQuery output dataset
   String PUBSUB_BQ_OUTPOUT_DATASET_PROP = "pubsub.bq.output.dataset";
-  // Big Query output table
+  // BigQuery output table
   String PUBSUB_BQ_OUTPOUT_TABLE_PROP = "pubsub.bq.output.table";
+  // Number of records to be written per message to BigQuery
+  String PUBSUB_BQ_BATCH_SIZE_PROP = "pubsub.bq.batch.size";
 
   /** GCS to Bigquery properties */
   String GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location";

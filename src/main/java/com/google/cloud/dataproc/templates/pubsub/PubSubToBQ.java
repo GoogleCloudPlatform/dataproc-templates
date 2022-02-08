@@ -33,7 +33,7 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.storage.StorageLevel;
 import org.apache.spark.streaming.Seconds;
-import org.apache.spark.streaming.api.java.JavaReceiverInputDStream;
+import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.pubsub.PubsubUtils;
 import org.apache.spark.streaming.pubsub.SparkGCPCredentials;
@@ -48,9 +48,11 @@ public class PubSubToBQ implements BaseTemplate {
   private String pubsubInputSubscription;
   private long timeoutMs;
   private int streamingDuration;
+  private int totalReceivers;
   private String outputProjectID;
   private String pubSubBQOutputDataset;
   private String pubSubBQOutputTable;
+  private int batchSize;
 
   public PubSubToBQ() {
     inputProjectID = getProperties().getProperty(PUBSUB_INPUT_PROJECT_ID_PROP);
@@ -58,9 +60,11 @@ public class PubSubToBQ implements BaseTemplate {
     timeoutMs = Long.parseLong(getProperties().getProperty(PUBSUB_TIMEOUT_MS_PROP));
     streamingDuration =
         Integer.parseInt(getProperties().getProperty(PUBSUB_STREAMING_DURATION_SECONDS_PROP));
+    totalReceivers = Integer.parseInt(getProperties().getProperty(PUBSUB_TOTAL_RECEIVERS_PROP));
     outputProjectID = getProperties().getProperty(PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP);
     pubSubBQOutputDataset = getProperties().getProperty(PUBSUB_BQ_OUTPOUT_DATASET_PROP);
     pubSubBQOutputTable = getProperties().getProperty(PUBSUB_BQ_OUTPOUT_TABLE_PROP);
+    batchSize = Integer.parseInt(getProperties().getProperty(PUBSUB_BQ_BATCH_SIZE_PROP));
   }
 
   @Override
@@ -92,7 +96,9 @@ public class PubSubToBQ implements BaseTemplate {
             + "4. {},{}"
             + "5. {},{}"
             + "6. {},{}"
-            + "7. {},{}",
+            + "7. {},{}"
+            + "8. {},{}"
+            + "9, {},{}",
         PUBSUB_INPUT_PROJECT_ID_PROP,
         inputProjectID,
         PUBSUB_INPUT_SUBSCRIPTION_PROP,
@@ -101,27 +107,39 @@ public class PubSubToBQ implements BaseTemplate {
         timeoutMs,
         PUBSUB_STREAMING_DURATION_SECONDS_PROP,
         streamingDuration,
+        PUBSUB_TOTAL_RECEIVERS_PROP,
+        totalReceivers,
         PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP,
         outputProjectID,
         PUBSUB_BQ_OUTPOUT_DATASET_PROP,
         pubSubBQOutputDataset,
         PUBSUB_BQ_OUTPOUT_TABLE_PROP,
-        pubSubBQOutputTable);
+        pubSubBQOutputTable,
+        PUBSUB_STREAMING_DURATION_SECONDS_PROP,
+        batchSize);
 
     try {
       SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigQuery Dataproc Job");
       jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
 
-      JavaReceiverInputDStream<SparkPubsubMessage> pubSubStream =
-          PubsubUtils.createStream(
-              jsc,
-              inputProjectID,
-              pubsubInputSubscription,
-              new SparkGCPCredentials.Builder().build(),
-              StorageLevel.MEMORY_AND_DISK_SER());
+      JavaDStream<SparkPubsubMessage> stream = null;
+      for (int i = 0; i < totalReceivers; i += 1) {
+        JavaDStream<SparkPubsubMessage> pubSubReciever =
+            PubsubUtils.createStream(
+                jsc,
+                inputProjectID,
+                pubsubInputSubscription,
+                new SparkGCPCredentials.Builder().build(),
+                StorageLevel.MEMORY_AND_DISK_SER());
+        if (stream == null) {
+          stream = pubSubReciever;
+        } else {
+          stream = stream.union(pubSubReciever);
+        }
+      }
 
       LOGGER.info("Writing data to outputPath: {}", pubSubBQOutputTable);
-      writeToBQ(pubSubStream, inputProjectID, pubSubBQOutputDataset, pubSubBQOutputTable);
+      writeToBQ(stream, inputProjectID, pubSubBQOutputDataset, pubSubBQOutputTable, batchSize);
 
       jsc.start();
       jsc.awaitTerminationOrTimeout(timeoutMs);
@@ -138,10 +156,11 @@ public class PubSubToBQ implements BaseTemplate {
   }
 
   public static void writeToBQ(
-      JavaReceiverInputDStream<SparkPubsubMessage> pubSubStream,
+      JavaDStream<SparkPubsubMessage> pubSubStream,
       String outputProjectID,
       String pubSubBQOutputDataset,
-      String PubSubBQOutputTable) {
+      String PubSubBQOutputTable,
+      Integer batchSize) {
     pubSubStream.foreachRDD(
         new VoidFunction<JavaRDD<SparkPubsubMessage>>() {
           @Override
@@ -159,15 +178,22 @@ public class PubSubToBQ implements BaseTemplate {
                     JsonStreamWriter writer =
                         JsonStreamWriter.newBuilder(parentTable.toString(), schema).build();
 
+                    JSONArray jsonArr = new JSONArray();
                     while (sparkPubsubMessageIterator.hasNext()) {
                       SparkPubsubMessage message = sparkPubsubMessageIterator.next();
                       JSONObject record = new JSONObject(new String(message.getData()));
-                      JSONArray jsonArr = new JSONArray();
                       jsonArr.put(record);
-
+                      if (jsonArr.length() == batchSize) {
+                        ApiFuture<AppendRowsResponse> future = writer.append(jsonArr);
+                        AppendRowsResponse response = future.get();
+                        jsonArr = new JSONArray();
+                      }
+                    }
+                    if (jsonArr.length() > 0) {
                       ApiFuture<AppendRowsResponse> future = writer.append(jsonArr);
                       AppendRowsResponse response = future.get();
                     }
+                    writer.close();
                   }
                 });
           }
