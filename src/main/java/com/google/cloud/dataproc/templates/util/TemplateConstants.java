@@ -64,6 +64,17 @@ public interface TemplateConstants {
   String HIVE_TO_BQ_PARTITION_COL = "hivetobq.partition.col";
   String HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP = "hivetobq.spark.sql.warehouse.dir";
 
+  /** Property values for JDBCToBQ */
+  String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
+
+  String JDBC_TO_BQ_JDBC_URL = "jdbctobq.jdbc.url";
+  String JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME = "jdbctobq.jdbc.driver.class.name";
+  String JDBC_TO_BQ_INPUT_TABLE_PROP = "jdbctobq.input.table";
+  String JDBC_TO_BQ_INPUT_TABLE_DATABASE_PROP = "jdbctobq.input.db";
+  String JDBC_TO_BQ_APPEND_MODE = "jdbctobq.append.mode";
+  String JDBC_TO_BQ_PARTITION_COL = "jdbctobq.partition.col";
+  String JDBC_TO_BQ_WAREHOUSE_LOCATION_PROP = "jdbctobq.spark.sql.warehouse.dir";
+
   /** Property values for WordCount template. */
   String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";
 

@@ -108,12 +108,24 @@ public class HiveToBigQuery implements BaseTemplate {
        * writing to BQ. Job failures would require a manual cleanup of this data.
        */
       // TODO -- Remove using warehouse location for staging data add new property
+
+      /*inputData
+         .write()
+         .mode(bqAppendMode)
+         .format("bigquery")
+         .option("table", bqLocation)
+         .option("temporaryGcsBucket", (warehouseLocation + "/temp/spark").replace("gs://", ""))
+         .save();
+
+
+      */
+
       inputData
           .write()
+          .format(GCS_BQ_OUTPUT_FORMAT)
+          .option(GCS_BQ_OUTPUT, bqLocation)
+          .option(GCS_BQ_TEMP_BUCKET, warehouseLocation)
           .mode(bqAppendMode)
-          .format("bigquery")
-          .option("table", bqLocation)
-          .option("temporaryGcsBucket", (warehouseLocation + "/temp/spark").replace("gs://", ""))
           .save();
 
       LOGGER.info("HiveToBigQuery job completed.");
