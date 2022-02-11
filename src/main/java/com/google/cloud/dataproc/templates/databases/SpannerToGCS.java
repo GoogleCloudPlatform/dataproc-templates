@@ -15,77 +15,64 @@
  */
 package com.google.cloud.dataproc.templates.databases;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_DATABASE_ID_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_GCS_PATH;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_INSTANCE_ID_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_TABLE_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
+import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import java.util.Objects;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
+import org.apache.spark.sql.jdbc.JdbcDialects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SpannerToGCS implements BaseTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SpannerToGCS.class);
+  public static final String SPANNER_JDBC_DRIVER = "com.google.cloud.spanner.jdbc.JdbcDriver";
 
   private final String projectId;
   private final String instanceId;
   private final String databaseId;
   private final String tableId;
   private final String gcsWritePath;
+  private final String gcsSaveMode;
 
   public SpannerToGCS() {
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
-    instanceId = getProperties().getProperty(SPANNER_INSTANCE_ID_PROP);
-    databaseId = getProperties().getProperty(SPANNER_DATABASE_ID_PROP);
-    tableId = getProperties().getProperty(SPANNER_TABLE_ID_PROP);
-    gcsWritePath = getProperties().getProperty(SPANNER_GCS_PATH);
+    instanceId = getProperties().getProperty(SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID);
+    databaseId = getProperties().getProperty(SPANNER_GCS_INPUT_DATABASE_ID);
+    tableId = getProperties().getProperty(SPANNER_GCS_INPUT_TABLE_ID);
+    gcsWritePath = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_PATH);
+    gcsSaveMode = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_SAVEMODE);
   }
 
   @Override
   public void runTemplate() {
+    String spannerUrl =
+        String.format(
+            "jdbc:cloudspanner:/projects/%s/instances/%s/databases/%s?lenient=true",
+            projectId, instanceId, databaseId);
+    JdbcDialects.registerDialect(new SpannerJdbcDialect());
 
-    SparkSession spark = null;
-    try {
+    LOGGER.info("Spanner URL: " + spannerUrl);
 
-      String spannerUrl =
-          String.format(
-              "jdbc:cloudspanner:/projects/%s/instances/%s/databases/%s?lenient=true",
-              projectId, instanceId, databaseId);
+    SparkSession spark = SparkSession.builder().appName("DatabaseToGCS Dataproc job").getOrCreate();
 
-      LOGGER.info("Spanner URL: " + spannerUrl);
+    LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
+    Dataset<Row> jdbcDF =
+        spark
+            .read()
+            .format("jdbc")
+            .option(JDBCOptions.JDBC_URL(), spannerUrl)
+            .option(JDBCOptions.JDBC_TABLE_NAME(), tableId)
+            .option(JDBCOptions.JDBC_DRIVER_CLASS(), SPANNER_JDBC_DRIVER)
+            .load();
 
-      spark = SparkSession.builder().appName("DatabaseToGCS Dataproc job").getOrCreate();
+    LOGGER.info("Data load complete from table/query: " + tableId);
+    jdbcDF.write().format("avro").mode(gcsSaveMode).save(gcsWritePath);
 
-      LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
-      spark.sparkContext().hadoopConfiguration().getClassLoader();
-
-      Dataset<Row> jdbcDF =
-          spark
-              .read()
-              .format("jdbc")
-              .option(JDBCOptions.JDBC_URL(), spannerUrl)
-              .option(JDBCOptions.JDBC_TABLE_NAME(), tableId)
-              .option(JDBCOptions.JDBC_DRIVER_CLASS(), "com.google.cloud.spanner.jdbc.JdbcDriver")
-              .load();
-
-      LOGGER.info("Data load complete from table/query: " + tableId);
-      jdbcDF.write().format("avro").mode(SaveMode.ErrorIfExists).save(gcsWritePath);
-
-      spark.stop();
-    } catch (Throwable th) {
-      LOGGER.error("Exception in DatabaseToGCS", th);
-      if (Objects.nonNull(spark)) {
-        spark.stop();
-      }
-      throw th;
-    }
+    spark.stop();
   }
 }
