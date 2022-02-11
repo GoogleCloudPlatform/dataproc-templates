@@ -15,17 +15,12 @@
  */
 package com.google.cloud.dataproc.templates.databases;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_DATABASE_ID_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_GCS_PATH;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_INSTANCE_ID_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_TABLE_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
 import org.apache.spark.sql.jdbc.JdbcDialects;
@@ -42,13 +37,15 @@ public class SpannerToGCS implements BaseTemplate {
   private final String databaseId;
   private final String tableId;
   private final String gcsWritePath;
+  private final String gcsSaveMode;
 
   public SpannerToGCS() {
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
-    instanceId = getProperties().getProperty(SPANNER_INSTANCE_ID_PROP);
-    databaseId = getProperties().getProperty(SPANNER_DATABASE_ID_PROP);
-    tableId = getProperties().getProperty(SPANNER_TABLE_ID_PROP);
-    gcsWritePath = getProperties().getProperty(SPANNER_GCS_PATH);
+    instanceId = getProperties().getProperty(SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID);
+    databaseId = getProperties().getProperty(SPANNER_GCS_INPUT_DATABASE_ID);
+    tableId = getProperties().getProperty(SPANNER_GCS_INPUT_TABLE_ID);
+    gcsWritePath = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_PATH);
+    gcsSaveMode = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_SAVEMODE);
   }
 
   @Override
@@ -64,8 +61,6 @@ public class SpannerToGCS implements BaseTemplate {
     SparkSession spark = SparkSession.builder().appName("DatabaseToGCS Dataproc job").getOrCreate();
 
     LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
-    spark.sparkContext().hadoopConfiguration().getClassLoader();
-
     Dataset<Row> jdbcDF =
         spark
             .read()
@@ -76,7 +71,7 @@ public class SpannerToGCS implements BaseTemplate {
             .load();
 
     LOGGER.info("Data load complete from table/query: " + tableId);
-    jdbcDF.write().format("avro").mode(SaveMode.Overwrite).save(gcsWritePath);
+    jdbcDF.write().format("avro").mode(gcsSaveMode).save(gcsWritePath);
 
     spark.stop();
   }

@@ -23,10 +23,11 @@ public interface TemplateConstants {
   String BIGTABLE_INSTANCE_ID_PROP = "project.id";
   String BIGTABLE_OUTPUT_TABLE_NAME_PROP = "bigtable.output.table.name";
 
-  String SPANNER_INSTANCE_ID_PROP = "spanner.id";
-  String SPANNER_DATABASE_ID_PROP = "database.id";
-  String SPANNER_TABLE_ID_PROP = "table.id";
-  String SPANNER_GCS_PATH = "gcs.export.path";
+  String SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID = "spanner.gcs.input.spanner.id";
+  String SPANNER_GCS_INPUT_DATABASE_ID = "spanner.gcs.input.database.id";
+  String SPANNER_GCS_INPUT_TABLE_ID = "spanner.gcs.input.table.id";
+  String SPANNER_GCS_OUTPUT_GCS_PATH = "spanner.gcs.output.gcs.path";
+  String SPANNER_GCS_OUTPUT_GCS_SAVEMODE = "spanner.gcs.output.gcs.saveMode";
 
   /**
    * Column to be used as row key for BigTable. Required for GCSToBigTable template.
