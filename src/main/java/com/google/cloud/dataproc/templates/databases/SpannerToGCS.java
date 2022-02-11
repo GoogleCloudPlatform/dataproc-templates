@@ -77,7 +77,7 @@ public class SpannerToGCS implements BaseTemplate {
               .load();
 
       LOGGER.info("Data load complete from table/query: " + tableId);
-      jdbcDF.write().format("avro").mode(SaveMode.ErrorIfExists).save(gcsWritePath);
+      jdbcDF.write().format("avro").mode(SaveMode.Overwrite).save(gcsWritePath);
 
       spark.stop();
     } catch (Throwable th) {
