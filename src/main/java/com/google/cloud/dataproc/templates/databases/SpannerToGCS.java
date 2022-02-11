@@ -21,6 +21,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_INSTANCE_ID_PROP;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_TABLE_ID_PROP;
 
+import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.Objects;
 import org.apache.spark.sql.Dataset;
@@ -28,6 +29,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
+import org.apache.spark.sql.jdbc.JdbcDialects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +61,7 @@ public class SpannerToGCS implements BaseTemplate {
           String.format(
               "jdbc:cloudspanner:/projects/%s/instances/%s/databases/%s?lenient=true",
               projectId, instanceId, databaseId);
+      JdbcDialects.registerDialect(new SpannerJdbcDialect());
 
       LOGGER.info("Spanner URL: " + spannerUrl);
 
