@@ -74,6 +74,7 @@ public interface TemplateConstants {
   String JDBC_TO_BQ_APPEND_MODE = "jdbctobq.append.mode";
   String JDBC_TO_BQ_PARTITION_COL = "jdbctobq.partition.col";
   String JDBC_TO_BQ_WAREHOUSE_LOCATION_PROP = "jdbctobq.spark.sql.warehouse.dir";
+  String JDBC_TO_BQ_JDBC_PROPERTIES_JSON = "jdbctobq.jdbc.properties";
 
   /** Property values for WordCount template. */
   String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";

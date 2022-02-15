@@ -18,9 +18,13 @@ package com.google.cloud.dataproc.templates.jdbc;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -39,6 +43,7 @@ public class JDBCToBigQuery implements BaseTemplate {
   private String jdbcInputTable;
   private String jdbcInputDb;
   private String bqAppendMode;
+  private String jdbcPropoertiesJSON;
 
   public JDBCToBigQuery() {
 
@@ -49,6 +54,7 @@ public class JDBCToBigQuery implements BaseTemplate {
     bqAppendMode = getProperties().getProperty(JDBC_TO_BQ_APPEND_MODE);
     jdbcURL = getProperties().getProperty(JDBC_TO_BQ_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME);
+    jdbcPropoertiesJSON = getProperties().getProperty(JDBC_TO_BQ_JDBC_PROPERTIES_JSON);
   }
 
   @Override
@@ -100,9 +106,22 @@ public class JDBCToBigQuery implements BaseTemplate {
               .getOrCreate();
 
       Properties connectionProperties = new Properties();
+      List<String> jsonList = new ArrayList<>();
+      // Following code is to convert string json properties as values.
+      // TODO -- Replace deprecated function for reading json
+      jsonList.add(jdbcPropoertiesJSON);
+      JavaSparkContext javaSparkContext = new JavaSparkContext(spark.sparkContext());
+      JavaRDD<String> javaRdd = javaSparkContext.parallelize(jsonList);
+      System.out.println("*******Printing json schema");
+      Dataset<Row> jdbcPropertiesDF = spark.read().json(javaRdd);
+      String[] propertyNames = jdbcPropertiesDF.schema().fieldNames();
+      Row propertyValues = jdbcPropertiesDF.collectAsList().get(0);
+      int i = 0;
+      for (String propName : propertyNames) {
+        connectionProperties.setProperty(propName, propertyValues.getString(i));
+        i++;
+      }
       connectionProperties.setProperty("driver", jdbcDriverClassName);
-      connectionProperties.setProperty("user", "hive");
-      connectionProperties.setProperty("password", "hive-password");
 
       /** Read Input data from JDBC table */
       Dataset<Row> inputData =
@@ -118,9 +137,10 @@ public class JDBCToBigQuery implements BaseTemplate {
           .save();
 
     } catch (Throwable th) {
-      LOGGER.error("Exception in S3toBigquery", th);
+      LOGGER.error("Exception in JDBCtoBigquery", th);
       if (Objects.nonNull(spark)) {
         spark.stop();
+        throw th;
       }
     }
   }
