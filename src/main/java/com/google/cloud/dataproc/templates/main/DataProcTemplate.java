@@ -15,11 +15,8 @@
  */
 package com.google.cloud.dataproc.templates.main;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_STAGING_BUCKET_PATH;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 
-import com.google.api.gax.rpc.FixedHeaderProvider;
-import com.google.api.gax.rpc.HeaderProvider;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
@@ -33,8 +30,10 @@ import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
+import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.FixedHeaderProvider;
+import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.HeaderProvider;
+import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQuery;
+import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQueryOptions;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Properties;
@@ -154,7 +153,7 @@ public class DataProcTemplate {
       throw e;
     }
 
-    testTempLocationAccess(templateName);
+    checkBigqueryConnectivity(templateName);
 
     if (TEMPLATE_FACTORIES.containsKey(templateName)) {
       return TEMPLATE_FACTORIES.get(templateName).apply(remainingArgs);
@@ -164,28 +163,26 @@ public class DataProcTemplate {
     }
   }
 
-  private static void testTempLocationAccess(TemplateName templateName) {
-    try{
+  private static void checkBigqueryConnectivity(TemplateName templateName) {
+    try {
       String USER_AGENT_HEADER = "user-agent";
       String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0-" + templateName;
 
       HeaderProvider headerProvider =
-              FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+          FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
 
       String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
 
-      Storage storage =
-              StorageOptions.newBuilder()
-                      .setProjectId(projectId)
-                      .setHeaderProvider(headerProvider)
-                      .build()
-                      .getService();
-
-      storage.list();
-    }
-    catch (Exception e){
-      //log error message and ignore
-      LOGGER.info("Unable to list GCS Buckets. Error:" + e.getMessage());
+      BigQuery bigquery =
+          BigQueryOptions.newBuilder()
+              .setProjectId(projectId)
+              .setHeaderProvider(headerProvider)
+              .build()
+              .getService();
+      bigquery.listDatasets();
+    } catch (Exception e) {
+      // log error message and ignore
+      LOGGER.info("Unable to list datasets. Error:" + e.getMessage());
     }
   }
 
