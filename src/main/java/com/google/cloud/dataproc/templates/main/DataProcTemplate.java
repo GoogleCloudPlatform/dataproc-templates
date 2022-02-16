@@ -153,7 +153,7 @@ public class DataProcTemplate {
       throw e;
     }
 
-    checkBigqueryConnectivity(templateName);
+    checkBQConnectivity(templateName);
 
     if (TEMPLATE_FACTORIES.containsKey(templateName)) {
       return TEMPLATE_FACTORIES.get(templateName).apply(remainingArgs);
@@ -163,7 +163,7 @@ public class DataProcTemplate {
     }
   }
 
-  private static void checkBigqueryConnectivity(TemplateName templateName) {
+  private static void checkBQConnectivity(TemplateName templateName) {
     try {
       String USER_AGENT_HEADER = "user-agent";
       String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
