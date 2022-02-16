@@ -166,7 +166,7 @@ public class DataProcTemplate {
   private static void checkBigqueryConnectivity(TemplateName templateName) {
     try {
       String USER_AGENT_HEADER = "user-agent";
-      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0-" + templateName;
+      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
 
       HeaderProvider headerProvider =
           FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
