@@ -23,10 +23,11 @@ public interface TemplateConstants {
   String BIGTABLE_INSTANCE_ID_PROP = "project.id";
   String BIGTABLE_OUTPUT_TABLE_NAME_PROP = "bigtable.output.table.name";
 
-  String SPANNER_INSTANCE_ID_PROP = "spanner.id";
-  String SPANNER_DATABASE_ID_PROP = "database.id";
-  String SPANNER_TABLE_ID_PROP = "table.id";
-  String SPANNER_GCS_PATH = "gcs.export.path";
+  String SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID = "spanner.gcs.input.spanner.id";
+  String SPANNER_GCS_INPUT_DATABASE_ID = "spanner.gcs.input.database.id";
+  String SPANNER_GCS_INPUT_TABLE_ID = "spanner.gcs.input.table.id";
+  String SPANNER_GCS_OUTPUT_GCS_PATH = "spanner.gcs.output.gcs.path";
+  String SPANNER_GCS_OUTPUT_GCS_SAVEMODE = "spanner.gcs.output.gcs.saveMode";
 
   /**
    * Column to be used as row key for BigTable. Required for GCSToBigTable template.
@@ -92,14 +93,17 @@ public interface TemplateConstants {
   String PUBSUB_TIMEOUT_MS_PROP = "pubsub.timeout.ms";
   // Streaming duration
   String PUBSUB_STREAMING_DURATION_SECONDS_PROP = "pubsub.streaming.duration.seconds";
+  // Number of receivers
+  String PUBSUB_TOTAL_RECEIVERS_PROP = "pubsub.total.receivers";
   // Project that contains the output table
   String PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP = "pubsub.bq.output.project.id";
-  // Big Query output dataset
+  // BigQuery output dataset
   String PUBSUB_BQ_OUTPOUT_DATASET_PROP = "pubsub.bq.output.dataset";
-  // Big Query output table
+  // BigQuery output table
   String PUBSUB_BQ_OUTPOUT_TABLE_PROP = "pubsub.bq.output.table";
+  // Number of records to be written per message to BigQuery
+  String PUBSUB_BQ_BATCH_SIZE_PROP = "pubsub.bq.batch.size";
 
-  /** GCS to Bigquery properties */
   /** GCS to Bigquery properties */
   String GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location";
 
@@ -169,4 +173,19 @@ public interface TemplateConstants {
   String S3_BQ_PRQT_FORMAT = "parquet";
 
   String S3_BQ_JSON_FORMAT = "json";
+
+  /** Bigquery to GCS properties */
+  String BQ_GCS_INPUT_TABLE_NAME = "bigquery.gcs.input.table";
+
+  String BQ_GCS_OUTPUT_FORMAT_CSV = "csv";
+
+  String BQ_GCS_OUTPUT_FORMAT_AVRO = "avro";
+
+  String BQ_GCS_OUTPUT_FORMAT_PARQUET = "parquet";
+
+  String BQ_GCS_OUTPUT_FORMAT_JSON = "json";
+
+  String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
+
+  String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
 }

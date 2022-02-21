@@ -8,12 +8,15 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 
 
 ## Templates
-* [HiveToBigQuery](src/main/java/com/google/cloud/dataproc/templates/hive/HiveToBigQuery.java)
-* [HiveToGCS](src/main/java/com/google/cloud/dataproc/templates/hive/HiveToGCS.java)
-* [PubSubToBigQuery](src/main/java/com/google/cloud/dataproc/templates/pubsub/PubSubToBQ.java)
-* [GCSToBigQuery](src/main/java/com/google/cloud/dataproc/templates/gcs/GCStoBigquery.java)
-* [SpannerToGCS](src/main/java/com/google/cloud/dataproc/templates/databases/SpannerToGCS.java)
+* [HiveToBigQuery](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+* [HiveToGCS](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+* [PubSubToBigQuery](src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
+* [GCSToBigQuery](src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
+* [GCSToSpanner](src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
+* [SpannerToGCS](src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
+* [S3ToBigQuery](src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
+* [GeneralTemplate](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
 
 ## Getting Started
@@ -103,8 +106,8 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
         --properties=<spark.something.key>=<value> \
         --version=... \
         -- \
-        -- --template <TEMPLATE TYPE>
-        -- --templateProperty <key>=<value>
+        --template <TEMPLATE TYPE>
+        --templateProperty <key>=<value>
         ```
 
     1. #### Executing Hive to GCS template
@@ -138,6 +141,11 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
         ```
         bin/start.sh -- --template GCSTOBIGQUERY
         ```
+
+   1. #### Executing BigQuery to GCS template.
+       ```
+       bin/start.sh -- --template BIGQUERYTOGCS
+       ```
 
     1. #### Executing General template.
        Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/general/README.md)

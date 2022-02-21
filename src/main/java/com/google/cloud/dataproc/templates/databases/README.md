@@ -7,15 +7,20 @@ GCP_PROJECT=<gcp-project-id>
 REGION=<region>  \
 SUBNET=<subnet>   \
 GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
-HISTORY_SERVER_CLUSTER=<history-server> \
 bin/start.sh \
--- --template SPANNERTOGCS
+-- --template SPANNERTOGCS \
+--templateProperty project.id=$GCP_PROJECT \
+--templateProperty spanner.gcs.input.spanner.id=<spanner-id> \
+--templateProperty spanner.gcs.input.database.id=<database-id> \
+--templateProperty spanner.gcs.input.table.id=<table-id> \
+--templateProperty spanner.gcs.output.gcs.path=<gcs-path> \
+--templateProperty spanner.gcs.output.gcs.saveMode=<Append|Overwrite|ErrorIfExists|Ignore>
 ```
 
 ### Export query results as avro
-Update [template.properties](../../../../../../../resources/template.properties) `table.id` property as follows:
+Update`spanner.gcs.input.table.id` property as follows:
 ```
-table.id=(select name, age, phone from employee where designation = 'engineer')
+"spanner.gcs.input.table.id=(select name, age, phone from employee where designation = 'engineer')"
 ```
 
-**NOTE** It is required to surround your custom query with parenthesis.
+**NOTE** It is required to surround your custom query with parenthesis and parameter name with double quotes.

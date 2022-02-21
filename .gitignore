@@ -6,4 +6,5 @@ target/
 .DS_Store
 logs/
 grpc_lb/
+.envrc
 dependency-reduced-pom.xml

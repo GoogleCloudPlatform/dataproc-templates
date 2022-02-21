@@ -80,8 +80,7 @@ if [ "${JOB_TYPE}" == "CLUSTER" ]; then
       ${OPT_LABELS} \
       ${OPT_FILES} \
       ${OPT_PROPERTIES} \
-      ${OPT_CLASS} \
-      $*
+      ${OPT_CLASS}
 EOF
 )
 elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
@@ -98,8 +97,7 @@ elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
       ${OPT_CLASS} \
       ${OPT_SUBNET} \
       ${OPT_HISTORY_SERVER_CLUSTER} \
-      ${OPT_METASTORE_SERVICE} \
-      $*
+      ${OPT_METASTORE_SERVICE}
 EOF
 )
 else
@@ -108,5 +106,5 @@ else
 fi
 
 echo "Triggering Spark Submit job"
-echo_formatted "${command}"
-$command
+echo ${command} "$@"
+${command} "$@"
