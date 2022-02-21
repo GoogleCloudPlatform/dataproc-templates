@@ -22,7 +22,7 @@ bin/start.sh \
 --templateProperty jdbctobq.jdbc.properties=<jdbc properties in json format> \
 --templateProperty jdbctobq.input.table=<source table> \
 --templateProperty jdbctobq.input.db=<source database> \
---templateProperty jdbctobq.append.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
+--templateProperty jdbctobq.write.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
 --templateProperty jdbctobq.spark.sql.warehouse.dir=<gcs path> \
 ```
 
@@ -40,9 +40,7 @@ jdbctobq.jdbc.properties={"user":"usernamehere","password":"passwordhere"}
 jdbctobq.input.table=
 jdbctobq.input.db=
 #Write mode to use while writing output to BQ. Supported values are - Append/Overwrite/ErrorIfExists/Ignore
-jdbctobq.append.mode=
-# Optional, column to partition by
-jdbctobq.partition.col=
+jdbctobq.write.mode=
 # Spark warehouse directory location
 jdbctobq.spark.sql.warehouse.dir=
 ```

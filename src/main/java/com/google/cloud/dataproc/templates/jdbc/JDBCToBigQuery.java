@@ -51,7 +51,7 @@ public class JDBCToBigQuery implements BaseTemplate {
     warehouseLocation = getProperties().getProperty(JDBC_TO_BQ_WAREHOUSE_LOCATION_PROP);
     jdbcInputTable = getProperties().getProperty(JDBC_TO_BQ_INPUT_TABLE_PROP);
     jdbcInputDb = getProperties().getProperty(JDBC_TO_BQ_INPUT_TABLE_DATABASE_PROP);
-    bqAppendMode = getProperties().getProperty(JDBC_TO_BQ_APPEND_MODE);
+    bqAppendMode = getProperties().getProperty(JDBC_TO_BQ_WRITE_MODE);
     jdbcURL = getProperties().getProperty(JDBC_TO_BQ_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME);
     jdbcPropoertiesJSON = getProperties().getProperty(JDBC_TO_BQ_JDBC_PROPERTIES_JSON);
@@ -92,7 +92,7 @@ public class JDBCToBigQuery implements BaseTemplate {
         jdbcInputTable,
         JDBC_TO_BQ_INPUT_TABLE_DATABASE_PROP,
         jdbcInputDb,
-        JDBC_TO_BQ_APPEND_MODE,
+        JDBC_TO_BQ_WRITE_MODE,
         bqAppendMode,
         JDBC_TO_BQ_JDBC_URL,
         jdbcURL);
