@@ -112,10 +112,11 @@ public class JDBCToBigQuery implements BaseTemplate {
       jsonList.add(jdbcPropoertiesJSON);
       JavaSparkContext javaSparkContext = new JavaSparkContext(spark.sparkContext());
       JavaRDD<String> javaRdd = javaSparkContext.parallelize(jsonList);
-      System.out.println("*******Printing json schema");
       Dataset<Row> jdbcPropertiesDF = spark.read().json(javaRdd);
       String[] propertyNames = jdbcPropertiesDF.schema().fieldNames();
       Row propertyValues = jdbcPropertiesDF.collectAsList().get(0);
+
+      // Adding user provided jdbc properties
       int i = 0;
       for (String propName : propertyNames) {
         connectionProperties.setProperty(propName, propertyValues.getString(i));

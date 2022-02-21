@@ -1,12 +1,8 @@
 ## 1. JDBC To BigQuery
 
-Note: Currently supports built-in connection providers. Future changes to enhance include adding custom jar files.
+Note - Add dependency jar's specific to database in jars variable. 
 
-* DB2
-* MariaDB
-* MS Sql
-* Oracle
-* PostgreSQL
+Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 
 General Execution:
 
@@ -16,6 +12,8 @@ REGION=<region>  \
 SUBNET=<subnet>   \
 GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 HISTORY_SERVER_CLUSTER=<history-server> \
+export JARS=<gcs_path_to_jar_files> \
+
 bin/start.sh \
 -- --template JDBCTOBIGQUERY \
 --templateProperty jdbctobq.bigquery.location=<bigquery destination> \

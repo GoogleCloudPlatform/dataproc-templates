@@ -43,7 +43,7 @@ gsutil cp ${PROJECT_ROOT_DIR}/src/test/resources/log4j-spark-driver-template.pro
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
-OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/grpc-grpclb-1.40.1.jar,${GCS_STAGING_LOCATION}/${JAR_FILE},${GCS_STAGING_LOCATION}/mysql-connector-java.jar"
+OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/grpc-grpclb-1.40.1.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
 OPT_FILES="--files=${GCS_STAGING_LOCATION}/log4j-spark-driver-template.properties"
@@ -62,6 +62,9 @@ if [ -n "${HISTORY_SERVER_CLUSTER}" ]; then
 fi
 if [ -n "${METASTORE_SERVICE}" ]; then
   OPT_METASTORE_SERVICE="--metastore-service=${METASTORE_SERVICE}"
+fi
+if [ -n "${JARS}" ]; then
+  OPT_JARS="${OPT_JARS},${JARS}"
 fi
 
 # Running on an existing dataproc cluster or run on serverless spark
