@@ -17,6 +17,7 @@ package com.google.cloud.dataproc.templates.main;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 
+import com.google.cloud.MonitoredResource;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
@@ -30,11 +31,13 @@ import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
+import com.google.cloud.logging.*;
 import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.FixedHeaderProvider;
 import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.HeaderProvider;
 import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQueryOptions;
 import com.google.common.collect.ImmutableMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
@@ -153,7 +156,7 @@ public class DataProcTemplate {
       throw e;
     }
 
-    checkBQConnectivity(templateName);
+    trackTemplateInvocation(templateName);
 
     if (TEMPLATE_FACTORIES.containsKey(templateName)) {
       return TEMPLATE_FACTORIES.get(templateName).apply(remainingArgs);
@@ -163,7 +166,14 @@ public class DataProcTemplate {
     }
   }
 
-  private static void checkBQConnectivity(TemplateName templateName) {
+  private static void trackTemplateInvocation(TemplateName templateName) {
+    trackUsingBQ(templateName);
+    trackUsingBQWithTemplateName(templateName);
+    trackUsingLogging(templateName);
+    trackUsingLoggingWithName(templateName);
+  }
+
+  private static void trackUsingBQ(TemplateName templateName) {
     try {
       String USER_AGENT_HEADER = "user-agent";
       String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
@@ -180,6 +190,93 @@ public class DataProcTemplate {
               .build()
               .getService();
       bigquery.listDatasets();
+    } catch (Exception e) {
+      // log error message and ignore
+      LOGGER.info("Unable to list datasets. Error:" + e.getMessage());
+    }
+  }
+
+  private static void trackUsingBQWithTemplateName(TemplateName templateName) {
+    try {
+      String USER_AGENT_HEADER = "user-agent";
+      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0-" + templateName;
+
+      HeaderProvider headerProvider =
+          FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+
+      String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
+
+      BigQuery bigquery =
+          BigQueryOptions.newBuilder()
+              .setProjectId(projectId)
+              .setHeaderProvider(headerProvider)
+              .build()
+              .getService();
+      bigquery.listDatasets();
+    } catch (Exception e) {
+      // log error message and ignore
+      LOGGER.info("Unable to list datasets. Error:" + e.getMessage());
+    }
+  }
+
+  private static void trackUsingLogging(TemplateName templateName) {
+    try {
+      String USER_AGENT_HEADER = "user-agent";
+      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
+
+      com.google.api.gax.rpc.HeaderProvider headerProvider =
+          com.google.api.gax.rpc.FixedHeaderProvider.create(
+              ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+
+      String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
+
+      Logging logging =
+          LoggingOptions.newBuilder()
+              .setProjectId(projectId)
+              .setHeaderProvider(headerProvider)
+              .build()
+              .getService();
+
+      String payload = "Invkoking the template dataproc serverless template: " + templateName;
+      LogEntry entry =
+          LogEntry.newBuilder(Payload.StringPayload.of(payload))
+              .setSeverity(Severity.INFO)
+              .setLogName("dataproc-templates")
+              .setResource(MonitoredResource.newBuilder("global").build())
+              .build();
+      logging.write(Collections.singleton(entry));
+    } catch (Exception e) {
+      // log error message and ignore
+      LOGGER.info("Unable to list datasets. Error:" + e.getMessage());
+    }
+  }
+
+  private static void trackUsingLoggingWithName(TemplateName templateName) {
+    try {
+      String USER_AGENT_HEADER = "user-agent";
+      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0-" + templateName;
+
+      com.google.api.gax.rpc.HeaderProvider headerProvider =
+          com.google.api.gax.rpc.FixedHeaderProvider.create(
+              ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+
+      String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
+
+      Logging logging =
+          LoggingOptions.newBuilder()
+              .setProjectId(projectId)
+              .setHeaderProvider(headerProvider)
+              .build()
+              .getService();
+
+      String payload = "Invkoking the template dataproc serverless template: " + templateName;
+      LogEntry entry =
+          LogEntry.newBuilder(Payload.StringPayload.of(payload))
+              .setSeverity(Severity.INFO)
+              .setLogName("dataproc-templates")
+              .setResource(MonitoredResource.newBuilder("global").build())
+              .build();
+      logging.write(Collections.singleton(entry));
     } catch (Exception e) {
       // log error message and ignore
       LOGGER.info("Unable to list datasets. Error:" + e.getMessage());
