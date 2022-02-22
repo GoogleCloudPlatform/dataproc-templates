@@ -242,7 +242,7 @@ public class DataProcTemplate {
           LogEntry.newBuilder(Payload.StringPayload.of(payload))
               .setSeverity(Severity.INFO)
               .setLogName("dataproc-templates")
-              .setResource(MonitoredResource.newBuilder("global").build())
+              .setResource(MonitoredResource.newBuilder("dataproc-templates").build())
               .build();
       logging.write(Collections.singleton(entry));
     } catch (Exception e) {
@@ -274,7 +274,7 @@ public class DataProcTemplate {
           LogEntry.newBuilder(Payload.StringPayload.of(payload))
               .setSeverity(Severity.INFO)
               .setLogName("dataproc-templates")
-              .setResource(MonitoredResource.newBuilder("global").build())
+              .setResource(MonitoredResource.newBuilder("dataproc-templates").build())
               .build();
       logging.write(Collections.singleton(entry));
     } catch (Exception e) {
