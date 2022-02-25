@@ -177,102 +177,83 @@ public class DataProcTemplate {
   }
 
   private static void trackUsingBQ(TemplateName templateName) {
-    try {
-      HeaderProvider headerProvider =
-          FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+    HeaderProvider headerProvider =
+        FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
 
-      String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
+    String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
 
-      BigQuery bigquery =
-          BigQueryOptions.newBuilder()
-              .setProjectId(projectId)
-              .setHeaderProvider(headerProvider)
-              .build()
-              .getService();
-      bigquery.listDatasets();
-    } catch (Exception e) {
-      // log error message and ignore
-      LOGGER.info("Unable to list datasets. Error:" + e.getMessage());
-    }
+    BigQuery bigquery =
+        BigQueryOptions.newBuilder()
+            .setProjectId(projectId)
+            .setHeaderProvider(headerProvider)
+            .build()
+            .getService();
+    bigquery.listDatasets();
   }
 
   private static void trackUsingBQWithTemplateName(TemplateName templateName) {
-    try {
-      HeaderProvider headerProvider =
-          FixedHeaderProvider.create(
-              ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE + "-" + templateName));
 
-      String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
+    HeaderProvider headerProvider =
+        FixedHeaderProvider.create(
+            ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE + "-" + templateName));
 
-      BigQuery bigquery =
-          BigQueryOptions.newBuilder()
-              .setProjectId(projectId)
-              .setHeaderProvider(headerProvider)
-              .build()
-              .getService();
-      bigquery.listDatasets();
-    } catch (Exception e) {
-      // log error message and ignore
-      LOGGER.info("Unable to list datasets. Error:" + e.getMessage());
-    }
+    String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
+
+    BigQuery bigquery =
+        BigQueryOptions.newBuilder()
+            .setProjectId(projectId)
+            .setHeaderProvider(headerProvider)
+            .build()
+            .getService();
+    bigquery.listDatasets();
   }
 
   private static void trackUsingLogging(TemplateName templateName) {
-    try {
-      com.google.api.gax.rpc.HeaderProvider headerProvider =
-          com.google.api.gax.rpc.FixedHeaderProvider.create(
-              ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+    com.google.api.gax.rpc.HeaderProvider headerProvider =
+        com.google.api.gax.rpc.FixedHeaderProvider.create(
+            ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
 
-      String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
+    String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
 
-      Logging logging =
-          LoggingOptions.newBuilder()
-              .setProjectId(projectId)
-              .setHeaderProvider(headerProvider)
-              .build()
-              .getService();
+    Logging logging =
+        LoggingOptions.newBuilder()
+            .setProjectId(projectId)
+            .setHeaderProvider(headerProvider)
+            .build()
+            .getService();
 
-      String payload = "Invkoking the dataproc serverless template: " + templateName;
-      LogEntry entry =
-          LogEntry.newBuilder(Payload.StringPayload.of(payload))
-              .setSeverity(Severity.INFO)
-              .setLogName("dataproc-templates")
-              .setResource(MonitoredResource.newBuilder(RESOURCE_MONITOR_NAME).build())
-              .build();
-      logging.write(Collections.singleton(entry));
-    } catch (Exception e) {
-      // log error message and ignore
-      LOGGER.info("Unable to list datasets. Error:" + e.getMessage());
-    }
+    String payload = "Invkoking the dataproc serverless template: " + templateName;
+    LogEntry entry =
+        LogEntry.newBuilder(Payload.StringPayload.of(payload))
+            .setSeverity(Severity.INFO)
+            .setLogName("dataproc-templates")
+            .setResource(MonitoredResource.newBuilder(RESOURCE_MONITOR_NAME).build())
+            .build();
+    logging.write(Collections.singleton(entry));
   }
 
   private static void trackUsingLoggingWithName(TemplateName templateName) {
-    try {
-      com.google.api.gax.rpc.HeaderProvider headerProvider =
-          com.google.api.gax.rpc.FixedHeaderProvider.create(
-              ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE + "-" + templateName));
+    com.google.api.gax.rpc.HeaderProvider headerProvider =
+        com.google.api.gax.rpc.FixedHeaderProvider.create(
+            ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE + "-" + templateName));
 
-      String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
+    String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
 
-      Logging logging =
-          LoggingOptions.newBuilder()
-              .setProjectId(projectId)
-              .setHeaderProvider(headerProvider)
-              .build()
-              .getService();
+    Logging logging =
+        LoggingOptions.newBuilder()
+            .setProjectId(projectId)
+            .setHeaderProvider(headerProvider)
+            .build()
+            .getService();
 
-      String payload = "Invkoking the dataproc serverless template: " + templateName;
-      LogEntry entry =
-          LogEntry.newBuilder(Payload.StringPayload.of(payload))
-              .setSeverity(Severity.INFO)
-              .setLogName("dataproc-templates")
-              .setResource(MonitoredResource.newBuilder(RESOURCE_MONITOR_NAME).build())
-              .build();
-      logging.write(Collections.singleton(entry));
-    } catch (Exception e) {
-      // log error message and ignore
-      LOGGER.info("Unable to list datasets. Error:" + e.getMessage());
-    }
+    String payload = "Invkoking the dataproc serverless template: " + templateName;
+    LogEntry entry =
+        LogEntry.newBuilder(Payload.StringPayload.of(payload))
+            .setSeverity(Severity.INFO)
+            .setLogName("dataproc-templates")
+            .setResource(MonitoredResource.newBuilder(RESOURCE_MONITOR_NAME).build())
+            .build();
+    logging.write(Collections.singleton(entry));
   }
 
   /**
