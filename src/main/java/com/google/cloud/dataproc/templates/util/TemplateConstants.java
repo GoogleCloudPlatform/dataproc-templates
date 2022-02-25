@@ -78,6 +78,7 @@ public interface TemplateConstants {
 
   /** Property values for JDBCToGCS */
   String JDBC_TO_GCS_OUTPUT_LOCATION = "jdbctogcs.output.location";
+
   String JDBC_TO_GCS_OUTPUT_FORMAT = "jdbctogcs.output.format";
   String JDBC_TO_GCS_JDBC_URL = "jdbctogcs.jdbc.url";
   String JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME = "jdbctogcs.jdbc.driver.class.name";
