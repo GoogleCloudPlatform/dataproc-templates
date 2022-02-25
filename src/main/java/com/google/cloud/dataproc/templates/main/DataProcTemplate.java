@@ -71,6 +71,9 @@ public class DataProcTemplate {
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
+  private static final String USER_AGENT_HEADER = "user-agent";
+  private static final String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
+  private static final String RESOURCE_MONITOR_NAME = "DataprocTemplates";
 
   private static final Option TEMPLATE_OPTION =
       OptionBuilder.withLongOpt(TEMPLATE_NAME_LONG_OPT)
@@ -175,9 +178,6 @@ public class DataProcTemplate {
 
   private static void trackUsingBQ(TemplateName templateName) {
     try {
-      String USER_AGENT_HEADER = "user-agent";
-      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
-
       HeaderProvider headerProvider =
           FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
 
@@ -198,11 +198,9 @@ public class DataProcTemplate {
 
   private static void trackUsingBQWithTemplateName(TemplateName templateName) {
     try {
-      String USER_AGENT_HEADER = "user-agent";
-      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0-" + templateName;
-
       HeaderProvider headerProvider =
-          FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+          FixedHeaderProvider.create(
+              ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE + "-" + templateName));
 
       String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
 
@@ -221,9 +219,6 @@ public class DataProcTemplate {
 
   private static void trackUsingLogging(TemplateName templateName) {
     try {
-      String USER_AGENT_HEADER = "user-agent";
-      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
-
       com.google.api.gax.rpc.HeaderProvider headerProvider =
           com.google.api.gax.rpc.FixedHeaderProvider.create(
               ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
@@ -237,12 +232,12 @@ public class DataProcTemplate {
               .build()
               .getService();
 
-      String payload = "Invkoking the template dataproc serverless template: " + templateName;
+      String payload = "Invkoking the dataproc serverless template: " + templateName;
       LogEntry entry =
           LogEntry.newBuilder(Payload.StringPayload.of(payload))
               .setSeverity(Severity.INFO)
               .setLogName("dataproc-templates")
-              .setResource(MonitoredResource.newBuilder("dataproc-templates").build())
+              .setResource(MonitoredResource.newBuilder(RESOURCE_MONITOR_NAME).build())
               .build();
       logging.write(Collections.singleton(entry));
     } catch (Exception e) {
@@ -253,12 +248,9 @@ public class DataProcTemplate {
 
   private static void trackUsingLoggingWithName(TemplateName templateName) {
     try {
-      String USER_AGENT_HEADER = "user-agent";
-      String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0-" + templateName;
-
       com.google.api.gax.rpc.HeaderProvider headerProvider =
           com.google.api.gax.rpc.FixedHeaderProvider.create(
-              ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
+              ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE + "-" + templateName));
 
       String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
 
@@ -269,12 +261,12 @@ public class DataProcTemplate {
               .build()
               .getService();
 
-      String payload = "Invkoking the template dataproc serverless template: " + templateName;
+      String payload = "Invkoking the dataproc serverless template: " + templateName;
       LogEntry entry =
           LogEntry.newBuilder(Payload.StringPayload.of(payload))
               .setSeverity(Severity.INFO)
               .setLogName("dataproc-templates")
-              .setResource(MonitoredResource.newBuilder("dataproc-templates").build())
+              .setResource(MonitoredResource.newBuilder(RESOURCE_MONITOR_NAME).build())
               .build();
       logging.write(Collections.singleton(entry));
     } catch (Exception e) {
