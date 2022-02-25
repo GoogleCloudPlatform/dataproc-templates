@@ -73,7 +73,7 @@ public class DataProcTemplate {
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
   private static final String USER_AGENT_HEADER = "user-agent";
   private static final String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
-  private static final String RESOURCE_MONITOR_NAME = "DataprocTemplates";
+  private static final String RESOURCE_MONITOR_NAME = "Global";
 
   private static final Option TEMPLATE_OPTION =
       OptionBuilder.withLongOpt(TEMPLATE_NAME_LONG_OPT)
