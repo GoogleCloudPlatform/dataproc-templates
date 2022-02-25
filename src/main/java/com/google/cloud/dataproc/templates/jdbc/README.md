@@ -44,3 +44,60 @@ jdbctobq.write.mode=
 # Spark warehouse directory location
 jdbctobq.spark.sql.warehouse.dir=
 ```
+
+
+## 2. JDBC To GCS
+
+Note - Add dependency jar's specific to database in jars variable.
+
+Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
+
+General Execution:
+
+```
+GCP_PROJECT=<gcp-project-id> \
+REGION=<region>  \
+SUBNET=<subnet>   \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+HISTORY_SERVER_CLUSTER=<history-server> \
+export JARS=<gcs_path_to_jar_files> \
+
+bin/start.sh \
+-- --template JDBCTOGCS \
+--templateProperty jdbctobq.bigquery.location=<bigquery destination> \
+--templateProperty jdbctobq.jdbc.url=<jdbc url> \
+--templateProperty  jdbctogcs.output.location=<gcs-ouput-location> \
+--templateProperty  jdbctogcs.output.format=<output-format> \
+--templateProperty  jdbctogcs.write.mode=<write-mode> \
+--templateProperty  jdbctogcs.jdbc.url=<jdbc-url> \
+--templateProperty  jdbctogcs.jdbc.driver.class.name=<jdbc-driver-class-name> \
+--templateProperty  jdbctogcs.jdbc.properties={"user":"usernamehere","password":"passwordhere"} \
+--templateProperty  jdbctogcs.input.table=<input-table> \
+--templateProperty  jdbctogcs.input.db=<input-db> \
+--templateProperty  jdbctogcs.sql=<input-sql> \
+--templateProperty  jdbctogcs.partition.col=<partition-col> \
+```
+
+### Configurable Parameters
+Update Following properties in  [template.properties](../../../../../../../resources/template.properties) file:
+```
+# JDBCToGCS Template properties.
+#JDBCTOGCS Template properties
+# Required - GCS output location
+jdbctogcs.output.location=
+# Optional - Default output format is csv. Example values avro,csv,parquet
+jdbctogcs.output.format=
+# Optional - Default is overwrite. Supported values are - Append/Overwrite/ErrorIfExists/Ignore
+jdbctogcs.write.mode=
+# Required - JDBC specific properties
+jdbctogcs.jdbc.url=
+jdbctogcs.jdbc.driver.class.name=
+#Customize any properties supported by jdbc. Value to be in JSON format
+jdbctogcs.jdbc.properties={"user":"usernamehere","password":"passwordhere"}
+#database,tablename or custom sql are required.
+jdbctogcs.input.table=
+jdbctogcs.input.db=
+jdbctogcs.sql=
+# Optional property. column on which the output to be partitioned
+jdbctogcs.partition.col=
+```

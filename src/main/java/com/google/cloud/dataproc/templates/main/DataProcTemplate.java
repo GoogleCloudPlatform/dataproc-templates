@@ -25,6 +25,7 @@ import com.google.cloud.dataproc.templates.general.GeneralTemplate;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToBigQuery;
+import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -59,6 +60,7 @@ public class DataProcTemplate {
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
           .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
+          .put(TemplateName.JDBCTOGCS, (args) -> new JDBCToGCS())
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .build();
