@@ -71,3 +71,9 @@ Note: Following is example JDBC URL for mysql database
 ```
 --templateProperty  jdbctogcs.jdbc.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>"
 ```
+
+Have SQL query within double quotes. Example,
+
+```
+--templateProperty  jdbctogcs.sql="select * from dbname.tablename"
+```
