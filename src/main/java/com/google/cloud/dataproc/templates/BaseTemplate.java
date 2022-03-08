@@ -32,6 +32,7 @@ public interface BaseTemplate {
     S3TOBIGQUERY,
     GCSTOBIGQUERY,
     JDBCTOBIGQUERY,
+    JDBCTOGCS,
     BIGQUERYTOGCS,
     GENERAL
   }

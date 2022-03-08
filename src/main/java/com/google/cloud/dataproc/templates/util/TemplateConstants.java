@@ -76,6 +76,16 @@ public interface TemplateConstants {
   String JDBC_TO_BQ_WAREHOUSE_LOCATION_PROP = "jdbctobq.spark.sql.warehouse.dir";
   String JDBC_TO_BQ_JDBC_PROPERTIES_JSON = "jdbctobq.jdbc.properties";
 
+  /** Property values for JDBCToGCS */
+  String JDBC_TO_GCS_OUTPUT_LOCATION = "jdbctogcs.output.location";
+
+  String JDBC_TO_GCS_OUTPUT_FORMAT = "jdbctogcs.output.format";
+  String JDBC_TO_GCS_JDBC_URL = "jdbctogcs.jdbc.url";
+  String JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME = "jdbctogcs.jdbc.driver.class.name";
+  String JDBC_TO_GCS_WRITE_MODE = "jdbctogcs.write.mode";
+  String JDBC_TO_GCS_SQL = "jdbctogcs.sql";
+  String JDBC_TO_GCS_PARTITION_COLUMN = "jdbctogcs.partition.col";
+
   /** Property values for WordCount template. */
   String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";
 
