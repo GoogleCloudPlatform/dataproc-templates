@@ -82,10 +82,7 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_OUTPUT_FORMAT = "jdbctogcs.output.format";
   String JDBC_TO_GCS_JDBC_URL = "jdbctogcs.jdbc.url";
   String JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME = "jdbctogcs.jdbc.driver.class.name";
-  String JDBC_TO_GCS_INPUT_TABLE_PROP = "jdbctogcs.input.table";
-  String JDBC_TO_GCS_INPUT_TABLE_DATABASE_PROP = "jdbctogcs.input.db";
   String JDBC_TO_GCS_WRITE_MODE = "jdbctogcs.write.mode";
-  String JDBC_TO_GCS_JDBC_PROPERTIES_JSON = "jdbctogcs.jdbc.properties";
   String JDBC_TO_GCS_SQL = "jdbctogcs.sql";
   String JDBC_TO_GCS_PARTITION_COLUMN = "jdbctogcs.partition.col";
 

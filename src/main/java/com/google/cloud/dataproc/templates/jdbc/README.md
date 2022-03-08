@@ -1,3 +1,14 @@
+**Pre-requisites:**
+
+* Source Database must be accessible from the Subnet configured. 
+  * Documentation reference for Network configuration - https://cloud.google.com/dataproc-serverless/docs/concepts/network 
+* Customize the subnet using following command
+
+  ```
+   export SUBNET=projects/<gcp-project>/regions/<region>/subnetworks/test-subnet1
+  ```
+
+
 ## 1. JDBC To BigQuery
 
 Note - Add dependency jar's specific to database in jars variable. 
@@ -26,25 +37,7 @@ bin/start.sh \
 --templateProperty jdbctobq.spark.sql.warehouse.dir=<gcs path> \
 ```
 
-### Configurable Parameters
-Update Following properties in  [template.properties](../../../../../../../resources/template.properties) file:
-```
-# JDBCToBQ Template properties.
-##Bigquery table name
-jdbctobq.bigquery.location=
-jdbctobq.jdbc.url=jdbc:mysql://host:port/
-jdbctobq.jdbc.driver.class.name=com.mysql.jdbc.Driver
-#Customize any properties supported by jdbc. Value to be in JSON format
-jdbctobq.jdbc.properties={"user":"usernamehere","password":"passwordhere"}
-##jdbc:bigquery://https://www.googleapis.com/bigquery/v2:443;ProjectId=nsadineni;OAuthType=1;
-jdbctobq.input.table=
-jdbctobq.input.db=
-#Write mode to use while writing output to BQ. Supported values are - Append/Overwrite/ErrorIfExists/Ignore
-jdbctobq.write.mode=
-# Spark warehouse directory location
-jdbctobq.spark.sql.warehouse.dir=
-```
-
+***
 
 ## 2. JDBC To GCS
 
@@ -64,40 +57,17 @@ export JARS=<gcs_path_to_jar_files> \
 
 bin/start.sh \
 -- --template JDBCTOGCS \
---templateProperty jdbctobq.bigquery.location=<bigquery destination> \
 --templateProperty jdbctobq.jdbc.url=<jdbc url> \
---templateProperty  jdbctogcs.output.location=<gcs-ouput-location> \
---templateProperty  jdbctogcs.output.format=<output-format> \
---templateProperty  jdbctogcs.write.mode=<write-mode> \
---templateProperty  jdbctogcs.jdbc.url=<jdbc-url> \
 --templateProperty  jdbctogcs.jdbc.driver.class.name=<jdbc-driver-class-name> \
---templateProperty  jdbctogcs.jdbc.properties={"user":"usernamehere","password":"passwordhere"} \
---templateProperty  jdbctogcs.input.table=<input-table> \
---templateProperty  jdbctogcs.input.db=<input-db> \
+--templateProperty  jdbctogcs.output.location=<gcs-ouput-location> \
+--templateProperty  jdbctogcs.output.format=<optional_output-format> \
+--templateProperty  jdbctogcs.write.mode=<optional_write-mode> \
 --templateProperty  jdbctogcs.sql=<input-sql> \
---templateProperty  jdbctogcs.partition.col=<partition-col> \
+--templateProperty  jdbctogcs.partition.col=<optional_partition-col> \
 ```
 
-### Configurable Parameters
-Update Following properties in  [template.properties](../../../../../../../resources/template.properties) file:
+Note: Following is example JDBC URL for mysql database
+
 ```
-# JDBCToGCS Template properties.
-#JDBCTOGCS Template properties
-# Required - GCS output location
-jdbctogcs.output.location=
-# Optional - Default output format is csv. Example values avro,csv,parquet
-jdbctogcs.output.format=
-# Optional - Default is overwrite. Supported values are - Append/Overwrite/ErrorIfExists/Ignore
-jdbctogcs.write.mode=
-# Required - JDBC specific properties
-jdbctogcs.jdbc.url=
-jdbctogcs.jdbc.driver.class.name=
-#Customize any properties supported by jdbc. Value to be in JSON format
-jdbctogcs.jdbc.properties={"user":"usernamehere","password":"passwordhere"}
-#database,tablename or custom sql are required.
-jdbctogcs.input.table=
-jdbctogcs.input.db=
-jdbctogcs.sql=
-# Optional property. column on which the output to be partitioned
-jdbctogcs.partition.col=
+--templateProperty  jdbctogcs.jdbc.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>"
 ```
