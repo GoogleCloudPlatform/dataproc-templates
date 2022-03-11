@@ -34,6 +34,7 @@ public interface BaseTemplate {
     JDBCTOBIGQUERY,
     JDBCTOGCS,
     BIGQUERYTOGCS,
+    PUBSUBTOGCS,
     GENERAL
   }
 
