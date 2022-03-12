@@ -50,6 +50,7 @@ public class PubSubToGCS implements BaseTemplate {
   private int streamingDuration;
   private int totalReceivers;
   private String outputProjectID;
+  private String gcsBucketUrl;
   private int batchSize;
 
   public PubSubToGCS() {
@@ -60,7 +61,7 @@ public class PubSubToGCS implements BaseTemplate {
         Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_STREAMING_DURATION_SECONDS_PROP));
     totalReceivers = Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_TOTAL_RECEIVERS_PROP));
     outputProjectID = getProperties().getProperty(PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP);
-    gcsBucketUrl = Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_BUCKET_URL));
+    gcsBucketUrl = getProperties().getProperty(PUBSUB_GCS_BUCKET_URL);
     batchSize = Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_BATCH_SIZE_PROP));
   }
 
@@ -165,7 +166,7 @@ public class PubSubToGCS implements BaseTemplate {
 
                     while (sparkPubsubMessageIterator.hasNext()) {
                       SparkPubsubMessage message = sparkPubsubMessageIterator.next();
-                      print(new String(message.getData()))
+                      System.out.println(new String(message.getData()));
                     }
 
                     /**
