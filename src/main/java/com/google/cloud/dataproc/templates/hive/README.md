@@ -11,27 +11,18 @@ HISTORY_SERVER_CLUSTER=<history-server> \
 bin/start.sh \
 --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
 -- --template HIVETOBIGQUERY \
---templateProperty hivetobq.bigquery.location=<bigquery destination> \
---templateProperty hivetobq.input.table=<table> \
---templateProperty hivetobq.input.db=<database> \
---templateProperty hivetobq.append.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
---templateProperty hivetobq.partition.col=<value> \
---templateProperty hivetobq.spark.sql.warehouse.dir=<gcs-path>
+--templateProperty hivetobq.bigquery.location=<required_bigquery destination>
+--templateProperty hivetobq.sql=<hive_sql>
+--templateProperty hivetobq.append.mode=<Write_Mode> 
+--templateProperty hivetobq.temp.gcs.bucket=<gcs_bucket_path>
 ```
 
-### Configurable Parameters
-Update Following properties in  [template.properties](../../../../../../../resources/template.properties) file:
+Have SQL query within double quotes. Example,
+
 ```
-hivetobq.bigquery.location=<bigquery-location>
-hivetobq.input.table=<hive-input-table>
-hivetobq.input.db=<hive-input-db>
-#Write mode to use while writing output to BQ. Supported values are - Append/Overwrite/ErrorIfExists/Ignore
-hivetobq.append.mode=ErrorIfExists
-# Optional, column to partition by
-hivetobq.partition.col=
-# Spark warehouse directory location
-hivetobq.spark.sql.warehouse.dir=<spark-warehouse-directory>
+--templateProperty  hivetobq.sql="select * from dbname.tablename"
 ```
+
 
 ## 2. Hive To GCS
 General Execution:
