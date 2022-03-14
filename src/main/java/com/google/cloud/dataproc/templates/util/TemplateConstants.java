@@ -70,11 +70,9 @@ public interface TemplateConstants {
 
   String JDBC_TO_BQ_JDBC_URL = "jdbctobq.jdbc.url";
   String JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME = "jdbctobq.jdbc.driver.class.name";
-  String JDBC_TO_BQ_INPUT_TABLE_PROP = "jdbctobq.input.table";
-  String JDBC_TO_BQ_INPUT_TABLE_DATABASE_PROP = "jdbctobq.input.db";
+  String JDBC_TO_BQ_TEMP_GCS_BUCKET = "jdbctobq.temp.gcs.bucket";
+  String JDBC_TO_BQ_SQL = "jdbctobq.sql";
   String JDBC_TO_BQ_WRITE_MODE = "jdbctobq.write.mode";
-  String JDBC_TO_BQ_WAREHOUSE_LOCATION_PROP = "jdbctobq.spark.sql.warehouse.dir";
-  String JDBC_TO_BQ_JDBC_PROPERTIES_JSON = "jdbctobq.jdbc.properties";
 
   /** Property values for JDBCToGCS */
   String JDBC_TO_GCS_OUTPUT_LOCATION = "jdbctogcs.output.location";
