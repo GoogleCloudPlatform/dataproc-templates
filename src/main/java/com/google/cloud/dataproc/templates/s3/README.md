@@ -1,6 +1,6 @@
 ## 1. S3 To BigQuery
 
-###Setup:
+### Setup:
 
 Dataproc Servereless requires Cloud NAT in order to have access beyond GCP. 
 \
@@ -9,7 +9,7 @@ To enable this follow [these steps](https://cloud.google.com/nat/docs/using-nat#
 In step (4) select the VPC from which you intend to run the Dataproc Serverless job.
 
 
-###General Execution:
+### General Execution:
 
 ```
 GCP_PROJECT=<gcp-project-id> \
