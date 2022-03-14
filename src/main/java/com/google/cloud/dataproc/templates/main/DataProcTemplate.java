@@ -15,9 +15,6 @@
  */
 package com.google.cloud.dataproc.templates.main;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
-
-import com.google.cloud.MonitoredResource;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
@@ -32,14 +29,9 @@ import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.TemplateUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
-import com.google.cloud.logging.*;
-import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.FixedHeaderProvider;
-import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.HeaderProvider;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQuery;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQueryOptions;
 import com.google.common.collect.ImmutableMap;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
@@ -75,9 +67,6 @@ public class DataProcTemplate {
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
-  private static final String USER_AGENT_HEADER = "user-agent";
-  private static final String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
-  private static final String RESOURCE_MONITOR_NAME = "global";
 
   private static final Option TEMPLATE_OPTION =
       OptionBuilder.withLongOpt(TEMPLATE_NAME_LONG_OPT)
@@ -157,13 +146,12 @@ public class DataProcTemplate {
       LOGGER.info("Properties: {}", properties);
       LOGGER.info("Remaining args: {}", (Object) remainingArgs);
       PropertyUtil.registerProperties(properties);
+      TemplateUtil.trackTemplateInvocation(templateName);
     } catch (IllegalArgumentException e) {
       LOGGER.error(e.getMessage(), e);
       printHelp();
       throw e;
     }
-
-    trackTemplateInvocation(templateName);
 
     if (TEMPLATE_FACTORIES.containsKey(templateName)) {
       return TEMPLATE_FACTORIES.get(templateName).apply(remainingArgs);
@@ -172,24 +160,6 @@ public class DataProcTemplate {
           String.format("Unexpected template name: %s", templateName));
     }
   }
-
-  private static void trackTemplateInvocation(TemplateName templateName) {
-
-    HeaderProvider headerProvider =
-        FixedHeaderProvider.create(
-            ImmutableMap.of(USER_AGENT_HEADER,USER_AGENT_VALUE + "-" + templateName));
-
-    String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
-
-    BigQuery bigquery =
-        BigQueryOptions.newBuilder()
-            .setProjectId(projectId)
-            .setHeaderProvider(headerProvider)
-            .build()
-            .getService();
-    bigquery.listDatasets();
-  }
-
 
   /**
    * Run spark job for template.
