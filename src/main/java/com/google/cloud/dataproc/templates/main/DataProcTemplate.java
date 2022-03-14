@@ -174,32 +174,10 @@ public class DataProcTemplate {
   }
 
   private static void trackTemplateInvocation(TemplateName templateName) {
-    trackUsingBQ(templateName);
-    trackUsingBQWithTemplateName(templateName);
-    trackUsingLogging(templateName);
-    trackUsingLoggingWithName(templateName);
-  }
-
-  private static void trackUsingBQ(TemplateName templateName) {
-    HeaderProvider headerProvider =
-        FixedHeaderProvider.create(ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
-
-    String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
-
-    BigQuery bigquery =
-        BigQueryOptions.newBuilder()
-            .setProjectId(projectId)
-            .setHeaderProvider(headerProvider)
-            .build()
-            .getService();
-    bigquery.listDatasets();
-  }
-
-  private static void trackUsingBQWithTemplateName(TemplateName templateName) {
 
     HeaderProvider headerProvider =
         FixedHeaderProvider.create(
-            ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE + "-" + templateName));
+            ImmutableMap.of(USER_AGENT_HEADER,USER_AGENT_VALUE + "-" + templateName));
 
     String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
 
@@ -212,53 +190,6 @@ public class DataProcTemplate {
     bigquery.listDatasets();
   }
 
-  private static void trackUsingLogging(TemplateName templateName) {
-    com.google.api.gax.rpc.HeaderProvider headerProvider =
-        com.google.api.gax.rpc.FixedHeaderProvider.create(
-            ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE));
-
-    String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
-
-    Logging logging =
-        LoggingOptions.newBuilder()
-            .setProjectId(projectId)
-            .setHeaderProvider(headerProvider)
-            .build()
-            .getService();
-
-    String payload = "Invkoking the dataproc serverless template: " + templateName;
-    LogEntry entry =
-        LogEntry.newBuilder(Payload.StringPayload.of(payload))
-            .setSeverity(Severity.INFO)
-            .setLogName("dataproc-templates")
-            .setResource(MonitoredResource.newBuilder(RESOURCE_MONITOR_NAME).build())
-            .build();
-    logging.write(Collections.singleton(entry));
-  }
-
-  private static void trackUsingLoggingWithName(TemplateName templateName) {
-    com.google.api.gax.rpc.HeaderProvider headerProvider =
-        com.google.api.gax.rpc.FixedHeaderProvider.create(
-            ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE + "-" + templateName));
-
-    String projectId = PropertyUtil.getProperties().getProperty(PROJECT_ID_PROP);
-
-    Logging logging =
-        LoggingOptions.newBuilder()
-            .setProjectId(projectId)
-            .setHeaderProvider(headerProvider)
-            .build()
-            .getService();
-
-    String payload = "Invkoking the dataproc serverless template: " + templateName;
-    LogEntry entry =
-        LogEntry.newBuilder(Payload.StringPayload.of(payload))
-            .setSeverity(Severity.INFO)
-            .setLogName("dataproc-templates")
-            .setResource(MonitoredResource.newBuilder(RESOURCE_MONITOR_NAME).build())
-            .build();
-    logging.write(Collections.singleton(entry));
-  }
 
   /**
    * Run spark job for template.
