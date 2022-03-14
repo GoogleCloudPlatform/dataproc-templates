@@ -15,6 +15,8 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 * [GCSToSpanner](src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
 * [SpannerToGCS](src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
 * [S3ToBigQuery](src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
+* [JDBCToBigQuery](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
+* [JDBCToGCS](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 

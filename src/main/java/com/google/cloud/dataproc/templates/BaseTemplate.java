@@ -31,6 +31,8 @@ public interface BaseTemplate {
     HIVETOBIGQUERY,
     S3TOBIGQUERY,
     GCSTOBIGQUERY,
+    JDBCTOBIGQUERY,
+    JDBCTOGCS,
     BIGQUERYTOGCS,
     GENERAL
   }

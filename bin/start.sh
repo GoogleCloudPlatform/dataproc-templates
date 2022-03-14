@@ -63,6 +63,9 @@ fi
 if [ -n "${METASTORE_SERVICE}" ]; then
   OPT_METASTORE_SERVICE="--metastore-service=${METASTORE_SERVICE}"
 fi
+if [ -n "${JARS}" ]; then
+  OPT_JARS="${OPT_JARS},${JARS}"
+fi
 
 # Running on an existing dataproc cluster or run on serverless spark
 if [ "${JOB_TYPE}" == "CLUSTER" ]; then
