@@ -21,8 +21,6 @@ import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.HeaderP
 import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQueryOptions;
 import com.google.common.collect.ImmutableMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TemplateUtil {
   private static final String USER_AGENT_HEADER = "user-agent";
@@ -36,8 +34,9 @@ public class TemplateUtil {
 
       BigQuery bigquery =
           BigQueryOptions.newBuilder().setHeaderProvider(headerProvider).build().getService();
-      bigquery.listDatasets("");
+      bigquery.listDatasets("bigquery-public-data", BigQuery.DatasetListOption.pageSize(1));
     } catch (Throwable e) {
+      // do nothing
     }
   }
 }
