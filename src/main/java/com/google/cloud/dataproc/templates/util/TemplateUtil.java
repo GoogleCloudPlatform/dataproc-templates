@@ -48,8 +48,8 @@ public class TemplateUtil {
               .setHeaderProvider(headerProvider)
               .build()
               .getService();
-      Page<Dataset> datasets = bigquery.listDatasets("");
-      LOGGER.info("datasets: "+ datasets.toString());
+      Page<Dataset> datasets = bigquery.listDatasets();
+      LOGGER.info("datasets: "+ datasets.iterateAll());
     } catch (Throwable e) {
       // Do nothing
     }
