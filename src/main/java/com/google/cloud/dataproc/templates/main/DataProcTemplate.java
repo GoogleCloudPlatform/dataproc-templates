@@ -29,6 +29,7 @@ import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.TemplateUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
@@ -145,11 +146,13 @@ public class DataProcTemplate {
       LOGGER.info("Properties: {}", properties);
       LOGGER.info("Remaining args: {}", (Object) remainingArgs);
       PropertyUtil.registerProperties(properties);
+      TemplateUtil.trackTemplateInvocation(templateName);
     } catch (IllegalArgumentException e) {
       LOGGER.error(e.getMessage(), e);
       printHelp();
       throw e;
     }
+
     if (TEMPLATE_FACTORIES.containsKey(templateName)) {
       return TEMPLATE_FACTORIES.get(templateName).apply(remainingArgs);
     } else {
