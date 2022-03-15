@@ -16,20 +16,15 @@
 package com.google.cloud.dataproc.templates.util;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import com.google.cloud.dataproc.templates.main.DataProcTemplate;
-import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.paging.Page;
 import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.FixedHeaderProvider;
 import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.HeaderProvider;
 import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQuery;
 import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQueryOptions;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.Dataset;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TemplateUtil {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TemplateUtil.class);
-
   private static final String USER_AGENT_HEADER = "user-agent";
   private static final String USER_AGENT_VALUE = "google-pso-tool/dataproc-templates/0.1.0";
 
@@ -39,19 +34,10 @@ public class TemplateUtil {
           FixedHeaderProvider.create(
               ImmutableMap.of(USER_AGENT_HEADER, USER_AGENT_VALUE + "-" + templateName));
 
-      String projectId =
-          PropertyUtil.getProperties().getProperty(TemplateConstants.PROJECT_ID_PROP);
-
       BigQuery bigquery =
-          BigQueryOptions.newBuilder()
-              .setProjectId(projectId)
-              .setHeaderProvider(headerProvider)
-              .build()
-              .getService();
-      Page<Dataset> datasets = bigquery.listDatasets();
-      LOGGER.info("datasets: "+ datasets.iterateAll());
+          BigQueryOptions.newBuilder().setHeaderProvider(headerProvider).build().getService();
+      bigquery.listDatasets("");
     } catch (Throwable e) {
-      LOGGER.info("Error occured ", e);
     }
   }
 }
