@@ -51,7 +51,7 @@ public class TemplateUtil {
       Page<Dataset> datasets = bigquery.listDatasets();
       LOGGER.info("datasets: "+ datasets.iterateAll());
     } catch (Throwable e) {
-      // Do nothing
+      LOGGER.info("Error occured ", e);
     }
   }
 }
