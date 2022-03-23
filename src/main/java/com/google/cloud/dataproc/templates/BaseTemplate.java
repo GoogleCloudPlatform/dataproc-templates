@@ -34,7 +34,8 @@ public interface BaseTemplate {
     JDBCTOBIGQUERY,
     JDBCTOGCS,
     BIGQUERYTOGCS,
-    GENERAL
+    GENERAL,
+    KAFKATOGCS;
   }
 
   default Properties getProperties() {
