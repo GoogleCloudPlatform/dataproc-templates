@@ -14,14 +14,6 @@
 
 from pyspark.sql import SparkSession
 import argparse, configparser
-import sys, os
-pwd = os.path.dirname(__file__)
-
-if os.environ.get('env') == 'local':
-  sys.path.append(os.path.join(pwd, '..', 'util'))
-  default_args_file_path = os.path.join(pwd, '..', 'resources/default_args.ini')
-else:
-  default_args_file_path = os.path.join(pwd, 'default_args.ini')
 
 from template_constants import *
 
@@ -31,7 +23,7 @@ spark.sparkContext.setLogLevel("INFO")
 log4jLogger = spark.sparkContext._jvm.org.apache.log4j
 logger = log4jLogger.LogManager.getLogger(__name__)
 
-def main():
+def runTemplate():
 
   # Arguments
   args = parse_args()
@@ -86,7 +78,7 @@ def main():
 def parse_args():
 
   config = configparser.ConfigParser()
-  config.read(default_args_file_path)
+  config.read('default_args.ini')
   defaults = config['gcs_to_bigquery']
 
   parser = argparse.ArgumentParser()
@@ -101,11 +93,11 @@ def parse_args():
   result = dict(defaults)
   result.update({k: v for k, v in args.items() if v is not None})
 
-  if (None in list(result.values()) or "" in list(result.values())):
+  if (None in list(result.values())) or ("" in list(result.values())):
     raise Exception("Required parameters for gcs_to_bigquery not passed")
 
   return result
 
-if __name__ == "__main__":
 
-  main()
+if __name__ == '__main__':
+  runTemplate()
