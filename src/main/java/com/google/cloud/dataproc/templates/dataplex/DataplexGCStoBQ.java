@@ -15,20 +15,43 @@
  */
 package com.google.cloud.dataproc.templates.dataplex;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+
+import com.google.cloud.dataproc.templates.BaseTemplate;
+import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.util.DataplexUtil;
-import java.io.IOException;
+import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.connector.common.BigQueryConnectorException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class DataplexGCStoBQ {
+public class DataplexGCStoBQ implements BaseTemplate {
+
+  public static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigquery.class);
+
   private SparkSession spark;
   private SQLContext sqlContext;
+  private String entityDataBasePath;
+  private String entity;
+  private String materializationDataset;
+  private String targetTable;
+  private String inputFileFormat;
+  private String bqTempBucket;
 
+  public DataplexGCStoBQ() {
+    entity = getProperties().getProperty(DATAPLEX_GCS_BQ_ENTITY);
+    materializationDataset = getProperties().getProperty(DATAPLEX_GCS_BQ_MATERIALIZATION_DATASET);
+    targetTable = getProperties().getProperty(DATAPLEX_GCS_BQ_TARGET_TABLE);
+    bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
+  }
   /**
    * Parse partitionsListWithLocationAndKeys into a Dataset partition path and key values for each
    * partition in Dataplex Entity
@@ -38,10 +61,8 @@ public class DataplexGCStoBQ {
    * @param partitionKeysList list of partition keys for Dataplex Entity
    * @return a dataset with partition path and key values for each partition in Dataplex Entity
    */
-  public static Dataset<Row> getAllPartitionsDf(
-      List<String> partitionsListWithLocationAndKeys,
-      List<String> partitionKeysList,
-      SQLContext sqlContext) {
+  public Dataset<Row> getAllPartitionsDf(
+      List<String> partitionsListWithLocationAndKeys, List<String> partitionKeysList) {
     Dataset allPartitionsDf =
         sqlContext.createDataset(partitionsListWithLocationAndKeys, Encoders.STRING()).toDF();
     allPartitionsDf =
@@ -61,15 +82,21 @@ public class DataplexGCStoBQ {
    * @param partitionKeysList list of partition keys for Dataplex Entity
    * @return a dataset with all distinct value of partition keys in BQ target table
    */
-  private static Dataset<Row> getBQTargetAvailablePartitionsDf(
-      List<String> partitionKeysList, SparkSession spark) {
+  private Dataset<Row> getBQTargetAvailablePartitionsDf(List<String> partitionKeysList) {
     spark.conf().set("viewsEnabled", "true");
-    spark.conf().set("materializationDataset", "whaite_zone1");
-    String sql =
-        String.format(
-            "select distinct %s FROM `yadavaja-sandbox.whaite_zone1.trips_1_test`",
-            String.join(",", partitionKeysList));
-    return spark.read().format("bigquery").load(sql);
+    spark.conf().set("materializationDataset", materializationDataset);
+    try {
+      String sql =
+          String.format(
+              "select distinct %s FROM `%s`", String.join(",", partitionKeysList), targetTable);
+      return spark.read().format("bigquery").load(sql);
+    } catch (BigQueryConnectorException e) {
+      if (e.getCause().toString().contains("Not found: Table")) {
+        return null;
+      } else {
+        throw e;
+      }
+    }
   }
 
   /**
@@ -79,8 +106,16 @@ public class DataplexGCStoBQ {
    * @param partitionKeysList list of partition keys for Dataplex Entity
    * @return a dataset with the GCS paths of new partitions
    */
-  private static Dataset<Row> getNewPartitionsPathDf(
-      List<String> partitionKeysList, SparkSession spark) {
+  private Dataset<Row> getNewPartitionsPathDf(
+      List<String> partitionKeysList,
+      Dataset<Row> allPartitionsDf,
+      Dataset<Row> bqTargetAvailablePartitionsDf) {
+    if (bqTargetAvailablePartitionsDf == null) {
+      return allPartitionsDf.select("__gcs_location_path__");
+    }
+
+    allPartitionsDf.createOrReplaceTempView("partitionValuesInDataplex");
+    bqTargetAvailablePartitionsDf.createOrReplaceTempView("bqTargetAvailablePartitionsDf");
     String joinClause =
         partitionKeysList.stream()
             .map(str -> String.format("t1.%s=t2.%s", str, str))
@@ -101,56 +136,72 @@ public class DataplexGCStoBQ {
    * @param newPartitionsPathsDf a dataset with the GCS paths of new partitions
    * @return a dataset with the GCS paths of new partitions
    */
-  private static Dataset<Row> getNewPartitionsDf(
-      Dataset<Row> newPartitionsPathsDf, SQLContext sqlContext) {
+  private Dataset<Row> getNewPartitionsDf(Dataset<Row> newPartitionsPathsDf) {
     Row[] result = (Row[]) newPartitionsPathsDf.select("__gcs_location_path__").collect();
-    Dataset newPartitionsDf = null;
+    Dataset<Row> newPartitionsDf = null;
     for (Row row : result) {
-      Dataset newPartition =
+      Dataset<Row> newPartitionTempDf =
           sqlContext
               .read()
-              .format("csv")
-              .option("header", true)
-              .option("inferSchema", true)
-              .option("basePath", "gs://whaite-dataplex-test-2/trips/")
-              .load(row.get(0).toString() + "/*.csv");
+              .format(inputFileFormat)
+              .option(GCS_BQ_CSV_HEADER, true)
+              .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
+              .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityDataBasePath)
+              .load(row.get(0).toString() + "/*");
       if (newPartitionsDf == null) {
-        newPartitionsDf = newPartition;
+        newPartitionsDf = newPartitionTempDf;
       } else {
-        newPartitionsDf = newPartitionsDf.union(newPartition);
+        newPartitionsDf = newPartitionsDf.union(newPartitionTempDf);
       }
     }
     return newPartitionsDf;
   }
 
-  public static void main(String... args) throws IOException {
-    SparkSession spark =
-        SparkSession.builder().master("local").appName("Dataplex GCS to BQ").getOrCreate();
-    SQLContext sqlContext = new SQLContext(spark);
+  public void runTemplate() {
+    try {
+      this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
+      this.sqlContext = new SQLContext(spark);
+      this.entityDataBasePath = DataplexUtil.getEntityDataBasePath(entity);
+      this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
 
-    String entity = args[0];
+      List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);
+      List<String> partitionsListWithLocationAndKeys =
+          DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
 
-    List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);
-    List<String> partitionsListWithLocationAndKeys =
-        DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
+      // Building DF with all available partitions in Dataplex Entity
+      Dataset<Row> allPartitionsDf =
+          getAllPartitionsDf(partitionsListWithLocationAndKeys, partitionKeysList);
 
-    // Building DF with all available partitions in Dataplex Entity
-    Dataset<Row> allPartitionsDf =
-        getAllPartitionsDf(partitionsListWithLocationAndKeys, partitionKeysList, sqlContext);
-    allPartitionsDf.createOrReplaceTempView("partitionValuesInDataplex");
+      // Querying BQ target table for all combinations of partition keys
+      Dataset<Row> bqTargetAvailablePartitionsDf =
+          getBQTargetAvailablePartitionsDf(partitionKeysList);
 
-    // Querying BQ target table for all combinations of partition keys
-    Dataset<Row> bqTargetAvailablePartitionsDf =
-        getBQTargetAvailablePartitionsDf(partitionKeysList, spark);
-    bqTargetAvailablePartitionsDf.createOrReplaceTempView("bqTargetAvailablePartitionsDf");
+      // Compare partitionValuesInDataplex and bqTargetAvailablePartitionsDf to indetidy new
+      // partitions
+      Dataset<Row> newPartitionsPathsDf =
+          getNewPartitionsPathDf(partitionKeysList, allPartitionsDf, bqTargetAvailablePartitionsDf);
 
-    // Compare partitionValuesInDataplex and bqTargetAvailablePartitionsDf to indetidy new
-    // partitions
-    Dataset<Row> newPartitionsPathsDf = getNewPartitionsPathDf(partitionKeysList, spark);
+      // load data from each partition
+      Dataset<Row> newPartitionsDf = getNewPartitionsDf(newPartitionsPathsDf);
 
-    // load data from each partition
-    Dataset<Row> newPartitionsDf = getNewPartitionsDf(newPartitionsPathsDf, sqlContext);
-    newPartitionsDf.show();
+      if (newPartitionsDf != null) {
+        newPartitionsDf
+            .write()
+            .format(GCS_BQ_OUTPUT_FORMAT)
+            .option(GCS_BQ_OUTPUT, targetTable)
+            .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
+            .option(
+                DATAPLEX_GCS_BQ_CREATE_DISPOSITION_PROP_NAME,
+                DATAPLEX_GCS_BQ_CREATE_DISPOSITION_CREATE_IF_NEEDED)
+            .mode(SaveMode.Append)
+            .save();
+      }
 
+    } catch (Throwable th) {
+      LOGGER.error("Exception in DataplexGCStoBQ", th);
+      if (Objects.nonNull(spark)) {
+        spark.stop();
+      }
+    }
   }
 }

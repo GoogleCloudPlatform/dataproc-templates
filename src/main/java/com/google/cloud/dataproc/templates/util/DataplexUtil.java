@@ -42,7 +42,7 @@ public class DataplexUtil {
    * @return request response
    * @throws IOException when request fails
    */
-  private static HttpResponse executeRequest(String url) throws IOException {
+  private static JsonObject executeRequest(String url) throws IOException {
     GoogleCredentials googleCredentials = GoogleCredentials.getApplicationDefault();
     HttpCredentialsAdapter credentialsAdapter = new HttpCredentialsAdapter(googleCredentials);
     HttpRequestFactory requestFactory =
@@ -50,7 +50,9 @@ public class DataplexUtil {
     HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(url));
     JsonObjectParser parser = new JsonObjectParser(GsonFactory.getDefaultInstance());
     request.setParser(parser);
-    return request.execute();
+    HttpResponse response = request.execute();
+    String resp = response.parseAsString();
+    return JsonParser.parseString(resp).getAsJsonObject();
   }
 
   /**
@@ -60,7 +62,7 @@ public class DataplexUtil {
    * @return entity schema
    * @throws IOException when request on Dataplex API fails
    */
-  public static HttpResponse getEntitySchema(String entity) throws IOException {
+  public static JsonObject getEntitySchema(String entity) throws IOException {
     String url = "https://dataplex.googleapis.com/v1/" + entity + "?view=SCHEMA";
     return executeRequest(url);
   }
@@ -72,9 +74,34 @@ public class DataplexUtil {
    * @return entity partitions
    * @throws IOException when request on Dataplex API fails
    */
-  public static HttpResponse getEntityPartitions(String entity) throws IOException {
+  public static JsonObject getEntityPartitions(String entity) throws IOException {
     String url = "https://dataplex.googleapis.com/v1/" + entity + "/partitions";
     return executeRequest(url);
+  }
+
+  /**
+   * Execute request on Google API to fetch schema of a Dataplex entity and parses out data base
+   * path
+   *
+   * @param entity name
+   * @return source data base path
+   * @throws IOException when request on Dataplex API fails
+   */
+  public static String getEntityDataBasePath(String entity) throws IOException {
+    JsonObject responseJson = DataplexUtil.getEntitySchema(entity);
+    return responseJson.get("dataPath").getAsString();
+  }
+
+  /**
+   * Execute request on Google API to fetch schema of a Dataplex entity and parses out file format
+   *
+   * @param entity name
+   * @return file format
+   * @throws IOException when request on Dataplex API fails
+   */
+  public static String getInputFileFormat(String entity) throws IOException {
+    JsonObject responseJson = DataplexUtil.getEntitySchema(entity);
+    return responseJson.getAsJsonObject("format").get("format").getAsString().toLowerCase();
   }
 
   /**
@@ -86,9 +113,7 @@ public class DataplexUtil {
    * @throws IOException when request on Dataplex API fails
    */
   public static List<String> getPartitionKeyList(String entity) throws IOException {
-    HttpResponse response = DataplexUtil.getEntitySchema(entity);
-    String resp = response.parseAsString();
-    JsonObject responseJson = JsonParser.parseString(resp).getAsJsonObject();
+    JsonObject responseJson = DataplexUtil.getEntitySchema(entity);
     JsonArray partitionKeys =
         responseJson.getAsJsonObject("schema").getAsJsonArray("partitionFields");
 
@@ -112,9 +137,7 @@ public class DataplexUtil {
    */
   public static List<String> getPartitionsListWithLocationAndKeys(String entity)
       throws IOException {
-    HttpResponse response = getEntityPartitions(entity);
-    String resp = response.parseAsString();
-    JsonObject responseJson = JsonParser.parseString(resp).getAsJsonObject();
+    JsonObject responseJson = getEntityPartitions(entity);
 
     Iterator<JsonElement> partitionsIterator = responseJson.getAsJsonArray("partitions").iterator();
     List<String> partitionsListWithLocationAndKeys = new ArrayList<String>();

@@ -197,4 +197,17 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
 
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
+
+  /** Dataplex GCS to BQ */
+  String DATAPLEX_GCS_BQ_ENTITY = "dataplex.gcs.bq.entity";
+
+  String DATAPLEX_GCS_BQ_TARGET_TABLE = "dataplex.gcs.bq.target.table";
+
+  String DATAPLEX_GCS_BQ_MATERIALIZATION_DATASET = "dataplex.gcs.bq.materialization.dataset";
+
+  String DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME = "basePath";
+
+  String DATAPLEX_GCS_BQ_CREATE_DISPOSITION_PROP_NAME = "createDisposition";
+
+  String DATAPLEX_GCS_BQ_CREATE_DISPOSITION_CREATE_IF_NEEDED = "CREATE_IF_NEEDED";
 }
