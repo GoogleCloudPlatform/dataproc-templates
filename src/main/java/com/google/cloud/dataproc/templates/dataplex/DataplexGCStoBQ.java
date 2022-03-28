@@ -17,13 +17,20 @@ package com.google.cloud.dataproc.templates.dataplex;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.util.DataplexUtil;
 import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.connector.common.BigQueryConnectorException;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.commons.cli.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -36,9 +43,12 @@ import org.slf4j.LoggerFactory;
 public class DataplexGCStoBQ implements BaseTemplate {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigquery.class);
+  public static String CUSTOM_SQL_GCS_PATH_OPTION = "custom_sql_gcs_path";
 
   private SparkSession spark;
   private SQLContext sqlContext;
+  private String projectId;
+  private String customSqlGCSPath;
   private String entityDataBasePath;
   private String entity;
   private String materializationDataset;
@@ -46,12 +56,45 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private String inputFileFormat;
   private String bqTempBucket;
 
-  public DataplexGCStoBQ() {
+  public DataplexGCStoBQ(String pCustomSqlGCSPath) {
+    customSqlGCSPath = pCustomSqlGCSPath;
+    projectId = getProperties().getProperty(PROJECT_ID_PROP);
     entity = getProperties().getProperty(DATAPLEX_GCS_BQ_ENTITY);
     materializationDataset = getProperties().getProperty(DATAPLEX_GCS_BQ_MATERIALIZATION_DATASET);
     targetTable = getProperties().getProperty(DATAPLEX_GCS_BQ_TARGET_TABLE);
     bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
   }
+
+  public static DataplexGCStoBQ of(String... args) {
+    CommandLine cmd = parseArguments(args);
+    String customSqlGCSPath = cmd.getOptionValue(CUSTOM_SQL_GCS_PATH_OPTION);
+    return new DataplexGCStoBQ(customSqlGCSPath);
+  }
+
+  /**
+   * Parse command line arguments to supply GCS path of file with custom sql
+   *
+   * @param args line arguments to supply template configuration yaml file at startup
+   * @return parsed arguments
+   */
+  public static CommandLine parseArguments(String... args) {
+    Options options = new Options();
+    Option configFileOption =
+        new Option(
+            CUSTOM_SQL_GCS_PATH_OPTION,
+            "gcs path of file containing custom sql");
+    configFileOption.setRequired(false);
+    configFileOption.setArgs(1);
+    options.addOption(configFileOption);
+
+    CommandLineParser parser = new BasicParser();
+    try {
+      return parser.parse(options, args);
+    } catch (ParseException e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
+
   /**
    * Parse partitionsListWithLocationAndKeys into a Dataset partition path and key values for each
    * partition in Dataplex Entity
@@ -157,6 +200,56 @@ public class DataplexGCStoBQ implements BaseTemplate {
     return newPartitionsDf;
   }
 
+  /**
+   * Load custom sql from GCS and apply SQL to output dataset
+   *
+   * @param newPartitionsDf dataset with new partitions
+   * @return a dataset after custom sql has been applied
+   * @throws IOException when Google Credential setup fails
+   */
+  public Dataset<Row> applyCustomSql(Dataset<Row> newPartitionsDf) throws IOException {
+    if (customSqlGCSPath != null) {
+      String[] pathAsList = customSqlGCSPath.replace("gs://", "").split("/");
+      String BUCKET_NAME = pathAsList[0];
+      String OBJECT_NAME = Stream.of(pathAsList).skip(1).collect(Collectors.joining("/"));
+      System.out.println(BUCKET_NAME);
+      System.out.println(OBJECT_NAME);
+      StorageOptions options =
+          StorageOptions.newBuilder()
+              .setProjectId(projectId)
+              .setCredentials(GoogleCredentials.getApplicationDefault())
+              .build();
+
+      Storage storage = options.getService();
+      Blob blob = storage.get(BUCKET_NAME, OBJECT_NAME);
+      String custom_sql = new String(blob.getContent());
+      newPartitionsDf.createOrReplaceTempView("__table__");
+      return spark.sql(custom_sql);
+    } else {
+      return newPartitionsDf;
+    }
+  }
+
+  /**
+   * Loads dataset to BigQuery
+   *
+   * @param newPartitionsDf dataset with new partitions
+   */
+  public void writeToBQ(Dataset<Row> newPartitionsDf) {
+    if (newPartitionsDf != null) {
+      newPartitionsDf
+          .write()
+          .format(GCS_BQ_OUTPUT_FORMAT)
+          .option(GCS_BQ_OUTPUT, targetTable)
+          .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
+          .option(
+              DATAPLEX_GCS_BQ_CREATE_DISPOSITION_PROP_NAME,
+              DATAPLEX_GCS_BQ_CREATE_DISPOSITION_CREATE_IF_NEEDED)
+          .mode(SaveMode.Append)
+          .save();
+    }
+  }
+
   public void runTemplate() {
     try {
       this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
@@ -184,18 +277,10 @@ public class DataplexGCStoBQ implements BaseTemplate {
       // load data from each partition
       Dataset<Row> newPartitionsDf = getNewPartitionsDf(newPartitionsPathsDf);
 
-      if (newPartitionsDf != null) {
-        newPartitionsDf
-            .write()
-            .format(GCS_BQ_OUTPUT_FORMAT)
-            .option(GCS_BQ_OUTPUT, targetTable)
-            .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
-            .option(
-                DATAPLEX_GCS_BQ_CREATE_DISPOSITION_PROP_NAME,
-                DATAPLEX_GCS_BQ_CREATE_DISPOSITION_CREATE_IF_NEEDED)
-            .mode(SaveMode.Append)
-            .save();
-      }
+      newPartitionsDf = applyCustomSql(newPartitionsDf);
+
+      // writing to bq
+      writeToBQ(newPartitionsDf);
 
     } catch (Throwable th) {
       LOGGER.error("Exception in DataplexGCStoBQ", th);

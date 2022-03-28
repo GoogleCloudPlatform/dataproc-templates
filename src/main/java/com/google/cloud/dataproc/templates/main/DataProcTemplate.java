@@ -65,7 +65,7 @@ public class DataProcTemplate {
           .put(TemplateName.JDBCTOGCS, (args) -> new JDBCToGCS())
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
-          .put(TemplateName.DATAPLEXGCSTOBQ, (args) -> new DataplexGCStoBQ())
+          .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
