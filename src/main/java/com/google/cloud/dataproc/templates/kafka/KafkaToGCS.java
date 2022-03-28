@@ -28,11 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Spark job to move data or/and schema from Hive table to BigQuery. This template can be configured
- * to run in few different modes. In default mode hivetobq.append.mode is set to ErrorIfExists. This
- * will cause failure if target BigQuery table already exists. Other possible values for this
- * property are: 1. Append 2. Overwrite 3. ErrorIfExists 4. Ignore For detailed list of properties
- * refer "HiveToBQ Template properties" section in resources/template.properties file.
+ * Spark job to move data or/and schema from Kafka topic to GCS. This template can be configured
+ * to run in few different modes. In default mode kafka.gcs.output.mode is set to "append".
+ * This will write only the new row in streaming DataFrame/Dataset to write to sink. Other possible values for this
+ * property are:
+ * 1. Complete: All the rows in the streaming DataFrame/Dataset will be written to the sink every time there are some updates.
+ * 2. Update: Only the rows that were updated in the streaming DataFrame/Dataset will be written to the sink every time there are some updates.
+ * For detailed list of properties
+ * refer "KafkaToGCS Template properties" section in resources/template.properties file.
  */
 public class KafkaToGCS implements BaseTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(KafkaToGCS.class);
@@ -43,7 +46,7 @@ public class KafkaToGCS implements BaseTemplate {
   private String gcsCheckpointLocation;
   private String kafkaStartingOffsets;
   private String kafkaOutputMode;
-  private Long kafkaAwaitTimeout;
+  private Long kafkaAwaitTerminationTimeout;
 
   public KafkaToGCS() {
     gcsOutputLocation = getProperties().getProperty(KAFKA_GCS_OUTPUT_LOCATION);
@@ -56,9 +59,9 @@ public class KafkaToGCS implements BaseTemplate {
         getProperties().getProperty(KAFKA_GCS_STARTING_OFFSET, KAFKA_GCS_STARTING_OFFSET_DEFAULT);
     kafkaOutputMode =
         getProperties().getProperty(KAFKA_GCS_OUTPUT_MODE, KAFKA_GCS_OUTPUT_MODE_DEFAULT);
-    kafkaAwaitTimeout =
+    kafkaAwaitTerminationTimeout =
         Long.valueOf(
-            getProperties().getProperty(KAFKA_GCS_AWAIT_TIMEOUT, KAFKA_GCS_AWAIT_TIMEOUT_DEFAULT));
+            getProperties().getProperty(KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT, KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT_DEFAULT));
   }
 
   @Override
@@ -99,8 +102,8 @@ public class KafkaToGCS implements BaseTemplate {
         kafkaStartingOffsets,
         KAFKA_GCS_OUTPUT_MODE,
         kafkaOutputMode,
-        KAFKA_GCS_AWAIT_TIMEOUT,
-        kafkaAwaitTimeout);
+        KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT,
+        kafkaAwaitTerminationTimeout);
 
     try {
       // Initialize Spark session
@@ -108,7 +111,7 @@ public class KafkaToGCS implements BaseTemplate {
 
       LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
 
-      /** Read Input data from Hive table */
+      /** Read stream data from Kafka topic */
       Dataset<Row> inputData =
           spark
               .readStream()
@@ -135,7 +138,7 @@ public class KafkaToGCS implements BaseTemplate {
           .option("checkpointLocation", gcsCheckpointLocation)
           .option("path", gcsOutputLocation)
           .start()
-          .awaitTermination(kafkaAwaitTimeout);
+          .awaitTermination(kafkaAwaitTerminationTimeout);
 
       LOGGER.info("KakfaToGCS job completed.");
       spark.stop();

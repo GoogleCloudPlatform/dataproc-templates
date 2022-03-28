@@ -17,6 +17,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 * [S3ToBigQuery](src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
 * [JDBCToBigQuery](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [JDBCToGCS](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
+* [KafkaToGCS](src/main/java/com/google/cloud/dataproc/templates/kafka/README.md)
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
