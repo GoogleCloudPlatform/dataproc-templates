@@ -30,11 +30,21 @@ bin/start.sh \
 --templateProperty jdbctobq.bigquery.location=<bigquery destination> \
 --templateProperty jdbctobq.jdbc.url=<jdbc url> \
 --templateProperty jdbctobq.jdbc.driver.class.name=<jdbc driver class name> \
---templateProperty jdbctobq.jdbc.properties=<jdbc properties in json format> \
---templateProperty jdbctobq.input.table=<source table> \
---templateProperty jdbctobq.input.db=<source database> \
+--templateProperty jdbctobq.sql=<input-sql> \
 --templateProperty jdbctobq.write.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
---templateProperty jdbctobq.spark.sql.warehouse.dir=<gcs path> \
+--templateProperty jdbctobq.temp.gcs.bucket=<gcs path> \
+```
+
+Note: Following is example JDBC URL for mysql database
+
+```
+--templateProperty  jdbctobq.jdbc.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>"
+```
+
+Have SQL query within double quotes. Example,
+
+```
+--templateProperty  jdbctobq.sql="select * from dbname.tablename"
 ```
 
 ***

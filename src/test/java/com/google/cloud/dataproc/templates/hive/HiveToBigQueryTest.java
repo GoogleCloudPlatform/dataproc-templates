@@ -43,10 +43,8 @@ class HiveToBigQueryTest {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     PropertyUtil.getProperties()
         .setProperty(HIVE_TO_BQ_BIGQUERY_LOCATION, "projname.dataset.table");
-    PropertyUtil.getProperties()
-        .setProperty(HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP, "gs://test-bucket");
-    PropertyUtil.getProperties().setProperty(HIVE_TO_BQ_INPUT_TABLE_PROP, "hivetablename");
-    PropertyUtil.getProperties().setProperty(HIVE_TO_BQ_INPUT_TABLE_DATABASE_PROP, "hivedbname");
+    PropertyUtil.getProperties().setProperty(HIVE_TO_BQ_TEMP_GCS_BUCKET, "gs://test-bucket");
+    PropertyUtil.getProperties().setProperty(HIVE_TO_BQ_SQL, "select * from default.employee");
     PropertyUtil.getProperties().setProperty(HIVE_TO_BQ_APPEND_MODE, "Append");
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
     hiveToBigQueryTest = new HiveToBigQuery();
@@ -73,9 +71,8 @@ class HiveToBigQueryTest {
   static Stream<String> propertyKeys() {
     return Stream.of(
         HIVE_TO_BQ_BIGQUERY_LOCATION,
-        HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP,
-        HIVE_TO_BQ_INPUT_TABLE_PROP,
-        HIVE_TO_BQ_INPUT_TABLE_DATABASE_PROP,
+        HIVE_TO_BQ_TEMP_GCS_BUCKET,
+        HIVE_TO_BQ_SQL,
         HIVE_TO_BQ_APPEND_MODE);
   }
 }

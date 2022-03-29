@@ -59,22 +59,18 @@ public interface TemplateConstants {
   /** Property values for HiveToBQ */
   String HIVE_TO_BQ_BIGQUERY_LOCATION = "hivetobq.bigquery.location";
 
-  String HIVE_TO_BQ_INPUT_TABLE_PROP = "hivetobq.input.table";
-  String HIVE_TO_BQ_INPUT_TABLE_DATABASE_PROP = "hivetobq.input.db";
-  String HIVE_TO_BQ_APPEND_MODE = "hivetobq.append.mode";
-  String HIVE_TO_BQ_PARTITION_COL = "hivetobq.partition.col";
-  String HIVE_TO_BQ_WAREHOUSE_LOCATION_PROP = "hivetobq.spark.sql.warehouse.dir";
+  String HIVE_TO_BQ_SQL = "hivetobq.sql";
+  String HIVE_TO_BQ_APPEND_MODE = "hivetobq.write.mode";
+  String HIVE_TO_BQ_TEMP_GCS_BUCKET = "hivetobq.temp.gcs.bucket";
 
   /** Property values for JDBCToBQ */
   String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
 
   String JDBC_TO_BQ_JDBC_URL = "jdbctobq.jdbc.url";
   String JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME = "jdbctobq.jdbc.driver.class.name";
-  String JDBC_TO_BQ_INPUT_TABLE_PROP = "jdbctobq.input.table";
-  String JDBC_TO_BQ_INPUT_TABLE_DATABASE_PROP = "jdbctobq.input.db";
+  String JDBC_TO_BQ_TEMP_GCS_BUCKET = "jdbctobq.temp.gcs.bucket";
+  String JDBC_TO_BQ_SQL = "jdbctobq.sql";
   String JDBC_TO_BQ_WRITE_MODE = "jdbctobq.write.mode";
-  String JDBC_TO_BQ_WAREHOUSE_LOCATION_PROP = "jdbctobq.spark.sql.warehouse.dir";
-  String JDBC_TO_BQ_JDBC_PROPERTIES_JSON = "jdbctobq.jdbc.properties";
 
   /** Property values for JDBCToGCS */
   String JDBC_TO_GCS_OUTPUT_LOCATION = "jdbctogcs.output.location";
