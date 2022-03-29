@@ -80,9 +80,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   public static CommandLine parseArguments(String... args) {
     Options options = new Options();
     Option configFileOption =
-        new Option(
-            CUSTOM_SQL_GCS_PATH_OPTION,
-            "gcs path of file containing custom sql");
+        new Option(CUSTOM_SQL_GCS_PATH_OPTION, "gcs path of file containing custom sql");
     configFileOption.setRequired(false);
     configFileOption.setArgs(1);
     options.addOption(configFileOption);
@@ -149,41 +147,41 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * @param partitionKeysList list of partition keys for Dataplex Entity
    * @return a dataset with the GCS paths of new partitions
    */
-  private Dataset<Row> getNewPartitionsPathDf(
+  private Dataset<Row> getNewPartitionsPathsDS(
       List<String> partitionKeysList,
-      Dataset<Row> allPartitionsDf,
-      Dataset<Row> bqTargetAvailablePartitionsDf) {
-    if (bqTargetAvailablePartitionsDf == null) {
-      return allPartitionsDf.select("__gcs_location_path__");
+      Dataset<Row> dataplexPartitionsKeysDS,
+      Dataset<Row> bqPartitionsKeysDS) {
+    if (bqPartitionsKeysDS == null) {
+      return dataplexPartitionsKeysDS.select("__gcs_location_path__");
     }
 
-    allPartitionsDf.createOrReplaceTempView("partitionValuesInDataplex");
-    bqTargetAvailablePartitionsDf.createOrReplaceTempView("bqTargetAvailablePartitionsDf");
+    dataplexPartitionsKeysDS.createOrReplaceTempView("dataplexPartitionsKeysDS");
+    bqPartitionsKeysDS.createOrReplaceTempView("bqPartitionsKeysDS");
     String joinClause =
         partitionKeysList.stream()
             .map(str -> String.format("t1.%s=t2.%s", str, str))
             .collect(Collectors.joining(" AND "));
-    Dataset newPartitionsDf =
+    Dataset<Row> newPartitionsDS =
         spark.sql(
             "SELECT __gcs_location_path__ "
-                + "FROM partitionValuesInDataplex t1 "
-                + "LEFT JOIN bqTargetAvailablePartitionsDf t2 ON "
+                + "FROM dataplexPartitionsKeysDS t1 "
+                + "LEFT JOIN bqPartitionsKeysDS t2 ON "
                 + joinClause
                 + " WHERE t2.id is null");
-    return newPartitionsDf;
+    return newPartitionsDS;
   }
 
   /**
-   * Read from GCS all new partitions
+   * Loads from GCS all new partitions
    *
    * @param newPartitionsPathsDf a dataset with the GCS paths of new partitions
    * @return a dataset with the GCS paths of new partitions
    */
-  private Dataset<Row> getNewPartitionsDf(Dataset<Row> newPartitionsPathsDf) {
+  private Dataset<Row> getNewPartitionsDS(Dataset<Row> newPartitionsPathsDf) {
     Row[] result = (Row[]) newPartitionsPathsDf.select("__gcs_location_path__").collect();
-    Dataset<Row> newPartitionsDf = null;
+    Dataset<Row> newPartitionsDS = null;
     for (Row row : result) {
-      Dataset<Row> newPartitionTempDf =
+      Dataset<Row> newPartitionTempDS =
           sqlContext
               .read()
               .format(inputFileFormat)
@@ -191,13 +189,13 @@ public class DataplexGCStoBQ implements BaseTemplate {
               .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
               .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityDataBasePath)
               .load(row.get(0).toString() + "/*");
-      if (newPartitionsDf == null) {
-        newPartitionsDf = newPartitionTempDf;
+      if (newPartitionsDS == null) {
+        newPartitionsDS = newPartitionTempDS;
       } else {
-        newPartitionsDf = newPartitionsDf.union(newPartitionTempDf);
+        newPartitionsDS = newPartitionsDS.union(newPartitionTempDS);
       }
     }
-    return newPartitionsDf;
+    return newPartitionsDS;
   }
 
   /**
@@ -261,26 +259,26 @@ public class DataplexGCStoBQ implements BaseTemplate {
       List<String> partitionsListWithLocationAndKeys =
           DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
 
-      // Building DF with all available partitions in Dataplex Entity
-      Dataset<Row> allPartitionsDf =
+      // Building dataset with all partitions keys in Dataplex Entity
+      Dataset<Row> dataplexPartitionsKeysDS =
           getAllPartitionsDf(partitionsListWithLocationAndKeys, partitionKeysList);
 
-      // Querying BQ target table for all combinations of partition keys
-      Dataset<Row> bqTargetAvailablePartitionsDf =
-          getBQTargetAvailablePartitionsDf(partitionKeysList);
+      // Querying BQ for all partition keys currently present in target table
+      Dataset<Row> bqPartitionsKeysDS = getBQTargetAvailablePartitionsDf(partitionKeysList);
 
-      // Compare partitionValuesInDataplex and bqTargetAvailablePartitionsDf to indetidy new
+      // Compare dataplexPartitionsKeysDS and bqPartitionsKeysDS to indetify new
       // partitions
-      Dataset<Row> newPartitionsPathsDf =
-          getNewPartitionsPathDf(partitionKeysList, allPartitionsDf, bqTargetAvailablePartitionsDf);
+      Dataset<Row> newPartitionsPathsDS =
+          getNewPartitionsPathsDS(partitionKeysList, dataplexPartitionsKeysDS, bqPartitionsKeysDS);
 
       // load data from each partition
-      Dataset<Row> newPartitionsDf = getNewPartitionsDf(newPartitionsPathsDf);
+      Dataset<Row> newPartitionsDS = getNewPartitionsDS(newPartitionsPathsDS);
 
-      newPartitionsDf = applyCustomSql(newPartitionsDf);
+      newPartitionsDS = applyCustomSql(newPartitionsDS);
 
-      // writing to bq
-      writeToBQ(newPartitionsDf);
+      newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
+
+      writeToBQ(newPartitionsDS);
 
     } catch (Throwable th) {
       LOGGER.error("Exception in DataplexGCStoBQ", th);
