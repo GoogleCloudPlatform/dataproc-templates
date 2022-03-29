@@ -198,7 +198,6 @@ public interface TemplateConstants {
 
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
 
-
   /** PubSubToGCS Template configs. */
   // Project that contains the input PubSub subscription to be read
   String PUBSUB_GCS_INPUT_PROJECT_ID_PROP = "pubsubtogcs.input.project.id";
@@ -213,8 +212,12 @@ public interface TemplateConstants {
   // Project that contains the GCS output
   String PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP = "pubsubtogcs.gcs.output.project.id";
   // GCS bucket URL
-  String PUBSUB_GCS_BUCKET_URL = "pubsubtogcs.gcs.bucket.url";
+  String PUBSUB_GCS_BUCKET_NAME = "pubsubtogcs.gcs.bucket.name";
   // Number of records to be written per message to GCS
   String PUBSUB_GCS_BATCH_SIZE_PROP = "pubsubtogcs.batch.size";
-
+  String PUBSUB_GCS_BUCKET_OUTPUT_PATH = "output/";
+  String PUBSUB_GCS_OUTPUT_DATA_FORMAT = "pubsubtogcs.gcs.output.data.format";
+  String[] PUBSUB_GCS_OUTPUT_FORMATS_ARRAY = {"AVRO", "JSON"};
+  String PUBSUB_GCS_AVRO_EXTENSION = "avro";
+  String PUBSUB_GCS_JSON_EXTENSION = "json";
 }
