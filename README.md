@@ -18,6 +18,7 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 * [JDBCToBigQuery](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [JDBCToGCS](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
+* [PubSubToGCS](src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
 * [GeneralTemplate](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
 
@@ -148,6 +149,11 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
        ```
        bin/start.sh -- --template BIGQUERYTOGCS
        ```
+   1. #### Executing PubSub to GCS template.
+      Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
+      ```
+      bin/start.sh -- --template PUBSUBTOGCS
+      ```
 
     1. #### Executing General template.
        Detailed instructions at [README.md](src/main/java/com/google/cloud/dataproc/templates/general/README.md)

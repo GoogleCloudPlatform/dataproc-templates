@@ -16,6 +16,7 @@
 package com.google.cloud.dataproc.templates.pubsub;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.storage.Blob;
@@ -173,10 +174,10 @@ public class PubSubToGCS implements BaseTemplate {
                   @Override
                   public void call(Iterator<SparkPubsubMessage> sparkPubsubMessageIterator)
                       throws Exception {
-                    while (sparkPubsubMessageIterator.hasNext()) {
-                      SparkPubsubMessage message = sparkPubsubMessageIterator.next();
-                      if (Arrays.asList(PUBSUB_GCS_OUTPUT_FORMATS_ARRAY)
-                          .contains(outputDataFormat)) {
+                    if (Arrays.asList(PUBSUB_GCS_OUTPUT_FORMATS_ARRAY).contains(outputDataFormat)) {
+                      JSONArray jsonArr = new JSONArray();
+                      while (sparkPubsubMessageIterator.hasNext()) {
+                        SparkPubsubMessage message = sparkPubsubMessageIterator.next();
                         if (outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_AVRO_EXTENSION)) {
                           LOGGER.info("PubSubToGCS message Avro start...");
                           Blob blob =
@@ -189,75 +190,35 @@ public class PubSubToGCS implements BaseTemplate {
                           LOGGER.info("PubSubToGCS message Avro end...");
                         } else if (outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_JSON_EXTENSION)) {
                           LOGGER.info("PubSubToGCS message Json start...");
-                          JSONArray jsonArr = new JSONArray();
                           JSONObject record = new JSONObject(new String(message.getData()));
                           jsonArr.put(record);
-                          if (jsonArr.length() == batchSize) {
-                            Blob blob =
-                                bucket.create(
-                                    PUBSUB_GCS_BUCKET_OUTPUT_PATH
-                                        + "batch_"
-                                        + System.nanoTime()
-                                        + "."
-                                        + PUBSUB_GCS_JSON_EXTENSION,
-                                    message.getData());
+                          if (jsonArr.length() == batchSize && jsonArr.length() > 0) {
+                            bucket.create(
+                                PUBSUB_GCS_BUCKET_OUTPUT_PATH
+                                    + "batch_"
+                                    + System.nanoTime()
+                                    + "."
+                                    + PUBSUB_GCS_JSON_EXTENSION,
+                                jsonArr.toString().getBytes(UTF_8));
                             jsonArr = new JSONArray();
                           }
                           LOGGER.info("PubSubToGCS message Json end...");
-                        } else {
-                          LOGGER.error(outputDataFormat + " is not supported...");
                         }
+                      } // end while
+                      if (jsonArr.length() > 0
+                          && outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_JSON_EXTENSION)) {
+                        bucket.create(
+                            PUBSUB_GCS_BUCKET_OUTPUT_PATH
+                                + "batch_"
+                                + System.nanoTime()
+                                + "."
+                                + PUBSUB_GCS_JSON_EXTENSION,
+                            jsonArr.toString().getBytes(UTF_8));
+                        jsonArr = new JSONArray();
                       }
-
-                      // Bucket bucket = storage.create(BucketInfo.of("pubsubtogcs_dev"));
-                      /*
-                      BlobId blobId =
-                          BlobId.of(
-                              "pubsubtogcs_dev", "output/" + "batch" + Math.random() + ".avro");
-                      BlobInfo blobInfo = BlobInfo.newBuilder(blobId).build();
-                      Blob blob = storage.create(blobInfo, message.getData());
-                      */
-                      /*
-                      FileOutputStream fileOutputStream =
-                          new FileOutputStream(gcsBucketUrl + "/batch" + Math.random() + ".avro");
-                      ObjectOutputStream objectOutputStream =
-                          new ObjectOutputStream(fileOutputStream);
-                      message.writeExternal(objectOutputStream);
-                      objectOutputStream.flush();
-                      objectOutputStream.close();
-                      fileOutputStream.close();
-                      */
-                      /*
-                      FileOutputStream file = new FileOutputStream(gcsBucketUrl + "/batch1.avro");
-                      ObjectOutputStream output = new ObjectOutputStream(file);
-                      output.writeObject(message.getData());
-                      output.close();
-                      */
-                      // System.out.println(new String(message.getData()));
-                      // LOGGER.info(new String(message.getData()));
-                      // ObjectOutput output = new ObjectOutput();
-                      // message.writeExternal(output);
-                      // LOGGER.info(output);
+                    } else {
+                      LOGGER.error(outputDataFormat + " is not supported...");
                     }
-
-                    /**
-                     * BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService(); Table
-                     * table = bigquery.getTable(pubSubBQOutputDataset, PubSubBQOutputTable);
-                     * TableName parentTable = TableName.of(outputProjectID, pubSubBQOutputDataset,
-                     * PubSubBQOutputTable); Schema schema = table.getDefinition().getSchema();
-                     * JsonStreamWriter writer = JsonStreamWriter.newBuilder(parentTable.toString(),
-                     * schema).build();
-                     *
-                     * <p>JSONArray jsonArr = new JSONArray(); while
-                     * (sparkPubsubMessageIterator.hasNext()) { SparkPubsubMessage message =
-                     * sparkPubsubMessageIterator.next(); JSONObject record = new JSONObject(new
-                     * String(message.getData())); jsonArr.put(record); if (jsonArr.length() ==
-                     * batchSize) { ApiFuture<AppendRowsResponse> future = writer.append(jsonArr);
-                     * AppendRowsResponse response = future.get(); jsonArr = new JSONArray(); } } if
-                     * (jsonArr.length() > 0) { ApiFuture<AppendRowsResponse> future =
-                     * writer.append(jsonArr); AppendRowsResponse response = future.get(); }
-                     * writer.close();
-                     */
                   }
                 });
           }

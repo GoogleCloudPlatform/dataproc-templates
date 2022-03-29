@@ -41,14 +41,24 @@ pubsub.bq.batch.size=1000
 General Execution:
 
 ```
-GCP_PROJECT=<gcp-project-id> \
-REGION=<region>  \
-SUBNET=<subnet>   \
-GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
-HISTORY_SERVER_CLUSTER=<history-server> \
+export PROJECT=<gcp-project-id>
+export GCP_PROJECT=<gcp-project-id>
+export REGION=<gcp-project-region>
+export GCS_STAGING_LOCATION=<gcs-bucket-staging-folder-path>
+# Set optional environment variables.
+export SUBNET=<gcp-project-dataproc-clusters-subnet>
+# ID of Dataproc cluster running permanent history server to access historic logs.
+#export HISTORY_SERVER_CLUSTER=<gcp-project-dataproc-phs-server-id>
+
+# The submit spark options must be seperated with a "--" from the template options
 bin/start.sh \
---scopes=https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/devstorage.read_write \
--- --template PUBSUBTOGCS
+-- \
+--template PUBSUBTOGCS \
+--templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
+--templateProperty pubsubtogcs.input.subscription=<pubsub-topic-subscription-name> \
+--templateProperty pubsubtogcs.gcs.output.project.id=$GCP_PROJECT \
+--templateProperty pubsubtogcs.gcs.bucket.name=<gcs-bucket-name> \
+--templateProperty pubsubtogcs.gcs.output.data.format=AVRO or JSON (based on pubsub topic configuration) \
 ```
 
 ### Configurable Parameters
@@ -56,9 +66,9 @@ Update Following properties in  [template.properties](../../../../../../../resou
 ```
 # PubSub to GCS
 ## Project that contains the input Pub/Sub subscription to be read
-pubsubtogcs.input.project.id=<pubsub project id>
+pubsubtogcs.input.project.id=yadavaja-sandbox
 ## PubSub subscription name
-pubsubtogcs.input.subscription=<pubsub subscription>
+pubsubtogcs.input.subscription=
 ## Stream timeout, for how long the subscription will be read
 pubsubtogcs.timeout.ms=60000
 ## Streaming duration, how often wil writes to GCS be triggered
@@ -66,9 +76,11 @@ pubsubtogcs.streaming.duration.seconds=15
 ## Number of streams that will read from Pub/Sub subscription in parallel
 pubsubtogcs.total.receivers=5
 ## Project that contains the GCS output
-pubsubtogcs.gcs.output.project.id=<pubsub to gcs output project id>
+pubsubtogcs.gcs.output.project.id=
 ## GCS bucket URL
-pubsubtogcs.gcs.bucket.url=<pubsub to gcs output project id>
+pubsubtogcs.gcs.bucket.name=
 ## Number of records to be written per message to GCS
 pubsubtogcs.batch.size=1000
+## PubSub to GCS supported formats are: AVRO, JSON
+pubsubtogcs.gcs.output.data.format=
 ```
