@@ -27,7 +27,6 @@ def runTemplate():
 
   # Arguments
   args = parse_args()
-  project_id          = args[PROJECT_ID_PROP]
   input_file_location = args[GCS_BQ_INPUT_LOCATION]
   big_query_dataset   = args[GCS_OUTPUT_DATASET_NAME]
   big_query_table     = args[GCS_OUTPUT_TABLE_NAME]
@@ -51,9 +50,7 @@ def runTemplate():
   else:
     raise Exception("Currently avro, parquet and csv are the only supported formats")
 
-  logger.info("Starting GCS to Bigquery spark job with following parameters\n 1. {}={}\n 2. {}={}\n 3. {}={}\n 4. {}={}\n 5. {}={}\n 6. {}={}\n".format(
-              PROJECT_ID_PROP,
-              project_id,
+  logger.info("Starting GCS to Bigquery spark job with following parameters\n 1. {}={}\n 2. {}={}\n 3. {}={}\n 4. {}={}\n 5. {}={}\n".format(
               GCS_BQ_INPUT_LOCATION,
               input_file_location,
               GCS_OUTPUT_DATASET_NAME,
@@ -69,7 +66,6 @@ def runTemplate():
   # Write
   input_data.write \
             .format(GCS_BQ_OUTPUT_FORMAT) \
-            .option(GCS_BQ_CSV_HEADER, True) \
             .option(GCS_BQ_OUTPUT, big_query_dataset + "." + big_query_table) \
             .option(GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
             .mode("append") \
@@ -82,7 +78,6 @@ def parse_args():
   defaults = config['gcs_to_bigquery']
 
   parser = argparse.ArgumentParser()
-  parser.add_argument('--'+PROJECT_ID_PROP, dest=PROJECT_ID_PROP)
   parser.add_argument('--'+GCS_BQ_INPUT_LOCATION, dest=GCS_BQ_INPUT_LOCATION)
   parser.add_argument('--'+GCS_OUTPUT_DATASET_NAME, dest=GCS_OUTPUT_DATASET_NAME)
   parser.add_argument('--'+GCS_OUTPUT_TABLE_NAME, dest=GCS_OUTPUT_TABLE_NAME)
@@ -97,7 +92,6 @@ def parse_args():
     raise Exception("Required parameters for gcs_to_bigquery not passed")
 
   return result
-
 
 if __name__ == '__main__':
   runTemplate()
