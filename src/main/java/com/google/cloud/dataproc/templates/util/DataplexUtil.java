@@ -45,6 +45,26 @@ public class DataplexUtil {
   private static String GET_ENTITY_METHOD_URL = "https://dataplex.googleapis.com/v1/%s?view=SCHEMA";
   private static String GET_ENTITY_PARTITIONS_METHOD_URL =
       "https://dataplex.googleapis.com/v1/%s/partitions";
+  private static String GET_ENTITY_LIST_METHOD_URL =
+      "https://dataplex.googleapis.com/v1/%s/entities?filter=asset=%s&view=TABLES";
+
+  private static String ASSET_ENTITIES_PROP_KEY = "entities";
+  private static String ASSET_ENTITY_NAME_PROP_KEY = "name";
+  private static String ENTITY_BASE_PATH_PROP_KEY = "dataPath";
+  private static String ENTITY_FORMAT_PROP_KEY = "format";
+  private static String ENTITY_SCHEMA_PROP_KEY = "schema";
+  private static String ENTITY_SCHEMA_PARTITION_FIELDS_PROP_KEY = "partitionFields";
+  private static String PARTITION_FIELD_NAME_PROP_KEY = "name";
+  private static String ENTITY_PARTITION_PROP_KEY = "partitions";
+  private static String ENTITY_PARTITION_LOCATION_PROP_KEY = "location";
+  private static String ENTITY_PARTITION_VALUES_PROP_KEY = "values";
+  private static String ENTITY_SCHEMA_FIELD_TYPE_PROP_KEY = "type";
+  private static String ENTITY_SCHEMA_FIELD_MODE_PROP_KEY = "mode";
+  private static String ENTITY_SCHEMA_FIELD_MODE_UNSPECIFIED = "MODE_UNSPECIFIED";
+  private static String ENTITY_SCHEMA_FIELD_MODE_REPEATED = "REPEATED";
+  private static String ENTITY_SCHEMA_TYPE_MODE_RECORD = "RECORD";
+  private static String ENTITY_SCHEMA_FIELDS_PROP_NAME = "fields";
+
   private static String DATAPLEX_BOOLEAN_DATA_TYPE_NAME = "BOOLEAN";
   private static String DATAPLEX_BYTE_DATA_TYPE_NAME = "BYTE";
   private static String DATAPLEX_INT16_DATA_TYPE_NAME = "INT16";
@@ -79,6 +99,35 @@ public class DataplexUtil {
   }
 
   /**
+   * Execute request on Google API
+   *
+   * @param asset
+   * @return list of entities in the asset
+   * @throws IOException when request fails
+   */
+  public static List<String> getEntityNameListFromAsset(String asset) throws IOException {
+    List<String> entityList = new ArrayList<String>();
+    String url =
+        String.format(
+            GET_ENTITY_LIST_METHOD_URL, asset.split("/assets/")[0], asset.split("/assets/")[1]);
+    String urlWithTokenParam = url;
+    while (true) {
+      JsonObject resp = executeRequest(urlWithTokenParam);
+      Iterator entityIterator = resp.get(ASSET_ENTITIES_PROP_KEY).getAsJsonArray().iterator();
+      while (entityIterator.hasNext()) {
+        JsonObject currentEntity = (JsonObject) entityIterator.next();
+        entityList.add(currentEntity.get(ASSET_ENTITY_NAME_PROP_KEY).getAsString());
+      }
+
+      if (!resp.has("nextPageToken")) {
+        break;
+      } else {
+        urlWithTokenParam = url + "&pageToken=" + resp.get("nextPageToken").getAsString();
+      }
+    }
+    return entityList;
+  }
+  /**
    * Execute request on Google API to fetch schema of a Dataplex entity
    *
    * @param entity name
@@ -103,16 +152,16 @@ public class DataplexUtil {
   }
 
   /**
-   * Execute request on Google API to fetch schema of a Dataplex entity and parses out data base
-   * path
+   * Execute request on Google API to fetch schema of a Dataplex entity and parses out base path of
+   * entity data
    *
    * @param entity name
    * @return source data base path
    * @throws IOException when request on Dataplex API fails
    */
-  public static String getEntityDataBasePath(String entity) throws IOException {
+  public static String getBasePathEntityData(String entity) throws IOException {
     JsonObject responseJson = DataplexUtil.getEntitySchema(entity);
-    return responseJson.get("dataPath").getAsString();
+    return responseJson.get(ENTITY_BASE_PATH_PROP_KEY).getAsString();
   }
 
   /**
@@ -124,7 +173,11 @@ public class DataplexUtil {
    */
   public static String getInputFileFormat(String entity) throws IOException {
     JsonObject responseJson = DataplexUtil.getEntitySchema(entity);
-    return responseJson.getAsJsonObject("format").get("format").getAsString().toLowerCase();
+    return responseJson
+        .getAsJsonObject(ENTITY_FORMAT_PROP_KEY)
+        .get(ENTITY_FORMAT_PROP_KEY)
+        .getAsString()
+        .toLowerCase();
   }
 
   /**
@@ -138,13 +191,15 @@ public class DataplexUtil {
   public static List<String> getPartitionKeyList(String entity) throws IOException {
     JsonObject responseJson = DataplexUtil.getEntitySchema(entity);
     JsonArray partitionKeys =
-        responseJson.getAsJsonObject("schema").getAsJsonArray("partitionFields");
+        responseJson
+            .getAsJsonObject(ENTITY_SCHEMA_PROP_KEY)
+            .getAsJsonArray(ENTITY_SCHEMA_PARTITION_FIELDS_PROP_KEY);
 
     List<String> partitionFieldsNames = new ArrayList<String>();
     Iterator partitionFieldsIter = partitionKeys.iterator();
     while (partitionFieldsIter.hasNext()) {
       JsonObject partitionField = (JsonObject) partitionFieldsIter.next();
-      partitionFieldsNames.add(partitionField.get("name").getAsString());
+      partitionFieldsNames.add(partitionField.get(PARTITION_FIELD_NAME_PROP_KEY).getAsString());
     }
     return partitionFieldsNames;
   }
@@ -164,16 +219,17 @@ public class DataplexUtil {
       throws IOException {
     JsonObject responseJson = getEntityPartitions(entity);
 
-    Iterator<JsonElement> partitionsIterator = responseJson.getAsJsonArray("partitions").iterator();
+    Iterator<JsonElement> partitionsIterator =
+        responseJson.getAsJsonArray(ENTITY_PARTITION_PROP_KEY).iterator();
     List<String> partitionsListWithLocationAndKeys = new ArrayList<String>();
     while (partitionsIterator.hasNext()) {
       JsonObject partition = (JsonObject) partitionsIterator.next();
 
       String currentRecord = "";
-      currentRecord += partition.get("location").getAsString();
+      currentRecord += partition.get(ENTITY_PARTITION_LOCATION_PROP_KEY).getAsString();
 
       Iterator<JsonElement> partitionValuesIterator =
-          partition.get("values").getAsJsonArray().iterator();
+          partition.get(ENTITY_PARTITION_VALUES_PROP_KEY).getAsJsonArray().iterator();
       while (partitionValuesIterator.hasNext()) {
         currentRecord += "," + partitionValuesIterator.next().getAsString();
       }
@@ -211,26 +267,27 @@ public class DataplexUtil {
    * @param schema to which fields will added
    * @param dataplexTypeToSparkType mapping between Dataplex datatype name and spark DataType
    * @param dataplexSchema schema from source Dataplex entity
-   *
    * @return a spark schema matching Dataples source entity schema
    */
   public static List<StructField> buildSparkSchemaFromDataplexSchema(
       List<StructField> schema,
       HashMap<String, DataType> dataplexTypeToSparkType,
       JsonArray dataplexSchema) {
+
     Iterator fieldsIterator = dataplexSchema.iterator();
     while (fieldsIterator.hasNext()) {
       JsonObject field = (JsonObject) fieldsIterator.next();
-      String type = field.get("type").getAsString();
-      String name = field.get("name").getAsString();
-      String mode = "MODE_UNSPECIFIED";
-      if (field.get("mode") != null) {
-        mode = field.get("mode").getAsString();
+      String type = field.get(ENTITY_SCHEMA_FIELD_TYPE_PROP_KEY).getAsString();
+      String name = field.get(PARTITION_FIELD_NAME_PROP_KEY).getAsString();
+      String mode = ENTITY_SCHEMA_FIELD_MODE_UNSPECIFIED;
+      if (field.get(ENTITY_SCHEMA_FIELD_MODE_PROP_KEY) != null) {
+        mode = field.get(ENTITY_SCHEMA_FIELD_MODE_PROP_KEY).getAsString();
       }
 
-      if (type.equals("RECORD") && mode.equals("REPEATED")) {
+      if (type.equals(ENTITY_SCHEMA_TYPE_MODE_RECORD)
+          && mode.equals(ENTITY_SCHEMA_FIELD_MODE_REPEATED)) {
         List<StructField> structFieldList = new ArrayList<>();
-        JsonArray nestedField = field.getAsJsonArray("fields");
+        JsonArray nestedField = field.getAsJsonArray(ENTITY_SCHEMA_FIELDS_PROP_NAME);
         structFieldList =
             buildSparkSchemaFromDataplexSchema(
                 structFieldList, dataplexTypeToSparkType, nestedField);
@@ -238,23 +295,21 @@ public class DataplexUtil {
             DataTypes.createStructField(
                 name, DataTypes.createArrayType(DataTypes.createStructType(structFieldList)), true);
         schema.add(newField);
-      } else if (type.equals("RECORD")) {
+      } else if (type.equals(ENTITY_SCHEMA_TYPE_MODE_RECORD)) {
         List<StructField> structFieldList = new ArrayList<>();
-        JsonArray nestedField = field.getAsJsonArray("fields");
+        JsonArray nestedField = field.getAsJsonArray(ENTITY_SCHEMA_FIELDS_PROP_NAME);
         structFieldList =
             buildSparkSchemaFromDataplexSchema(
                 structFieldList, dataplexTypeToSparkType, nestedField);
         StructField newField =
             DataTypes.createStructField(name, DataTypes.createStructType(structFieldList), true);
         schema.add(newField);
-      } else if (mode.equals("REPEATED")) {
-        System.out.println(field);
+      } else if (mode.equals(ENTITY_SCHEMA_FIELD_MODE_REPEATED)) {
         StructField newField =
             DataTypes.createStructField(
                 name, DataTypes.createArrayType(dataplexTypeToSparkType.get(type)), true);
         schema.add(newField);
       } else {
-        System.out.println(field);
         StructField newField =
             DataTypes.createStructField(name, dataplexTypeToSparkType.get(type), true);
         schema.add(newField);
@@ -268,16 +323,20 @@ public class DataplexUtil {
    *
    * @param inputDS dataset that will be casted to new schema
    * @param entity dataplex source entity
-   *
    * @return a spark dataset with schema matching Dataples source entity schema
    */
   public static Dataset<Row> castDatasetToDataplexSchema(Dataset<Row> inputDS, String entity)
       throws IOException {
     JsonObject entityJson = getEntitySchema(entity);
     HashMap<String, DataType> dataplexTypeToSparkType = getDataplexTypeToSparkTypeMap();
-    JsonArray dataplexSchema = entityJson.getAsJsonObject("schema").getAsJsonArray("fields");
+    JsonArray dataplexSchema =
+        entityJson
+            .getAsJsonObject(ENTITY_SCHEMA_PROP_KEY)
+            .getAsJsonArray(ENTITY_SCHEMA_FIELDS_PROP_NAME);
     JsonArray dataplexPartitionSchema =
-        entityJson.getAsJsonObject("schema").getAsJsonArray("partitionFields");
+        entityJson
+            .getAsJsonObject(ENTITY_SCHEMA_PROP_KEY)
+            .getAsJsonArray(ENTITY_SCHEMA_PARTITION_FIELDS_PROP_KEY);
 
     if (dataplexPartitionSchema != null) {
       dataplexSchema.addAll(dataplexPartitionSchema);

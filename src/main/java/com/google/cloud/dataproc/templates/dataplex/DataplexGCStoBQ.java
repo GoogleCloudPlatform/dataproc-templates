@@ -26,6 +26,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -43,47 +44,88 @@ import org.slf4j.LoggerFactory;
 public class DataplexGCStoBQ implements BaseTemplate {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigquery.class);
-  public static String CUSTOM_SQL_GCS_PATH_OPTION = "custom_sql_gcs_path";
+  public static String CUSTOM_SQL_GCS_PATH_OPTION = "customSqlGcsPath";
+  public static String ENTITY_LIST_OPTION = "dataplexEntityList";
+  public static String ASSET_LIST_OPTION = "dataplexAsset";
 
   private SparkSession spark;
   private SQLContext sqlContext;
+  private String entitiesString;
+  private String asset;
+  private List<String> entityList;
+  private String entity;
+
   private String projectId;
   private String customSqlGCSPath;
-  private String entityDataBasePath;
-  private String entity;
-  private String materializationDataset;
+  private String entityBasePath;
+  private String targetDataset;
+  private String targetTableName;
   private String targetTable;
   private String inputFileFormat;
   private String bqTempBucket;
 
-  public DataplexGCStoBQ(String pCustomSqlGCSPath) {
-    customSqlGCSPath = pCustomSqlGCSPath;
+  public DataplexGCStoBQ(String customSqlGCSPath, String entitiesString, String asset) {
+    this.customSqlGCSPath = customSqlGCSPath;
+    this.entitiesString = entitiesString;
+    this.asset = asset;
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
-    entity = getProperties().getProperty(DATAPLEX_GCS_BQ_ENTITY);
-    materializationDataset = getProperties().getProperty(DATAPLEX_GCS_BQ_MATERIALIZATION_DATASET);
-    targetTable = getProperties().getProperty(DATAPLEX_GCS_BQ_TARGET_TABLE);
+    targetDataset = getProperties().getProperty(DATAPLEX_GCS_BQ_TARGET_DATASET);
     bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
   }
 
   public static DataplexGCStoBQ of(String... args) {
     CommandLine cmd = parseArguments(args);
     String customSqlGCSPath = cmd.getOptionValue(CUSTOM_SQL_GCS_PATH_OPTION);
-    return new DataplexGCStoBQ(customSqlGCSPath);
+    String asset = cmd.getOptionValue(ASSET_LIST_OPTION);
+    String entitiesString = cmd.getOptionValue(ENTITY_LIST_OPTION);
+    return new DataplexGCStoBQ(customSqlGCSPath, entitiesString, asset);
   }
 
   /**
-   * Parse command line arguments to supply GCS path of file with custom sql
+   * Sets value for entityList based on input values for entitiesString and asset
    *
-   * @param args line arguments to supply template configuration yaml file at startup
+   * @throws Exception if values are passed for both --dataplexEntityList and --dataplexAsset. Will
+   *     also throw exceptio if niether is set
+   */
+  private void checkInput() throws Exception {
+    if (entitiesString != null && asset != null) {
+      throw new Exception(
+          String.format(
+              "Properties %s and %s ars mutually exclusive, please specify just one of these.",
+              ENTITY_LIST_OPTION, ASSET_LIST_OPTION));
+    } else if (asset != null) {
+      this.entityList = DataplexUtil.getEntityNameListFromAsset(asset);
+    } else if (entitiesString != null) {
+      this.entityList = Arrays.asList(entitiesString.split(","));
+    } else {
+      throw new Exception(
+          String.format("Please specifiy either %s or %s", ENTITY_LIST_OPTION, ASSET_LIST_OPTION));
+    }
+  }
+
+  /**
+   * Parse command line arguments
+   *
+   * @param args line arguments
    * @return parsed arguments
    */
   public static CommandLine parseArguments(String... args) {
     Options options = new Options();
-    Option configFileOption =
-        new Option(CUSTOM_SQL_GCS_PATH_OPTION, "gcs path of file containing custom sql");
-    configFileOption.setRequired(false);
-    configFileOption.setArgs(1);
-    options.addOption(configFileOption);
+    Option customSQLFileOption =
+        new Option(CUSTOM_SQL_GCS_PATH_OPTION, "GCS path of file containing custom sql");
+    customSQLFileOption.setRequired(false);
+    customSQLFileOption.setArgs(1);
+    options.addOption(customSQLFileOption);
+
+    Option entityListOption = new Option(ENTITY_LIST_OPTION, "Dataplex GCS table resource name");
+    entityListOption.setRequired(false);
+    entityListOption.setArgs(2);
+    options.addOption(entityListOption);
+
+    Option assetOption = new Option(ASSET_LIST_OPTION, "Dataplex asset name");
+    assetOption.setRequired(false);
+    assetOption.setArgs(3);
+    options.addOption(assetOption);
 
     CommandLineParser parser = new BasicParser();
     try {
@@ -124,8 +166,9 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * @return a dataset with all distinct value of partition keys in BQ target table
    */
   private Dataset<Row> getBQTargetAvailablePartitionsDf(List<String> partitionKeysList) {
+    LOGGER.info("Reading target table: {}", targetTable);
     spark.conf().set("viewsEnabled", "true");
-    spark.conf().set("materializationDataset", materializationDataset);
+    spark.conf().set("materializationDataset", targetDataset);
     try {
       String sql =
           String.format(
@@ -181,14 +224,17 @@ public class DataplexGCStoBQ implements BaseTemplate {
     Row[] result = (Row[]) newPartitionsPathsDf.select("__gcs_location_path__").collect();
     Dataset<Row> newPartitionsDS = null;
     for (Row row : result) {
+      String path = row.get(0).toString() + "/*";
+      LOGGER.info("Loading data from GCS path: {}", path);
+
       Dataset<Row> newPartitionTempDS =
           sqlContext
               .read()
               .format(inputFileFormat)
               .option(GCS_BQ_CSV_HEADER, true)
               .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
-              .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityDataBasePath)
-              .load(row.get(0).toString() + "/*");
+              .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityBasePath)
+              .load(path);
       if (newPartitionsDS == null) {
         newPartitionsDS = newPartitionTempDS;
       } else {
@@ -207,11 +253,11 @@ public class DataplexGCStoBQ implements BaseTemplate {
    */
   public Dataset<Row> applyCustomSql(Dataset<Row> newPartitionsDf) throws IOException {
     if (customSqlGCSPath != null) {
+      LOGGER.info("Reading custom SQL from GCS path: {}", customSqlGCSPath);
       String[] pathAsList = customSqlGCSPath.replace("gs://", "").split("/");
       String BUCKET_NAME = pathAsList[0];
       String OBJECT_NAME = Stream.of(pathAsList).skip(1).collect(Collectors.joining("/"));
-      System.out.println(BUCKET_NAME);
-      System.out.println(OBJECT_NAME);
+
       StorageOptions options =
           StorageOptions.newBuilder()
               .setProjectId(projectId)
@@ -235,6 +281,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
    */
   public void writeToBQ(Dataset<Row> newPartitionsDf) {
     if (newPartitionsDf != null) {
+      LOGGER.info("Writing to target table: {}", targetTable);
       newPartitionsDf
           .write()
           .format(GCS_BQ_OUTPUT_FORMAT)
@@ -252,33 +299,41 @@ public class DataplexGCStoBQ implements BaseTemplate {
     try {
       this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
       this.sqlContext = new SQLContext(spark);
-      this.entityDataBasePath = DataplexUtil.getEntityDataBasePath(entity);
-      this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
+      checkInput();
 
-      List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);
-      List<String> partitionsListWithLocationAndKeys =
-          DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
+      for (int i = 0; i <= entityList.size(); i += 1) {
+        this.entity = entityList.get(i);
+        this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
+        this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
+        this.targetTableName = entity.split("/")[entity.split("/").length - 1];
+        this.targetTable = String.format("%s.%s.%s", projectId, targetDataset, targetTableName);
+        LOGGER.info("Processing entity: {}", entity);
+        List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);
+        List<String> partitionsListWithLocationAndKeys =
+            DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
 
-      // Building dataset with all partitions keys in Dataplex Entity
-      Dataset<Row> dataplexPartitionsKeysDS =
-          getAllPartitionsDf(partitionsListWithLocationAndKeys, partitionKeysList);
+        // Building dataset with all partitions keys in Dataplex Entity
+        Dataset<Row> dataplexPartitionsKeysDS =
+            getAllPartitionsDf(partitionsListWithLocationAndKeys, partitionKeysList);
 
-      // Querying BQ for all partition keys currently present in target table
-      Dataset<Row> bqPartitionsKeysDS = getBQTargetAvailablePartitionsDf(partitionKeysList);
+        // Querying BQ for all partition keys currently present in target table
+        Dataset<Row> bqPartitionsKeysDS = getBQTargetAvailablePartitionsDf(partitionKeysList);
 
-      // Compare dataplexPartitionsKeysDS and bqPartitionsKeysDS to indetify new
-      // partitions
-      Dataset<Row> newPartitionsPathsDS =
-          getNewPartitionsPathsDS(partitionKeysList, dataplexPartitionsKeysDS, bqPartitionsKeysDS);
+        // Compare dataplexPartitionsKeysDS and bqPartitionsKeysDS to indetify new
+        // partitions
+        Dataset<Row> newPartitionsPathsDS =
+            getNewPartitionsPathsDS(
+                partitionKeysList, dataplexPartitionsKeysDS, bqPartitionsKeysDS);
 
-      // load data from each partition
-      Dataset<Row> newPartitionsDS = getNewPartitionsDS(newPartitionsPathsDS);
+        // load data from each partition
+        Dataset<Row> newPartitionsDS = getNewPartitionsDS(newPartitionsPathsDS);
 
-      newPartitionsDS = applyCustomSql(newPartitionsDS);
+        newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
 
-      newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
+        newPartitionsDS = applyCustomSql(newPartitionsDS);
 
-      writeToBQ(newPartitionsDS);
+        writeToBQ(newPartitionsDS);
+      }
 
     } catch (Throwable th) {
       LOGGER.error("Exception in DataplexGCStoBQ", th);

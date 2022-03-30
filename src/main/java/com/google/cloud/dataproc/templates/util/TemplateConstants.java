@@ -199,11 +199,7 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
 
   /** Dataplex GCS to BQ */
-  String DATAPLEX_GCS_BQ_ENTITY = "dataplex.gcs.bq.entity";
-
-  String DATAPLEX_GCS_BQ_TARGET_TABLE = "dataplex.gcs.bq.target.table";
-
-  String DATAPLEX_GCS_BQ_MATERIALIZATION_DATASET = "dataplex.gcs.bq.materialization.dataset";
+  String DATAPLEX_GCS_BQ_TARGET_DATASET = "dataplex.gcs.bq.target.dataset";
 
   String DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME = "basePath";
 
