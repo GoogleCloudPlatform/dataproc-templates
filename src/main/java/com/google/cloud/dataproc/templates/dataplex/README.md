@@ -16,24 +16,32 @@ bin/start.sh \
 --templateProperty project.id=${PROJECT} \
 --templateProperty dataplex.gcs.bq.target.dataset=<dataset_name> \
 --templateProperty gcs.bigquery.temp.bucket.name=<temp-bucket-name> \
+--templateProperty dataplex.gcs.bq.save.mode="append" \
+--templateProperty dataplex.gcs.bq.incremental.partition.copy="yes" \
 --dataplexAsset "projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/asset/{asset_id}" \
+--partitionField "partition_field"
+--partitionType "DAY"
 --customSqlGcsPath "gs://bucket/path/to/custom_sql.sql" 
 ```
 
-### Specifying Dataplex tables to load
-##### 1) Providing asset 
-By providing the asset, all tables within that asset will be loaded.\
-This is achieved by using the `--dataplexAsset` argument as shown here:
-```
---dataplexAsset projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/asset/{asset_id}
-```
+### Template properties
+`dataplex.gcs.bq.save.mode` specifies how to handle existing data in BigQuery if present. 
+Can be any of the following: `errorifexists`, `append` ,`overwrite`, `ignore`. Defaults to `errorifexists` \
 
-##### 2) Providing a list of tables (Dataplex Entities)
-By providing a list of tables, each table in the list will be loaded.\
-This is achieved by providing a string with comma seperated values to the `--dataplexEntityList` as show here:
-```
---dataplexEntityList "projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1},projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_2}"
-```
+`dataplex.gcs.bq.incremental.partition.copy` specifies if the template should copy new partitions only or all the partitions. 
+If set to `no` existing partitions, if found will be overwritten. Can be any of the following `yes`, `no`. Defaults to `yes`
+
+
+### Arguments
+`--dataplexAsset` asset to be copied to BigQuery. If provided, each GCS table of the asset will be loaded. \
+Example: `--dataplexAsset projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/asset/{asset_id}`
+
+`--dataplexEntityList` list of GCS tables to load in BigQuery, separated by commas. \
+Example: `--dataplexEntityList "projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1},projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_2}"`
+
+`--partitionField` if field is specified together with `partitionType`, the table is partitioned by this field. The field must be a top-level TIMESTAMP or DATE field.
+
+`--partitionType` Supported types are: `HOUR`, `DAY`, `MONTH`, `YEAR`
 
 ### Custom SQL 
 
