@@ -22,10 +22,12 @@ import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 class HiveToBigQueryTest {
 
@@ -37,6 +39,7 @@ class HiveToBigQueryTest {
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
 
+  @Disabled
   @ParameterizedTest
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
