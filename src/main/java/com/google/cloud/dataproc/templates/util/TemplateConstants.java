@@ -28,6 +28,7 @@ public interface TemplateConstants {
   String SPANNER_GCS_INPUT_TABLE_ID = "spanner.gcs.input.table.id";
   String SPANNER_GCS_OUTPUT_GCS_PATH = "spanner.gcs.output.gcs.path";
   String SPANNER_GCS_OUTPUT_GCS_SAVEMODE = "spanner.gcs.output.gcs.saveMode";
+  String SPANNER_GCS_OUTPUT_FORMAT = "spanner.gcs.output.gcs.format";
 
   /**
    * Column to be used as row key for BigTable. Required for GCSToBigTable template.

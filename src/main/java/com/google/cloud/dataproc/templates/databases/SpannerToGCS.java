@@ -38,6 +38,7 @@ public class SpannerToGCS implements BaseTemplate {
   private final String tableId;
   private final String gcsWritePath;
   private final String gcsSaveMode;
+  private final String outputFormat;
 
   public SpannerToGCS() {
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
@@ -46,6 +47,7 @@ public class SpannerToGCS implements BaseTemplate {
     tableId = getProperties().getProperty(SPANNER_GCS_INPUT_TABLE_ID);
     gcsWritePath = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_PATH);
     gcsSaveMode = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_SAVEMODE);
+    outputFormat = getProperties().getProperty(SPANNER_GCS_OUTPUT_FORMAT);
   }
 
   @Override
@@ -71,7 +73,7 @@ public class SpannerToGCS implements BaseTemplate {
             .load();
 
     LOGGER.info("Data load complete from table/query: " + tableId);
-    jdbcDF.write().format("avro").mode(gcsSaveMode).save(gcsWritePath);
+    jdbcDF.write().format(outputFormat).mode(gcsSaveMode).save(gcsWritePath);
 
     spark.stop();
   }

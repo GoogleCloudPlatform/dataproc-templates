@@ -3,9 +3,9 @@
 General Execution:
 
 ```
-GCP_PROJECT=<gcp-project-id>
-REGION=<region>  \
-SUBNET=<subnet>   \
+export GCP_PROJECT=<gcp-project-id>
+export REGION=<region>
+export SUBNET=<subnet>
 GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 bin/start.sh \
 -- --template SPANNERTOGCS \
@@ -15,6 +15,7 @@ bin/start.sh \
 --templateProperty spanner.gcs.input.table.id=<table-id> \
 --templateProperty spanner.gcs.output.gcs.path=<gcs-path> \
 --templateProperty spanner.gcs.output.gcs.saveMode=<Append|Overwrite|ErrorIfExists|Ignore>
+--templateProperty spanner.gcs.output.gcs.format=<avro|csv|parquet|json|orc>
 ```
 
 ### Export query results as avro
