@@ -28,7 +28,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 class HiveToBigQueryTest {
 
   private HiveToBigQuery hiveToBigQueryTest;
