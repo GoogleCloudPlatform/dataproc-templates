@@ -1,4 +1,4 @@
-## 1. Dataplex GCS to BigQuery
+## Dataplex GCS to BigQuery
 
 This template will incrementally move data from a Dataplex GCS tables to BigQuery. \ 
 It will identify new partitions in Dataplex GCS and copy them to BigQuery.
@@ -29,7 +29,7 @@ This is achieved by using the `--dataplexAsset` argument as shown here:
 ```
 
 ##### 2) Providing a list of tables (Dataplex Entities)
-By providing a list of tables, each table in the list will be loaded.
+By providing a list of tables, each table in the list will be loaded.\
 This is achieved by providing a string with comma seperated values to the `--dataplexEntityList` as show here:
 ```
 --dataplexEntityList "projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1},projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_2}"

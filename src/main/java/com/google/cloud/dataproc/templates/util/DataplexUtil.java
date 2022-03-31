@@ -44,7 +44,7 @@ public class DataplexUtil {
 
   private static String GET_ENTITY_METHOD_URL = "https://dataplex.googleapis.com/v1/%s?view=SCHEMA";
   private static String GET_ENTITY_PARTITIONS_METHOD_URL =
-      "https://dataplex.googleapis.com/v1/%s/partitions";
+      "https://dataplex.googleapis.com/v1/%s/partitions?";
   private static String GET_ENTITY_LIST_METHOD_URL =
       "https://dataplex.googleapis.com/v1/%s/entities?filter=asset=%s&view=TABLES";
 
@@ -64,7 +64,7 @@ public class DataplexUtil {
   private static String ENTITY_SCHEMA_FIELD_MODE_REPEATED = "REPEATED";
   private static String ENTITY_SCHEMA_TYPE_MODE_RECORD = "RECORD";
   private static String ENTITY_SCHEMA_FIELDS_PROP_NAME = "fields";
-
+  private static String DATAPLEX_API_RESP_NEXT_PAGE_TOKEN_FIELD_NAME = "nextPageToken";
   private static String DATAPLEX_BOOLEAN_DATA_TYPE_NAME = "BOOLEAN";
   private static String DATAPLEX_BYTE_DATA_TYPE_NAME = "BYTE";
   private static String DATAPLEX_INT16_DATA_TYPE_NAME = "INT16";
@@ -119,14 +119,18 @@ public class DataplexUtil {
         entityList.add(currentEntity.get(ASSET_ENTITY_NAME_PROP_KEY).getAsString());
       }
 
-      if (!resp.has("nextPageToken")) {
+      if (!resp.has(DATAPLEX_API_RESP_NEXT_PAGE_TOKEN_FIELD_NAME)) {
         break;
       } else {
-        urlWithTokenParam = url + "&pageToken=" + resp.get("nextPageToken").getAsString();
+        urlWithTokenParam =
+            url
+                + "&pageToken="
+                + resp.get(DATAPLEX_API_RESP_NEXT_PAGE_TOKEN_FIELD_NAME).getAsString();
       }
     }
     return entityList;
   }
+
   /**
    * Execute request on Google API to fetch schema of a Dataplex entity
    *
@@ -143,11 +147,15 @@ public class DataplexUtil {
    * Execute request on Google API to fetch partitions of a Dataplex entity
    *
    * @param entity name
+   * @param pageToken
    * @return entity partitions
    * @throws IOException when request on Dataplex API fails
    */
-  public static JsonObject getEntityPartitions(String entity) throws IOException {
+  public static JsonObject getEntityPartitions(String entity, String pageToken) throws IOException {
     String url = String.format(GET_ENTITY_PARTITIONS_METHOD_URL, entity);
+    if (pageToken != null) {
+      url += "pageToken=" + pageToken;
+    }
     return executeRequest(url);
   }
 
@@ -205,22 +213,18 @@ public class DataplexUtil {
   }
 
   /**
-   * Execute request on Google API to fetch partitions of a Dataplex entity and parses out a list
-   * with all partitions each element contains gcs path and key values for a given partition This
-   * will return a list of string with the pattern: ["partition_path,key_1,key_2,...,key_n",
-   * "partition_path,key1,key2,...,keyn", ...]
+   * Parses out a list API response with partitions list of all partitions where each element
+   * contains gcs path and key values for a given partition will return a list of string with the
+   * pattern: ["partition_path,key_1,key_2,...,key_n", "partition_path,key1,key2,...,keyn", ...]
    *
    * @param entity name
    * @return list of all partitions where each element contains gcs path and key values for a given
    *     partition
    * @throws IOException when request on Dataplex API fails
    */
-  public static List<String> getPartitionsListWithLocationAndKeys(String entity)
-      throws IOException {
-    JsonObject responseJson = getEntityPartitions(entity);
-
+  public static List<String> parsePartitionToStringWithLocationAndKeys(JsonObject partitions) {
     Iterator<JsonElement> partitionsIterator =
-        responseJson.getAsJsonArray(ENTITY_PARTITION_PROP_KEY).iterator();
+        partitions.getAsJsonArray(ENTITY_PARTITION_PROP_KEY).iterator();
     List<String> partitionsListWithLocationAndKeys = new ArrayList<String>();
     while (partitionsIterator.hasNext()) {
       JsonObject partition = (JsonObject) partitionsIterator.next();
@@ -233,9 +237,42 @@ public class DataplexUtil {
       while (partitionValuesIterator.hasNext()) {
         currentRecord += "," + partitionValuesIterator.next().getAsString();
       }
-
       partitionsListWithLocationAndKeys.add(currentRecord);
     }
+    return partitionsListWithLocationAndKeys;
+  }
+
+  /**
+   * Execute request on Google API to fetch partitions of a Dataplex entity and parses out a list
+   * with all partitions each element contains gcs path and key values for a given partition This
+   * will return a list of string with the pattern: ["partition_path,key_1,key_2,...,key_n",
+   * "partition_path,key1,key2,...,keyn", ...]
+   *
+   * @param entity name
+   * @return list of all partitions where each element contains gcs path and key values for a given
+   *     partition
+   * @throws IOException when request on Dataplex API fails
+   */
+  public static List<String> getPartitionsListWithLocationAndKeys(String entity)
+      throws IOException {
+    String pageToken = null;
+    JsonObject responseJson = null;
+    List<String> partitionsListWithLocationAndKeys = new ArrayList<String>();
+    List<String> currentPartitionsListWithLocationAndKeys = new ArrayList<String>();
+
+    while (true) {
+      responseJson = getEntityPartitions(entity, pageToken);
+      currentPartitionsListWithLocationAndKeys =
+          parsePartitionToStringWithLocationAndKeys(responseJson);
+      partitionsListWithLocationAndKeys.addAll(currentPartitionsListWithLocationAndKeys);
+
+      if (!responseJson.has(DATAPLEX_API_RESP_NEXT_PAGE_TOKEN_FIELD_NAME)) {
+        break;
+      } else {
+        pageToken = responseJson.get(DATAPLEX_API_RESP_NEXT_PAGE_TOKEN_FIELD_NAME).getAsString();
+      }
+    }
+
     return partitionsListWithLocationAndKeys;
   }
 

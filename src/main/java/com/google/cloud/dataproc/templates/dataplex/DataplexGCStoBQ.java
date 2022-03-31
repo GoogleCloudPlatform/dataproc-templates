@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.cli.*;
+import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
@@ -47,13 +48,19 @@ public class DataplexGCStoBQ implements BaseTemplate {
   public static String CUSTOM_SQL_GCS_PATH_OPTION = "customSqlGcsPath";
   public static String ENTITY_LIST_OPTION = "dataplexEntityList";
   public static String ASSET_LIST_OPTION = "dataplexAsset";
+  public static String PARTITION_FIELD_OPTION = "partitionField";
+  public static String PARTITION_TYPE_OPTION = "partitionType";
+  public static String INCREMENTAL_PARTITION_COPY_NO = "no";
 
   private SparkSession spark;
   private SQLContext sqlContext;
+
   private String entitiesString;
   private String asset;
   private List<String> entityList;
   private String entity;
+  private String partitionField;
+  private String partitionType;
 
   private String projectId;
   private String customSqlGCSPath;
@@ -63,14 +70,30 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private String targetTable;
   private String inputFileFormat;
   private String bqTempBucket;
+  private String sparkSaveMode;
+  private String incrementalParittionCopy;
 
-  public DataplexGCStoBQ(String customSqlGCSPath, String entitiesString, String asset) {
+  public DataplexGCStoBQ(
+      String customSqlGCSPath,
+      String entitiesString,
+      String asset,
+      String partitionField,
+      String partitionType) {
     this.customSqlGCSPath = customSqlGCSPath;
     this.entitiesString = entitiesString;
     this.asset = asset;
+    this.partitionField = partitionField;
+    this.partitionType = partitionType;
+
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
     targetDataset = getProperties().getProperty(DATAPLEX_GCS_BQ_TARGET_DATASET);
     bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
+    sparkSaveMode = getProperties().getProperty(DATAPLEX_GCS_BQ_SAVE_MODE);
+    incrementalParittionCopy =
+        getProperties().getProperty(DATAPLEX_GCS_BQ_INCREMENTAL_PARTITION_COPY);
+    if (incrementalParittionCopy.equals(INCREMENTAL_PARTITION_COPY_NO)) {
+      sparkSaveMode = SaveMode.Overwrite.toString();
+    }
   }
 
   public static DataplexGCStoBQ of(String... args) {
@@ -78,7 +101,10 @@ public class DataplexGCStoBQ implements BaseTemplate {
     String customSqlGCSPath = cmd.getOptionValue(CUSTOM_SQL_GCS_PATH_OPTION);
     String asset = cmd.getOptionValue(ASSET_LIST_OPTION);
     String entitiesString = cmd.getOptionValue(ENTITY_LIST_OPTION);
-    return new DataplexGCStoBQ(customSqlGCSPath, entitiesString, asset);
+    String partitionField = cmd.getOptionValue(PARTITION_FIELD_OPTION);
+    String partitionType = cmd.getOptionValue(PARTITION_TYPE_OPTION);
+    return new DataplexGCStoBQ(
+        customSqlGCSPath, entitiesString, asset, partitionField, partitionType);
   }
 
   /**
@@ -126,6 +152,16 @@ public class DataplexGCStoBQ implements BaseTemplate {
     assetOption.setRequired(false);
     assetOption.setArgs(3);
     options.addOption(assetOption);
+
+    Option partitionField = new Option(PARTITION_FIELD_OPTION, "BigQuery partitionField");
+    partitionField.setRequired(false);
+    partitionField.setArgs(4);
+    options.addOption(partitionField);
+
+    Option partitionType = new Option(PARTITION_TYPE_OPTION, "BigQuery partitionType");
+    partitionType.setRequired(false);
+    partitionType.setArgs(5);
+    options.addOption(partitionType);
 
     CommandLineParser parser = new BasicParser();
     try {
@@ -194,7 +230,8 @@ public class DataplexGCStoBQ implements BaseTemplate {
       List<String> partitionKeysList,
       Dataset<Row> dataplexPartitionsKeysDS,
       Dataset<Row> bqPartitionsKeysDS) {
-    if (bqPartitionsKeysDS == null) {
+    if (bqPartitionsKeysDS == null
+        || incrementalParittionCopy.equals(INCREMENTAL_PARTITION_COPY_NO)) {
       return dataplexPartitionsKeysDS.select("__gcs_location_path__");
     }
 
@@ -226,7 +263,6 @@ public class DataplexGCStoBQ implements BaseTemplate {
     for (Row row : result) {
       String path = row.get(0).toString() + "/*";
       LOGGER.info("Loading data from GCS path: {}", path);
-
       Dataset<Row> newPartitionTempDS =
           sqlContext
               .read()
@@ -282,16 +318,25 @@ public class DataplexGCStoBQ implements BaseTemplate {
   public void writeToBQ(Dataset<Row> newPartitionsDf) {
     if (newPartitionsDf != null) {
       LOGGER.info("Writing to target table: {}", targetTable);
-      newPartitionsDf
-          .write()
-          .format(GCS_BQ_OUTPUT_FORMAT)
-          .option(GCS_BQ_OUTPUT, targetTable)
-          .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
-          .option(
-              DATAPLEX_GCS_BQ_CREATE_DISPOSITION_PROP_NAME,
-              DATAPLEX_GCS_BQ_CREATE_DISPOSITION_CREATE_IF_NEEDED)
-          .mode(SaveMode.Append)
-          .save();
+      DataFrameWriter dfWriter =
+          newPartitionsDf
+              .write()
+              .format(GCS_BQ_OUTPUT_FORMAT)
+              .option(GCS_BQ_OUTPUT, targetTable)
+              .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
+              .option(
+                  DATAPLEX_GCS_BQ_CREATE_DISPOSITION_PROP_NAME,
+                  DATAPLEX_GCS_BQ_CREATE_DISPOSITION_CREATE_IF_NEEDED)
+              .mode(sparkSaveMode);
+
+      if (partitionField != null) {
+        dfWriter.option(DATAPLEX_GCS_BQ_PARTITION_FIELD_PROP_NAME, partitionField);
+      }
+      if (partitionType != null) {
+        dfWriter.option(DATAPLEX_GCS_BQ_PARTITION_TYPE_PROP_NAME, partitionType);
+      }
+
+      dfWriter.save();
     }
   }
 
@@ -301,13 +346,14 @@ public class DataplexGCStoBQ implements BaseTemplate {
       this.sqlContext = new SQLContext(spark);
       checkInput();
 
-      for (int i = 0; i <= entityList.size(); i += 1) {
+      for (int i = 0; i < entityList.size(); i += 1) {
         this.entity = entityList.get(i);
         this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
         this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
         this.targetTableName = entity.split("/")[entity.split("/").length - 1];
         this.targetTable = String.format("%s.%s.%s", projectId, targetDataset, targetTableName);
         LOGGER.info("Processing entity: {}", entity);
+
         List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);
         List<String> partitionsListWithLocationAndKeys =
             DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
