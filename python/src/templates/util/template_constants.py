@@ -1,5 +1,6 @@
 PROJECT_ID_PROP = "project.id"
 
+# GCS to BigQuery
 GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location"
 GCS_OUTPUT_DATASET_NAME = "gcs.bigquery.output.dataset"
 GCS_BQ_INPUT_FORMAT = "gcs.bigquery.input.format"
@@ -14,3 +15,16 @@ GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name"
 GCS_BQ_OUTPUT = "table"
 GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro"
+
+
+# BigQuery to GCS
+BQ_GCS_INPUT_TABLE_NAME = "bigquery.gcs.input.table"
+BQ_GCS_OUTPUT_FORMAT_CSV = "csv"
+BQ_GCS_OUTPUT_FORMAT_AVRO = "avro"
+BQ_GCS_OUTPUT_FORMAT_PARQUET = "parquet"
+BQ_GCS_OUTPUT_FORMAT_JSON = "json"
+BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format"
+BQ_GCS_OUTPUT_MODE_OVERWRITE = "overwrite"
+BQ_GCS_OUTPUT_MODE_APPEND = "append"
+BQ_GCS_OUTPUT_MODE="bigquery.gcs.output.mode"
+BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location"
