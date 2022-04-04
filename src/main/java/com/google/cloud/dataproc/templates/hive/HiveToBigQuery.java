@@ -63,12 +63,11 @@ public class HiveToBigQuery implements BaseTemplate {
     }
 
     LOGGER.info(
-        "Starting Hive to BigQuery spark jo;b with following parameters:"
+        "Starting Hive to BigQuery spark job with following parameters:"
             + "1. {}:{}"
             + "2. {}:{}"
             + "3. {}:{}"
-            + "4. {},{}"
-            + "5. {},{}",
+            + "4. {}:{}",
         HIVE_TO_BQ_BIGQUERY_LOCATION,
         bqLocation,
         HIVE_TO_BQ_TEMP_GCS_BUCKET,
@@ -91,6 +90,11 @@ public class HiveToBigQuery implements BaseTemplate {
     /** Read Input data from Hive table */
     Dataset<Row> inputData = spark.sql(hiveSQL);
 
-    inputData.write().mode(bqAppendMode).format("bigquery").option("table", bqLocation).save();
+    inputData
+        .write()
+        .mode(bqAppendMode.toLowerCase())
+        .format("bigquery")
+        .option("table", bqLocation)
+        .save();
   }
 }

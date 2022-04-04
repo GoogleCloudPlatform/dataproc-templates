@@ -11,9 +11,9 @@ HISTORY_SERVER_CLUSTER=<history-server> \
 bin/start.sh \
 --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
 -- --template HIVETOBIGQUERY \
---templateProperty hivetobq.bigquery.location=<required_bigquery destination>
---templateProperty hivetobq.sql=<hive_sql>
---templateProperty hivetobq.append.mode=<Write_Mode> 
+--templateProperty hivetobq.bigquery.location=<required_bigquery destination> \
+--templateProperty hivetobq.sql=<hive_sql> \
+--templateProperty hivetobq.write.mode=<Write_Mode> \
 --templateProperty hivetobq.temp.gcs.bucket=<gcs_bucket_path>
 ```
 
