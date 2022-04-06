@@ -17,7 +17,7 @@ import logging
 import sys
 
 from dataproc_templates import BaseTemplate, TemplateName
-from dataproc_templates.util import DataprocTemplateArguments, parse_args
+from dataproc_templates.util import get_template_name
 from dataproc_templates.gcs.gcs_to_bigquery import GcsToBigQueryTemplate
 
 
@@ -53,10 +53,7 @@ def get_template_impl(template_name: str) -> Type[BaseTemplate]:
     return TEMPLATE_IMPLS[parsed_template_name]
 
 
-def run_template(
-    template_name: str,
-    properties: Dict[str, str]
-) -> None:
+def run_template(template_name: str) -> None:
     """
     Executes a template given it's template name.
     
@@ -80,7 +77,7 @@ def run_template(
     template_instance: BaseTemplate = template_impl.build()
 
     try:
-        template_instance.run(properties=properties)
+        template_instance.run()
     except Exception:
         LOGGER.exception(
             f'An error occurred while running {template_name} template'
@@ -91,8 +88,6 @@ def run_template(
 if __name__ == '__main__':
     LOGGER.setLevel(logging.INFO)
 
-    args: DataprocTemplateArguments = parse_args()
     run_template(
-        template_name=args['template_name'],
-        properties=args['properties']
+        template_name=get_template_name()
     )

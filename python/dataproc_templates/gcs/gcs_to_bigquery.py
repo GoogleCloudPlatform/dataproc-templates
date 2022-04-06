@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict
+from typing import Dict, Any
+import argparse
+import pprint
 
 from pyspark.sql import SparkSession
 
@@ -23,8 +25,55 @@ __all__ = ['GcsToBigQueryTemplate']
 
 
 class GcsToBigQueryTemplate(BaseTemplate):
+
+    @staticmethod
+    def _parse_args() -> Dict[str, Any]:
+        parser: argparse.ArgumentParser = argparse.ArgumentParser()
+
+        parser.add_argument(
+            f'--{constants.GCS_BQ_INPUT_LOCATION}',
+            dest=constants.GCS_BQ_INPUT_LOCATION,
+            required=True,
+            help='GCS location of the input files'
+        )
+        parser.add_argument(
+            f'--{constants.GCS_BQ_OUTPUT_DATASET}',
+            dest=constants.GCS_BQ_OUTPUT_DATASET,
+            required=True,
+            help='BigQuery dataset for the output table'
+        )
+        parser.add_argument(
+            f'--{constants.GCS_BQ_OUTPUT_TABLE}',
+            dest=constants.GCS_BQ_OUTPUT_TABLE,
+            required=True,
+            help='BigQuery output table name'
+        )
+        parser.add_argument(
+            f'--{constants.GCS_BQ_INPUT_FORMAT}',
+            dest=constants.GCS_BQ_INPUT_FORMAT,
+            required=True,
+            help='Input file format (one of: avro,parquet,csv)',
+            choices=[
+                constants.GCS_BQ_AVRO_FORMAT,
+                constants.GCS_BQ_PRQT_FORMAT,
+                constants.GCS_BQ_CSV_FORMAT
+            ]
+        )
+        parser.add_argument(
+            f'--{constants.GCS_BQ_LD_TEMP_BUCKET_NAME}',
+            dest=constants.GCS_BQ_LD_TEMP_BUCKET_NAME,
+            required=True,
+            help='Spark BigQuery connector temporary bucket'
+        )
+
+        known_args: argparse.Namespace
+        known_args, _ = parser.parse_known_args()
+
+        return vars(known_args)
     
-    def run(self, properties: Dict[str, str]) -> None:
+    def run(self) -> None:
+        arguments: Dict[str, Any] = self._parse_args()
+
         spark = SparkSession.builder\
             .appName("GCS to Bigquery load") \
             .getOrCreate()
@@ -34,11 +83,11 @@ class GcsToBigQueryTemplate(BaseTemplate):
         logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Arguments
-        input_file_location = properties[constants.GCS_BQ_INPUT_LOCATION]
-        big_query_dataset = properties[constants.GCS_BQ_OUTPUT_DATASET]
-        big_query_table = properties[constants.GCS_BQ_OUTPUT_TABLE]
-        input_file_format = properties[constants.GCS_BQ_INPUT_FORMAT]
-        bq_temp_bucket = properties[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
+        input_file_location = arguments[constants.GCS_BQ_INPUT_LOCATION]
+        big_query_dataset = arguments[constants.GCS_BQ_OUTPUT_DATASET]
+        big_query_table = arguments[constants.GCS_BQ_OUTPUT_TABLE]
+        input_file_format = arguments[constants.GCS_BQ_INPUT_FORMAT]
+        bq_temp_bucket = arguments[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
 
         # Read
         if (input_file_format == constants.GCS_BQ_PRQT_FORMAT):
@@ -54,20 +103,10 @@ class GcsToBigQueryTemplate(BaseTemplate):
                                 .option(constants.GCS_BQ_CSV_HEADER, True) \
                                 .option(constants.GCS_BQ_CSV_INFER_SCHEMA, True) \
                                 .load(input_file_location)
-        else:
-            raise Exception("Currently avro, parquet and csv are the only supported formats")
 
-        logger.info("Starting GCS to Bigquery spark job with following parameters\n 1. {}={}\n 2. {}={}\n 3. {}={}\n 4. {}={}\n 5. {}={}\n".format(
-                    constants.GCS_BQ_INPUT_LOCATION,
-                    input_file_location,
-                    constants.GCS_BQ_OUTPUT_DATASET,
-                    big_query_dataset,
-                    constants.GCS_BQ_OUTPUT_TABLE,
-                    big_query_table,
-                    constants.GCS_BQ_INPUT_FORMAT,
-                    input_file_format,
-                    constants.GCS_BQ_LD_TEMP_BUCKET_NAME,
-                    bq_temp_bucket)
+        logger.info(
+            "Starting GCS to Bigquery spark job with parameters:\n"
+            f"{pprint.pformat(arguments)}"
         )
 
         # Write

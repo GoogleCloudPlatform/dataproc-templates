@@ -35,13 +35,9 @@ class BaseTemplate(AbstractClass):
         return cls()
     
     @abstractmethod
-    def run(self, properties: Dict[str, str]) -> None:
+    def run(self) -> None:
         """
         Runs this template
-
-        Args:
-            properties (Dict[str, str]): Properties set for this
-                template run
         """
 
         pass
