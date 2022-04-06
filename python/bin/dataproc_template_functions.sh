@@ -39,18 +39,18 @@ Help() {
     export GCP_PROJECT=projectId
     export REGION=us-west1
     export GCS_STAGING_LOCATION=gs://bucket/path
-
-    # Optional environment variables for SERVERLESS mode
     export SUBNET=projects/{projectId}/regions/{regionId}/subnetworks/{subnetId}
+    
+    # Optional environment variables
     export HISTORY_SERVER_CLUSTER=projects/{projectId}/regions/{regionId}/clusters/{clusterId}
     export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{serviceId}
 
     Usage syntax:
 
-    start.sh [template_folder/template_name] -- [--key=value]
+    start.sh -- --template=TEMPLATENAME --template_property="my.property=value"
 
     eg:
-    start.sh gcs/gcs_to_bigquery -- --gcs.bigquery.input.location=gs://bucket/path/ (etc...)
+    start.sh -- --template=GCSTOBIGQUERY --template_property="gcs.bigquery.input.location=gs://bucket/path/" (etc...)
 EndOfMessage
 )
   echo "${help_text}"
