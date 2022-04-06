@@ -12,28 +12,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Sequence
 import argparse
+import sys
+
+from dataproc_templates import TemplateName
 
 
-def get_template_name() -> str:
+def get_template_name(args: Sequence[str] = sys.argv) -> str:
     """
-    Parses the template name option from the command line.
+    Parses the template name option from the program arguments.
+
+    This will print the command help and exit if the --template
+    argument is missing.
+
+    Args:
+        args (Sequence[str]): The program arguments. Defaults
+            to sys.argv.
 
     Returns:
         str: The value of the --template argument
     """
 
-    parser: argparse.ArgumentParser = argparse.ArgumentParser()
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(
+        add_help=False
+    )
 
     parser.add_argument(
         '--template',
         dest='template_name',
         type=str,
-        help='The name of the template to run',
-        required=True
+        required=False,
+        default=None,
+        choices=TemplateName.choices(),
+        help='The name of the template to run'
     )
 
     known_args: argparse.Namespace
     known_args, _ = parser.parse_known_args()
+
+    if known_args.template_name is None:
+        parser.print_help()
+        parser.exit()
 
     return known_args.template_name

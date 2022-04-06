@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 
+from typing import List
 from enum import Enum
 
 __all__ = ['TemplateName']
@@ -47,3 +48,16 @@ class TemplateName(Enum):
             return cls[template_name.upper()]
         except KeyError as err:
             raise ValueError(f'Invalid template name {template_name}')
+    
+    @classmethod
+    def choices(cls) -> List[str]:
+        """
+        Returns all the available TemplateName options as strings
+
+        Returns:
+            List[str]: All available TemplateName options
+        """
+
+        return [
+            template_name.value for template_name in cls
+        ]
