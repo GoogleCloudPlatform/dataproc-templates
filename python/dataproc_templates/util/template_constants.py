@@ -33,6 +33,7 @@ GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro"
 
 # BigQuery to GCS
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
+BQ_GCS_CSV_HEADER = "header"
 BQ_GCS_OUTPUT_FORMAT_CSV = "csv"
 BQ_GCS_OUTPUT_FORMAT_AVRO = "avro"
 BQ_GCS_OUTPUT_FORMAT_PARQUET = "parquet"
@@ -42,3 +43,4 @@ BQ_GCS_OUTPUT_MODE_OVERWRITE = "overwrite"
 BQ_GCS_OUTPUT_MODE_APPEND = "append"
 BQ_GCS_OUTPUT_MODE="bigquery.gcs.output.mode"
 BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location"
+BQ_GCS_AVRO_EXTD_FORMAT = "com.databricks.spark.avro"

@@ -24,6 +24,7 @@ class TemplateName(Enum):
     """Enumeration of all template types"""
 
     GCSTOBIGQUERY = 'GCSTOBIGQUERY'
+    BIGQUERYTOGCS = "BIGQUERYTOGCS"
 
     @classmethod
     def from_string(cls, template_name: str) -> TemplateName:
