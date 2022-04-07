@@ -44,13 +44,39 @@ import org.slf4j.LoggerFactory;
 
 public class DataplexGCStoBQ implements BaseTemplate {
 
+  /**
+   * This template will incrementally move data from a Dataplex GCS tables to BigQuery. It will
+   * identify new partitions in Dataplex GCS and load them to BigQuery.
+   */
   public static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigquery.class);
+
   public static String CUSTOM_SQL_GCS_PATH_OPTION = "customSqlGcsPath";
   public static String ENTITY_LIST_OPTION = "dataplexEntityList";
   public static String ASSET_LIST_OPTION = "dataplexAsset";
   public static String PARTITION_FIELD_OPTION = "partitionField";
   public static String PARTITION_TYPE_OPTION = "partitionType";
   public static String INCREMENTAL_PARTITION_COPY_NO = "no";
+  public static String BQ_TABLE_NAME_FORMAT = "%s.%s.%s";
+  public static String SPARK_SQL_SELECT_STAR = "*";
+  public static String SPARK_SQL_SPLIT_VALUE_AND_GET_LOCATION =
+      "split(value, ',')[0] as __gcs_location_path__";
+  public static String SPARK_SQL_SPLIT_VALUE_AND_GET_KEY = "split(value, ',')[%d] as %s";
+  public static String SPARK_SQL_VALUE_FIELD = "value";
+  public static String SPARK_SQL_SELECT_DISTINCT_FROM = "select distinct %s FROM `%s`";
+  public static String COMMA_DELIMITER = ",";
+  public static String TABLE_NOT_FOUND_ERROR_CAUSE = "Not found: Table";
+  public static String SPARK_SQL_GCS_LOCATION_PATH_COL_NAME = "__gcs_location_path__";
+  public static String SPARK_SQL_DATAPLEX_PARTITION_KEYS_TEMP_VIEW_NAME =
+      "dataplexPartitionsKeysDS";
+  public static String SPARK_SQL_BQ_PARTITION_KEYS_TEMP_VIEW = "bqPartitionsKeysDS";
+  public static String SPARK_SQL_COMPARE_COLS = "t1.%s=t2.%s";
+  public static String SPARK_SQL_AND = " AND ";
+  public static String SPARK_SQL_GET_NEW_PATHS =
+      "SELECT %s FROM %s t1 LEFT JOIN %s t2 ON %s WHERE t2.id is null";
+  public static String SPARK_SQL_OUTPUT_TABLE_TEMP_VIEW_NAME = "__table__";
+  public static String GCS_PATH_PREFIX = "gs://";
+  public static String EMPTY_STRING = "";
+  public static String FORWARD_SLASH = "/";
 
   private SparkSession spark;
   private SQLContext sqlContext;
@@ -185,13 +211,14 @@ public class DataplexGCStoBQ implements BaseTemplate {
     Dataset allPartitionsDf =
         sqlContext.createDataset(partitionsListWithLocationAndKeys, Encoders.STRING()).toDF();
     allPartitionsDf =
-        allPartitionsDf.selectExpr("*", "split(value, ',')[0] as __gcs_location_path__");
+        allPartitionsDf.selectExpr(SPARK_SQL_SELECT_STAR, SPARK_SQL_SPLIT_VALUE_AND_GET_LOCATION);
     for (int i = 0; i < partitionKeysList.size(); i += 1) {
       allPartitionsDf =
           allPartitionsDf.selectExpr(
-              "*", String.format("split(value, ',')[%d] as %s", i + 1, partitionKeysList.get(i)));
+              SPARK_SQL_SELECT_STAR,
+              String.format(SPARK_SQL_SPLIT_VALUE_AND_GET_KEY, i + 1, partitionKeysList.get(i)));
     }
-    allPartitionsDf = allPartitionsDf.drop("value");
+    allPartitionsDf = allPartitionsDf.drop(SPARK_SQL_VALUE_FIELD);
     return allPartitionsDf;
   }
 
@@ -203,15 +230,17 @@ public class DataplexGCStoBQ implements BaseTemplate {
    */
   private Dataset<Row> getBQTargetAvailablePartitionsDf(List<String> partitionKeysList) {
     LOGGER.info("Reading target table: {}", targetTable);
-    spark.conf().set("viewsEnabled", "true");
-    spark.conf().set("materializationDataset", targetDataset);
+    spark.conf().set(SPARK_CONF_NAME_VIEWS_ENABLED, "true");
+    spark.conf().set(SPARK_CONF_NAME_MATERIALIZATION_DATASET, targetDataset);
     try {
       String sql =
           String.format(
-              "select distinct %s FROM `%s`", String.join(",", partitionKeysList), targetTable);
-      return spark.read().format("bigquery").load(sql);
+              SPARK_SQL_SELECT_DISTINCT_FROM,
+              String.join(COMMA_DELIMITER, partitionKeysList),
+              targetTable);
+      return spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(sql);
     } catch (BigQueryConnectorException e) {
-      if (e.getCause().toString().contains("Not found: Table")) {
+      if (e.getCause().toString().contains(TABLE_NOT_FOUND_ERROR_CAUSE)) {
         return null;
       } else {
         throw e;
@@ -232,22 +261,24 @@ public class DataplexGCStoBQ implements BaseTemplate {
       Dataset<Row> bqPartitionsKeysDS) {
     if (bqPartitionsKeysDS == null
         || incrementalParittionCopy.equals(INCREMENTAL_PARTITION_COPY_NO)) {
-      return dataplexPartitionsKeysDS.select("__gcs_location_path__");
+      return dataplexPartitionsKeysDS.select(SPARK_SQL_GCS_LOCATION_PATH_COL_NAME);
     }
 
-    dataplexPartitionsKeysDS.createOrReplaceTempView("dataplexPartitionsKeysDS");
-    bqPartitionsKeysDS.createOrReplaceTempView("bqPartitionsKeysDS");
+    dataplexPartitionsKeysDS.createOrReplaceTempView(
+        SPARK_SQL_DATAPLEX_PARTITION_KEYS_TEMP_VIEW_NAME);
+    bqPartitionsKeysDS.createOrReplaceTempView(SPARK_SQL_BQ_PARTITION_KEYS_TEMP_VIEW);
     String joinClause =
         partitionKeysList.stream()
-            .map(str -> String.format("t1.%s=t2.%s", str, str))
-            .collect(Collectors.joining(" AND "));
+            .map(str -> String.format(SPARK_SQL_COMPARE_COLS, str, str))
+            .collect(Collectors.joining(SPARK_SQL_AND));
     Dataset<Row> newPartitionsDS =
         spark.sql(
-            "SELECT __gcs_location_path__ "
-                + "FROM dataplexPartitionsKeysDS t1 "
-                + "LEFT JOIN bqPartitionsKeysDS t2 ON "
-                + joinClause
-                + " WHERE t2.id is null");
+            String.format(
+                SPARK_SQL_GET_NEW_PATHS,
+                SPARK_SQL_GCS_LOCATION_PATH_COL_NAME,
+                SPARK_SQL_DATAPLEX_PARTITION_KEYS_TEMP_VIEW_NAME,
+                SPARK_SQL_BQ_PARTITION_KEYS_TEMP_VIEW,
+                joinClause));
     return newPartitionsDS;
   }
 
@@ -258,7 +289,8 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * @return a dataset with the GCS paths of new partitions
    */
   private Dataset<Row> getNewPartitionsDS(Dataset<Row> newPartitionsPathsDf) {
-    Row[] result = (Row[]) newPartitionsPathsDf.select("__gcs_location_path__").collect();
+    Row[] result =
+        (Row[]) newPartitionsPathsDf.select(SPARK_SQL_GCS_LOCATION_PATH_COL_NAME).collect();
     Dataset<Row> newPartitionsDS = null;
     for (Row row : result) {
       String path = row.get(0).toString() + "/*";
@@ -290,9 +322,10 @@ public class DataplexGCStoBQ implements BaseTemplate {
   public Dataset<Row> applyCustomSql(Dataset<Row> newPartitionsDf) throws IOException {
     if (customSqlGCSPath != null) {
       LOGGER.info("Reading custom SQL from GCS path: {}", customSqlGCSPath);
-      String[] pathAsList = customSqlGCSPath.replace("gs://", "").split("/");
+      String[] pathAsList =
+          customSqlGCSPath.replace(GCS_PATH_PREFIX, EMPTY_STRING).split(FORWARD_SLASH);
       String BUCKET_NAME = pathAsList[0];
-      String OBJECT_NAME = Stream.of(pathAsList).skip(1).collect(Collectors.joining("/"));
+      String OBJECT_NAME = Stream.of(pathAsList).skip(1).collect(Collectors.joining(FORWARD_SLASH));
 
       StorageOptions options =
           StorageOptions.newBuilder()
@@ -303,7 +336,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
       Storage storage = options.getService();
       Blob blob = storage.get(BUCKET_NAME, OBJECT_NAME);
       String custom_sql = new String(blob.getContent());
-      newPartitionsDf.createOrReplaceTempView("__table__");
+      newPartitionsDf.createOrReplaceTempView(SPARK_SQL_OUTPUT_TABLE_TEMP_VIEW_NAME);
       return spark.sql(custom_sql);
     } else {
       return newPartitionsDf;
@@ -324,6 +357,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
               .format(GCS_BQ_OUTPUT_FORMAT)
               .option(GCS_BQ_OUTPUT, targetTable)
               .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
+              .option(INTERMEDIATE_FORMAT_OPTION_NAME, INTERMEDIATE_FORMAT_ORC)
               .option(
                   DATAPLEX_GCS_BQ_CREATE_DISPOSITION_PROP_NAME,
                   DATAPLEX_GCS_BQ_CREATE_DISPOSITION_CREATE_IF_NEEDED)
@@ -350,8 +384,9 @@ public class DataplexGCStoBQ implements BaseTemplate {
         this.entity = entityList.get(i);
         this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
         this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
-        this.targetTableName = entity.split("/")[entity.split("/").length - 1];
-        this.targetTable = String.format("%s.%s.%s", projectId, targetDataset, targetTableName);
+        this.targetTableName = entity.split(FORWARD_SLASH)[entity.split(FORWARD_SLASH).length - 1];
+        this.targetTable =
+            String.format(BQ_TABLE_NAME_FORMAT, projectId, targetDataset, targetTableName);
         LOGGER.info("Processing entity: {}", entity);
 
         List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);

@@ -214,4 +214,14 @@ public interface TemplateConstants {
   String DATAPLEX_GCS_BQ_PARTITION_FIELD_PROP_NAME = "partitionField";
 
   String DATAPLEX_GCS_BQ_PARTITION_TYPE_PROP_NAME = "partitionType";
+
+  String SPARK_CONF_NAME_VIEWS_ENABLED = "viewsEnabled";
+
+  String SPARK_CONF_NAME_MATERIALIZATION_DATASET = "materializationDataset";
+
+  String SPARK_READ_FORMAT_BIGQUERY = "bigquery";
+
+  String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
+
+  String INTERMEDIATE_FORMAT_ORC = "orc";
 }

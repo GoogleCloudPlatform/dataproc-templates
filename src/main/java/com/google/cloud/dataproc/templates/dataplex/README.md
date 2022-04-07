@@ -1,7 +1,7 @@
 ## Dataplex GCS to BigQuery
 
 This template will incrementally move data from a Dataplex GCS tables to BigQuery. \ 
-It will identify new partitions in Dataplex GCS and copy them to BigQuery.
+It will identify new partitions in Dataplex GCS and load them to BigQuery.
 
 ### General Execution:
 
