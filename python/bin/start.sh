@@ -31,7 +31,7 @@ python ${PROJECT_ROOT_DIR}/setup.py bdist_egg
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
-OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
+OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
 OPT_PY_FILES="--py-files=${PROJECT_ROOT_DIR}/${PACKAGE_EGG_FILE}"
