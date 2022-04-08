@@ -4,26 +4,40 @@
 
 Submit using bin/start.sh
 ```
-export GCP_PROJECT=<project>
+# Environment variables
+export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gs://path>
 export SUBNET=<subnet>
 
-./bin/start.sh [template_folder/template_name] -- [--key=value]
+# Optional environment variables
+export JARS="gs://additional/dependency.jar"
+export HISTORY_SERVER_CLUSTER=projects/{projectId}/regions/{regionId}/clusters/{clusterId}
+export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{serviceId}
 
-### example: ./bin/start.sh gcs/gcs_to_bigquery -- --<optional.application.argument>=<arg_value>
+./bin/start.sh -- --template=TEMPLATENAME --my.property="value" --my.other.property="value" (etc...)
 ```
 
 Submit using gcloud CLI
 ```
+python setup.py bdist_egg
+export PACKAGE_EGG_FILE=dist/dataproc_templates-0.0.1-py3.8.egg
+
 gcloud dataproc batches submit pyspark \
       --region=<region> \
-      --project=<project> \
-      --jars="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar" \
+      --project=<project_id> \
+      --jars="<required_jar_dependencies>" \
       --deps-bucket=<gs://path> \
       --subnet=<subnet> \
-      --py-files="src/templates/util/template_constants.py" \
-      --files="src/templates/resources/default_args.ini" \
-      src/templates/<template_folder>/<template_name>.py \
-      -- --<optional.application.argument>=<arg_value>
+      --py-files=${PACKAGE_EGG_FILE} \
+      main.py \
+      -- --<my.property>=<value> \
+         --<my.other.property>=<value>
 ```
+
+See each template's README to know the specific required arguments
+
+- [GCS](dataproc_templates/gcs/README.md)
+  - GCSTOBIGQUERY
+- [BIGQUERY](dataproc_templates/bigquery/README.md)
+  - BIGQUERYTOGCS

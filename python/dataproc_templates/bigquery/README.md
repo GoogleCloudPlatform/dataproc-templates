@@ -3,7 +3,7 @@
 General Execution:
 
 ```
-export GCP_PROJECT=<gcp-project-id> \
+export GCP_PROJECT=<project_id> \
 export SUBNET=<region> \
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar" \
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
