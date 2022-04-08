@@ -35,7 +35,7 @@ class BaseTemplate(AbstractClass):
         return cls()
     
     @abstractmethod
-    def run(self) -> None:
+    def run(self, spark, arguments) -> None:
         """
         Runs this template
         """

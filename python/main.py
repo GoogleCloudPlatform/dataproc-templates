@@ -16,6 +16,8 @@ from typing import Dict, Type
 import logging
 import sys
 
+from pyspark.sql import SparkSession
+
 from dataproc_templates import BaseTemplate, TemplateName
 from dataproc_templates.util import get_template_name
 from dataproc_templates.gcs.gcs_to_bigquery import GcsToBigQueryTemplate
@@ -32,6 +34,14 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.BIGQUERYTOGCS: BigQueryToGCSTemplate
 }
 
+def create_spark_session(template_name: str) -> SparkSession:
+
+    spark = SparkSession.builder \
+        .appName(template_name) \
+        .getOrCreate()
+    spark.sparkContext.setLogLevel("INFO")
+
+    return spark
 
 def get_template_impl(template_name: str) -> Type[BaseTemplate]:
     """
@@ -79,7 +89,8 @@ def run_template(template_name: str) -> None:
     template_instance: BaseTemplate = template_impl.build()
 
     try:
-        template_instance.run()
+        args = template_instance.parse_args(sys.argv[1:])
+        template_instance.run(create_spark_session(template_name), args)
     except Exception:
         LOGGER.exception(
             f'An error occurred while running {template_name} template'

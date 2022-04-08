@@ -16,8 +16,6 @@ from typing import Dict, Any
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession
-
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
@@ -27,7 +25,7 @@ __all__ = ['BigQueryToGCSTemplate']
 class BigQueryToGCSTemplate(BaseTemplate):
 
     @staticmethod
-    def _parse_args() -> Dict[str, Any]:
+    def _parse_args(args) -> Dict[str, Any]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
@@ -66,17 +64,11 @@ class BigQueryToGCSTemplate(BaseTemplate):
         )
 
         known_args: argparse.Namespace
-        known_args, _ = parser.parse_known_args()
+        known_args, _ = parser.parse_known_args(args)
 
         return vars(known_args)
     
-    def run(self) -> None:
-        arguments: Dict[str, Any] = self._parse_args()
-
-        spark = SparkSession.builder\
-            .appName("BigQuery to GCS Extract") \
-            .getOrCreate()
-        spark.sparkContext.setLogLevel("INFO")
+    def run(self, spark, arguments) -> None:
 
         log4jLogger = spark.sparkContext._jvm.org.apache.log4j
         logger = log4jLogger.LogManager.getLogger(__name__)
@@ -88,7 +80,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
         outputLocation = arguments[constants.BQ_GCS_OUTPUT_LOCATION]
 
         # Read
-        inputData = spark.read.format("bigquery").option("table",inputTable).load()
+        inputData = spark.read.format("bigquery").option("table", inputTable).load()
 
         logger.info(
             "Starting Bigquery to GCS spark job with parameters:\n"
