@@ -15,7 +15,10 @@ export JARS="gs://additional/dependency.jar"
 export HISTORY_SERVER_CLUSTER=projects/{projectId}/regions/{regionId}/clusters/{clusterId}
 export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{serviceId}
 
-./bin/start.sh -- --template=TEMPLATENAME --my.property="value" --my.other.property="value" (etc...)
+./bin/start.sh -- --template=TEMPLATENAME \
+                  --my.property="value" \
+                  --my.other.property="value"
+                  (etc...)
 ```
 
 Submit using gcloud CLI
@@ -31,7 +34,8 @@ gcloud dataproc batches submit pyspark \
       --subnet=<subnet> \
       --py-files=${PACKAGE_EGG_FILE} \
       main.py \
-      -- --<my.property>=<value> \
+      -- --template=TEMPLATENAME \
+         --<my.property>=<value> \
          --<my.other.property>=<value>
 ```
 
