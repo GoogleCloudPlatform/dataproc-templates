@@ -47,10 +47,10 @@ Help() {
 
     Usage syntax:
 
-    start.sh -- --template=TEMPLATENAME --template_property="my.property=value"
+    start.sh -- --template=TEMPLATENAME --my.property="value" --my.other.property="value" (etc...)
 
     eg:
-    start.sh -- --template=GCSTOBIGQUERY --template_property="gcs.bigquery.input.location=gs://bucket/path/" (etc...)
+    start.sh -- --template=GCSTOBIGQUERY --gcs.bigquery.input.location="gs://bucket/path/" (etc...)
 EndOfMessage
 )
   echo "${help_text}"
