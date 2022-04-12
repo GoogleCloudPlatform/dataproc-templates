@@ -17,19 +17,19 @@
 import mock
 import pyspark
 
-from dataproc_templates.gcs.gcs_to_bigquery import GcsToBigQueryTemplate
+from dataproc_templates.gcs.gcs_to_bigquery import GCSToBigQueryTemplate
 import dataproc_templates.util.template_constants as constants
 
 
-class TestGcsToBigQueryTemplate:
+class TestGCSToBigQueryTemplate:
     """
-    Test suite for GcsToBigQueryTempate
+    Test suite for GCSToBigQueryTemplate
     """
 
     def test_parse_args(self):
-        """Tests GcsToBigQueryTemplate.parse_args()"""
+        """Tests GCSToBigQueryTemplate.parse_args()"""
 
-        gcs_to_bigquery_template = GcsToBigQueryTemplate()
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
         parsed_args = gcs_to_bigquery_template.parse_args(
             ["--gcs.bigquery.input.format=parquet",
              "--gcs.bigquery.input.location=gs://test",
@@ -45,9 +45,9 @@ class TestGcsToBigQueryTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_parquet(self, mock_spark_session):
-        """Tests GcsToBigqueryTemplate runs with parquet format"""
+        """Tests GCSToBigqueryTemplate runs with parquet format"""
 
-        gcs_to_bigquery_template = GcsToBigQueryTemplate()
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
         mock_parsed_args = gcs_to_bigquery_template.parse_args(
             ["--gcs.bigquery.input.format=parquet",
              "--gcs.bigquery.input.location=gs://test",
@@ -71,9 +71,9 @@ class TestGcsToBigQueryTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_avro(self, mock_spark_session):
-        """Tests GcsToBigqueryTemplate runs with parquet avro"""
+        """Tests GCSToBigqueryTemplate runs with parquet avro"""
 
-        gcs_to_bigquery_template = GcsToBigQueryTemplate()
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
         mock_parsed_args = gcs_to_bigquery_template.parse_args(
             ["--gcs.bigquery.input.format=avro",
              "--gcs.bigquery.input.location=gs://test",
@@ -99,9 +99,9 @@ class TestGcsToBigQueryTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_csv(self, mock_spark_session):
-        """Tests GcsToBigqueryTemplate runs with csv format"""
+        """Tests GCSToBigqueryTemplate runs with csv format"""
 
-        gcs_to_bigquery_template = GcsToBigQueryTemplate()
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
         mock_parsed_args = gcs_to_bigquery_template.parse_args(
             ["--gcs.bigquery.input.format=csv",
              "--gcs.bigquery.input.location=gs://test",

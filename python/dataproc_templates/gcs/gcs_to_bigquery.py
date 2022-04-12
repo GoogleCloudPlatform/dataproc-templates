@@ -21,10 +21,10 @@ from pyspark.sql import SparkSession
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
-__all__ = ['GcsToBigQueryTemplate']
+__all__ = ['GCSToBigQueryTemplate']
 
 
-class GcsToBigQueryTemplate(BaseTemplate):
+class GCSToBigQueryTemplate(BaseTemplate):
     """
     Dataproc template implementing loads from GCS into BigQuery
     """

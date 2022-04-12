@@ -20,7 +20,7 @@ from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate, TemplateName
 from dataproc_templates.util import get_template_name
-from dataproc_templates.gcs.gcs_to_bigquery import GcsToBigQueryTemplate
+from dataproc_templates.gcs.gcs_to_bigquery import GCSToBigQueryTemplate
 from dataproc_templates.bigquery.bigquery_to_gcs import BigQueryToGCSTemplate
 
 
@@ -30,7 +30,7 @@ LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
 # Maps each TemplateName to its corresponding implementation
 # of BaseTemplate
 TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
-    TemplateName.GCSTOBIGQUERY: GcsToBigQueryTemplate,
+    TemplateName.GCSTOBIGQUERY: GCSToBigQueryTemplate,
     TemplateName.BIGQUERYTOGCS: BigQueryToGCSTemplate
 }
 
