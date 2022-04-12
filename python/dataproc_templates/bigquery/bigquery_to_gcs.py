@@ -55,7 +55,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
             help='Output write mode (one of: append,overwrite)',
             choices=[
                 constants.BQ_GCS_OUTPUT_MODE_OVERWRITE,
-                constants.BQ_GCS_OUTPUT_MODE_APPEND 
+                constants.BQ_GCS_OUTPUT_MODE_APPEND
             ]
         )
         parser.add_argument(
@@ -69,7 +69,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
         known_args, _ = parser.parse_known_args(args)
 
         return vars(known_args)
-    
+
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
         log4jLogger = spark.sparkContext._jvm.org.apache.log4j
@@ -87,36 +87,31 @@ class BigQueryToGCSTemplate(BaseTemplate):
         )
 
         # Read
-        inputData = spark.read.format("bigquery").option("table", inputTable).load()
+        inputData = spark.read \
+            .format("bigquery") \
+            .option("table", inputTable) \
+            .load()
 
         # Write
-        if (outputFormat == constants.BQ_GCS_OUTPUT_FORMAT_PARQUET):
-            if (outputMode == constants.BQ_GCS_OUTPUT_MODE_OVERWRITE):
-                inputData.write.mode(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE).parquet(outputLocation)
-            elif (outputMode == constants.BQ_GCS_OUTPUT_MODE_APPEND):
-                inputData.write.mode(constants.BQ_GCS_OUTPUT_MODE_APPEND).parquet(outputLocation)
-            else:
-                raise Exception("Only Append and Overwrite modes are supported")
-        elif (outputFormat == constants.BQ_GCS_OUTPUT_FORMAT_AVRO):
-            if (outputMode == constants.BQ_GCS_OUTPUT_MODE_OVERWRITE):
-                inputData.write.mode(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE).format(constants.BQ_GCS_AVRO_EXTD_FORMAT).save(outputLocation)
-            elif (outputMode == constants.BQ_GCS_OUTPUT_MODE_APPEND):
-                inputData.write.mode(constants.BQ_GCS_OUTPUT_MODE_APPEND).format(constants.BQ_GCS_AVRO_EXTD_FORMAT).save(outputLocation)
-            else:
-                raise Exception("Only Append and Overwrite modes are supported")
-        elif (outputFormat == constants.BQ_GCS_OUTPUT_FORMAT_CSV):
-            if (outputMode == constants.BQ_GCS_OUTPUT_MODE_OVERWRITE):
-                inputData.write.mode(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE).option(constants.BQ_GCS_CSV_HEADER,True).csv(outputLocation)
-            elif (outputMode == constants.BQ_GCS_OUTPUT_MODE_APPEND):
-                inputData.write.mode(constants.BQ_GCS_OUTPUT_MODE_APPEND).option(constants.BQ_GCS_CSV_HEADER,True).csv(outputLocation)
-            else:
-                raise Exception("Only Append and Overwrite modes are supported")
-        elif (outputFormat == constants.BQ_GCS_OUTPUT_FORMAT_JSON):
-            if (outputMode == constants.BQ_GCS_OUTPUT_MODE_OVERWRITE):
-                inputData.write.mode(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE).json(outputLocation)
-            elif (outputMode == constants.BQ_GCS_OUTPUT_MODE_APPEND):
-                inputData.write.mode(constants.BQ_GCS_OUTPUT_MODE_APPEND).json(outputLocation)
-            else:
-                raise Exception("Only Append and Overwrite modes are supported")
+        if outputFormat == constants.BQ_GCS_OUTPUT_FORMAT_PARQUET:
+            inputData.write \
+                .mode(outputMode) \
+                .parquet(outputLocation)
+        elif outputFormat == constants.BQ_GCS_OUTPUT_FORMAT_AVRO:
+            inputData.write \
+                .mode(outputMode) \
+                .format(constants.BQ_GCS_OUTPUT_FORMAT_AVRO) \
+                .save(outputLocation)
+        elif outputFormat == constants.BQ_GCS_OUTPUT_FORMAT_CSV:
+            inputData.write \
+                .mode(outputMode) \
+                .option(constants.BQ_GCS_CSV_HEADER, True) \
+                .csv(outputLocation)
+        elif outputFormat == constants.BQ_GCS_OUTPUT_FORMAT_JSON:
+            inputData.write \
+                .mode(outputMode) \
+                .json(outputLocation)
         else:
-            raise Exception("Currently avro, parquet, csv and json are the only supported formats")
+            raise Exception(
+                "Currently avro, parquet, csv and json are the only supported formats"
+            )
