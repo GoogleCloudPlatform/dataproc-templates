@@ -13,9 +13,11 @@
 # limitations under the License.
 
 from __future__ import annotations
-from typing import Dict
 
+from typing import Dict, Sequence, Optional, Any
 from abc import ABC as AbstractClass, abstractmethod
+
+from pyspark.sql import SparkSession
 
 __all__ = ['BaseTemplate']
 
@@ -34,8 +36,23 @@ class BaseTemplate(AbstractClass):
 
         return cls()
     
+    @staticmethod
     @abstractmethod
-    def run(self, spark, arguments) -> None:
+    def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
+        """
+        Parses this template's arguments, returning them as a dictionary.
+
+        Implementations of this method should ignore unknown arguments.
+
+        Args:
+            args (Optional[Sequence[str]]): The template arguments.
+                By default, command line arguments are used.
+        """
+        
+        pass
+    
+    @abstractmethod
+    def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
         """
         Runs this template
         """

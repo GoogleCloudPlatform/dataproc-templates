@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict, Any
+from typing import Dict, Sequence, Optional, Any
 import argparse
 import pprint
+
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -25,7 +27,7 @@ __all__ = ['GcsToBigQueryTemplate']
 class GcsToBigQueryTemplate(BaseTemplate):
 
     @staticmethod
-    def parse_args(args) -> Dict[str, Any]:
+    def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
@@ -69,17 +71,22 @@ class GcsToBigQueryTemplate(BaseTemplate):
 
         return vars(known_args)
     
-    def run(self, spark, arguments) -> None:
+    def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
         log4jLogger = spark.sparkContext._jvm.org.apache.log4j
         logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Arguments
-        input_file_location = arguments[constants.GCS_BQ_INPUT_LOCATION]
-        big_query_dataset = arguments[constants.GCS_BQ_OUTPUT_DATASET]
-        big_query_table = arguments[constants.GCS_BQ_OUTPUT_TABLE]
-        input_file_format = arguments[constants.GCS_BQ_INPUT_FORMAT]
-        bq_temp_bucket = arguments[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
+        input_file_location = args[constants.GCS_BQ_INPUT_LOCATION]
+        big_query_dataset = args[constants.GCS_BQ_OUTPUT_DATASET]
+        big_query_table = args[constants.GCS_BQ_OUTPUT_TABLE]
+        input_file_format = args[constants.GCS_BQ_INPUT_FORMAT]
+        bq_temp_bucket = args[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
+
+        logger.info(
+            "Starting GCS to Bigquery spark job with parameters:\n"
+            f"{pprint.pformat(args)}"
+        )
 
         # Read
         if (input_file_format == constants.GCS_BQ_PRQT_FORMAT):
@@ -95,11 +102,6 @@ class GcsToBigQueryTemplate(BaseTemplate):
                                 .option(constants.GCS_BQ_CSV_HEADER, True) \
                                 .option(constants.GCS_BQ_CSV_INFER_SCHEMA, True) \
                                 .load(input_file_location)
-
-        logger.info(
-            "Starting GCS to Bigquery spark job with parameters:\n"
-            f"{pprint.pformat(arguments)}"
-        )
 
         # Write
         input_data.write \

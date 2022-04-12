@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict, Type
+from typing import Dict, Any, Type
 import logging
 import sys
 
@@ -34,14 +34,6 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.BIGQUERYTOGCS: BigQueryToGCSTemplate
 }
 
-def create_spark_session(template_name: str) -> SparkSession:
-
-    spark = SparkSession.builder \
-        .appName(template_name) \
-        .getOrCreate()
-    spark.sparkContext.setLogLevel("INFO")
-
-    return spark
 
 def get_template_impl(template_name: str) -> Type[BaseTemplate]:
     """
@@ -63,6 +55,29 @@ def get_template_impl(template_name: str) -> Type[BaseTemplate]:
     parsed_template_name: TemplateName = \
         TemplateName.from_string(template_name)
     return TEMPLATE_IMPLS[parsed_template_name]
+
+
+def create_spark_session(template_name: str) -> SparkSession:
+    """
+    Creates the SparkSession object.
+
+    It also sets the Spark logging level to info. We could
+    consider parametrizing the log level in the future.
+
+    Args:
+        template_name (str): The name of the template being
+            run. Used to set the Spark app name.
+
+    Returns:
+        pyspark.sql.SparkSession: The set up SparkSession.
+    """
+
+    spark = SparkSession.builder \
+        .appName(template_name) \
+        .getOrCreate()
+    spark.sparkContext.setLogLevel("INFO")
+
+    return spark
 
 
 def run_template(template_name: str) -> None:
@@ -89,8 +104,9 @@ def run_template(template_name: str) -> None:
     template_instance: BaseTemplate = template_impl.build()
 
     try:
-        args = template_instance.parse_args(sys.argv[1:])
-        template_instance.run(create_spark_session(template_name), args)
+        args: Dict[str, Any] = template_instance.parse_args()
+        spark: SparkSession = create_spark_session(template_name=template_name)
+        template_instance.run(spark=spark, args=args)
     except Exception:
         LOGGER.exception(
             f'An error occurred while running {template_name} template'

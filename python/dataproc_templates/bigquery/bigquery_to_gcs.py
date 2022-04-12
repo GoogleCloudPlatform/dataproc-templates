@@ -12,9 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Dict, Any
+from typing import Dict, Sequence, Optional, Any
 import argparse
 import pprint
+
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -25,7 +27,7 @@ __all__ = ['BigQueryToGCSTemplate']
 class BigQueryToGCSTemplate(BaseTemplate):
 
     @staticmethod
-    def _parse_args(args) -> Dict[str, Any]:
+    def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
@@ -68,24 +70,24 @@ class BigQueryToGCSTemplate(BaseTemplate):
 
         return vars(known_args)
     
-    def run(self, spark, arguments) -> None:
+    def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
         log4jLogger = spark.sparkContext._jvm.org.apache.log4j
         logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Arguments
-        inputTable = arguments[constants.BQ_GCS_INPUT_TABLE]
-        outputFormat = arguments[constants.BQ_GCS_OUTPUT_FORMAT]
-        outputMode = arguments[constants.BQ_GCS_OUTPUT_MODE]
-        outputLocation = arguments[constants.BQ_GCS_OUTPUT_LOCATION]
-
-        # Read
-        inputData = spark.read.format("bigquery").option("table", inputTable).load()
+        inputTable = args[constants.BQ_GCS_INPUT_TABLE]
+        outputFormat = args[constants.BQ_GCS_OUTPUT_FORMAT]
+        outputMode = args[constants.BQ_GCS_OUTPUT_MODE]
+        outputLocation = args[constants.BQ_GCS_OUTPUT_LOCATION]
 
         logger.info(
             "Starting Bigquery to GCS spark job with parameters:\n"
-            f"{pprint.pformat(arguments)}"
+            f"{pprint.pformat(args)}"
         )
+
+        # Read
+        inputData = spark.read.format("bigquery").option("table", inputTable).load()
 
         # Write
         if (outputFormat == constants.BQ_GCS_OUTPUT_FORMAT_PARQUET):
