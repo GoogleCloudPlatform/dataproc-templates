@@ -47,7 +47,7 @@ def get_template_impl(template_name: str) -> Type[BaseTemplate]:
     Returns:
         Type[BaseTemplate]: The class that implements the corresponding
             template.
-    
+
     Raises:
         ValueError: if the given template name is invalid
     """
@@ -83,23 +83,25 @@ def create_spark_session(template_name: str) -> SparkSession:
 def run_template(template_name: str) -> None:
     """
     Executes a template given it's template name.
-    
+
     Args:
         template_name (str): The name of the template that
             should be run.
-    
+
     Returns:
         None
-    
+
     Raises:
         ValueError: if the given template name is invalid
     """
+
+    # pylint: disable=broad-except
 
     template_impl: Type[BaseTemplate] = get_template_impl(
         template_name=template_name
     )
 
-    LOGGER.info(f'Running template {template_name}')
+    LOGGER.info('Running template %s', template_name)
 
     template_instance: BaseTemplate = template_impl.build()
 
@@ -109,7 +111,8 @@ def run_template(template_name: str) -> None:
         template_instance.run(spark=spark, args=args)
     except Exception:
         LOGGER.exception(
-            f'An error occurred while running {template_name} template'
+            'An error occurred while running %s template',
+            template_name
         )
         sys.exit(1)
 

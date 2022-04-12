@@ -25,6 +25,9 @@ __all__ = ['GcsToBigQueryTemplate']
 
 
 class GcsToBigQueryTemplate(BaseTemplate):
+    """
+    Dataproc template implementing loads from GCS into BigQuery
+    """
 
     @staticmethod
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
@@ -70,10 +73,10 @@ class GcsToBigQueryTemplate(BaseTemplate):
         known_args, _ = parser.parse_known_args(args)
 
         return vars(known_args)
-    
+
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
-        log4jLogger = spark.sparkContext._jvm.org.apache.log4j
+        log4jLogger = spark.sparkContext._jvm.org.apache.log4j  # pylint: disable=protected-access,invalid-name
         logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Arguments
@@ -89,24 +92,24 @@ class GcsToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        if (input_file_format == constants.GCS_BQ_PRQT_FORMAT):
+        if input_file_format == constants.GCS_BQ_PRQT_FORMAT:
             input_data = spark.read \
-                                .parquet(input_file_location)
-        elif (input_file_format == constants.GCS_BQ_AVRO_FORMAT):
+                .parquet(input_file_location)
+        elif input_file_format == constants.GCS_BQ_AVRO_FORMAT:
             input_data = spark.read \
-                                .format(constants.GCS_BQ_AVRO_EXTD_FORMAT) \
-                                .load(input_file_location)
-        elif (input_file_format == constants.GCS_BQ_CSV_FORMAT):
+                .format(constants.GCS_BQ_AVRO_EXTD_FORMAT) \
+                .load(input_file_location)
+        elif input_file_format == constants.GCS_BQ_CSV_FORMAT:
             input_data = spark.read \
-                                .format(constants.GCS_BQ_CSV_FORMAT) \
-                                .option(constants.GCS_BQ_CSV_HEADER, True) \
-                                .option(constants.GCS_BQ_CSV_INFER_SCHEMA, True) \
-                                .load(input_file_location)
+                .format(constants.GCS_BQ_CSV_FORMAT) \
+                .option(constants.GCS_BQ_CSV_HEADER, True) \
+                .option(constants.GCS_BQ_CSV_INFER_SCHEMA, True) \
+                .load(input_file_location)
 
         # Write
         input_data.write \
-                .format(constants.GCS_BQ_OUTPUT_FORMAT) \
-                .option(constants.GCS_BQ_OUTPUT, big_query_dataset + "." + big_query_table) \
-                .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
-                .mode("append") \
-                .save()
+            .format(constants.GCS_BQ_OUTPUT_FORMAT) \
+            .option(constants.GCS_BQ_OUTPUT, big_query_dataset + "." + big_query_table) \
+            .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
+            .mode("append") \
+            .save()

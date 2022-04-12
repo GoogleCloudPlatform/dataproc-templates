@@ -35,7 +35,7 @@ class BaseTemplate(AbstractClass):
         """
 
         return cls()
-    
+
     @staticmethod
     @abstractmethod
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
@@ -48,13 +48,9 @@ class BaseTemplate(AbstractClass):
             args (Optional[Sequence[str]]): The template arguments.
                 By default, command line arguments are used.
         """
-        
-        pass
-    
+
     @abstractmethod
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
         """
         Runs this template
         """
-
-        pass

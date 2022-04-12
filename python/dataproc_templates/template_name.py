@@ -36,11 +36,11 @@ class TemplateName(Enum):
         Args:
             template_name (str): The string representation of
                 the template name.
-        
+
         Returns:
             TemplateName: the TemplateName value corresponding
                 to the provided string
-        
+
         Raises:
             ValueError: if the given template name is invalid
         """
@@ -48,8 +48,8 @@ class TemplateName(Enum):
         try:
             return cls[template_name.upper()]
         except KeyError as err:
-            raise ValueError(f'Invalid template name {template_name}')
-    
+            raise ValueError(f'Invalid template name {template_name}') from err
+
     @classmethod
     def choices(cls) -> List[str]:
         """
