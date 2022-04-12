@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Sequence
+from typing import Optional, Sequence
 import argparse
-import sys
 
 from dataproc_templates import TemplateName
 
 
-def get_template_name(args: Sequence[str] = sys.argv) -> str:
+def get_template_name(args: Optional[Sequence[str]] = None) -> str:
     """
     Parses the template name option from the program arguments.
 
@@ -27,8 +26,8 @@ def get_template_name(args: Sequence[str] = sys.argv) -> str:
     argument is missing.
 
     Args:
-        args (Sequence[str]): The program arguments. Defaults
-            to sys.argv.
+        args (Optional[Sequence[str]]): The program arguments.
+            By default, command line arguments will be used.
 
     Returns:
         str: The value of the --template argument
@@ -49,7 +48,7 @@ def get_template_name(args: Sequence[str] = sys.argv) -> str:
     )
 
     known_args: argparse.Namespace
-    known_args, _ = parser.parse_known_args()
+    known_args, _ = parser.parse_known_args(args=args)
 
     if known_args.template_name is None:
         parser.print_help()
