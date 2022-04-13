@@ -1,31 +1,52 @@
 # Dataproc Templates
 
-### Submit PySpark jobs
+## PySpark Templates
+* [GCSToBigQuery](dataproc_templates/gcs/README.md)
+* [BigQueryToGCS](dataproc_templates/bigquery/README.md)
 
-Submit using bin/start.sh
+PySpark Templates submit jobs to Dataproc Serverless using [batches submit pyspark ](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
+
+### Requirements
+
+- Python 3.8
+
+### Submit templates to Dataproc Serverless
+
+A shell script is provided to:
+ - Build the python package
+ - Set Dataproc parameters based on environment variables
+ - Submit the desired template to Dataproc with the provided template parameters
+ 
+**bin/start.sh usage syntax**:
 ```
-# Environment variables
+# Set required environment variables
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gs://path>
 export SUBNET=<subnet>
 
-# Optional environment variables
+# Set optional environment variables
 export JARS="gs://additional/dependency.jar"
 export HISTORY_SERVER_CLUSTER=projects/{projectId}/regions/{regionId}/clusters/{clusterId}
 export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{serviceId}
 
+# Submit to Dataproc passing template parameters
 ./bin/start.sh -- --template=TEMPLATENAME \
-                  --my.property="value" \
-                  --my.other.property="value"
+                  --my.property="<value>" \
+                  --my.other.property="<value>"
                   (etc...)
 ```
+To see template's specific parameters, refer to each template's README.
 
-Submit using gcloud CLI
+It is also possible to submit the jobs using gcloud CLI, after building the package.
+
+**gcloud CLI usage syntax**:
 ```
+# Build the package
 python setup.py bdist_egg
 export PACKAGE_EGG_FILE=dist/dataproc_templates-0.0.1-py3.8.egg
 
+# Submit passing Dataproc and template parameters
 gcloud dataproc batches submit pyspark \
       --region=<region> \
       --project=<project_id> \
@@ -35,13 +56,7 @@ gcloud dataproc batches submit pyspark \
       --py-files=${PACKAGE_EGG_FILE} \
       main.py \
       -- --template=TEMPLATENAME \
-         --<my.property>=<value> \
-         --<my.other.property>=<value>
+         --<my.property>="<value>" \
+         --<my.other.property>="<value>"
+         (etc...)
 ```
-
-See each template's README to know the specific required arguments
-
-- [GCS](dataproc_templates/gcs/README.md)
-  - GCSTOBIGQUERY
-- [BIGQUERY](dataproc_templates/bigquery/README.md)
-  - BIGQUERYTOGCS
