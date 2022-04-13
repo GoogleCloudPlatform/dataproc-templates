@@ -10,6 +10,11 @@ PySpark Templates submit jobs to Dataproc Serverless using [batches submit pyspa
 
 - Python 3.8
 
+### Run unit tests
+```
+coverage run --source=dataproc_templates --module pytest --verbose test && coverage report --show-missing
+```
+
 ### Submit templates to Dataproc Serverless
 
 A shell script is provided to:
