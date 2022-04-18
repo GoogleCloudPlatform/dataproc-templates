@@ -14,7 +14,7 @@ export REGION=<region>
 	--bigquery.gcs.input.table=<projectId:datasetId.tableName> \
 	--bigquery.gcs.output.format=<csv|parquet|avro|json> \
 	--bigquery.gcs.output.mode=<overwrite|append> \
-	--bigquery.gcs.output.location=<gcs-path>
+	--bigquery.gcs.output.location=<gs://bucket/path>
 ```
 
 Note: Since this template uses Spark BigQuery Connector, the shell script appends the JARS variable defined with this dependency to the Dataproc command
