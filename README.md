@@ -7,8 +7,8 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 [![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/editor)
 
 
-## Dataproc Templates (Spark)
-Please refer to the [Dataproc Templates (Spark) README](java/README.md)  for more information
+## Dataproc Templates (Java - Spark)
+Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  for more information
 * [HiveToBigQuery](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
 * [HiveToGCS](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
 * [PubSubToBigQuery](src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
@@ -21,8 +21,8 @@ Please refer to the [Dataproc Templates (Spark) README](java/README.md)  for mor
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
-## Dataproc Templates (PySpark)
-Please refer to the [Dataproc Templates (PySpark) README](python/README.md) for more information
+## Dataproc Templates (Python - PySpark)
+Please refer to the [Dataproc Templates (Python - PySpark) README](python/README.md) for more information
 * [GCSToBigQuery](python/dataproc_templates/gcs/README.md)
 * [BigQueryToGCS](python/dataproc_templates/bigquery/README.md)
 
@@ -48,8 +48,8 @@ Please refer to the [Dataproc Templates (PySpark) README](python/README.md) for 
 3) Executing a Template 
 
     Follow the specific guide, depending on your use case:
-   - [Dataproc Templates (Spark) README](java/README.md)
-   - [Dataproc Templates (PySpark) README](python/README.md)
+   - [Dataproc Templates (Java - Spark)](java/README.md)
+   - [Dataproc Templates (Python - PySpark)](python/README.md)
 
 ## Flow diagram
 

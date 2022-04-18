@@ -1,4 +1,4 @@
-# Dataproc Templates (Spark)
+# Dataproc Templates (Java - Spark)
 
 * [HiveToBigQuery](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
 * [HiveToGCS](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
@@ -12,7 +12,7 @@
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
-Dataproc Templates (Spark) submit jobs to Dataproc Serverless using [batches submit pyspark ](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/spark) and to Dataproc using [jobs submit spark](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs/submit/spark) .
+Dataproc Templates (Java - Spark) submit jobs to Dataproc Serverless using [batches submit spark ](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/spark) and to Dataproc Standard using [jobs submit spark](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs/submit/spark) .
 
 ## Requirements
 
