@@ -9,17 +9,17 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 
 ## Dataproc Templates (Java - Spark)
 Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  for more information
-* [HiveToBigQuery](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
-* [HiveToGCS](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
-* [PubSubToBigQuery](src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
-* [GCSToBigQuery](src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
-* [GCSToSpanner](src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
-* [SpannerToGCS](src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
-* [S3ToBigQuery](src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
-* [JDBCToBigQuery](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
-* [JDBCToGCS](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
-* [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
-* [GeneralTemplate](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
+* [HiveToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+* [HiveToGCS](java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+* [PubSubToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
+* [GCSToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
+* [GCSToSpanner](java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
+* [SpannerToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
+* [S3ToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
+* [JDBCToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
+* [JDBCToGCS](java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
+* [WordCount](java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
+* [GeneralTemplate](java/src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
 ## Dataproc Templates (Python - PySpark)
 Please refer to the [Dataproc Templates (Python - PySpark) README](python/README.md) for more information
