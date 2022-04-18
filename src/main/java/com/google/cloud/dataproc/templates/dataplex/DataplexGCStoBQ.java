@@ -320,7 +320,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * @return a dataset after custom sql has been applied
    * @throws IOException when Google Credential setup fails
    */
-  public Dataset<Row> applyCustomSql(Dataset<Row> newPartitionsDf) throws IOException {
+  private Dataset<Row> applyCustomSql(Dataset<Row> newPartitionsDf) throws IOException {
     if (customSqlGCSPath != null) {
       LOGGER.info("Reading custom SQL from GCS path: {}", customSqlGCSPath);
       String[] pathAsList =
@@ -349,7 +349,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
    *
    * @param newPartitionsDf dataset with new partitions
    */
-  public void writeToBQ(Dataset<Row> newPartitionsDf) {
+  private void writeToBQ(Dataset<Row> newPartitionsDf) {
     if (newPartitionsDf != null) {
       LOGGER.info("Writing to target table: {}", targetTable);
       DataFrameWriter dfWriter =
