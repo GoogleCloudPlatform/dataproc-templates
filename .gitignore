@@ -1,10 +1,14 @@
-target/
-.idea
+# Intellij idea
+*.log
+*.iml
 *.ipr
 *.iws
-**/*.iml
-.DS_Store
-logs/
-grpc_lb/
-.envrc
-dependency-reduced-pom.xml
+.idea
+
+# Eclipse
+build/
+.classpath
+.project
+.settings
+.worksheet
+.cache
