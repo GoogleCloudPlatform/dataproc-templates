@@ -138,7 +138,7 @@ public class DataplexUtil {
    * @return entity schema
    * @throws IOException when request on Dataplex API fails
    */
-  public static JsonObject getEntitySchema(String entity) throws IOException {
+  private static JsonObject getEntitySchema(String entity) throws IOException {
     String url = String.format(GET_ENTITY_METHOD_URL, entity);
     return executeRequest(url);
   }
@@ -151,7 +151,8 @@ public class DataplexUtil {
    * @return entity partitions
    * @throws IOException when request on Dataplex API fails
    */
-  public static JsonObject getEntityPartitions(String entity, String pageToken) throws IOException {
+  private static JsonObject getEntityPartitions(String entity, String pageToken)
+      throws IOException {
     String url = String.format(GET_ENTITY_PARTITIONS_METHOD_URL, entity);
     if (pageToken != null) {
       url += "pageToken=" + pageToken;
@@ -217,12 +218,12 @@ public class DataplexUtil {
    * contains gcs path and key values for a given partition will return a list of string with the
    * pattern: ["partition_path,key_1,key_2,...,key_n", "partition_path,key1,key2,...,keyn", ...]
    *
-   * @param entity name
+   * @param partitions list in a JsonObject
    * @return list of all partitions where each element contains gcs path and key values for a given
    *     partition
    * @throws IOException when request on Dataplex API fails
    */
-  public static List<String> parsePartitionToStringWithLocationAndKeys(JsonObject partitions) {
+  private static List<String> parsePartitionToStringWithLocationAndKeys(JsonObject partitions) {
     Iterator<JsonElement> partitionsIterator =
         partitions.getAsJsonArray(ENTITY_PARTITION_PROP_KEY).iterator();
     List<String> partitionsListWithLocationAndKeys = new ArrayList<String>();
@@ -277,9 +278,9 @@ public class DataplexUtil {
   }
 
   /**
-   * Builds a hasmap with mapping between Dataplex datatype name and spark DataType
+   * Builds a hashmap with mapping between Dataplex datatype name and spark DataType
    *
-   * @return hasmap with mapping between Dataplex datatype name and spark DataType
+   * @return hashmap with mapping between Dataplex datatype name and spark DataType
    */
   public static HashMap<String, DataType> getDataplexTypeToSparkTypeMap() {
     HashMap<String, DataType> dataplexTypeToSparkType = new HashMap<String, DataType>();

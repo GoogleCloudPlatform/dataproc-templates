@@ -138,7 +138,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * Sets value for entityList based on input values for entitiesString and asset
    *
    * @throws Exception if values are passed for both --dataplexEntityList and --dataplexAsset. Will
-   *     also throw exceptio if niether is set
+   *     also throw exception if neither is set
    */
   private void checkInput() throws DataprocTemplateException, IOException {
     if (entitiesString != null && asset != null) {
