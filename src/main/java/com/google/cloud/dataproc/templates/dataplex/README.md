@@ -3,13 +3,14 @@
 This template will incrementally move data from a Dataplex GCS tables to BigQuery. \ 
 It will identify new partitions in Dataplex GCS and load them to BigQuery.
 
+
 ### General Execution:
 
 ```
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
 SUBNET=<subnet>   \
-GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder-path> \
 HISTORY_SERVER_CLUSTER=<history-server> \
 bin/start.sh \
 -- --template DATAPLEXGCSTOBQ  \
@@ -19,8 +20,8 @@ bin/start.sh \
 --templateProperty dataplex.gcs.bq.save.mode="append" \
 --templateProperty dataplex.gcs.bq.incremental.partition.copy="yes" \
 --dataplexAsset "projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/asset/{asset_id}" \
---partitionField "partition_field"
---partitionType "DAY"
+--partitionField "partition_field" \
+--partitionType "DAY" \
 --customSqlGcsPath "gs://bucket/path/to/custom_sql.sql" 
 ```
 
