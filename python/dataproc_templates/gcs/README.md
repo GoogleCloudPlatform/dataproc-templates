@@ -3,11 +3,11 @@
 General Execution:
 
 ```
-export GCP_PROJECT=<project_id> \
-export SUBNET=<region> \
-export JARS="file:///usr/lib/spark/external/spark-avro.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar" \
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
-export REGION=<region> \
+export GCP_PROJECT=<project_id> 
+export SUBNET=<region> 
+export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar" 
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export REGION=<region>
 
 ./bin/start.sh \
 -- --template=GCSTOBIGQUERY \
@@ -17,3 +17,5 @@ export REGION=<region> \
     --gcs.bigquery.output.table="<table>" \
     --gcs.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
+
+Note: Since this template uses Spark BigQuery Connector, the shell script appends the JARS variable defined with this dependency to the Dataproc command
