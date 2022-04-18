@@ -21,6 +21,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.util.DataplexUtil;
+import com.google.cloud.dataproc.templates.util.DataprocTemplateException;
 import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.connector.common.BigQueryConnectorException;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
@@ -139,19 +140,19 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * @throws Exception if values are passed for both --dataplexEntityList and --dataplexAsset. Will
    *     also throw exceptio if niether is set
    */
-  private void checkInput() throws Exception {
+  private void checkInput() throws DataprocTemplateException, IOException {
     if (entitiesString != null && asset != null) {
-      throw new Exception(
+      throw new DataprocTemplateException(
           String.format(
-              "Properties %s and %s ars mutually exclusive, please specify just one of these.",
+              "Properties %s and %s are mutually exclusive, please specify just one of these.",
               ENTITY_LIST_OPTION, ASSET_LIST_OPTION));
     } else if (asset != null) {
       this.entityList = DataplexUtil.getEntityNameListFromAsset(asset);
     } else if (entitiesString != null) {
       this.entityList = Arrays.asList(entitiesString.split(","));
     } else {
-      throw new Exception(
-          String.format("Please specifiy either %s or %s", ENTITY_LIST_OPTION, ASSET_LIST_OPTION));
+      throw new DataprocTemplateException(
+          String.format("Please specify either %s or %s", ENTITY_LIST_OPTION, ASSET_LIST_OPTION));
     }
   }
 
@@ -408,6 +409,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
 
         // load data from each partition
         Dataset<Row> newPartitionsDS = getNewPartitionsDS(newPartitionsPathsDS);
+        newPartitionsDS.printSchema();
 
         newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
 
