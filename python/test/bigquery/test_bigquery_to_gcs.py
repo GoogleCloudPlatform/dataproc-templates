@@ -88,11 +88,11 @@ class TestBigQueryToGCSTemplate:
             .format.assert_called_with("bigquery")
         mock_spark_session.read \
             .format() \
-            .option.assert_called_with("table","projectId:dataset.table")
+            .option.assert_called_with("table", "projectId:dataset.table")
         mock_spark_session.read \
             .format() \
             .option() \
-            .load.assert_called_with()
+            .load.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write \
             .mode.assert_called_once_with(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write \
@@ -121,11 +121,11 @@ class TestBigQueryToGCSTemplate:
             .format.assert_called_with("bigquery")
         mock_spark_session.read \
             .format() \
-            .option.assert_called_with("table","projectId:dataset.table")
+            .option.assert_called_with("table", "projectId:dataset.table")
         mock_spark_session.read \
             .format() \
             .option() \
-            .load.assert_called_with()
+            .load.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write \
             .mode.assert_called_once_with(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write \
@@ -154,11 +154,11 @@ class TestBigQueryToGCSTemplate:
             .format.assert_called_with("bigquery")
         mock_spark_session.read \
             .format() \
-            .option.assert_called_with("table","projectId:dataset.table")
+            .option.assert_called_with("table", "projectId:dataset.table")
         mock_spark_session.read \
             .format() \
             .option() \
-            .load.assert_called_with()
+            .load.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write \
             .mode.assert_called_once_with(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write \
