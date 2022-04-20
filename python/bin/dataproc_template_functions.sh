@@ -47,7 +47,7 @@ Help() {
 
     Usage syntax:
 
-    start.sh -- --template=TEMPLATENAME --my.property="value" --my.other.property="value" (etc...)
+    start.sh [--properties=<spark.something.key>=<value>] -- --template=TEMPLATENAME --my.property="value" --my.other.property="value" (etc...)
 
     eg:
     start.sh -- --template=GCSTOBIGQUERY --gcs.bigquery.input.location="gs://bucket/path/" (etc...)

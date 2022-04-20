@@ -35,12 +35,14 @@ export HISTORY_SERVER_CLUSTER=projects/{projectId}/regions/{regionId}/clusters/{
 export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{serviceId}
 
 # Submit to Dataproc passing template parameters
-./bin/start.sh -- --template=TEMPLATENAME \
+./bin/start.sh [--properties=<spark.something.key>=<value>] \
+               -- --template=TEMPLATENAME \
                   --my.property="<value>" \
                   --my.other.property="<value>"
                   (etc...)
 ```
-To see template's specific parameters, refer to each template's README.
+To see template's specific parameters, refer to each template's README.  
+Refer to this [documentation](https://cloud.google.com/dataproc-serverless/docs/concepts/properties) to see the available spark properties.
 
 It is also possible to submit the jobs using gcloud CLI, after building the package.
 
@@ -58,6 +60,7 @@ gcloud dataproc batches submit pyspark \
       --deps-bucket=<gs://path> \
       --subnet=<subnet> \
       --py-files=${PACKAGE_EGG_FILE} \
+      [--properties=<spark.something.key>=<value>] \
       main.py \
       -- --template=TEMPLATENAME \
          --<my.property>="<value>" \
