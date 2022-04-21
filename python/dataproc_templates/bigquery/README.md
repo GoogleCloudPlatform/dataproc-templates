@@ -13,7 +13,7 @@ export REGION=<region>
 -- --template=BIGQUERYTOGCS \
 	--bigquery.gcs.input.table=<projectId:datasetId.tableName> \
 	--bigquery.gcs.output.format=<csv|parquet|avro|json> \
-	--bigquery.gcs.output.mode=<overwrite|append> \
+	--bigquery.gcs.output.mode=<overwrite|append|ignore|errorifexists> \
 	--bigquery.gcs.output.location=<gs://bucket/path>
 ```
 

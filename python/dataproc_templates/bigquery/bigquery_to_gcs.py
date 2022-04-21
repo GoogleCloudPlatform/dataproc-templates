@@ -16,7 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -55,10 +55,12 @@ class BigQueryToGCSTemplate(BaseTemplate):
             f'--{constants.BQ_GCS_OUTPUT_MODE}',
             dest=constants.BQ_GCS_OUTPUT_MODE,
             required=True,
-            help='Output write mode (one of: append,overwrite)',
+            help='Output write mode (one of: append,overwrite,ignore,errorifexists)',
             choices=[
                 constants.BQ_GCS_OUTPUT_MODE_OVERWRITE,
-                constants.BQ_GCS_OUTPUT_MODE_APPEND
+                constants.BQ_GCS_OUTPUT_MODE_APPEND,
+                constants.BQ_GCS_OUTPUT_MODE_IGNORE,
+                constants.BQ_GCS_OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
         parser.add_argument(
@@ -79,10 +81,10 @@ class BigQueryToGCSTemplate(BaseTemplate):
         logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Arguments
-        input_table = args[constants.BQ_GCS_INPUT_TABLE]
-        output_format = args[constants.BQ_GCS_OUTPUT_FORMAT]
-        output_mode = args[constants.BQ_GCS_OUTPUT_MODE]
-        output_location = args[constants.BQ_GCS_OUTPUT_LOCATION]
+        input_table: str = args[constants.BQ_GCS_INPUT_TABLE]
+        output_format: str = args[constants.BQ_GCS_OUTPUT_FORMAT]
+        output_mode: str = args[constants.BQ_GCS_OUTPUT_MODE]
+        output_location: str = args[constants.BQ_GCS_OUTPUT_LOCATION]
 
         logger.info(
             "Starting Bigquery to GCS spark job with parameters:\n"
@@ -96,24 +98,20 @@ class BigQueryToGCSTemplate(BaseTemplate):
             .load()
 
         # Write
+        writer: DataFrameWriter = input_data.write.mode(output_mode)
+
         if output_format == constants.BQ_GCS_OUTPUT_FORMAT_PARQUET:
-            input_data.write \
-                .mode(output_mode) \
-                .parquet(output_location)
+            writer.parquet(output_location)
         elif output_format == constants.BQ_GCS_OUTPUT_FORMAT_AVRO:
-            input_data.write \
-                .mode(output_mode) \
+            writer \
                 .format(constants.BQ_GCS_OUTPUT_FORMAT_AVRO) \
                 .save(output_location)
         elif output_format == constants.BQ_GCS_OUTPUT_FORMAT_CSV:
-            input_data.write \
-                .mode(output_mode) \
+            writer \
                 .option(constants.BQ_GCS_CSV_HEADER, True) \
                 .csv(output_location)
         elif output_format == constants.BQ_GCS_OUTPUT_FORMAT_JSON:
-            input_data.write \
-                .mode(output_mode) \
-                .json(output_location)
+            writer.json(output_location)
         else:
             raise Exception(
                 "Currently avro, parquet, csv and json are the only supported formats"
