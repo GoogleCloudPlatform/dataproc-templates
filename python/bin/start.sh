@@ -19,7 +19,7 @@ set -e
 BIN_DIR="$(dirname "$BASH_SOURCE")"
 PROJECT_ROOT_DIR=${BIN_DIR}/..
 
-PACKAGE_EGG_FILE=dist/dataproc_templates-0.0.1-py3.8.egg
+PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
 
 . ${BIN_DIR}/dataproc_template_functions.sh
 
@@ -27,7 +27,7 @@ check_required_envvar GCP_PROJECT
 check_required_envvar REGION
 check_required_envvar GCS_STAGING_LOCATION
 
-python ${PROJECT_ROOT_DIR}/setup.py bdist_egg
+python ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
