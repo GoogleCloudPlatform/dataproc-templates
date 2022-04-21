@@ -194,4 +194,31 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
 
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
+
+  /** Dataplex GCS to BQ */
+  String DATAPLEX_GCS_BQ_TARGET_DATASET = "dataplex.gcs.bq.target.dataset";
+
+  String DATAPLEX_GCS_BQ_SAVE_MODE = "dataplex.gcs.bq.save.mode";
+
+  String DATAPLEX_GCS_BQ_INCREMENTAL_PARTITION_COPY = "dataplex.gcs.bq.incremental.partition.copy";
+
+  String DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME = "basePath";
+
+  String DATAPLEX_GCS_BQ_CREATE_DISPOSITION_PROP_NAME = "createDisposition";
+
+  String DATAPLEX_GCS_BQ_CREATE_DISPOSITION_CREATE_IF_NEEDED = "CREATE_IF_NEEDED";
+
+  String DATAPLEX_GCS_BQ_PARTITION_FIELD_PROP_NAME = "partitionField";
+
+  String DATAPLEX_GCS_BQ_PARTITION_TYPE_PROP_NAME = "partitionType";
+
+  String SPARK_CONF_NAME_VIEWS_ENABLED = "viewsEnabled";
+
+  String SPARK_CONF_NAME_MATERIALIZATION_DATASET = "materializationDataset";
+
+  String SPARK_READ_FORMAT_BIGQUERY = "bigquery";
+
+  String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
+
+  String INTERMEDIATE_FORMAT_ORC = "orc";
 }
