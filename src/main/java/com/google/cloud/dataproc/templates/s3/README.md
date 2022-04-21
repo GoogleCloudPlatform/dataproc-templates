@@ -18,7 +18,14 @@ SUBNET=<subnet>   \
 GCS_STAGING_BUCKET=<gcs-staging-bucket-folder> \
 HISTORY_SERVER_CLUSTER=<history-server> \
 bin/start.sh \
--- --template S3TOBIGQUERY
+-- --template S3TOBIGQUERY \
+--templateProperty s3.bq.access.key=<s3-accesss-key> \
+--templateProperty s3.bq.secret.key=<s3-secret-key> \
+--templateProperty s3.bq.input.format=<avro,parquet,csv,json> \
+--templateProperty s3.bq.input.location=<s3-input-location> \
+--templateProperty s3.bq.output.dataset.name=<bq-dataset-name> \
+--templateProperty s3.bq.output.table.name=<bq-output-table> \ 
+--templateProperty s3.bq.ld.temp.bucket.name=<temp-bucket>
 ```
 
 ### Configurable Parameters
