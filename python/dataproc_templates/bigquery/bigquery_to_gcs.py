@@ -16,7 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
+from pyspark.sql import SparkSession, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -52,22 +52,27 @@ class BigQueryToGCSTemplate(BaseTemplate):
             ]
         )
         parser.add_argument(
+            f'--{constants.BQ_GCS_OUTPUT_LOCATION}',
+            dest=constants.BQ_GCS_OUTPUT_LOCATION,
+            required=True,
+            help='GCS location for output files'
+        )
+        parser.add_argument(
             f'--{constants.BQ_GCS_OUTPUT_MODE}',
             dest=constants.BQ_GCS_OUTPUT_MODE,
-            required=True,
-            help='Output write mode (one of: append,overwrite,ignore,errorifexists)',
+            required=False,
+            default=constants.BQ_GCS_OUTPUT_MODE_APPEND,
+            help=(
+                'Output write mode '
+                '(one of: append,overwrite,ignore,errorifexists) '
+                '(Defaults to append)'
+            ),
             choices=[
                 constants.BQ_GCS_OUTPUT_MODE_OVERWRITE,
                 constants.BQ_GCS_OUTPUT_MODE_APPEND,
                 constants.BQ_GCS_OUTPUT_MODE_IGNORE,
                 constants.BQ_GCS_OUTPUT_MODE_ERRORIFEXISTS
             ]
-        )
-        parser.add_argument(
-            f'--{constants.BQ_GCS_OUTPUT_LOCATION}',
-            dest=constants.BQ_GCS_OUTPUT_LOCATION,
-            required=True,
-            help='GCS location for output files'
         )
 
         known_args: argparse.Namespace
