@@ -69,6 +69,23 @@ class GCSToBigQueryTemplate(BaseTemplate):
             required=True,
             help='Spark BigQuery connector temporary bucket'
         )
+        parser.add_argument(
+            f'--{constants.GCS_BQ_OUTPUT_MODE}',
+            dest=constants.GCS_BQ_OUTPUT_MODE,
+            required=False,
+            default=constants.GCS_BQ_OUTPUT_MODE_APPEND,
+            help=(
+                'Output write mode '
+                '(one of: append,overwrite,ignore,errorifexists) '
+                '(Defaults to append)'
+            ),
+            choices=[
+                constants.GCS_BQ_OUTPUT_MODE_OVERWRITE,
+                constants.GCS_BQ_OUTPUT_MODE_APPEND,
+                constants.GCS_BQ_OUTPUT_MODE_IGNORE,
+                constants.GCS_BQ_OUTPUT_MODE_ERRORIFEXISTS
+            ]
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -86,6 +103,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
         big_query_table: str = args[constants.GCS_BQ_OUTPUT_TABLE]
         input_file_format: str = args[constants.GCS_BQ_INPUT_FORMAT]
         bq_temp_bucket: str = args[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
+        output_mode: str = args[constants.GCS_BQ_OUTPUT_MODE]
 
         logger.info(
             "Starting GCS to Bigquery spark job with parameters:\n"
@@ -117,5 +135,5 @@ class GCSToBigQueryTemplate(BaseTemplate):
             .format(constants.GCS_BQ_OUTPUT_FORMAT) \
             .option(constants.GCS_BQ_OUTPUT, big_query_dataset + "." + big_query_table) \
             .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
-            .mode("append") \
+            .mode(output_mode) \
             .save()

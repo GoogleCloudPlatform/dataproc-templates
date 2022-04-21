@@ -15,6 +15,7 @@ export REGION=<region>
     --gcs.bigquery.input.location="<gs://bucket/path>" \
     --gcs.bigquery.output.dataset="<dataset>" \
     --gcs.bigquery.output.table="<table>" \
+    --gcs.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
     --gcs.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
 
