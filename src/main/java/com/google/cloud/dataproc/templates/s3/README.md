@@ -27,9 +27,10 @@ bin/start.sh \
 --templateProperty s3.bq.output.table.name=<bq-output-table> \ 
 --templateProperty s3.bq.ld.temp.bucket.name=<temp-bucket>
 ```
+**Note**: S3 input location must begin with `s3a://`.
 
 ### Configurable Parameters
-Update Following properties in  [template.properties](../../../../../../../resources/template.properties) file:
+Optionally update the following properties in the [template.properties](../../../../../../../resources/template.properties) file:
 ```
 s3.bq.access.key=<s3-accesss-key>
 s3.bq.secret.key=<s3-secret-key>
@@ -39,4 +40,4 @@ s3.bq.output.dataset.name=<bq-dataset-name>
 s3.bq.output.table.name=<bq-output-table>
 s3.bq.ld.temp.bucket.name=<temp-bucket>
 ```
-**Note**: S3 input location must begin with `s3a://`.
+Note that template properties provided as arguments in the execution command will have priority over those specified in the template.properties file.
