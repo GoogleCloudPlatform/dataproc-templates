@@ -16,7 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -59,7 +59,8 @@ class GCSToBigQueryTemplate(BaseTemplate):
             choices=[
                 constants.GCS_BQ_AVRO_FORMAT,
                 constants.GCS_BQ_PRQT_FORMAT,
-                constants.GCS_BQ_CSV_FORMAT
+                constants.GCS_BQ_CSV_FORMAT,
+                constants.GCS_BQ_JSON_FORMAT
             ]
         )
         parser.add_argument(
@@ -80,11 +81,11 @@ class GCSToBigQueryTemplate(BaseTemplate):
         logger = log4jLogger.LogManager.getLogger(__name__)
 
         # Arguments
-        input_file_location = args[constants.GCS_BQ_INPUT_LOCATION]
-        big_query_dataset = args[constants.GCS_BQ_OUTPUT_DATASET]
-        big_query_table = args[constants.GCS_BQ_OUTPUT_TABLE]
-        input_file_format = args[constants.GCS_BQ_INPUT_FORMAT]
-        bq_temp_bucket = args[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
+        input_file_location: str = args[constants.GCS_BQ_INPUT_LOCATION]
+        big_query_dataset: str = args[constants.GCS_BQ_OUTPUT_DATASET]
+        big_query_table: str = args[constants.GCS_BQ_OUTPUT_TABLE]
+        input_file_format: str = args[constants.GCS_BQ_INPUT_FORMAT]
+        bq_temp_bucket: str = args[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
 
         logger.info(
             "Starting GCS to Bigquery spark job with parameters:\n"
@@ -92,6 +93,8 @@ class GCSToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
+        input_data: DataFrame
+
         if input_file_format == constants.GCS_BQ_PRQT_FORMAT:
             input_data = spark.read \
                 .parquet(input_file_location)
@@ -105,6 +108,9 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 .option(constants.GCS_BQ_CSV_HEADER, True) \
                 .option(constants.GCS_BQ_CSV_INFER_SCHEMA, True) \
                 .load(input_file_location)
+        elif input_file_format == constants.GCS_BQ_JSON_FORMAT:
+            input_data = spark.read \
+                .json(input_file_location)
 
         # Write
         input_data.write \
