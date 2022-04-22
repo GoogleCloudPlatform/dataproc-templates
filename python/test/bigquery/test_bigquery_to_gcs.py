@@ -78,7 +78,7 @@ class TestBigQueryToGCSTemplate:
         mock_parsed_args = bigquery_to_gcs_template.parse_args(
             ["--bigquery.gcs.input.table=projectId:dataset.table",
              "--bigquery.gcs.output.format=avro",
-             "--bigquery.gcs.output.mode=overwrite",
+             "--bigquery.gcs.output.mode=append",
              "--bigquery.gcs.output.location=gs://test"])
         mock_spark_session.read.format().option().load.return_value \
             = mock_spark_session.dataframe.DataFrame
@@ -94,7 +94,7 @@ class TestBigQueryToGCSTemplate:
             .option() \
             .load.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write \
-            .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
+            .mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .format.assert_called_once_with(constants.FORMAT_AVRO)
@@ -111,7 +111,7 @@ class TestBigQueryToGCSTemplate:
         mock_parsed_args = bigquery_to_gcs_template.parse_args(
             ["--bigquery.gcs.input.table=projectId:dataset.table",
              "--bigquery.gcs.output.format=csv",
-             "--bigquery.gcs.output.mode=overwrite",
+             "--bigquery.gcs.output.mode=ignore",
              "--bigquery.gcs.output.location=gs://test"])
         mock_spark_session.read.format().option().load.return_value \
             = mock_spark_session.dataframe.DataFrame
@@ -127,7 +127,7 @@ class TestBigQueryToGCSTemplate:
             .option() \
             .load.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write \
-            .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
+            .mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .option.assert_called_once_with(constants.CSV_HEADER, True)
@@ -144,7 +144,7 @@ class TestBigQueryToGCSTemplate:
         mock_parsed_args = bigquery_to_gcs_template.parse_args(
             ["--bigquery.gcs.input.table=projectId:dataset.table",
              "--bigquery.gcs.output.format=json",
-             "--bigquery.gcs.output.mode=overwrite",
+             "--bigquery.gcs.output.mode=errorifexists",
              "--bigquery.gcs.output.location=gs://test"])
         mock_spark_session.read.format().option().load.return_value \
             = mock_spark_session.dataframe.DataFrame
@@ -160,7 +160,7 @@ class TestBigQueryToGCSTemplate:
             .option() \
             .load.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write \
-            .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
+            .mode.assert_called_once_with(constants.OUTPUT_MODE_ERRORIFEXISTS)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .json.assert_called_once_with("gs://test")
