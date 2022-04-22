@@ -57,10 +57,10 @@ class GCSToBigQueryTemplate(BaseTemplate):
             required=True,
             help='Input file format (one of: avro,parquet,csv)',
             choices=[
-                constants.GCS_BQ_AVRO_FORMAT,
-                constants.GCS_BQ_PRQT_FORMAT,
-                constants.GCS_BQ_CSV_FORMAT,
-                constants.GCS_BQ_JSON_FORMAT
+                constants.FORMAT_AVRO,
+                constants.FORMAT_PRQT,
+                constants.FORMAT_CSV,
+                constants.FORMAT_JSON
             ]
         )
         parser.add_argument(
@@ -73,17 +73,17 @@ class GCSToBigQueryTemplate(BaseTemplate):
             f'--{constants.GCS_BQ_OUTPUT_MODE}',
             dest=constants.GCS_BQ_OUTPUT_MODE,
             required=False,
-            default=constants.GCS_BQ_OUTPUT_MODE_APPEND,
+            default=constants.OUTPUT_MODE_APPEND,
             help=(
                 'Output write mode '
                 '(one of: append,overwrite,ignore,errorifexists) '
                 '(Defaults to append)'
             ),
             choices=[
-                constants.GCS_BQ_OUTPUT_MODE_OVERWRITE,
-                constants.GCS_BQ_OUTPUT_MODE_APPEND,
-                constants.GCS_BQ_OUTPUT_MODE_IGNORE,
-                constants.GCS_BQ_OUTPUT_MODE_ERRORIFEXISTS
+                constants.OUTPUT_MODE_OVERWRITE,
+                constants.OUTPUT_MODE_APPEND,
+                constants.OUTPUT_MODE_IGNORE,
+                constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
 
@@ -113,27 +113,27 @@ class GCSToBigQueryTemplate(BaseTemplate):
         # Read
         input_data: DataFrame
 
-        if input_file_format == constants.GCS_BQ_PRQT_FORMAT:
+        if input_file_format == constants.FORMAT_PRQT:
             input_data = spark.read \
                 .parquet(input_file_location)
-        elif input_file_format == constants.GCS_BQ_AVRO_FORMAT:
+        elif input_file_format == constants.FORMAT_AVRO:
             input_data = spark.read \
-                .format(constants.GCS_BQ_AVRO_EXTD_FORMAT) \
+                .format(constants.FORMAT_AVRO_EXTD) \
                 .load(input_file_location)
-        elif input_file_format == constants.GCS_BQ_CSV_FORMAT:
+        elif input_file_format == constants.FORMAT_CSV:
             input_data = spark.read \
-                .format(constants.GCS_BQ_CSV_FORMAT) \
-                .option(constants.GCS_BQ_CSV_HEADER, True) \
-                .option(constants.GCS_BQ_CSV_INFER_SCHEMA, True) \
+                .format(constants.FORMAT_CSV) \
+                .option(constants.CSV_HEADER, True) \
+                .option(constants.CSV_INFER_SCHEMA, True) \
                 .load(input_file_location)
-        elif input_file_format == constants.GCS_BQ_JSON_FORMAT:
+        elif input_file_format == constants.FORMAT_JSON:
             input_data = spark.read \
                 .json(input_file_location)
 
         # Write
         input_data.write \
-            .format(constants.GCS_BQ_OUTPUT_FORMAT) \
-            .option(constants.GCS_BQ_OUTPUT, big_query_dataset + "." + big_query_table) \
+            .format(constants.FORMAT_BIGQUERY) \
+            .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
             .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
             .mode(output_mode) \
             .save()

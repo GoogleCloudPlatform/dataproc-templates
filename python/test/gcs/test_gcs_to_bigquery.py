@@ -62,13 +62,13 @@ class TestGCSToBigQueryTemplate:
 
         mock_spark_session.read.parquet.assert_called_once_with("gs://test")
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
-            constants.GCS_BQ_OUTPUT_FORMAT)
+            constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.GCS_BQ_OUTPUT, "dataset.table")
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
         mock_spark_session.dataframe.DataFrame.write.format().option(
         ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.GCS_BQ_OUTPUT_MODE_APPEND)
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
 
@@ -88,16 +88,16 @@ class TestGCSToBigQueryTemplate:
         gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read.format.assert_called_with(
-            constants.GCS_BQ_AVRO_EXTD_FORMAT)
+            constants.FORMAT_AVRO_EXTD)
         mock_spark_session.read.format().load.assert_called_once_with("gs://test")
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
-            constants.GCS_BQ_OUTPUT_FORMAT)
+            constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.GCS_BQ_OUTPUT, "dataset.table")
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
         mock_spark_session.dataframe.DataFrame.write.format().option(
         ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.GCS_BQ_OUTPUT_MODE_OVERWRITE)
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
 
@@ -118,21 +118,21 @@ class TestGCSToBigQueryTemplate:
         gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read.format.assert_called_with(
-            constants.GCS_BQ_CSV_FORMAT)
+            constants.FORMAT_CSV)
         mock_spark_session.read.format().option.assert_called_with(
-            constants.GCS_BQ_CSV_HEADER, True)
+            constants.CSV_HEADER, True)
         mock_spark_session.read.format().option().option.assert_called_with(
-            constants.GCS_BQ_CSV_INFER_SCHEMA, True)
+            constants.CSV_INFER_SCHEMA, True)
         mock_spark_session.read.format().option().option(
         ).load.assert_called_once_with("gs://test")
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
-            constants.GCS_BQ_OUTPUT_FORMAT)
+            constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.GCS_BQ_OUTPUT, "dataset.table")
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
         mock_spark_session.dataframe.DataFrame.write.format().option(
         ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.GCS_BQ_OUTPUT_MODE_IGNORE)
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
 
@@ -154,12 +154,12 @@ class TestGCSToBigQueryTemplate:
 
         mock_spark_session.read.json.assert_called_once_with("gs://test")
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
-            constants.GCS_BQ_OUTPUT_FORMAT)
+            constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.GCS_BQ_OUTPUT, "dataset.table")
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
         mock_spark_session.dataframe.DataFrame.write.format().option(
         ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.GCS_BQ_OUTPUT_MODE_ERRORIFEXISTS)
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_ERRORIFEXISTS)
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()

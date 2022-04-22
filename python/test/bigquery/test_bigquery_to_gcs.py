@@ -56,16 +56,16 @@ class TestBigQueryToGCSTemplate:
         bigquery_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read \
-            .format.assert_called_with("bigquery")
+            .format.assert_called_with(constants.FORMAT_BIGQUERY)
         mock_spark_session.read \
             .format() \
-            .option.assert_called_with("table","projectId:dataset.table")
+            .option.assert_called_with(constants.TABLE,"projectId:dataset.table")
         mock_spark_session.read \
             .format() \
             .option() \
             .load.assert_called_with()
         mock_spark_session.dataframe.DataFrame.write \
-            .mode.assert_called_once_with(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE)
+            .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .parquet.assert_called_once_with("gs://test")
@@ -85,19 +85,19 @@ class TestBigQueryToGCSTemplate:
         bigquery_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read \
-            .format.assert_called_with("bigquery")
+            .format.assert_called_with(constants.FORMAT_BIGQUERY)
         mock_spark_session.read \
             .format() \
-            .option.assert_called_with("table", "projectId:dataset.table")
+            .option.assert_called_with(constants.TABLE, "projectId:dataset.table")
         mock_spark_session.read \
             .format() \
             .option() \
             .load.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write \
-            .mode.assert_called_once_with(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE)
+            .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
-            .format.assert_called_once_with(constants.BQ_GCS_OUTPUT_FORMAT_AVRO)
+            .format.assert_called_once_with(constants.FORMAT_AVRO)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .format() \
@@ -118,19 +118,19 @@ class TestBigQueryToGCSTemplate:
         bigquery_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read \
-            .format.assert_called_with("bigquery")
+            .format.assert_called_with(constants.FORMAT_BIGQUERY)
         mock_spark_session.read \
             .format() \
-            .option.assert_called_with("table", "projectId:dataset.table")
+            .option.assert_called_with(constants.TABLE, "projectId:dataset.table")
         mock_spark_session.read \
             .format() \
             .option() \
             .load.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write \
-            .mode.assert_called_once_with(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE)
+            .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
-            .option.assert_called_once_with(constants.BQ_GCS_CSV_HEADER,True)
+            .option.assert_called_once_with(constants.CSV_HEADER, True)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .option() \
@@ -151,16 +151,16 @@ class TestBigQueryToGCSTemplate:
         bigquery_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read \
-            .format.assert_called_with("bigquery")
+            .format.assert_called_with(constants.FORMAT_BIGQUERY)
         mock_spark_session.read \
             .format() \
-            .option.assert_called_with("table", "projectId:dataset.table")
+            .option.assert_called_with(constants.TABLE, "projectId:dataset.table")
         mock_spark_session.read \
             .format() \
             .option() \
             .load.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write \
-            .mode.assert_called_once_with(constants.BQ_GCS_OUTPUT_MODE_OVERWRITE)
+            .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .json.assert_called_once_with("gs://test")

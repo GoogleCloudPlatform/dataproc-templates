@@ -45,10 +45,10 @@ class BigQueryToGCSTemplate(BaseTemplate):
             required=True,
             help='Output file format (one of: avro,parquet,csv,json)',
             choices=[
-                constants.BQ_GCS_OUTPUT_FORMAT_AVRO,
-                constants.BQ_GCS_OUTPUT_FORMAT_PARQUET,
-                constants.BQ_GCS_OUTPUT_FORMAT_CSV,
-                constants.BQ_GCS_OUTPUT_FORMAT_JSON
+                constants.FORMAT_AVRO,
+                constants.FORMAT_PRQT,
+                constants.FORMAT_CSV,
+                constants.FORMAT_JSON
             ]
         )
         parser.add_argument(
@@ -61,17 +61,17 @@ class BigQueryToGCSTemplate(BaseTemplate):
             f'--{constants.BQ_GCS_OUTPUT_MODE}',
             dest=constants.BQ_GCS_OUTPUT_MODE,
             required=False,
-            default=constants.BQ_GCS_OUTPUT_MODE_APPEND,
+            default=constants.OUTPUT_MODE_APPEND,
             help=(
                 'Output write mode '
                 '(one of: append,overwrite,ignore,errorifexists) '
                 '(Defaults to append)'
             ),
             choices=[
-                constants.BQ_GCS_OUTPUT_MODE_OVERWRITE,
-                constants.BQ_GCS_OUTPUT_MODE_APPEND,
-                constants.BQ_GCS_OUTPUT_MODE_IGNORE,
-                constants.BQ_GCS_OUTPUT_MODE_ERRORIFEXISTS
+                constants.OUTPUT_MODE_OVERWRITE,
+                constants.OUTPUT_MODE_APPEND,
+                constants.OUTPUT_MODE_IGNORE,
+                constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
 
@@ -98,24 +98,24 @@ class BigQueryToGCSTemplate(BaseTemplate):
 
         # Read
         input_data = spark.read \
-            .format("bigquery") \
-            .option("table", input_table) \
+            .format(constants.FORMAT_BIGQUERY) \
+            .option(constants.TABLE, input_table) \
             .load()
 
         # Write
         writer: DataFrameWriter = input_data.write.mode(output_mode)
 
-        if output_format == constants.BQ_GCS_OUTPUT_FORMAT_PARQUET:
+        if output_format == constants.FORMAT_PRQT:
             writer.parquet(output_location)
-        elif output_format == constants.BQ_GCS_OUTPUT_FORMAT_AVRO:
+        elif output_format == constants.FORMAT_AVRO:
             writer \
-                .format(constants.BQ_GCS_OUTPUT_FORMAT_AVRO) \
+                .format(constants.FORMAT_AVRO) \
                 .save(output_location)
-        elif output_format == constants.BQ_GCS_OUTPUT_FORMAT_CSV:
+        elif output_format == constants.FORMAT_CSV:
             writer \
-                .option(constants.BQ_GCS_CSV_HEADER, True) \
+                .option(constants.CSV_HEADER, True) \
                 .csv(output_location)
-        elif output_format == constants.BQ_GCS_OUTPUT_FORMAT_JSON:
+        elif output_format == constants.FORMAT_JSON:
             writer.json(output_location)
         else:
             raise Exception(
