@@ -37,7 +37,7 @@ Help() {
 
     # Environment variables
     export GCP_PROJECT=projectId
-    export REGION=us-west1
+    export REGION=region
     export GCS_STAGING_LOCATION=gs://bucket/path
     export SUBNET=projects/{projectId}/regions/{regionId}/subnetworks/{subnetId}
     
