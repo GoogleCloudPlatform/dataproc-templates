@@ -50,6 +50,7 @@ class TestGCSToBigQueryTemplate:
         gcs_to_bigquery_template = GCSToBigQueryTemplate()
         mock_parsed_args = gcs_to_bigquery_template.parse_args(
             ["--gcs.bigquery.input.format=parquet",
+             "--gcs.bigquery.output.mode=append",
              "--gcs.bigquery.input.location=gs://test",
              "--gcs.bigquery.output.dataset=dataset",
              "--gcs.bigquery.output.table=table",
@@ -76,6 +77,7 @@ class TestGCSToBigQueryTemplate:
         gcs_to_bigquery_template = GCSToBigQueryTemplate()
         mock_parsed_args = gcs_to_bigquery_template.parse_args(
             ["--gcs.bigquery.input.format=avro",
+             "--gcs.bigquery.output.mode=overwrite",
              "--gcs.bigquery.input.location=gs://test",
              "--gcs.bigquery.output.dataset=dataset",
              "--gcs.bigquery.output.table=table",
@@ -93,7 +95,7 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.dataframe.DataFrame.write.format().option(
         ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with("append")
+        ).option().option().mode.assert_called_once_with("overwrite")
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
 
@@ -104,6 +106,7 @@ class TestGCSToBigQueryTemplate:
         gcs_to_bigquery_template = GCSToBigQueryTemplate()
         mock_parsed_args = gcs_to_bigquery_template.parse_args(
             ["--gcs.bigquery.input.format=csv",
+             "--gcs.bigquery.output.mode=append",
              "--gcs.bigquery.input.location=gs://test",
              "--gcs.bigquery.output.dataset=dataset",
              "--gcs.bigquery.output.table=table",
@@ -139,6 +142,7 @@ class TestGCSToBigQueryTemplate:
         gcs_to_bigquery_template = GCSToBigQueryTemplate()
         mock_parsed_args = gcs_to_bigquery_template.parse_args(
             ["--gcs.bigquery.input.format=json",
+             "--gcs.bigquery.output.mode=overwrite",
              "--gcs.bigquery.input.location=gs://test",
              "--gcs.bigquery.output.dataset=dataset",
              "--gcs.bigquery.output.table=table",
@@ -154,6 +158,6 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.dataframe.DataFrame.write.format().option(
         ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with("append")
+        ).option().option().mode.assert_called_once_with("overwrite")
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
