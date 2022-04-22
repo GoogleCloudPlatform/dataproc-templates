@@ -55,7 +55,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
             f'--{constants.GCS_BQ_INPUT_FORMAT}',
             dest=constants.GCS_BQ_INPUT_FORMAT,
             required=True,
-            help='Input file format (one of: avro,parquet,csv)',
+            help='Input file format (one of: avro,parquet,csv,json)',
             choices=[
                 constants.FORMAT_AVRO,
                 constants.FORMAT_PRQT,
