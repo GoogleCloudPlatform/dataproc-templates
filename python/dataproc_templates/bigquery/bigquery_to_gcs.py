@@ -117,7 +117,3 @@ class BigQueryToGCSTemplate(BaseTemplate):
                 .csv(output_location)
         elif output_format == constants.FORMAT_JSON:
             writer.json(output_location)
-        else:
-            raise Exception(
-                "Currently avro, parquet, csv and json are the only supported formats"
-            )
