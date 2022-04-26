@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from typing import Dict, Sequence, Optional, Any
+from logging import Logger
 import argparse
 import pprint
 
@@ -82,8 +83,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
-        log4jLogger = spark.sparkContext._jvm.org.apache.log4j  # pylint: disable=protected-access,invalid-name
-        logger = log4jLogger.LogManager.getLogger(__name__)
+        logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
         input_table: str = args[constants.BQ_GCS_INPUT_TABLE]
