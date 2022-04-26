@@ -3,33 +3,59 @@
 * [GCSToBigQuery](dataproc_templates/gcs/README.md)
 * [BigQueryToGCS](dataproc_templates/bigquery/README.md)
 
-Dataproc Templates (Python - PySpark) submit jobs to Dataproc Serverless using [batches submit pyspark ](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
+Dataproc Templates (Python - PySpark) submit jobs to Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
 
-## Requirements
+## Setting up the local environment
 
-- Python 3.8
+It is recommended to use a [virtual environment](https://docs.python.org/3/library/venv.html) when setting up the local environment. This setup is not required for submitting templates, only for running and developing locally.
 
-## Run unit tests
+``` bash
+# Create a virtual environment, activate it and install requirements
+mkdir venv
+python -m venv venv/
+source venv/bin/activate
+pip install -r requirements.txt
 ```
-coverage run --source=dataproc_templates --module pytest --verbose test && coverage report --show-missing
+
+## Running unit tests
+
+Unit tests are developed using [`pytest`](https://docs.pytest.org/en/7.1.x/).
+
+To run all unit tests, simply run pytest:
+
+``` bash
+pytest
 ```
 
-## Submit templates to Dataproc Serverless
+To generate a coverage report, run the tests using coverage
+
+``` bash
+coverage run \
+  --source=dataproc_templates \
+  --module pytest \
+  --verbose \
+  test
+
+coverage report --show-missing
+```
+
+## Submitting templates to Dataproc Serverless
 
 A shell script is provided to:
- - Build the python package
- - Set Dataproc parameters based on environment variables
- - Submit the desired template to Dataproc with the provided template parameters
+- Build the python package
+- Set Dataproc parameters based on environment variables
+- Submit the desired template to Dataproc with the provided template parameters
  
-**bin/start.sh usage syntax**:
+**bin/start.sh usage**:
+
 ```
 # Set required environment variables
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gs://path>
-export SUBNET=<subnet>
 
 # Set optional environment variables
+export SUBNET=<subnet>
 export JARS="gs://additional/dependency.jar"
 export HISTORY_SERVER_CLUSTER=projects/{projectId}/regions/{regionId}/clusters/{clusterId}
 export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{serviceId}
@@ -41,18 +67,23 @@ export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{ser
                   --my.other.property="<value>"
                   (etc...)
 ```
-To see template's specific parameters, refer to each template's README.  
-Refer to this [documentation](https://cloud.google.com/dataproc-serverless/docs/concepts/properties) to see the available spark properties.
 
-It is also possible to submit the jobs using gcloud CLI, after building the package.
+**gcloud CLI usage**:
 
-**gcloud CLI usage syntax**:
+It is also possible to submit jobs using the `gcloud` CLI directly. That can be achieved by:
+
+1. Building the `dataproc_templates` package into an `.egg`
+
+``` bash
+PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
+python setup.py bdist_egg --output=${PACKAGE_EGG_FILE}
 ```
-# Build the package
-python setup.py bdist_egg
-export PACKAGE_EGG_FILE=dist/dataproc_templates-0.0.1-py3.8.egg
 
-# Submit passing Dataproc and template parameters
+2. Submitting the job
+  * The `main.py` file should be the main python script
+  * The `.egg` file for the package must be bundled using the `--py-files` flag
+
+```
 gcloud dataproc batches submit pyspark \
       --region=<region> \
       --project=<project_id> \
@@ -67,3 +98,7 @@ gcloud dataproc batches submit pyspark \
          --<my.other.property>="<value>"
          (etc...)
 ```
+
+To see each template's specific parameters, refer to each template's README.
+
+Refer to this [documentation](https://cloud.google.com/dataproc-serverless/docs/concepts/properties) to see the available spark properties.
