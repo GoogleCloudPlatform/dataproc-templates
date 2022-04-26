@@ -14,22 +14,27 @@
  * limitations under the License.
 """
 
+from typing import List
+
 import pytest
 
+from dataproc_templates import TemplateName
 from dataproc_templates.util.argument_parsing import get_template_name
 
 
 def test_get_valid_template_names():
-  """Tests valid template names"""
-  template_names = ["GCSTOBIGQUERY", "BIGQUERYTOGCS"]
+    """Tests valid template names"""
+    template_names: List[str] = ["GCSTOBIGQUERY", "BIGQUERYTOGCS"]
 
-  for template_name in template_names:
-    parsed_template_name = get_template_name(["--template=" + template_name])
-    assert template_name == parsed_template_name
+    for template_name in template_names:
+        parsed_template_name: TemplateName = get_template_name(
+            args=["--template",  template_name]
+        )
+        assert template_name == parsed_template_name.value
 
 
 def test_get_invalid_template_name():
-  """Tests that an invalid template name raises an error"""
-  template_name = "GCSTOSMALLQUERY"
-  with pytest.raises(SystemExit):
-    get_template_name(["--template=" + template_name])
+    """Tests that an invalid template name raises an error"""
+    template_name = "GCSTOSMALLQUERY"
+    with pytest.raises(SystemExit):
+        get_template_name(["--template=" + template_name])

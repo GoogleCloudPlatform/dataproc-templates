@@ -18,7 +18,7 @@ import argparse
 from dataproc_templates import TemplateName
 
 
-def get_template_name(args: Optional[Sequence[str]] = None) -> str:
+def get_template_name(args: Optional[Sequence[str]] = None) -> TemplateName:
     """
     Parses the template name option from the program arguments.
 
@@ -54,4 +54,4 @@ def get_template_name(args: Optional[Sequence[str]] = None) -> str:
         parser.print_help()
         parser.exit()
 
-    return known_args.template_name
+    return TemplateName.from_string(known_args.template_name)

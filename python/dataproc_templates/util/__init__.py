@@ -13,3 +13,4 @@
 # limitations under the License.
 
 from .argument_parsing import get_template_name
+from .tracking import track_template_invocation
