@@ -1,3 +1,5 @@
+![Build Status](http://35.227.235.112/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=java-build)
+
 # Dataproc Templates (Java - Spark)
 
 * [HiveToBigQuery](src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
