@@ -28,14 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Spark job to move data or/and schema from Kafka topic to GCS. This template can be configured
- * to run in few different modes. In default mode kafka.gcs.output.mode is set to "append".
- * This will write only the new row in streaming DataFrame/Dataset to write to sink. Other possible values for this
- * property are:
- * 1. Complete: All the rows in the streaming DataFrame/Dataset will be written to the sink every time there are some updates.
- * 2. Update: Only the rows that were updated in the streaming DataFrame/Dataset will be written to the sink every time there are some updates.
- * For detailed list of properties
- * refer "KafkaToGCS Template properties" section in resources/template.properties file.
+ * Spark job to move data or/and schema from Kafka topic to GCS. This template can be configured to
+ * run in few different modes. In default mode kafka.gcs.output.mode is set to "append". This will
+ * write only the new row in streaming DataFrame/Dataset to write to sink. Other possible values for
+ * this property are: 1. Complete: All the rows in the streaming DataFrame/Dataset will be written
+ * to the sink every time there are some updates. 2. Update: Only the rows that were updated in the
+ * streaming DataFrame/Dataset will be written to the sink every time there are some updates. For
+ * detailed list of properties refer "KafkaToGCS Template properties" section in
+ * resources/template.properties file.
  */
 public class KafkaToGCS implements BaseTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(KafkaToGCS.class);
@@ -50,18 +50,14 @@ public class KafkaToGCS implements BaseTemplate {
 
   public KafkaToGCS() {
     gcsOutputLocation = getProperties().getProperty(KAFKA_GCS_OUTPUT_LOCATION);
-    gcsOutputFormat =
-        getProperties().getProperty(KAFKA_GCS_OUTPUT_FORMAT, KAFKA_GCS_OUTPUT_FORMAT_DEFAULT);
+    gcsOutputFormat = getProperties().getProperty(KAFKA_GCS_OUTPUT_FORMAT);
     kafkaBootstrapServers = getProperties().getProperty(KAFKA_GCS_BOOTSTRAP_SERVERS);
     kafkaTopic = getProperties().getProperty(KAFKA_GCS_TOPIC);
     gcsCheckpointLocation = gcsOutputLocation.concat("/checkpoint/");
-    kafkaStartingOffsets =
-        getProperties().getProperty(KAFKA_GCS_STARTING_OFFSET, KAFKA_GCS_STARTING_OFFSET_DEFAULT);
-    kafkaOutputMode =
-        getProperties().getProperty(KAFKA_GCS_OUTPUT_MODE, KAFKA_GCS_OUTPUT_MODE_DEFAULT);
+    kafkaStartingOffsets = getProperties().getProperty(KAFKA_GCS_STARTING_OFFSET);
+    kafkaOutputMode = getProperties().getProperty(KAFKA_GCS_OUTPUT_MODE);
     kafkaAwaitTerminationTimeout =
-        Long.valueOf(
-            getProperties().getProperty(KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT, KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT_DEFAULT));
+        Long.valueOf(getProperties().getProperty(KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT));
   }
 
   @Override

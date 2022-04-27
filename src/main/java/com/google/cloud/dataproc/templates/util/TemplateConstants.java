@@ -200,14 +200,11 @@ public interface TemplateConstants {
 
   /** Kafka To GCS properties */
   String KAFKA_GCS_OUTPUT_LOCATION = "kafka.gcs.output.location";
+
   String KAFKA_GCS_OUTPUT_FORMAT = "kafka.gcs.output.format";
-  String KAFKA_GCS_OUTPUT_FORMAT_DEFAULT = "csv";
   String KAFKA_GCS_BOOTSTRAP_SERVERS = "kafka.gcs.bootstrap.servers";
   String KAFKA_GCS_TOPIC = "kafka.gcs.topic";
   String KAFKA_GCS_STARTING_OFFSET = "kafka.gcs.starting.offset";
-  String KAFKA_GCS_STARTING_OFFSET_DEFAULT = "latest";
   String KAFKA_GCS_OUTPUT_MODE = "kafka.gcs.output.mode";
-  String KAFKA_GCS_OUTPUT_MODE_DEFAULT = "append";
   String KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT = "kafka.gcs.await.termination.timeout";
-  String KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT_DEFAULT = "300000";
 }

@@ -25,9 +25,12 @@ kafka.gcs.output.format=<gcs output format>;
 kafka.gcs.bootstrap.servers=<kafka bootstrap server>;
 kafka.gcs.topic=<kafka topic>;
 
-#Offset to start reading from. Values can be '**earliest**' ,'lateßst', '<topic_name>:{<partition>:<offeset>}' ...
+#Offset to start reading from. Values can be '**earliest**' ,'latest', '<topic_name>:{<partition>:<offset>}' ...
 kafka.gcs.starting.offset=<starting offset value>
 
 #Await time in milliseconds before terminating stream read
 kafka.gcs.await.termination.timeout=<stream await termination timeout>
+
+#Ouptut mode for writing data. Values can be 'append', 'complete', 'update'
+kafka.gcs.output.mode=<kafka output mode> 
 ```
