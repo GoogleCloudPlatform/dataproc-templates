@@ -1,3 +1,5 @@
+![Build Status](http://35.227.235.112/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build)
+
 # Dataproc Templates (Python - PySpark)
 
 * [GCSToBigQuery](dataproc_templates/gcs/README.md)
