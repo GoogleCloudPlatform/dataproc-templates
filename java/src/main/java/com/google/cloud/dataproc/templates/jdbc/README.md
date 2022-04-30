@@ -18,12 +18,11 @@ Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 General Execution:
 
 ```
-GCP_PROJECT=<gcp-project-id> \
-REGION=<region>  \
-SUBNET=<subnet>   \
-GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
-HISTORY_SERVER_CLUSTER=<history-server> \
-export JARS=<gcs_path_to_jar_files> \
+export GCP_PROJECT=<gcp-project-id> \
+export REGION=<region>  \
+export SUBNET=<subnet>   \
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+export JARS=<gcs_path_to_jar_files>
 
 bin/start.sh \
 -- --template JDBCTOBIGQUERY \
@@ -58,32 +57,49 @@ Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 General Execution:
 
 ```
-GCP_PROJECT=<gcp-project-id> \
-REGION=<region>  \
-SUBNET=<subnet>   \
-GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
-HISTORY_SERVER_CLUSTER=<history-server> \
-export JARS=<gcs_path_to_jar_files> \
+export GCP_PROJECT=<gcp-project-id> \
+export REGION=<region>  \
+export SUBNET=<subnet>   \
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+export JARS=<gcs_path_to_jdbc_jar_files>
 
 bin/start.sh \
 -- --template JDBCTOGCS \
---templateProperty jdbctobq.jdbc.url=<jdbc url> \
---templateProperty  jdbctogcs.jdbc.driver.class.name=<jdbc-driver-class-name> \
---templateProperty  jdbctogcs.output.location=<gcs-ouput-location> \
---templateProperty  jdbctogcs.output.format=<optional_output-format> \
---templateProperty  jdbctogcs.write.mode=<optional_write-mode> \
---templateProperty  jdbctogcs.sql=<input-sql> \
---templateProperty  jdbctogcs.partition.col=<optional_partition-col> \
+--templateProperty jdbctogcs.jdbc.url=<jdbc url> \
+--templateProperty jdbctogcs.jdbc.driver.class.name=<jdbc-driver-class-name> \
+--templateProperty jdbctogcs.output.location=<gcs-ouput-location> \
+--templateProperty jdbctogcs.output.format=<csv|avro|orc|json|parquet> \
+--templateProperty jdbctogcs.write.mode=<optional_write-mode> \
+--templateProperty jdbctogcs.sql=<input-sql> \
+--templateProperty jdbctogcs.partition.col=<optional_partition-col>
 ```
 
 Note: Following is example JDBC URL for mysql database
 
 ```
---templateProperty  jdbctogcs.jdbc.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>"
+--templateProperty  'jdbctogcs.jdbc.url=jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>'
 ```
 
 Have SQL query within double quotes. Example,
 
 ```
---templateProperty  jdbctogcs.sql="select * from dbname.tablename"
+--templateProperty  'jdbctogcs.sql=select * from dbname.tablename'
 ```
+
+Example execution:
+
+
+    export GCP_PROJECT=my-gcp-proj \
+    export REGION=us-central1  \
+    export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default   \
+    export GCS_STAGING_LOCATION=gs://my-gcp-proj/mysql-export/staging \
+    export JARS=gs://my-gcp-proj/mysql-export/mysql-connector-java-8.0.17.jar
+
+    bin/start.sh \
+    -- --template JDBCTOGCS \
+    --templateProperty 'jdbctogcs.jdbc.url=jdbc:mysql://192.168.16.3:3306/MyCloudSQLDB?user=root&password=root' \
+    --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.cj.jdbc.Driver \
+    --templateProperty jdbctogcs.output.location=gs://my-gcp-proj/mysql-export/export/table1_export \
+    --templateProperty jdbctogcs.output.format=avro \
+    --templateProperty jdbctogcs.write.mode=OVERWRITE \
+    --templateProperty 'jdbctogcs.sql=SELECT * FROM MyCloudSQLDB.table1'
