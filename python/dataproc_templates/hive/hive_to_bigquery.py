@@ -110,16 +110,9 @@ class HiveToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        # input_data = spark.sql("select * from default.employee")
         input_data = spark.sql(hive_sql)
 
         # Write
-        # input_data.write \
-        #     .format("com.google.cloud.spark.bigquery") \
-        #     .option("table", "hive_to_bq_py.employee") \
-        #     .option("temporaryGcsBucket", "python-hive-to-bq-temp") \
-        #     .mode("overwrite") \
-        #     .save()
         input_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
