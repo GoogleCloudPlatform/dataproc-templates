@@ -26,7 +26,6 @@
     <project.version>3.1</project.version>
     <junit-platform.version>5.7.2</junit-platform.version>
     <spotless-maven-plugin.version>2.1.0</spotless-maven-plugin.version>
-    <json.version>20211205$</json.version>
   </properties>
 
   <dependencies>
@@ -240,7 +239,7 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
-      <version>{json.version}</version>
+      <version>20211205</version>
     </dependency>
 
   </dependencies>

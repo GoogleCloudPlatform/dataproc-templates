@@ -114,7 +114,7 @@ Dataproc Templates (Java - Spark) submit jobs to Dataproc Serverless using [batc
         ```
         bin/start.sh -- --template PUBSUBTOBQ
         ```
-       
+
    1. #### Executing PubSub to GCS template.
        ```
        bin/start.sh -- --template PUBSUBTOGCS
