@@ -19,11 +19,9 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
@@ -70,55 +68,8 @@ public class PubSubToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(inputProjectID)
-        || StringUtils.isAllBlank(pubsubInputSubscription)
-        || StringUtils.isAllBlank(outputProjectID)
-        || StringUtils.isAllBlank(gcsBucketName)
-        || StringUtils.isAllBlank(outputDataFormat)) {
-      LOGGER.error(
-          "{},{},{},{},{} are required parameter. ",
-          PUBSUB_GCS_INPUT_PROJECT_ID_PROP,
-          PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP,
-          PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP,
-          PUBSUB_GCS_BUCKET_NAME,
-          PUBSUB_GCS_OUTPUT_DATA_FORMAT);
-      throw new IllegalArgumentException(
-          "Required parameters for PubSubToGCS not passed. "
-              + "Set mandatory parameter for PubSubToGCS template "
-              + "in resources/conf/template.properties file.");
-    }
-
+    this.addTemplateLogging();
     JavaStreamingContext jsc = null;
-    LOGGER.info(
-        "Starting PubSub to GCS spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}"
-            + "5. {},{}"
-            + "6. {},{}"
-            + "7. {},{}"
-            + "8. {},{}"
-            + "9. {},{}",
-        PUBSUB_GCS_INPUT_PROJECT_ID_PROP,
-        inputProjectID,
-        PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP,
-        pubsubInputSubscription,
-        PUBSUB_GCS_TIMEOUT_MS_PROP,
-        timeoutMs,
-        PUBSUB_GCS_STREAMING_DURATION_SECONDS_PROP,
-        streamingDuration,
-        PUBSUB_GCS_TOTAL_RECEIVERS_PROP,
-        totalReceivers,
-        PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP,
-        outputProjectID,
-        PUBSUB_GCS_BUCKET_NAME,
-        gcsBucketName,
-        PUBSUB_GCS_BATCH_SIZE_PROP,
-        batchSize,
-        PUBSUB_GCS_OUTPUT_DATA_FORMAT,
-        outputDataFormat);
-
     try {
       SparkConf sparkConf = new SparkConf().setAppName("PubSubToGCS Dataproc Job");
       jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
@@ -149,13 +100,61 @@ public class PubSubToGCS implements BaseTemplate {
 
       LOGGER.info("PubSubToGCS job completed.");
       jsc.stop();
-
     } catch (Throwable th) {
       LOGGER.error("Exception in PubSubToGCS", th);
       if (Objects.nonNull(jsc)) {
         jsc.stop();
       }
     }
+  }
+
+  private void addTemplateLogging() {
+    if (StringUtils.isAllBlank(inputProjectID)
+        || StringUtils.isAllBlank(pubsubInputSubscription)
+        || StringUtils.isAllBlank(outputProjectID)
+        || StringUtils.isAllBlank(gcsBucketName)
+        || StringUtils.isAllBlank(outputDataFormat)) {
+      LOGGER.error(
+          "{},{},{},{},{} are required parameter. ",
+          PUBSUB_GCS_INPUT_PROJECT_ID_PROP,
+          PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP,
+          PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP,
+          PUBSUB_GCS_BUCKET_NAME,
+          PUBSUB_GCS_OUTPUT_DATA_FORMAT);
+      throw new IllegalArgumentException(
+          "Required parameters for PubSubToGCS not passed. "
+              + "Set mandatory parameter for PubSubToGCS template "
+              + "in resources/conf/template.properties file.");
+    }
+    LOGGER.info(
+        "Starting PubSub to GCS spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {},{}"
+            + "5. {},{}"
+            + "6. {},{}"
+            + "7. {},{}"
+            + "8. {},{}"
+            + "9. {},{}",
+        PUBSUB_GCS_INPUT_PROJECT_ID_PROP,
+        inputProjectID,
+        PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP,
+        pubsubInputSubscription,
+        PUBSUB_GCS_TIMEOUT_MS_PROP,
+        timeoutMs,
+        PUBSUB_GCS_STREAMING_DURATION_SECONDS_PROP,
+        streamingDuration,
+        PUBSUB_GCS_TOTAL_RECEIVERS_PROP,
+        totalReceivers,
+        PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP,
+        outputProjectID,
+        PUBSUB_GCS_BUCKET_NAME,
+        gcsBucketName,
+        PUBSUB_GCS_BATCH_SIZE_PROP,
+        batchSize,
+        PUBSUB_GCS_OUTPUT_DATA_FORMAT,
+        outputDataFormat);
   }
 
   public static void writeToGCS(
@@ -174,46 +173,26 @@ public class PubSubToGCS implements BaseTemplate {
                   @Override
                   public void call(Iterator<SparkPubsubMessage> sparkPubsubMessageIterator)
                       throws Exception {
-                    if (Arrays.asList(PUBSUB_GCS_OUTPUT_FORMATS_ARRAY).contains(outputDataFormat)) {
+                    if (outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_AVRO_EXTENSION)
+                        || outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_JSON_EXTENSION)) {
                       JSONArray jsonArr = new JSONArray();
                       while (sparkPubsubMessageIterator.hasNext()) {
                         SparkPubsubMessage message = sparkPubsubMessageIterator.next();
                         if (outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_AVRO_EXTENSION)) {
-                          LOGGER.info("PubSubToGCS message Avro start...");
-                          Blob blob =
-                              bucket.create(
-                                  PUBSUB_GCS_BUCKET_OUTPUT_PATH
-                                      + message.getMessageId()
-                                      + "."
-                                      + PUBSUB_GCS_AVRO_EXTENSION,
-                                  message.getData());
-                          LOGGER.info("PubSubToGCS message Avro end...");
+                          writeAvroToGCS(message, bucket);
                         } else if (outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_JSON_EXTENSION)) {
-                          LOGGER.info("PubSubToGCS message Json start...");
                           JSONObject record = new JSONObject(new String(message.getData()));
                           jsonArr.put(record);
                           if (jsonArr.length() == batchSize && jsonArr.length() > 0) {
-                            bucket.create(
-                                PUBSUB_GCS_BUCKET_OUTPUT_PATH
-                                    + "batch_"
-                                    + System.nanoTime()
-                                    + "."
-                                    + PUBSUB_GCS_JSON_EXTENSION,
-                                jsonArr.toString().getBytes(UTF_8));
+                            writeJsonArrayToGCS(jsonArr, bucket);
                             jsonArr = new JSONArray();
                           }
-                          LOGGER.info("PubSubToGCS message Json end...");
                         }
                       } // end while
                       if (jsonArr.length() > 0
                           && outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_JSON_EXTENSION)) {
-                        bucket.create(
-                            PUBSUB_GCS_BUCKET_OUTPUT_PATH
-                                + "batch_"
-                                + System.nanoTime()
-                                + "."
-                                + PUBSUB_GCS_JSON_EXTENSION,
-                            jsonArr.toString().getBytes(UTF_8));
+                        // If any Json objects were missed including in the last batch
+                        writeJsonArrayToGCS(jsonArr, bucket);
                         jsonArr = new JSONArray();
                       }
                     } else {
@@ -223,5 +202,25 @@ public class PubSubToGCS implements BaseTemplate {
                 });
           }
         });
+  }
+
+  public static void writeAvroToGCS(SparkPubsubMessage message, Bucket bucket) {
+    LOGGER.info("PubSubToGCS message Avro start...");
+    bucket.create(
+        PUBSUB_GCS_BUCKET_OUTPUT_PATH + message.getMessageId() + "." + PUBSUB_GCS_AVRO_EXTENSION,
+        message.getData());
+    LOGGER.info("PubSubToGCS message Avro end...");
+  }
+
+  public static void writeJsonArrayToGCS(JSONArray jsonArr, Bucket bucket) {
+    LOGGER.info("PubSubToGCS message Json Array start...");
+    bucket.create(
+        PUBSUB_GCS_BUCKET_OUTPUT_PATH
+            + "batch_"
+            + System.nanoTime()
+            + "."
+            + PUBSUB_GCS_JSON_EXTENSION,
+        jsonArr.toString().getBytes(UTF_8));
+    LOGGER.info("PubSubToGCS message Json Array end...");
   }
 }

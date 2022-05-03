@@ -214,7 +214,6 @@ public interface TemplateConstants {
   String PUBSUB_GCS_BATCH_SIZE_PROP = "pubsubtogcs.batch.size";
   String PUBSUB_GCS_BUCKET_OUTPUT_PATH = "output/";
   String PUBSUB_GCS_OUTPUT_DATA_FORMAT = "pubsubtogcs.gcs.output.data.format";
-  String[] PUBSUB_GCS_OUTPUT_FORMATS_ARRAY = {"AVRO", "JSON"};
   String PUBSUB_GCS_AVRO_EXTENSION = "avro";
   String PUBSUB_GCS_JSON_EXTENSION = "json";
 
