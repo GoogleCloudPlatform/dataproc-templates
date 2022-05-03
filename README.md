@@ -17,6 +17,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  
 * [S3ToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
 * [JDBCToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [JDBCToGCS](java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
+* [PubSubToGCS](java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md#2-pubsub-to-gcs)
 * [WordCount](java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](java/src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
