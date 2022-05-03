@@ -22,6 +22,7 @@ from dataproc_templates import BaseTemplate, TemplateName
 from dataproc_templates.util import get_template_name, track_template_invocation
 from dataproc_templates.gcs.gcs_to_bigquery import GCSToBigQueryTemplate
 from dataproc_templates.bigquery.bigquery_to_gcs import BigQueryToGCSTemplate
+from dataproc_templates.hive.hive_to_bigquery import HiveToBigQueryTemplate
 
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
@@ -31,7 +32,8 @@ LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
 # of BaseTemplate
 TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.GCSTOBIGQUERY: GCSToBigQueryTemplate,
-    TemplateName.BIGQUERYTOGCS: BigQueryToGCSTemplate
+    TemplateName.BIGQUERYTOGCS: BigQueryToGCSTemplate,
+    TemplateName.HIVETOBIGQUERY: HiveToBigQueryTemplate
 }
 
 
@@ -52,6 +54,7 @@ def create_spark_session(template_name: TemplateName) -> SparkSession:
 
     spark = SparkSession.builder \
         .appName(template_name.value) \
+        .enableHiveSupport() \
         .getOrCreate()
     spark.sparkContext.setLogLevel("INFO")
 

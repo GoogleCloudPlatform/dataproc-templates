@@ -25,6 +25,7 @@ FORMAT_PRQT = "parquet"
 FORMAT_AVRO_EXTD = "com.databricks.spark.avro"
 FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery"
 TABLE = "table"
+TEMP_GCS_BUCKET="temporaryGcsBucket"
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -46,3 +47,10 @@ BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
 BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format"
 BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode"
 BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location"
+
+# Hive to BigQuery
+HIVE_BQ_OUTPUT_MODE = "hive.bigquery.output.mode"
+HIVE_BQ_LD_TEMP_BUCKET_NAME = "hive.bigquery.temp.bucket.name"
+HIVE_BQ_OUTPUT_DATASET = "hive.bigquery.output.dataset"
+HIVE_BQ_OUTPUT_TABLE = "hive.bigquery.output.table"
+HIVE_BQ_SQL = "hive.bigquery.sql"
