@@ -31,13 +31,15 @@ class TestHiveToBigQueryTemplate:
 
         hive_to_bigquery_template = HiveToBigQueryTemplate()
         parsed_args = hive_to_bigquery_template.parse_args(
-            ["--hive.bigquery.sql=select * from database.table",
+            ["--hive.bigquery.input.database=database",
+            "--hive.bigquery.input.table=table",
              "--hive.bigquery.output.dataset=dataset",
              "--hive.bigquery.output.table=table",
              "--hive.bigquery.temp.bucket.name=bucket",
              "--hive.bigquery.output.mode=overwrite"])
 
-        assert parsed_args["hive.bigquery.sql"] == "select * from database.table"
+        assert parsed_args["hive.bigquery.input.database"] == "database"
+        assert parsed_args["hive.bigquery.input.table"] == "table"
         assert parsed_args["hive.bigquery.output.dataset"] == "dataset"
         assert parsed_args["hive.bigquery.output.table"] == "table"
         assert parsed_args["hive.bigquery.temp.bucket.name"] == "bucket"
@@ -49,15 +51,16 @@ class TestHiveToBigQueryTemplate:
 
         hive_to_bigquery_template = HiveToBigQueryTemplate()
         mock_parsed_args = hive_to_bigquery_template.parse_args(
-            ["--hive.bigquery.sql=select * from database.table",
+            ["--hive.bigquery.input.database=database",
+            "--hive.bigquery.input.table=table",
              "--hive.bigquery.output.dataset=dataset",
              "--hive.bigquery.output.table=table",
              "--hive.bigquery.temp.bucket.name=bucket",
              "--hive.bigquery.output.mode=overwrite"])
-        mock_spark_session.sql.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.table.return_value = mock_spark_session.dataframe.DataFrame
         hive_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
 
-        mock_spark_session.sql.assert_called_once_with("select * from database.table")
+        mock_spark_session.table.assert_called_once_with("database.table")
         mock_spark_session.dataframe.DataFrame.write \
             .format.assert_called_once_with(constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write \
@@ -85,15 +88,16 @@ class TestHiveToBigQueryTemplate:
 
         hive_to_bigquery_template = HiveToBigQueryTemplate()
         mock_parsed_args = hive_to_bigquery_template.parse_args(
-            ["--hive.bigquery.sql=select * from database.table",
+            ["--hive.bigquery.input.database=database",
+            "--hive.bigquery.input.table=table",
              "--hive.bigquery.output.dataset=dataset",
              "--hive.bigquery.output.table=table",
              "--hive.bigquery.temp.bucket.name=bucket",
              "--hive.bigquery.output.mode=append"])
-        mock_spark_session.sql.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.table.return_value = mock_spark_session.dataframe.DataFrame
         hive_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
 
-        mock_spark_session.sql.assert_called_once_with("select * from database.table")
+        mock_spark_session.table.assert_called_once_with("database.table")
         mock_spark_session.dataframe.DataFrame.write \
             .format.assert_called_once_with(constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write \

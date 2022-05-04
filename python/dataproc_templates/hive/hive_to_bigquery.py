@@ -35,12 +35,18 @@ class HiveToBigQueryTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.HIVE_BQ_SQL}',
-            dest=constants.HIVE_BQ_SQL,
+            f'--{constants.HIVE_BQ_INPUT_DATABASE}',
+            dest=constants.HIVE_BQ_INPUT_DATABASE,
             required=True,
-            help='Hive sql for importing data to BigQuery'
+            help='Hive database for importing data to BigQuery'
         )
-        
+
+        parser.add_argument(
+            f'--{constants.HIVE_BQ_INPUT_TABLE}',
+            dest=constants.HIVE_BQ_INPUT_TABLE,
+            required=True,
+            help='Hive table for importing data to BigQuery'
+        )
         parser.add_argument(
             f'--{constants.HIVE_BQ_OUTPUT_DATASET}',
             dest=constants.HIVE_BQ_OUTPUT_DATASET,
@@ -90,9 +96,10 @@ class HiveToBigQueryTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        hive_sql: str = args[constants.HIVE_BQ_SQL]
-        big_query_dataset: str = args[constants.HIVE_BQ_OUTPUT_DATASET]
-        big_query_table: str = args[constants.HIVE_BQ_OUTPUT_TABLE]
+        hive_datbase: str = args[constants.HIVE_BQ_INPUT_DATABASE]
+        hive_table: str = args[constants.HIVE_BQ_INPUT_TABLE]
+        bigquery_dataset: str = args[constants.HIVE_BQ_OUTPUT_DATASET]
+        bigquery_table: str = args[constants.HIVE_BQ_OUTPUT_TABLE]
         bq_temp_bucket: str = args[constants.HIVE_BQ_LD_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.HIVE_BQ_OUTPUT_MODE]
 
@@ -102,12 +109,12 @@ class HiveToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        input_data = spark.sql(hive_sql)
+        input_data = spark.table(hive_datbase + "." + hive_table)
 
         # Write
         input_data.write \
             .format(constants.FORMAT_BIGQUERY) \
-            .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
+            .option(constants.TABLE, bigquery_dataset + "." + bigquery_table) \
             .option(constants.TEMP_GCS_BUCKET, bq_temp_bucket) \
             .mode(output_mode) \
             .save()

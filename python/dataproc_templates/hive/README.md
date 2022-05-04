@@ -1,13 +1,14 @@
 ## Hive To BigQuery
 
-Template for reading data from Hive and writing them to a BigQuery table. It supports reading using hive sql query.
+Template for reading data from Hive and writing them to a BigQuery table. It supports reading from hive table.
 
 It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
 
 ## Arguments
 
 * `spark.hadoop.hive.metastore.uris`: Hive metastore URI
-* `hive.bigquery.sql`: Hive SQL query for required data
+* `hive.bigquery.input.database`: Hive database for input table query for required data
+* `hive.bigquery.input.table`: Hive input table name
 * `hive.bigquery.output.dataset`: BigQuery dataset for the output table
 * `hive.bigquery.output.table`: BigQuery output table name
 * `hive.bigquery.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
@@ -19,7 +20,8 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 $ python main.py --template HIVETOBIGQUERY --help
 
 usage: main.py --template HIVETOBIGQUERY [-h] \
-    --hive.bigquery.sql HIVE.BIGQUERY.SQL \ 
+    --hive.bigquery.input.database HIVE.BIGQUERY.INPUT.DATABASE \
+    --hive.bigquery.input.table HIVE.BIGQUERY.INPUT.TABLE \
     --hive.bigquery.output.dataset HIVE.BIGQUERY.OUTPUT.DATASET \
     --hive.bigquery.output.table HIVE.BIGQUERY.OUTPUT.TABLE \
     --hive.bigquery.temp.bucket.name HIVE.BIGQUERY.TEMP.BUCKET.NAME \ 
@@ -27,8 +29,10 @@ usage: main.py --template HIVETOBIGQUERY [-h] \
 
 optional arguments:
   -h, --help            show this help message and exit
-  --hive.bigquery.sql HIVE.BIGQUERY.SQL
-                        Hive sql for importing data to BigQuery
+  --hive.bigquery.input.database HIVE.BIGQUERY.INPUT.DATABASE
+                        Hive database for importing data to BigQuery
+  --hive.bigquery.input.table HIVE.BIGQUERY.INPUT.TABLE
+                        Hive table for importing data to BigQuery
   --hive.bigquery.output.dataset HIVE.BIGQUERY.OUTPUT.DATASET
                         BigQuery dataset for the output table
   --hive.bigquery.output.table HIVE.BIGQUERY.OUTPUT.TABLE
@@ -55,7 +59,8 @@ export SUBNET=<subnet>
 ./bin/start.sh \
     --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
     -- --template=HIVETOBIGQUERY \
-    --hive.bigquery.sql="<hive-sql>" \
+    --hive.bigquery.input.database="<database>" \
+    --hive.bigquery.input.table="<table>" \
     --hive.bigquery.output.dataset="<dataset>" \
     --hive.bigquery.output.table="<table>" \
     --hive.bigquery.output.mode="<append|overwrite|ignore|errorifexists>" \
