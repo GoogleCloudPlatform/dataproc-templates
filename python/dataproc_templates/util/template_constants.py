@@ -55,3 +55,10 @@ HIVE_BQ_OUTPUT_DATASET = "hive.bigquery.output.dataset"
 HIVE_BQ_OUTPUT_TABLE = "hive.bigquery.output.table"
 HIVE_BQ_INPUT_DATABASE="hive.bigquery.input.database"
 HIVE_BQ_INPUT_TABLE="hive.bigquery.input.table"
+
+# Hive to GCS
+HIVE_GCS_INPUT_DATABASE="hive.gcs.input.database"
+HIVE_GCS_INPUT_TABLE="hive.gcs.input.table"
+HIVE_GCS_OUTPUT_LOCATION = "hive.gcs.output.location"
+HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
+HIVE_GCS_OUTPUT_MODE = "hive.gcs.output.mode"

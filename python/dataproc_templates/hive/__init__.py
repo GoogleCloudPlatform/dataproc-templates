@@ -13,3 +13,4 @@
 # limitations under the License.
 
 from .hive_to_bigquery import HiveToBigQueryTemplate
+from .hive_to_gcs import HiveToGCSTemplate

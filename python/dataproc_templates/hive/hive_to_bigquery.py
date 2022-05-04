@@ -96,7 +96,7 @@ class HiveToBigQueryTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        hive_datbase: str = args[constants.HIVE_BQ_INPUT_DATABASE]
+        hive_database: str = args[constants.HIVE_BQ_INPUT_DATABASE]
         hive_table: str = args[constants.HIVE_BQ_INPUT_TABLE]
         bigquery_dataset: str = args[constants.HIVE_BQ_OUTPUT_DATASET]
         bigquery_table: str = args[constants.HIVE_BQ_OUTPUT_TABLE]
@@ -109,7 +109,7 @@ class HiveToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        input_data = spark.table(hive_datbase + "." + hive_table)
+        input_data = spark.table(hive_database + "." + hive_table)
 
         # Write
         input_data.write \
