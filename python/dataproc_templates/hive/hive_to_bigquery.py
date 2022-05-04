@@ -40,15 +40,7 @@ class HiveToBigQueryTemplate(BaseTemplate):
             required=True,
             help='Hive sql for importing data to BigQuery'
         )
-
-        # add bq-project
-        # parser.add_argument(
-        #     f'--{constants.HIVE_BQ_OUTPUT_DATASET}',
-        #     dest=constants.HIVE_BQ_OUTPUT_DATASET,
-        #     required=True,
-        #     help='BigQuery dataset for the output table'
-        # )
-
+        
         parser.add_argument(
             f'--{constants.HIVE_BQ_OUTPUT_DATASET}',
             dest=constants.HIVE_BQ_OUTPUT_DATASET,
