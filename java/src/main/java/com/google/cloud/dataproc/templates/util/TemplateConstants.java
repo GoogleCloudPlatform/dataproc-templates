@@ -195,6 +195,28 @@ public interface TemplateConstants {
 
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
 
+  /** PubSubToGCS Template configs. */
+  // Project that contains the input PubSub subscription to be read
+  String PUBSUB_GCS_INPUT_PROJECT_ID_PROP = "pubsubtogcs.input.project.id";
+  // PubSub subscription name
+  String PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP = "pubsubtogcs.input.subscription";
+  // Stream timeout
+  String PUBSUB_GCS_TIMEOUT_MS_PROP = "pubsubtogcs.timeout.ms";
+  // Streaming duration
+  String PUBSUB_GCS_STREAMING_DURATION_SECONDS_PROP = "pubsubtogcs.streaming.duration.seconds";
+  // Number of receivers
+  String PUBSUB_GCS_TOTAL_RECEIVERS_PROP = "pubsubtogcs.total.receivers";
+  // Project that contains the GCS output
+  String PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP = "pubsubtogcs.gcs.output.project.id";
+  // GCS bucket URL
+  String PUBSUB_GCS_BUCKET_NAME = "pubsubtogcs.gcs.bucket.name";
+  // Number of records to be written per message to GCS
+  String PUBSUB_GCS_BATCH_SIZE_PROP = "pubsubtogcs.batch.size";
+  String PUBSUB_GCS_BUCKET_OUTPUT_PATH = "output/";
+  String PUBSUB_GCS_OUTPUT_DATA_FORMAT = "pubsubtogcs.gcs.output.data.format";
+  String PUBSUB_GCS_AVRO_EXTENSION = "avro";
+  String PUBSUB_GCS_JSON_EXTENSION = "json";
+
   /** Dataplex GCS to BQ */
   String DATAPLEX_GCS_BQ_TARGET_DATASET = "dataplex.gcs.bq.target.dataset";
 

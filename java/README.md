@@ -11,6 +11,7 @@
 * [S3ToBigQuery](src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
 * [JDBCToBigQuery](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [JDBCToGCS](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
+* [PubSubToGCS](src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md#2-pubsub-to-gcs)
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
@@ -113,6 +114,11 @@ Dataproc Templates (Java - Spark) submit jobs to Dataproc Serverless using [batc
         ```
         bin/start.sh -- --template PUBSUBTOBQ
         ```
+
+   1. #### Executing PubSub to GCS template.
+       ```
+       bin/start.sh -- --template PUBSUBTOGCS
+       ```
 
     1. #### Executing GCS to BigQuery template.
         ```
