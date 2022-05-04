@@ -69,7 +69,7 @@ export SUBNET=<subnet>
 
 # Hive To GCS
 
-Template for reading data from Hive and writing them to a GCS location. It supports reading from hive table.
+Template for reading data from Hive and writing to a GCS location. It supports reading from hive table.
 
 ## Arguments
 
