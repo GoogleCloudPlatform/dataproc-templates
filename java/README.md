@@ -1,4 +1,4 @@
-![Build Status](http://35.227.235.112/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=java-build)
+![Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=java-build)
 
 # Dataproc Templates (Java - Spark)
 
