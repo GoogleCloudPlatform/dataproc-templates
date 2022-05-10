@@ -100,13 +100,16 @@ public class JDBCToBigQuery implements BaseTemplate {
             + "4. {}:{}"
             + "5. {}:{}"
             + "6. {}:{}"
-            + "7. {}:{}",
+            + "7. {}:{}"
+            + "8. {}:{}",
         JDBC_TO_BQ_BIGQUERY_LOCATION,
         bqLocation,
         JDBC_TO_BQ_WRITE_MODE,
         bqWriteMode,
         JDBC_TO_BQ_JDBC_URL,
         jdbcURL,
+        JDBC_TO_BQ_SQL,
+        jdbcSQL,
         JDBC_TO_BQ_SQL_PARTITION_COLUMN,
         jdbcSQLPartitionColumn,
         JDBC_TO_BQ_SQL_UPPER_BOUND,
