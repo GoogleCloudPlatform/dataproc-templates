@@ -48,7 +48,7 @@ public class GCSToSpannerConfig {
 
   @JsonProperty(value = GCS_SPANNER_INPUT_FORMAT)
   @NotEmpty
-  @Pattern(regexp = "avro|parquet")
+  @Pattern(regexp = "avro|parquet|orc")
   private String inputFormat;
 
   @JsonProperty(value = PROJECT_ID_PROP)

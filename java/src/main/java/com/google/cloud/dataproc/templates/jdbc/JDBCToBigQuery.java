@@ -52,7 +52,7 @@ public class JDBCToBigQuery implements BaseTemplate {
     temporaryGcsBucket = getProperties().getProperty(JDBC_TO_BQ_TEMP_GCS_BUCKET);
     jdbcURL = getProperties().getProperty(JDBC_TO_BQ_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME);
-    jdbcSQL = getProperties().getProperty(JDBC_TO_BQ_SQL);
+    jdbcSQL = "(" + getProperties().getProperty(JDBC_TO_BQ_SQL) + ") as a";
 
     jdbcSQLPartitionColumn = getProperties().getProperty(JDBC_TO_BQ_SQL_PARTITION_COLUMN);
     jdbcSQLLowerBound = getProperties().getProperty(JDBC_TO_BQ_SQL_LOWER_BOUND);
