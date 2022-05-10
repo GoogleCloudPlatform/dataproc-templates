@@ -30,7 +30,7 @@ check_required_envvar REGION
 check_required_envvar GCS_STAGING_LOCATION
 
 # Do not rebuild when SKIP_BUILD is specified
-# Usage: export SKIP_BUILD=ture
+# Usage: export SKIP_BUILD=true
 if [ -z "$SKIP_BUILD" ]; then
 
   #Change PWD to root folder for Maven Build

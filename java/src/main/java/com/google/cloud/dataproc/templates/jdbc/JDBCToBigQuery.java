@@ -18,10 +18,12 @@ package com.google.cloud.dataproc.templates.jdbc;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import java.util.HashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,11 @@ public class JDBCToBigQuery implements BaseTemplate {
   // Default as ErrorIfExists
   private String bqWriteMode = "ErrorIfExists";
   private String jdbcSQL;
+  private String jdbcSQLPartitionColumn;
+  private String jdbcSQLLowerBound;
+  private String jdbcSQLUpperBound;
+  private String jdbcSQLNumPartitions;
+  private String concatedPartitionProps;
 
   public JDBCToBigQuery() {
 
@@ -46,6 +53,13 @@ public class JDBCToBigQuery implements BaseTemplate {
     jdbcURL = getProperties().getProperty(JDBC_TO_BQ_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME);
     jdbcSQL = getProperties().getProperty(JDBC_TO_BQ_SQL);
+
+    jdbcSQLPartitionColumn = getProperties().getProperty(JDBC_TO_BQ_SQL_PARTITION_COLUMN);
+    jdbcSQLLowerBound = getProperties().getProperty(JDBC_TO_BQ_SQL_LOWER_BOUND);
+    jdbcSQLUpperBound = getProperties().getProperty(JDBC_TO_BQ_SQL_UPPER_BOUND);
+    jdbcSQLNumPartitions = getProperties().getProperty(JDBC_TO_BQ_SQL_NUM_PARTITIONS);
+    concatedPartitionProps =
+        jdbcSQLPartitionColumn + jdbcSQLLowerBound + jdbcSQLUpperBound + jdbcSQLNumPartitions;
   }
 
   @Override
@@ -68,33 +82,41 @@ public class JDBCToBigQuery implements BaseTemplate {
               + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
     }
 
-    LOGGER.info(
-        "Starting JDBC to BQ spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}",
-        JDBC_TO_BQ_BIGQUERY_LOCATION,
-        bqLocation,
-        JDBC_TO_BQ_WRITE_MODE,
-        bqWriteMode,
-        JDBC_TO_BQ_JDBC_URL,
-        jdbcURL);
-
-    SparkSession spark = null;
+    if (StringUtils.isNotBlank(concatedPartitionProps)
+        && ((StringUtils.isBlank(jdbcSQLPartitionColumn)
+                || StringUtils.isBlank(jdbcSQLLowerBound)
+                || StringUtils.isBlank(jdbcSQLUpperBound))
+            || StringUtils.isBlank(jdbcSQLNumPartitions))) {
+      throw new IllegalArgumentException(
+          "Required parameters for JDBCToGCS not passed. "
+              + "Set all the sql partitioning parameters together"
+              + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
+    }
     LOGGER.info(
         "Starting JDBC to BigQuery spark job with following parameters:"
             + "1. {}:{}"
             + "2. {}:{}"
             + "3. {}:{}"
-            + "4. {},{}",
+            + "4. {}:{}"
+            + "5. {}:{}"
+            + "6. {}:{}"
+            + "7. {}:{}",
         JDBC_TO_BQ_BIGQUERY_LOCATION,
         bqLocation,
-        JDBC_TO_BQ_SQL,
-        jdbcSQL,
         JDBC_TO_BQ_WRITE_MODE,
         bqWriteMode,
         JDBC_TO_BQ_JDBC_URL,
-        jdbcURL);
+        jdbcURL,
+        JDBC_TO_BQ_SQL_PARTITION_COLUMN,
+        jdbcSQLPartitionColumn,
+        JDBC_TO_BQ_SQL_UPPER_BOUND,
+        jdbcSQLUpperBound,
+        JDBC_TO_BQ_SQL_LOWER_BOUND,
+        jdbcSQLLowerBound,
+        JDBC_TO_BQ_SQL_NUM_PARTITIONS,
+        jdbcSQLNumPartitions);
+
+    SparkSession spark = null;
 
     spark =
         SparkSession.builder()
@@ -103,15 +125,21 @@ public class JDBCToBigQuery implements BaseTemplate {
             .enableHiveSupport()
             .getOrCreate();
 
+    HashMap<String, String> jdbcProperties = new HashMap<>();
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), jdbcDriverClassName);
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), jdbcSQL);
+
+    if (StringUtils.isNotBlank(concatedPartitionProps)) {
+      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), jdbcSQLPartitionColumn);
+      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), jdbcSQLUpperBound);
+      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), jdbcSQLLowerBound);
+      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), jdbcSQLNumPartitions);
+    }
+
     /** Read Input data from JDBC table */
-    Dataset<Row> inputData =
-        spark
-            .read()
-            .format("jdbc")
-            .option("url", jdbcURL)
-            .option("driver", jdbcDriverClassName)
-            .option("query", jdbcSQL)
-            .load();
+    Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
     inputData.write().mode(bqWriteMode).format("bigquery").option("table", bqLocation).save();
   }
