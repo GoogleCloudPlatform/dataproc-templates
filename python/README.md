@@ -4,6 +4,8 @@
 
 * [GCSToBigQuery](dataproc_templates/gcs/README.md)
 * [BigQueryToGCS](dataproc_templates/bigquery/README.md)
+* [HiveToBigQuery](dataproc_templates/hive/README.md)
+* [HiveToGCS](dataproc_templates/hive/README.md)
 
 Dataproc Templates (Python - PySpark) submit jobs to Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
 
