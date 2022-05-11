@@ -70,6 +70,9 @@ fi
 if [ -n "${JARS}" ]; then
   OPT_JARS="${OPT_JARS},${JARS}"
 fi
+if [ -n "${PROPERTIES}" ]; then
+  OPT_PROPERTIES="${OPT_PROPERTIES},${PROPERTIES}"
+fi
 
 # Running on an existing dataproc cluster or run on serverless spark
 if [ "${JOB_TYPE}" == "CLUSTER" ]; then
