@@ -104,3 +104,8 @@ gcloud dataproc batches submit pyspark \
 To see each template's specific parameters, refer to each template's README.
 
 Refer to this [documentation](https://cloud.google.com/dataproc-serverless/docs/concepts/properties) to see the available spark properties.
+
+
+**Vertex AI usage**:
+
+Follow [Dataproc Templates (Jupyter Notebooks) README](./notebooks/README.md) to submit Dataproc Templates from a Vertex AI notebook.  
