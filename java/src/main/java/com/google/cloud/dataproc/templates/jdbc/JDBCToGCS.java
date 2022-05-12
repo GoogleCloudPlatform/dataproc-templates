@@ -18,8 +18,10 @@ package com.google.cloud.dataproc.templates.jdbc;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import java.util.HashMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.*;
+import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,29 +29,42 @@ public class JDBCToGCS implements BaseTemplate {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(JDBCToGCS.class);
 
-  private String GCSOutputLocation;
+  private String gcsOutputLocation;
   // Choosing default write mode as overwrite
-  private String GCSWriteMode = "OVERWRITE";
-  private String GCSPartitionColumn;
+  private String gcsWriteMode = "OVERWRITE";
+  private String gcsPartitionColumn;
   // Default output format as csv
-  private String GCSOutputFormat = "csv";
+  private String gcsOutputFormat = "csv";
   private String jdbcURL;
   private String jdbcDriverClassName;
   private String jdbcSQL;
+  private String jdbcSQLPartitionColumn;
+  private String jdbcSQLLowerBound;
+  private String jdbcSQLUpperBound;
+  private String jdbcSQLNumPartitions;
+  private String concatedPartitionProps;
 
   public JDBCToGCS() {
 
-    GCSOutputLocation = getProperties().getProperty(JDBC_TO_GCS_OUTPUT_LOCATION);
-    jdbcSQL = getProperties().getProperty(JDBC_TO_GCS_SQL);
+    gcsOutputLocation = getProperties().getProperty(JDBC_TO_GCS_OUTPUT_LOCATION);
+    jdbcSQL = "(" + getProperties().getProperty(JDBC_TO_GCS_SQL) + ") as a";
     jdbcURL = getProperties().getProperty(JDBC_TO_GCS_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME);
-    GCSPartitionColumn = getProperties().getProperty(JDBC_TO_GCS_PARTITION_COLUMN);
-    GCSOutputFormat = getProperties().getProperty(JDBC_TO_GCS_OUTPUT_FORMAT);
+    gcsPartitionColumn = getProperties().getProperty(JDBC_TO_GCS_OUTPUT_PARTITION_COLUMN);
+    gcsOutputFormat = getProperties().getProperty(JDBC_TO_GCS_OUTPUT_FORMAT);
+    gcsWriteMode = getProperties().getProperty(JDBC_TO_GCS_WRITE_MODE);
+
+    jdbcSQLPartitionColumn = getProperties().getProperty(JDBC_TO_GCS_SQL_PARTITION_COLUMN);
+    jdbcSQLLowerBound = getProperties().getProperty(JDBC_TO_GCS_SQL_LOWER_BOUND);
+    jdbcSQLUpperBound = getProperties().getProperty(JDBC_TO_GCS_SQL_UPPER_BOUND);
+    jdbcSQLNumPartitions = getProperties().getProperty(JDBC_TO_GCS_SQL_NUM_PARTITIONS);
+    concatedPartitionProps =
+        jdbcSQLPartitionColumn + jdbcSQLLowerBound + jdbcSQLUpperBound + jdbcSQLNumPartitions;
   }
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(GCSOutputLocation)
+    if (StringUtils.isAllBlank(gcsOutputLocation)
         || StringUtils.isAllBlank(jdbcURL)
         || StringUtils.isAllBlank(jdbcDriverClassName)
         || StringUtils.isAllBlank(jdbcSQL)) {
@@ -65,17 +80,37 @@ public class JDBCToGCS implements BaseTemplate {
               + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
     }
 
+    if (StringUtils.isNotBlank(concatedPartitionProps)
+        && ((StringUtils.isBlank(jdbcSQLPartitionColumn)
+                || StringUtils.isBlank(jdbcSQLLowerBound)
+                || StringUtils.isBlank(jdbcSQLUpperBound))
+            || StringUtils.isBlank(jdbcSQLNumPartitions))) {
+      throw new IllegalArgumentException(
+          "Required parameters for JDBCToGCS not passed. "
+              + "Set all the sql partitioning parameters together"
+              + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
+    }
+
     LOGGER.info(
         "Starting JDBC to GCS spark job with following parameters:"
             + "1. {}:{}"
             + "2. {}:{}"
-            + "3. {}:{}",
+            + "3. {}:{}"
+            + "4. {}:{}"
+            + "5. {}:{}"
+            + "6. {}:{}",
         JDBC_TO_GCS_OUTPUT_LOCATION,
-        GCSOutputLocation,
+        gcsOutputLocation,
         JDBC_TO_GCS_WRITE_MODE,
-        GCSWriteMode,
-        JDBC_TO_GCS_JDBC_URL,
-        jdbcURL);
+        gcsWriteMode,
+        JDBC_TO_GCS_SQL_PARTITION_COLUMN,
+        jdbcSQLPartitionColumn,
+        JDBC_TO_GCS_SQL_UPPER_BOUND,
+        jdbcSQLUpperBound,
+        JDBC_TO_GCS_SQL_LOWER_BOUND,
+        jdbcSQLLowerBound,
+        JDBC_TO_GCS_SQL_NUM_PARTITIONS,
+        jdbcSQLNumPartitions);
 
     SparkSession spark =
         SparkSession.builder()
@@ -84,26 +119,32 @@ public class JDBCToGCS implements BaseTemplate {
             .getOrCreate();
 
     /** Read Input data from JDBC table */
-    Dataset<Row> inputData =
-        spark
-            .read()
-            .format("jdbc")
-            .option("url", jdbcURL)
-            .option("driver", jdbcDriverClassName)
-            .option("query", jdbcSQL)
-            .load();
+    HashMap<String, String> jdbcProperties = new HashMap<>();
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), jdbcDriverClassName);
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), jdbcSQL);
 
-    DataFrameWriter<Row> writer = inputData.write().mode(GCSWriteMode).format(GCSOutputFormat);
+    if (StringUtils.isNotBlank(concatedPartitionProps)) {
+      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), jdbcSQLPartitionColumn);
+      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), jdbcSQLUpperBound);
+      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), jdbcSQLLowerBound);
+      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), jdbcSQLNumPartitions);
+    }
+
+    Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
+
+    DataFrameWriter<Row> writer = inputData.write().mode(gcsWriteMode).format(gcsOutputFormat);
 
     /*
      * If optional partition column is passed than partition data by partition
      * column before writing to GCS.
      * */
-    if (StringUtils.isNotBlank(GCSPartitionColumn)) {
-      LOGGER.info("Partitioning data by :{} cols", GCSPartitionColumn);
-      writer = writer.partitionBy(GCSPartitionColumn);
+    if (StringUtils.isNotBlank(gcsPartitionColumn)) {
+      LOGGER.info("Partitioning data by :{} cols", gcsPartitionColumn);
+      writer = writer.partitionBy(gcsPartitionColumn);
     }
 
-    writer.save(GCSOutputLocation);
+    writer.save(gcsOutputLocation);
   }
 }

@@ -71,6 +71,10 @@ public interface TemplateConstants {
   String JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME = "jdbctobq.jdbc.driver.class.name";
   String JDBC_TO_BQ_TEMP_GCS_BUCKET = "jdbctobq.temp.gcs.bucket";
   String JDBC_TO_BQ_SQL = "jdbctobq.sql";
+  String JDBC_TO_BQ_SQL_PARTITION_COLUMN = "jdbctobq.sql.partitionColumn";
+  String JDBC_TO_BQ_SQL_LOWER_BOUND = "jdbctobq.sql.lowerBound";
+  String JDBC_TO_BQ_SQL_UPPER_BOUND = "jdbctobq.sql.upperBound";
+  String JDBC_TO_BQ_SQL_NUM_PARTITIONS = "jdbctobq.sql.numPartitions";
   String JDBC_TO_BQ_WRITE_MODE = "jdbctobq.write.mode";
 
   /** Property values for JDBCToGCS */
@@ -81,7 +85,11 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME = "jdbctogcs.jdbc.driver.class.name";
   String JDBC_TO_GCS_WRITE_MODE = "jdbctogcs.write.mode";
   String JDBC_TO_GCS_SQL = "jdbctogcs.sql";
-  String JDBC_TO_GCS_PARTITION_COLUMN = "jdbctogcs.partition.col";
+  String JDBC_TO_GCS_SQL_PARTITION_COLUMN = "jdbctogcs.sql.partitionColumn";
+  String JDBC_TO_GCS_SQL_LOWER_BOUND = "jdbctogcs.sql.lowerBound";
+  String JDBC_TO_GCS_SQL_UPPER_BOUND = "jdbctogcs.sql.upperBound";
+  String JDBC_TO_GCS_SQL_NUM_PARTITIONS = "jdbctogcs.sql.numPartitions";
+  String JDBC_TO_GCS_OUTPUT_PARTITION_COLUMN = "jdbctogcs.output.partition.col";
 
   /** Property values for WordCount template. */
   String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";

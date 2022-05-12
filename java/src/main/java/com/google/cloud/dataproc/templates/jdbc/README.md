@@ -30,8 +30,12 @@ bin/start.sh \
 --templateProperty jdbctobq.jdbc.url=<jdbc url> \
 --templateProperty jdbctobq.jdbc.driver.class.name=<jdbc driver class name> \
 --templateProperty jdbctobq.sql=<input-sql> \
+--templateProperty jdbctobq.sql.partitionColumn=<optional-partition-column-name> \
+--templateProperty jdbctobq.sql.lowerBound=<optional-partition-start-value> \
+--templateProperty jdbctobq.sql.upperBound=<optional-partition-end-value> \
+--templateProperty jdbctobq.sql.numPartitions=<optional-partition--number> \
 --templateProperty jdbctobq.write.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
---templateProperty jdbctobq.temp.gcs.bucket=<gcs path> \
+--templateProperty jdbctobq.temp.gcs.bucket=<gcs path>
 ```
 
 Note: Following is example JDBC URL for mysql database
@@ -46,6 +50,11 @@ Have SQL query within double quotes. Example,
 --templateProperty  jdbctobq.sql="select * from dbname.tablename"
 ```
 
+**Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together.
+If one is specified then all needs to be specified.
+
+Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
+
 ***
 
 ## 2. JDBC To GCS
@@ -54,7 +63,7 @@ Note - Add dependency jar's specific to database in jars variable.
 
 Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 
-General Execution:
+General Execution  
 
 ```
 export GCP_PROJECT=<gcp-project-id> \
@@ -71,7 +80,11 @@ bin/start.sh \
 --templateProperty jdbctogcs.output.format=<csv|avro|orc|json|parquet> \
 --templateProperty jdbctogcs.write.mode=<optional_write-mode> \
 --templateProperty jdbctogcs.sql=<input-sql> \
---templateProperty jdbctogcs.partition.col=<optional_partition-col>
+--templateProperty jdbctogcs.sql.partitionColumn=<optional-partition-column-name> \
+--templateProperty jdbctogcs.sql.lowerBound=<optional-partition-start-value> \
+--templateProperty jdbctogcs.sql.upperBound=<optional-partition-end-value> \
+--templateProperty jdbctogcs.sql.numPartitions=<optional-partition-number> \
+--templateProperty jdbctogcs.output.partition.col=<optional_partition-col>
 ```
 
 Note: Following is example JDBC URL for mysql database
@@ -85,6 +98,11 @@ Have SQL query within double quotes. Example,
 ```
 --templateProperty  'jdbctogcs.sql=select * from dbname.tablename'
 ```
+
+**Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together. 
+If one is specified then all needs to be specified.
+
+Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 Example execution:
 

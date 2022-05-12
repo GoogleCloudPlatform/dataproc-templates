@@ -30,7 +30,7 @@ check_required_envvar REGION
 check_required_envvar GCS_STAGING_LOCATION
 
 # Do not rebuild when SKIP_BUILD is specified
-# Usage: export SKIP_BUILD=ture
+# Usage: export SKIP_BUILD=true
 if [ -z "$SKIP_BUILD" ]; then
 
   #Change PWD to root folder for Maven Build
@@ -69,6 +69,9 @@ if [ -n "${METASTORE_SERVICE}" ]; then
 fi
 if [ -n "${JARS}" ]; then
   OPT_JARS="${OPT_JARS},${JARS}"
+fi
+if [ -n "${SPARK_PROPERTIES}" ]; then
+  OPT_PROPERTIES="${OPT_PROPERTIES},${SPARK_PROPERTIES}"
 fi
 
 # Running on an existing dataproc cluster or run on serverless spark
