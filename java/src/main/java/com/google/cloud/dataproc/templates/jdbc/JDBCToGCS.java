@@ -98,14 +98,11 @@ public class JDBCToGCS implements BaseTemplate {
             + "3. {}:{}"
             + "4. {}:{}"
             + "5. {}:{}"
-            + "6. {}:{}"
-            + "7. {}:{}",
+            + "6. {}:{}",
         JDBC_TO_GCS_OUTPUT_LOCATION,
         gcsOutputLocation,
         JDBC_TO_GCS_WRITE_MODE,
         gcsWriteMode,
-        JDBC_TO_GCS_JDBC_URL,
-        jdbcURL,
         JDBC_TO_GCS_SQL_PARTITION_COLUMN,
         jdbcSQLPartitionColumn,
         JDBC_TO_GCS_SQL_UPPER_BOUND,
