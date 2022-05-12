@@ -12,7 +12,7 @@ bin/start.sh \
 -- --template GCSTOBIGQUERY \
 --templateProperty project.id=<gcp-project-id> \
 --templateProperty gcs.bigquery.input.location=<gcs path> \
---templateProperty gcs.bigquery.input.format=<csv|parquet|avro> \
+--templateProperty gcs.bigquery.input.format=<csv|parquet|avro|orc> \
 --templateProperty gcs.bigquery.output.dataset=<datasetId> \
 --templateProperty gcs.bigquery.output.table=<tableName> \
 --templateProperty gcs.bigquery.temp.bucket.name=<bigquery temp bucket name>
@@ -26,7 +26,7 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 bin/start.sh \
 -- --template GCSTOSPANNER \
 --templateProperty project.id=<gcp-project-id> \
---templateProperty gcs.spanner.input.format=<avro or parquet> \
+--templateProperty gcs.spanner.input.format=<avro | parquet | orc> \
 --templateProperty gcs.spanner.input.location=<gcs path> \
 --templateProperty gcs.spanner.output.instance=<spanner instance id> \
 --templateProperty gcs.spanner.output.database=<spanner database id> \
