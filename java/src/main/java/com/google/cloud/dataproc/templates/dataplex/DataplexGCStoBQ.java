@@ -27,7 +27,6 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -52,8 +51,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   public static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigquery.class);
 
   public static String CUSTOM_SQL_GCS_PATH_OPTION = "customSqlGcsPath";
-  public static String ENTITY_LIST_OPTION = "dataplexEntityList";
-  public static String ASSET_LIST_OPTION = "dataplexAsset";
+  public static String ENTITY_OPTION = "dataplexEntity";
   public static String PARTITION_FIELD_OPTION = "partitionField";
   public static String PARTITION_TYPE_OPTION = "partitionType";
   public static String INCREMENTAL_PARTITION_COPY_NO = "no";
@@ -82,8 +80,6 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private SparkSession spark;
   private SQLContext sqlContext;
 
-  private String entitiesString;
-  private String asset;
   private List<String> entityList;
   private String entity;
   private String partitionField;
@@ -101,14 +97,9 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private String incrementalParittionCopy;
 
   public DataplexGCStoBQ(
-      String customSqlGCSPath,
-      String entitiesString,
-      String asset,
-      String partitionField,
-      String partitionType) {
+      String customSqlGCSPath, String entity, String partitionField, String partitionType) {
     this.customSqlGCSPath = customSqlGCSPath;
-    this.entitiesString = entitiesString;
-    this.asset = asset;
+    this.entity = entity;
     this.partitionField = partitionField;
     this.partitionType = partitionType;
 
@@ -126,33 +117,22 @@ public class DataplexGCStoBQ implements BaseTemplate {
   public static DataplexGCStoBQ of(String... args) {
     CommandLine cmd = parseArguments(args);
     String customSqlGCSPath = cmd.getOptionValue(CUSTOM_SQL_GCS_PATH_OPTION);
-    String asset = cmd.getOptionValue(ASSET_LIST_OPTION);
-    String entitiesString = cmd.getOptionValue(ENTITY_LIST_OPTION);
+    String entity = cmd.getOptionValue(ENTITY_OPTION);
     String partitionField = cmd.getOptionValue(PARTITION_FIELD_OPTION);
     String partitionType = cmd.getOptionValue(PARTITION_TYPE_OPTION);
-    return new DataplexGCStoBQ(
-        customSqlGCSPath, entitiesString, asset, partitionField, partitionType);
+    return new DataplexGCStoBQ(customSqlGCSPath, entity, partitionField, partitionType);
   }
 
   /**
-   * Sets value for entityList based on input values for entitiesString and asset
+   * Sets value for entity
    *
-   * @throws Exception if values are passed for both --dataplexEntityList and --dataplexAsset. Will
-   *     also throw exception if neither is set
+   * @throws Exception if values no value is passed for --dataplexEntity and --dataplexAsset.
    */
   private void checkInput() throws DataprocTemplateException, IOException {
-    if (entitiesString != null && asset != null) {
-      throw new DataprocTemplateException(
-          String.format(
-              "Properties %s and %s are mutually exclusive, please specify just one of these.",
-              ENTITY_LIST_OPTION, ASSET_LIST_OPTION));
-    } else if (asset != null) {
-      this.entityList = DataplexUtil.getEntityNameListFromAsset(asset);
-    } else if (entitiesString != null) {
-      this.entityList = Arrays.asList(entitiesString.split(","));
+    if (entity != null) {
+      this.entity = entity;
     } else {
-      throw new DataprocTemplateException(
-          String.format("Please specify either %s or %s", ENTITY_LIST_OPTION, ASSET_LIST_OPTION));
+      throw new DataprocTemplateException(String.format("Please specify %s", ENTITY_OPTION));
     }
   }
 
@@ -170,15 +150,10 @@ public class DataplexGCStoBQ implements BaseTemplate {
     customSQLFileOption.setArgs(1);
     options.addOption(customSQLFileOption);
 
-    Option entityListOption = new Option(ENTITY_LIST_OPTION, "Dataplex GCS table resource name");
+    Option entityListOption = new Option(ENTITY_OPTION, "Dataplex GCS table resource name");
     entityListOption.setRequired(false);
     entityListOption.setArgs(2);
     options.addOption(entityListOption);
-
-    Option assetOption = new Option(ASSET_LIST_OPTION, "Dataplex asset name");
-    assetOption.setRequired(false);
-    assetOption.setArgs(3);
-    options.addOption(assetOption);
 
     Option partitionField = new Option(PARTITION_FIELD_OPTION, "BigQuery partitionField");
     partitionField.setRequired(false);
@@ -381,42 +356,38 @@ public class DataplexGCStoBQ implements BaseTemplate {
       this.sqlContext = new SQLContext(spark);
       checkInput();
 
-      for (int i = 0; i < entityList.size(); i += 1) {
-        this.entity = entityList.get(i);
-        this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
-        this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
-        this.targetTableName = entity.split(FORWARD_SLASH)[entity.split(FORWARD_SLASH).length - 1];
-        this.targetTable =
-            String.format(BQ_TABLE_NAME_FORMAT, projectId, targetDataset, targetTableName);
-        LOGGER.info("Processing entity: {}", entity);
+      this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
+      this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
+      this.targetTableName = entity.split(FORWARD_SLASH)[entity.split(FORWARD_SLASH).length - 1];
+      this.targetTable =
+          String.format(BQ_TABLE_NAME_FORMAT, projectId, targetDataset, targetTableName);
+      LOGGER.info("Processing entity: {}", entity);
 
-        List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);
-        List<String> partitionsListWithLocationAndKeys =
-            DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
+      List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);
+      List<String> partitionsListWithLocationAndKeys =
+          DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
 
-        // Building dataset with all partitions keys in Dataplex Entity
-        Dataset<Row> dataplexPartitionsKeysDS =
-            getAllPartitionsDf(partitionsListWithLocationAndKeys, partitionKeysList);
+      // Building dataset with all partitions keys in Dataplex Entity
+      Dataset<Row> dataplexPartitionsKeysDS =
+          getAllPartitionsDf(partitionsListWithLocationAndKeys, partitionKeysList);
 
-        // Querying BQ for all partition keys currently present in target table
-        Dataset<Row> bqPartitionsKeysDS = getBQTargetAvailablePartitionsDf(partitionKeysList);
+      // Querying BQ for all partition keys currently present in target table
+      Dataset<Row> bqPartitionsKeysDS = getBQTargetAvailablePartitionsDf(partitionKeysList);
 
-        // Compare dataplexPartitionsKeysDS and bqPartitionsKeysDS to indetify new
-        // partitions
-        Dataset<Row> newPartitionsPathsDS =
-            getNewPartitionsPathsDS(
-                partitionKeysList, dataplexPartitionsKeysDS, bqPartitionsKeysDS);
+      // Compare dataplexPartitionsKeysDS and bqPartitionsKeysDS to indetify new
+      // partitions
+      Dataset<Row> newPartitionsPathsDS =
+          getNewPartitionsPathsDS(partitionKeysList, dataplexPartitionsKeysDS, bqPartitionsKeysDS);
 
-        // load data from each partition
-        Dataset<Row> newPartitionsDS = getNewPartitionsDS(newPartitionsPathsDS);
-        newPartitionsDS.printSchema();
+      // load data from each partition
+      Dataset<Row> newPartitionsDS = getNewPartitionsDS(newPartitionsPathsDS);
+      newPartitionsDS.printSchema();
 
-        newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
+      newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
 
-        newPartitionsDS = applyCustomSql(newPartitionsDS);
+      newPartitionsDS = applyCustomSql(newPartitionsDS);
 
-        writeToBQ(newPartitionsDS);
-      }
+      writeToBQ(newPartitionsDS);
 
     } catch (Throwable th) {
       LOGGER.error("Exception in DataplexGCStoBQ", th);
