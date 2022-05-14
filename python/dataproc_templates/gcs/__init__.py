@@ -13,3 +13,4 @@
 # limitations under the License.
 
 from .gcs_to_bigquery import GCSToBigQueryTemplate
+from .gcs_to_spanner import GCSToSpannerTemplate
