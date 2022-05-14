@@ -49,7 +49,7 @@ GCS_SPANNER_INPUT_FORMAT = "gcs.spanner.input.format"
 GCS_SPANNER_OUTPUT_INSTANCE = "gcs.spanner.output.instance"
 GCS_SPANNER_OUTPUT_DATABASE = "gcs.spanner.output.database"
 GCS_SPANNER_OUTPUT_TABLE = "gcs.spanner.output.table"
-GCS_SPANNER_PRIMARY_KEY = "gcs.spanner.pk"
+GCS_SPANNER_PRIMARY_KEY = "gcs.spanner.output.primary_key"
 GCS_SPANNER_OUTPUT_SAVE_MODE = "gcs.spanner.output.save_mode"
 GCS_SPANNER_OUTPUT_BATCH_INSERT_SIZE = "gcs.spanner.output.batch_size"
 
