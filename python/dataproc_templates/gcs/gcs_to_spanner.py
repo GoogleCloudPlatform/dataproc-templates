@@ -73,8 +73,11 @@ class GCSToSpannerTemplate(BaseTemplate):
     parser.add_argument(
       f'--{constants.GCS_SPANNER_PRIMARY_KEY}',
       dest=constants.GCS_SPANNER_PRIMARY_KEY,
-      required=True,
-      help='Primary key of the table'
+      required=False,
+      help=(
+        "Primary key of the table. "
+        "It is only required when the table doesn't exist"
+      )
     )
     parser.add_argument(
       f'--{constants.GCS_SPANNER_OUTPUT_SAVE_MODE}',
@@ -126,7 +129,7 @@ class GCSToSpannerTemplate(BaseTemplate):
       f"databases/{spanner_database}"
     )
     spanner_driver = "com.google.cloud.spanner.jdbc.JdbcDriver"
-    table_options = f"PRIMARY KEY ({spanner_pk})"
+    table_options = f"PRIMARY KEY ({spanner_pk})" if spanner_pk else None
 
     logger.info(
       "Starting GCS to Spanner spark job with parameters:\n"

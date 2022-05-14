@@ -93,7 +93,7 @@ usage: main.py [-h] \
     --gcs.spanner.output.instance GCS.SPANNER.OUTPUT.INSTANCE \
     --gcs.spanner.output.database GCS.SPANNER.OUTPUT.DATABASE \
     --gcs.spanner.output.table GCS.SPANNER.OUTPUT.TABLE \
-    --gcs.spanner.output.primary_key GCS.SPANNER.OUTPUT.PRIMARY_KEY \
+    [--gcs.spanner.output.primary_key GCS.SPANNER.OUTPUT.PRIMARY_KEY] \
     [--gcs.spanner.output.mode {overwrite,append,ignore,errorifexists}] \
     [--gcs.spanner.output.batch_size GCS.SPANNER.OUTPUT.BATCH_SIZE]
 
