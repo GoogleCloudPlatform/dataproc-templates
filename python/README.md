@@ -2,10 +2,11 @@
 
 # Dataproc Templates (Python - PySpark)
 
-* [GCSToBigQuery](/python/dataproc_templates/gcs/README.md)
-* [BigQueryToGCS](/python/dataproc_templates/bigquery/README.md)
-* [HiveToBigQuery](/python/dataproc_templates/hive/README.md)
-* [HiveToGCS](/python/dataproc_templates/hive/README.md)
+* [GCSToBigQuery](dataproc_templates/gcs/README.md)
+* [GCSToSpanner](dataproc_templates/gcs/README.md)
+* [BigQueryToGCS](dataproc_templates/bigquery/README.md)
+* [HiveToBigQuery](dataproc_templates/hive/README.md)
+* [HiveToGCS](dataproc_templates/hive/README.md)
 
 Dataproc Templates (Python - PySpark) submit jobs to Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
 
