@@ -43,6 +43,16 @@ GCS_BQ_OUTPUT_MODE = "gcs.bigquery.output.mode"
 GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name"
 
+# GCS to Spanner
+GCS_SPANNER_INPUT_LOCATION = "gcs.spanner.input.location"
+GCS_SPANNER_INPUT_FORMAT = "gcs.spanner.input.format"
+GCS_SPANNER_OUTPUT_INSTANCE = "gcs.spanner.output.instance"
+GCS_SPANNER_OUTPUT_DATABASE = "gcs.spanner.output.database"
+GCS_SPANNER_OUTPUT_TABLE = "gcs.spanner.output.table"
+GCS_SPANNER_PRIMARY_KEY = "gcs.spanner.pk"
+GCS_SPANNER_OUTPUT_SAVE_MODE = "gcs.spanner.output.save_mode"
+GCS_SPANNER_OUTPUT_BATCH_INSERT_SIZE = "gcs.spanner.output.batch_size"
+
 # BigQuery to GCS
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
 BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format"
