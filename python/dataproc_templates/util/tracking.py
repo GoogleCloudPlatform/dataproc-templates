@@ -14,6 +14,7 @@
 
 from dataproc_templates import TemplateName
 
+import google.auth
 from google.api_core import client_info as http_client_info
 from google.cloud import bigquery
 
@@ -28,6 +29,9 @@ def track_template_invocation(template_name: TemplateName) -> None:
     Returns:
         None
     """
+
+    project_id: str
+    _, project_id = google.auth.default()
 
     try:
         client_info = http_client_info.ClientInfo(user_agent=f"google-pso-tool/dataproc-templates/0.1.0-{template_name.value}")
