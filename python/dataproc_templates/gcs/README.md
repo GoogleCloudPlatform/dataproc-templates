@@ -85,7 +85,7 @@ Spanner table. It supports reading Parquet, Avro and ORC formats.
 ## Usage
 
 ```
-$ python main.py --template GCSTSPANNER --help
+$ python main.py --template GCSTOSPANNER --help
 
 usage: main.py [-h] \
     --gcs.spanner.input.location GCS.SPANNER.INPUT.LOCATION \
