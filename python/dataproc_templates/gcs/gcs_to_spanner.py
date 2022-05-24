@@ -83,7 +83,7 @@ class GCSToSpannerTemplate(BaseTemplate):
       f'--{constants.GCS_SPANNER_OUTPUT_SAVE_MODE}',
       dest=constants.GCS_SPANNER_OUTPUT_SAVE_MODE,
       required=False,
-      default=constants.OUTPUT_MODE_APPEND,
+      default=constants.OUTPUT_MODE_ERRORIFEXISTS,
       help=(
         'Output write mode '
         '(one of: <Overwrite|ErrorIfExists|Append|Ignore>) '
