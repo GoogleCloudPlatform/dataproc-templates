@@ -32,11 +32,9 @@ public class GCSToJDBCConfig {
 
   public static final String GCS_JDBC_INPUT_FORMAT = "gcs.jdbc.input.format";
   public static final String GCS_JDBC_INPUT_LOCATION = "gcs.jdbc.input.location";
-  // public static final String GCS_JDBC_OUTPUT_INSTANCE = "gcs.jdbc.output.instance";
   public static final String GCS_JDBC_OUTPUT_URL = "gcs.jdbc.output.url";
   public static final String GCS_JDBC_OUTPUT_TABLE = "gcs.jdbc.output.table";
   public static final String GCS_JDBC_OUTPUT_SAVE_MODE = "gcs.jdbc.output.saveMode";
-  // public static final String GCS_JDBC_OUTPUT_PRIMARY_KEY = "gcs.jdbc.output.primaryKey";
   public static final String GCS_JDBC_OUTPUT_BATCH_INSERT_SIZE = "gcs.jdbc.output.batchInsertSize";
 
   static final ObjectMapper mapper =
@@ -54,11 +52,7 @@ public class GCSToJDBCConfig {
   @JsonProperty(value = PROJECT_ID_PROP)
   @NotEmpty
   private String projectId;
-  /*
-        @JsonProperty(value = GCS_JDBC_OUTPUT_INSTANCE)
-        @NotEmpty
-        private String instance;
-  */
+
   @JsonProperty(value = GCS_JDBC_OUTPUT_URL)
   @NotEmpty
   private String jdbcUrl;
@@ -70,11 +64,7 @@ public class GCSToJDBCConfig {
   @JsonProperty(value = GCS_JDBC_OUTPUT_SAVE_MODE)
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
   private String saveModeString = "ErrorIfExists";
-  /*
-    @JsonProperty(value = GCS_JDBC_OUTPUT_PRIMARY_KEY)
-    @NotEmpty
-    private String primaryKey;
-  */
+
   @JsonProperty(value = GCS_JDBC_OUTPUT_BATCH_INSERT_SIZE)
   @Min(value = 1)
   private long batchInsertSize = 1000;
@@ -90,11 +80,7 @@ public class GCSToJDBCConfig {
   public String getProjectId() {
     return projectId;
   }
-  /*
-        public String getInstance() {
-            return instance;
-        }
-  */
+
   public String getJDBCUrl() {
     return jdbcUrl;
   }
@@ -111,30 +97,10 @@ public class GCSToJDBCConfig {
   public SaveMode getSaveMode() {
     return SaveMode.valueOf(getSaveModeString());
   }
-  /*
-    public String getPrimaryKey() {
-        return primaryKey;
-    }
-  */
+
   public long getBatchInsertSize() {
     return batchInsertSize;
   }
-  /*
-  @Override
-  public String toString() {
-      return MoreObjects.toStringHelper(this)
-              .add("inputLocation", inputLocation)
-              .add("inputFormat", inputFormat)
-              .add("projectId", projectId)
-              .add("instance", instance)
-              .add("database", database)
-              .add("table", table)
-              .add("saveModeString", saveModeString)
-              .add("primaryKey", primaryKey)
-              .add("batchInsertSize", batchInsertSize)
-              .toString();
-  }
-  */
 
   @Override
   public String toString() {
