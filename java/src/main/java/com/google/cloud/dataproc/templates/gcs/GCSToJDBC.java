@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class GCSToJDBC implements BaseTemplate {
-  public static final String SPANNER_JDBC_DRIVER = "com.mysql.jdbc.Driver";
+  public static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GCSToSpanner.class);
   private final GCSToJDBCConfig config;
@@ -70,7 +70,7 @@ public class GCSToJDBC implements BaseTemplate {
             "NONE") // Needed because transaction have a 20,000 mutation limit per commit.
         .option(
             JDBCOptions.JDBC_BATCH_INSERT_SIZE(), config.getBatchInsertSize()) // default is 1000
-        .option(JDBCOptions.JDBC_DRIVER_CLASS(), SPANNER_JDBC_DRIVER)
+        .option(JDBCOptions.JDBC_DRIVER_CLASS(), JDBC_DRIVER)
         .mode(config.getSaveMode())
         .save();
   }
