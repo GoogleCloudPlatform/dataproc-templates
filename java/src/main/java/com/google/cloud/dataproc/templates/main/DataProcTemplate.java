@@ -20,6 +20,7 @@ import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
+import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
 import com.google.cloud.dataproc.templates.gcs.GCSToSpanner;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.general.GeneralTemplate;
@@ -65,6 +66,7 @@ public class DataProcTemplate {
           .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
           .put(TemplateName.JDBCTOGCS, (args) -> new JDBCToGCS())
+          .put(TemplateName.GCSTOJDBC, GCSToJDBC::of)
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
