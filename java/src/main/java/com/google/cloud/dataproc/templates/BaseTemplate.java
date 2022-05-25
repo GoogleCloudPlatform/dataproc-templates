@@ -36,7 +36,8 @@ public interface BaseTemplate {
     BIGQUERYTOGCS,
     GENERAL,
     DATAPLEXGCSTOBQ,
-    PUBSUBTOGCS
+    PUBSUBTOGCS,
+    GCSTOJDBC
   }
 
   default Properties getProperties() {
