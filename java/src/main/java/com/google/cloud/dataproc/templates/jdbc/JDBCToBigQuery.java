@@ -140,7 +140,8 @@ public class JDBCToBigQuery implements BaseTemplate {
 
     /** Read Input data from JDBC table */
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
-
-    inputData.write().mode(bqWriteMode).format("bigquery").option("table", bqLocation).save();
+    LOGGER.info("Data loaded into the mysql table looks like this ");
+    inputData.show();
+    // inputData.write().mode(bqWriteMode).format("bigquery").option("table", bqLocation).save();
   }
 }
