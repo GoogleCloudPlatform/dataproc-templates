@@ -34,3 +34,19 @@ bin/start.sh \
 --templateProperty gcs.spanner.output.saveMode=<Append|Overwrite|ErrorIfExists|Ignore> \
 --templateProperty gcs.spanner.output.primaryKey=<column[(,column)*] - primary key columns needed when creating the table>
 ```
+
+
+## 3. GCS to JDBC
+```
+GCP_PROJECT=<gcp-project-id> \
+REGION=<region>  \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+bin/start.sh \
+-- --template GCSTOJDBC \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty gcs.jdbc.input.format=<avro | parquet | orc> \
+--templateProperty gcs.jdbc.input.location=<gcs path> \
+--templateProperty gcs.jdbc.output.url=<jdbc url along with username and password in single quotes> \
+--templateProperty gcs.jdbc.output.table=<jdbc connection table id> \
+--templateProperty gcs.jdbc.output.saveMode=<Append|Overwrite|ErrorIfExists|Ignore>
+```
