@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public class GCSToJDBC implements BaseTemplate {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GCSToSpanner.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GCSToJDBC.class);
   private final GCSToJDBCConfig config;
 
   public GCSToJDBC(GCSToJDBCConfig config) {
