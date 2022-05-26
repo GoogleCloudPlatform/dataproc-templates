@@ -7,26 +7,26 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 
 
 ## Dataproc Templates (Java - Spark)
-Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  for more information
-* [HiveToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
-* [HiveToGCS](java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
-* [PubSubToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
-* [GCSToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
-* [GCSToSpanner](java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md) (blogpost [link](https://agarwalsh.medium.com/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
-* [SpannerToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases/README.md) (blogpost [link](https://medium.com/google-cloud/cloud-spanner-export-query-results-using-dataproc-serverless-6f2f65b583a4))
-* [S3ToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
-* [JDBCToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
-* [JDBCToGCS](java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md) (blogpost [link](https://agarwalsh.medium.com/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
-* [PubSubToGCS](java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md#2-pubsub-to-gcs) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-cloud-storage-using-dataproc-serverless-7a1e4823926e))
-* [WordCount](java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
-* [GeneralTemplate](java/src/main/java/com/google/cloud/dataproc/templates/general/README.md)
+Please refer to the [Dataproc Templates (Java - Spark) README](/java/README.md)  for more information
+* [HiveToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+* [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+* [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
+* [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
+* [GCSToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md) (blogpost [link](https://agarwalsh.medium.com/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
+* [SpannerToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases/README.md) (blogpost [link](https://medium.com/google-cloud/cloud-spanner-export-query-results-using-dataproc-serverless-6f2f65b583a4))
+* [S3ToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
+* [JDBCToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
+* [JDBCToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md) (blogpost [link](https://agarwalsh.medium.com/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
+* [PubSubToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md#2-pubsub-to-gcs) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-cloud-storage-using-dataproc-serverless-7a1e4823926e))
+* [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
+* [GeneralTemplate](/java/src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
 ## Dataproc Templates (Python - PySpark)
 Please refer to the [Dataproc Templates (Python - PySpark) README](python/README.md) for more information
-* [GCSToBigQuery](python/dataproc_templates/gcs/README.md)
-* [BigQueryToGCS](python/dataproc_templates/bigquery/README.md)
-* [HiveToBigQuery](python/dataproc_templates/hive/README.md)
-* [HiveToGCS](python/dataproc_templates/hive/README.md)
+* [GCSToBigQuery](/python/dataproc_templates/gcs/README.md)
+* [BigQueryToGCS](/python/dataproc_templates/bigquery/README.md)
+* [HiveToBigQuery](/python/dataproc_templates/hive/README.md)
+* [HiveToGCS](/python/dataproc_templates/hive/README.md)
 
 ## Getting Started
 
