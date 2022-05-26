@@ -37,7 +37,10 @@ bin/start.sh \
 
 
 ## 3. GCS to JDBC
+
 ```
+export JARS=<gcs location for jdbc connector jar>
+
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
 GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
