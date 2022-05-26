@@ -22,7 +22,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java/README.md) 
 * [GeneralTemplate](/java/src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
 ## Dataproc Templates (Python - PySpark)
-Please refer to the [Dataproc Templates (Python - PySpark) README](python/README.md) for more information
+Please refer to the [Dataproc Templates (Python - PySpark) README](/python/README.md) for more information
 * [GCSToBigQuery](/python/dataproc_templates/gcs/README.md)
 * [BigQueryToGCS](/python/dataproc_templates/bigquery/README.md)
 * [HiveToBigQuery](/python/dataproc_templates/hive/README.md)
