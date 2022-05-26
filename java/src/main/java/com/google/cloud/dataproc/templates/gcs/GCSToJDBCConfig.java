@@ -36,6 +36,7 @@ public class GCSToJDBCConfig {
   public static final String GCS_JDBC_OUTPUT_TABLE = "gcs.jdbc.output.table";
   public static final String GCS_JDBC_OUTPUT_SAVE_MODE = "gcs.jdbc.output.saveMode";
   public static final String GCS_JDBC_OUTPUT_BATCH_INSERT_SIZE = "gcs.jdbc.output.batchInsertSize";
+  public static final String GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver";
 
   static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -56,6 +57,10 @@ public class GCSToJDBCConfig {
   @JsonProperty(value = GCS_JDBC_OUTPUT_URL)
   @NotEmpty
   private String jdbcUrl;
+
+  @JsonProperty(value = GCS_JDBC_OUTPUT_DRIVER)
+  @NotEmpty
+  private String jdbcDriver;
 
   @JsonProperty(value = GCS_JDBC_OUTPUT_TABLE)
   @NotEmpty
@@ -85,6 +90,10 @@ public class GCSToJDBCConfig {
     return jdbcUrl;
   }
 
+  public String getJDBCDriver() {
+    return jdbcDriver;
+  }
+
   public String getTable() {
     return table;
   }
@@ -112,6 +121,7 @@ public class GCSToJDBCConfig {
         .add("table", table)
         .add("saveModeString", saveModeString)
         .add("jdbcUrl", jdbcUrl)
+        .add("jdbcDriver", jdbcDriver)
         .toString();
   }
 
