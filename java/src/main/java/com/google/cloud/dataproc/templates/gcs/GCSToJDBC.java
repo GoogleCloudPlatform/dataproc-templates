@@ -63,9 +63,6 @@ public class GCSToJDBC implements BaseTemplate {
         .option(JDBCOptions.JDBC_URL(), config.getJDBCUrl())
         .option(JDBCOptions.JDBC_TABLE_NAME(), config.getTable())
         .option(
-            JDBCOptions.JDBC_TXN_ISOLATION_LEVEL(),
-            "NONE") // Needed because transaction have a 20,000 mutation limit per commit.
-        .option(
             JDBCOptions.JDBC_BATCH_INSERT_SIZE(), config.getBatchInsertSize()) // default is 1000
         .option(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJDBCDriver())
         .mode(config.getSaveMode())
