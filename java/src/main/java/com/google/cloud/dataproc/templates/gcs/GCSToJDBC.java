@@ -48,8 +48,6 @@ public class GCSToJDBC implements BaseTemplate {
     try (SparkSession spark = SparkSession.builder().appName("GCS to JDBC").getOrCreate()) {
       Dataset<Row> dataset =
           spark.read().format(config.getInputFormat()).load(config.getInputLocation());
-      LOGGER.info("Schema of input Data set is as follows ");
-      dataset.printSchema();
 
       write(dataset);
     }
