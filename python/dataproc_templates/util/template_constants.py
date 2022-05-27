@@ -24,6 +24,7 @@ FORMAT_AVRO = "avro"
 FORMAT_PRQT = "parquet"
 FORMAT_AVRO_EXTD = "com.databricks.spark.avro"
 FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery"
+FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
 TEMP_GCS_BUCKET="temporaryGcsBucket"
 
@@ -41,6 +42,10 @@ GCS_BQ_OUTPUT_TABLE = "gcs.bigquery.output.table"
 GCS_BQ_OUTPUT_MODE = "gcs.bigquery.output.mode"
 GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name"
+
+# GCS to BigTable
+GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
+GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format"
 
 # BigQuery to GCS
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"

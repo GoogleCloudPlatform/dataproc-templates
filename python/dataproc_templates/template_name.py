@@ -23,7 +23,8 @@ __all__ = ['TemplateName']
 class TemplateName(Enum):
     """Enumeration of all template types"""
 
-    GCSTOBIGQUERY = 'GCSTOBIGQUERY'
+    GCSTOBIGQUERY = "GCSTOBIGQUERY"
+    GCSTOBIGTABLE = "GCSTOBIGTABLE"
     BIGQUERYTOGCS = "BIGQUERYTOGCS"
     HIVETOBIGQUERY = "HIVETOBIGQUERY"
     HIVETOGCS = "HIVETOGCS"
