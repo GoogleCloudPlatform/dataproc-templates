@@ -50,8 +50,6 @@ public class GCSToJDBC implements BaseTemplate {
           spark.read().format(config.getInputFormat()).load(config.getInputLocation());
       LOGGER.info("Schema of input Data set is as follows ");
       dataset.printSchema();
-      LOGGER.info("Actual Data is as follows ");
-      dataset.show();
 
       write(dataset);
     }
