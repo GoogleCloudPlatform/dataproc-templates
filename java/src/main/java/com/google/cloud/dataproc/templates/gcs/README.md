@@ -47,7 +47,7 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 bin/start.sh \
 -- --template GCSTOJDBC \
 --templateProperty project.id=<gcp-project-id> \
---templateProperty gcs.jdbc.input.format=<csv | avro | parquet | orc> \
+--templateProperty gcs.jdbc.input.format=<avro | parquet | orc> \
 --templateProperty gcs.jdbc.input.location=<gcs path> \
 --templateProperty gcs.jdbc.output.driver=<jdbc driver required in single quotes> \
 --templateProperty gcs.jdbc.output.url=<jdbc url along with username and password in single quotes> \
