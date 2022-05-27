@@ -53,4 +53,17 @@ bin/start.sh \
 --templateProperty gcs.jdbc.output.url=<jdbc url along with username and password in single quotes> \
 --templateProperty gcs.jdbc.output.table=<jdbc connection table id> \
 --templateProperty gcs.jdbc.output.saveMode=<Append|Overwrite|ErrorIfExists|Ignore>
+
+Example execution:-
+
+bin/start.sh \
+-- --template GCSTOJDBC \
+--templateProperty project.id=my-gcp-project \
+--templateProperty gcs.jdbc.input.location=gs://my-gcp-project-bucket/empavro \
+--templateProperty gcs.jdbc.input.format=avro \
+--templateProperty gcs.jdbc.output.table=avrodemo \
+--templateProperty gcs.jdbc.output.saveMode=Overwrite \
+--templateProperty gcs.jdbc.output.url='jdbc:mysql://192.168.16.3:3306/test?user=root&password=root' \
+--templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver'
+
 ```
