@@ -12,6 +12,7 @@
 * [JDBCToBigQuery](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [JDBCToGCS](src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [PubSubToGCS](src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md#2-pubsub-to-gcs)
+* [GCSToJDBC](src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
 * [WordCount](src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](src/main/java/com/google/cloud/dataproc/templates/general/README.md)
 
