@@ -207,7 +207,9 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private Dataset<Row> getBQTargetAvailablePartitionsDf(List<String> partitionKeysList) {
     LOGGER.info("Reading target table: {}", targetTable);
     spark.conf().set(SPARK_CONF_NAME_VIEWS_ENABLED, "true");
+    spark.conf().set(SPARK_CONF_NAME_MATERIALIZATION_PROJECT, projectId);
     spark.conf().set(SPARK_CONF_NAME_MATERIALIZATION_DATASET, targetDataset);
+
     try {
       String sql =
           String.format(

@@ -244,6 +244,8 @@ public interface TemplateConstants {
 
   String SPARK_CONF_NAME_VIEWS_ENABLED = "viewsEnabled";
 
+  String SPARK_CONF_NAME_MATERIALIZATION_PROJECT = "materializationProject";
+
   String SPARK_CONF_NAME_MATERIALIZATION_DATASET = "materializationDataset";
 
   String SPARK_READ_FORMAT_BIGQUERY = "bigquery";
