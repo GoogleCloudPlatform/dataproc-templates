@@ -39,6 +39,8 @@ bin/start.sh \
 ## 3. GCS to JDBC
 
 ```
+Please download the JDBC Driver of respective database and copy it to gcs bucket location.
+
 export JARS=<gcs location for jdbc connector jar>
 
 GCP_PROJECT=<gcp-project-id> \
