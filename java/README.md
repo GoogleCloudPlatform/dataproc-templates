@@ -1,7 +1,5 @@
 ![Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=java-build)
 
-# Dataproc Templates (Java - Spark)
-
 
 ## Dataproc Templates (Java - Spark)
 Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  for more information
@@ -15,8 +13,10 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  
 * [JDBCToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [JDBCToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
 * [PubSubToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md#2-pubsub-to-gcs) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-cloud-storage-using-dataproc-serverless-7a1e4823926e))
+* [GCSToJDBC](src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](/java/src/main/java/com/google/cloud/dataproc/templates/general/README.md)
+
 
 Dataproc Templates (Java - Spark) submit jobs to Dataproc Serverless using [batches submit spark ](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/spark) and to Dataproc Standard using [jobs submit spark](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs/submit/spark) .
 

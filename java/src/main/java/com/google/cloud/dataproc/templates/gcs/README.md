@@ -35,3 +35,38 @@ bin/start.sh \
 --templateProperty gcs.spanner.output.primaryKey=<column[(,column)*] - primary key columns needed when creating the table> \
 --templateProperty gcs.spanner.output.batchInsertSize=<optional integer>
 ```
+
+
+## 3. GCS to JDBC
+
+```
+Please download the JDBC Driver of respective database and copy it to gcs bucket location.
+
+export JARS=<gcs location for jdbc connector jar>
+
+GCP_PROJECT=<gcp-project-id> \
+REGION=<region>  \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+bin/start.sh \
+-- --template GCSTOJDBC \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty gcs.jdbc.input.format=<avro | parquet | orc> \
+--templateProperty gcs.jdbc.input.location=<gcs path> \
+--templateProperty gcs.jdbc.output.driver=<jdbc driver required in single quotes> \
+--templateProperty gcs.jdbc.output.url=<jdbc url along with username and password in single quotes> \
+--templateProperty gcs.jdbc.output.table=<jdbc connection table id> \
+--templateProperty gcs.jdbc.output.saveMode=<Append|Overwrite|ErrorIfExists|Ignore>
+
+Example execution:-
+
+bin/start.sh \
+-- --template GCSTOJDBC \
+--templateProperty project.id=my-gcp-project \
+--templateProperty gcs.jdbc.input.location=gs://my-gcp-project-bucket/empavro \
+--templateProperty gcs.jdbc.input.format=avro \
+--templateProperty gcs.jdbc.output.table=avrodemo \
+--templateProperty gcs.jdbc.output.saveMode=Overwrite \
+--templateProperty gcs.jdbc.output.url='jdbc:mysql://192.168.16.3:3306/test?user=root&password=root' \
+--templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver'
+
+```
