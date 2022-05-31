@@ -32,7 +32,8 @@ bin/start.sh \
 --templateProperty gcs.spanner.output.database=<spanner database id> \
 --templateProperty gcs.spanner.output.table=<spanner table id> \
 --templateProperty gcs.spanner.output.saveMode=<Append|Overwrite|ErrorIfExists|Ignore> \
---templateProperty gcs.spanner.output.primaryKey=<column[(,column)*] - primary key columns needed when creating the table>
+--templateProperty gcs.spanner.output.primaryKey=<column[(,column)*] - primary key columns needed when creating the table> \
+--templateProperty gcs.spanner.output.batchInsertSize=<optional integer>
 ```
 
 

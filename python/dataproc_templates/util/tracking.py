@@ -1,21 +1,22 @@
-
-from typing import Dict
-
-import google.auth
-from google.auth.credentials import Credentials
-from google.auth.transport.requests import AuthorizedSession
-from google.cloud import bigquery
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 from dataproc_templates import TemplateName
 
-
-def _build_tracking_request_headers(
-    template_name: TemplateName
-) -> Dict[str, str]:
-    return {
-        'user-agent': f"google-pso-tool/dataproc-templates/0.1.0-{template_name.value}"
-    }
-
+import google.auth
+from google.api_core import client_info as http_client_info
+from google.cloud import bigquery
 
 def track_template_invocation(template_name: TemplateName) -> None:
     """
@@ -29,24 +30,12 @@ def track_template_invocation(template_name: TemplateName) -> None:
         None
     """
 
-    # pylint: disable=broad-except
-
-    credentials: Credentials
     project_id: str
-    credentials, project_id = google.auth.default()
-
-    headers: Dict[str, str] = _build_tracking_request_headers(
-        template_name=template_name
-    )
-
-    authorized_session: AuthorizedSession = AuthorizedSession(
-        credentials=credentials
-    )
-
-    authorized_session.headers.update(headers)
+    _, project_id = google.auth.default()
 
     try:
-        with bigquery.Client(project=project_id, _http=authorized_session) as client:
+        client_info = http_client_info.ClientInfo(user_agent=f"google-pso-tool/dataproc-templates/0.1.0-{template_name.value}")
+        with bigquery.Client(project=project_id, client_info=client_info) as client:
             client.list_datasets(
                 project='bigquery-public-data',
                 page_size=1
