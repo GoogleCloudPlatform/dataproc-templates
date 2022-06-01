@@ -67,6 +67,7 @@ public class GCSToJDBCConfig {
   private String table;
 
   @JsonProperty(value = GCS_JDBC_OUTPUT_SAVE_MODE)
+  @NotEmpty
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
   private String saveModeString = "ErrorIfExists";
 
