@@ -15,17 +15,17 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import static com.google.cloud.dataproc.templates.gcs.GCSToJDBCConfig.*;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static com.google.cloud.dataproc.templates.gcs.GCSToJDBCConfig.*;
-import org.junit.jupiter.api.function.ThrowingSupplier;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -60,21 +60,20 @@ public class GCStoJDBCTest {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
 
-    Exception exception =
-            assertThrows(IllegalArgumentException.class, GCSToJDBC::of);
+    Exception exception = assertThrows(IllegalArgumentException.class, GCSToJDBC::of);
     assertEquals(
-            "Required parameters for GCStoJDBC not passed. "
-                    + "Set mandatory parameter for GCStoJDBC template",
-            exception.getMessage());
+        "Required parameters for GCStoJDBC not passed. "
+            + "Set mandatory parameter for GCStoJDBC template",
+        exception.getMessage());
   }
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-            GCS_JDBC_INPUT_FORMAT,
-            GCS_JDBC_INPUT_LOCATION,
-            GCS_JDBC_OUTPUT_DRIVER,
-            GCS_JDBC_OUTPUT_TABLE,
-            GCS_JDBC_OUTPUT_URL,
-            GCS_JDBC_OUTPUT_SAVE_MODE);
+        GCS_JDBC_INPUT_FORMAT,
+        GCS_JDBC_INPUT_LOCATION,
+        GCS_JDBC_OUTPUT_DRIVER,
+        GCS_JDBC_OUTPUT_TABLE,
+        GCS_JDBC_OUTPUT_URL,
+        GCS_JDBC_OUTPUT_SAVE_MODE);
   }
 }
