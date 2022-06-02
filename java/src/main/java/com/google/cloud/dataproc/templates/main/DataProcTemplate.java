@@ -37,9 +37,9 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
-import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
@@ -86,7 +86,10 @@ public class DataProcTemplate {
           .withDescription("Value for given property")
           .create();
   private static final Options options =
-      new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
+      // new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
+      new Options()
+          .addOption(null, TEMPLATE_NAME_LONG_OPT, true, "test")
+          .addOption(PROPERTY_OPTION);
 
   /**
    * Parse command line arguments
@@ -95,7 +98,7 @@ public class DataProcTemplate {
    * @return parsed arguments
    */
   public static CommandLine parseArguments(String... args) {
-    CommandLineParser parser = new BasicParser();
+    CommandLineParser parser = new DefaultParser();
     LOGGER.info("Parsing arguments {}", (Object) args);
     try {
       return parser.parse(options, args, true);

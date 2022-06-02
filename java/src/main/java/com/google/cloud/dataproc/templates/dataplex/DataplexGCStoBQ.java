@@ -128,7 +128,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   /**
    * Sets value for entity
    *
-   * @throws Exception if values no value is passed for --dataplexEntity and --dataplexAsset.
+   * @throws Exception if values no value is passed for --dataplexEntity
    */
   private void checkInput() throws DataprocTemplateException, IOException {
     if (entity != null) {
@@ -144,32 +144,46 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * @param args line arguments
    * @return parsed arguments
    */
-  public static CommandLine parseArguments(String... args) {
+  public static CommandLine parseArguments(String[] args) {
     Options options = new Options();
+
+    CommandLineParser parser = new DefaultParser();
+    Option entityListOption =
+        OptionBuilder.withLongOpt(ENTITY_OPTION)
+            .hasArgs(1)
+            .isRequired(true)
+            .withDescription("Dataplex GCS table resource name")
+            .create();
+
     Option customSQLFileOption =
-        new Option(CUSTOM_SQL_GCS_PATH_OPTION, "GCS path of file containing custom sql");
-    customSQLFileOption.setRequired(false);
-    customSQLFileOption.setArgs(1);
-    options.addOption(customSQLFileOption);
+        OptionBuilder.withLongOpt(CUSTOM_SQL_GCS_PATH_OPTION)
+            .hasArgs(1)
+            .isRequired(false)
+            .withDescription("GCS path of file containing custom sql")
+            .create();
 
-    Option entityListOption = new Option(ENTITY_OPTION, "Dataplex GCS table resource name");
-    entityListOption.setRequired(false);
-    entityListOption.setArgs(2);
-    options.addOption(entityListOption);
+    Option partitionField =
+        OptionBuilder.withLongOpt(PARTITION_FIELD_OPTION)
+            .hasArgs(1)
+            .isRequired(false)
+            .withDescription("BigQuery partitionField")
+            .create();
 
-    Option partitionField = new Option(PARTITION_FIELD_OPTION, "BigQuery partitionField");
-    partitionField.setRequired(false);
-    partitionField.setArgs(4);
-    options.addOption(partitionField);
+    Option partitionType =
+        OptionBuilder.withLongOpt(PARTITION_TYPE_OPTION)
+            .hasArgs(1)
+            .isRequired(false)
+            .withDescription("BigQuery partitionType")
+            .create();
 
-    Option partitionType = new Option(PARTITION_TYPE_OPTION, "BigQuery partitionType");
-    partitionType.setRequired(false);
-    partitionType.setArgs(5);
-    options.addOption(partitionType);
-
-    CommandLineParser parser = new BasicParser();
+    options =
+        new Options()
+            .addOption(entityListOption)
+            .addOption(customSQLFileOption)
+            .addOption(partitionField)
+            .addOption(partitionType);
     try {
-      return parser.parse(options, args);
+      return parser.parse(options, args, true);
     } catch (ParseException e) {
       throw new IllegalArgumentException(e);
     }
