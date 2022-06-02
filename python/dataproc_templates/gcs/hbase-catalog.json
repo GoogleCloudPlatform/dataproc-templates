@@ -1,7 +1,7 @@
 {
   "table":{
     "namespace":"default",
-    "name":"python-gcs-bigtable-template"
+    "name":"<your_table>"
   },
   "rowkey":"key",
   "columns":{
