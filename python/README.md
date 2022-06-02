@@ -3,6 +3,7 @@
 # Dataproc Templates (Python - PySpark)
 
 * [GCSToBigQuery](/python/dataproc_templates/gcs/README.md)
+* [GCSToBigTable](/python/dataproc_templates/gcs/README.md)
 * [BigQueryToGCS](/python/dataproc_templates/bigquery/README.md)
 * [HiveToBigQuery](/python/dataproc_templates/hive/README.md)
 * [HiveToGCS](/python/dataproc_templates/hive/README.md)
