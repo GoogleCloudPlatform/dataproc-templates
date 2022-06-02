@@ -60,7 +60,7 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --gcs.bigquery.input.location="<gs://bucket/path>" \
     --gcs.bigquery.output.dataset="<dataset>" \
     --gcs.bigquery.output.table="<table>" \
-    --gcs.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
+    --gcs.bigquery.output.mode=<append|overwrite|ignore|errorifexists>\
     --gcs.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
 
@@ -73,8 +73,22 @@ It uses the [Apache HBase Spark Connector](https://mvnrepository.com/artifact/or
 
 ## Requirements
 
-Configure the BigTable HBase catalog with table schema
-Configure Dataproc to point to the BigTable instance
+- Configure the hbase-catalog.json with your catalog (table reference and schema)
+- Configure the hbase-site.xml with your BigTable instance reference
+
+The hbase-site.xml needs to be available in the container image used by Dataproc Serverless.  
+You need to host a customer container image in GCP Container Registry.  
+A environment variable should be set to its path as well when submitting the job.  
+
+```
+--container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>"  # image with hbase-site.xml in /etc/hbase/conf/
+--properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'
+```
+
+The hbase-catalog.json should be passed using the --files, and it is read by the Spark application:
+```
+--files="./dataproc_templates/gcs/hbase-catalog.json" 
+```
 
 ## Arguments
 
@@ -99,14 +113,17 @@ optional arguments:
 
 ## Required JAR files
 
-Possible options:
-gs://deps-dataproc-template/hbase-spark-1.0.0.jar
-gs://deps-dataproc-template/hbase-client-2.4.11.jar
-gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar
-gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar
+Some HBase and BigTable dependencies are required to be passed:
 
-Possible config options:
---properties='spark.driver.extraClassPath=/etc/hbase/conf:/usr/lib/hbase/*,spark.executor.extraClassPath=/etc/hbase/conf:/usr/lib/hbase/*'
+- gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar
+- gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar
+- gs://deps-dataproc-template/bigtable-hbase-2.x-hadoop-2.3.0.jar
+- gs://deps-dataproc-template/hbase-common-2.4.12.jar,
+- gs://deps-dataproc-template/hbase-client-2.4.12.jar
+- gs://deps-dataproc-template/hbase-server-2.4.12.jar
+- gs://deps-dataproc-template/hbase-mapreduce-2.4.12.jar
+- gs://deps-dataproc-template/hbase-shaded-miscellaneous-4.1.0.jar
+- gs://deps-dataproc-template/hbase-shaded-protobuf-4.1.0.jar
 
 ## Example submission
 
@@ -114,10 +131,13 @@ Possible config options:
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
-export JARS="gs://deps-dataproc-template/hbase-spark-1.0.0.jar,gs://deps-dataproc-template/hbase-client-2.4.11.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar"
+export JARS="gs://deps-dataproc-template/hbase-shaded-protobuf-4.1.0.jar,gs://deps-dataproc-template/bigtable-hbase-2.x-hadoop-2.3.0.jar,gs://deps-dataproc-template/hbase-common-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/hbase-server-2.4.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-shaded-miscellaneous-4.1.0.jar"
 
 ./bin/start.sh \
+--container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>" \
+--properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
+--files="./dataproc_templates/gcs/hbase-catalog.json" \
 -- --template=GCSTOBIGTABLE \
    --gcs.bigtable.input.format="<json|csv|parquet|avro>" \
-   --gcs.bigtable.input.location="<gs://bucket/path>" 
+   --gcs.bigtable.input.location="<gs://bucket/path>"
 ```

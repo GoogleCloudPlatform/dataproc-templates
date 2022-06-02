@@ -91,18 +91,12 @@ class GCSToBigTableTemplate(BaseTemplate):
             input_data = spark.read \
                 .json(input_file_location)
 
-        # TODO: have a config file to provide the catalog before running the template
-        catalog = ''.join("""{
-            "table":{"namespace":"default", "name":"python-gcs-bigtable-template"},
-            "rowkey":"value",
-            "columns":{
-                "col0":{"cf":"rowkey", "col":"value", "type":"string"},
-                "col1":{"cf":"cf", "col":"value", "type":"string"}
-            }
-        }""".split())
+        with open('./hbase-catalog.json', 'r') as f:
+            catalog = f.read()
 
         # Write
-        input_data.write \
+        df.write \
             .format(constants.FORMAT_HBASE) \
-            .option("catalog", catalog) \
+            .options(catalog=catalog) \
+            .option('hbase.spark.use.hbasecontext', "false") \
             .save()

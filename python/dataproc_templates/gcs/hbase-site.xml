@@ -2,14 +2,14 @@
 <configuration>
   <property>
     <name>hbase.client.connection.impl</name>
-    <value>com.google.cloud.bigtable.hbase1_x.BigtableConnection</value>
+    <value>com.google.cloud.bigtable.hbase2_x.BigtableConnection</value>
   </property>
   <property>
     <name>google.bigtable.project.id</name>
-    <value>project_id</value>
+    <value>yadavaja-sandbox</value>
   </property>
   <property>
     <name>google.bigtable.instance.id</name>
-    <value>bigtable_instance_id</value>
+    <value>bt-templates-test</value>
   </property>
 </configuration>

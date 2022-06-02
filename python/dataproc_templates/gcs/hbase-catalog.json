@@ -1,0 +1,19 @@
+{
+  "table":{
+    "namespace":"default",
+    "name":"python-gcs-bigtable-template"
+  },
+  "rowkey":"key",
+  "columns":{
+    "key":{
+      "cf":"rowkey",
+      "col":"key",
+      "type":"string"
+    },
+    "name":{
+      "cf":"cf",
+      "col":"name",
+      "type":"string"
+    }
+  }
+}
