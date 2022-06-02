@@ -139,6 +139,8 @@ public interface TemplateConstants {
 
   String GCS_BQ_CSV_INFOR_SCHEMA = "inferSchema";
 
+  String GCS_BQ_CSV_DELIMITER_PROP_NAME = "delimiter";
+
   String GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket";
 
   String GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name";

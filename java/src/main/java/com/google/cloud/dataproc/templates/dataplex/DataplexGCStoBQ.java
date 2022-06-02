@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.cli.*;
+import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
@@ -92,6 +93,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private String targetTableName;
   private String targetTable;
   private String inputFileFormat;
+  private String inputCSVDelimiter;
   private String bqTempBucket;
   private String sparkSaveMode;
   private String incrementalParittionCopy;
@@ -273,14 +275,19 @@ public class DataplexGCStoBQ implements BaseTemplate {
     for (Row row : result) {
       String path = row.get(0).toString() + "/*";
       LOGGER.info("Loading data from GCS path: {}", path);
-      Dataset<Row> newPartitionTempDS =
+      DataFrameReader DfReader =
           sqlContext
               .read()
               .format(inputFileFormat)
-              .option(GCS_BQ_CSV_HEADER, true)
-              .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
-              .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityBasePath)
-              .load(path);
+              .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityBasePath);
+
+      if (this.inputFileFormat.equals(GCS_BQ_CSV_FORMAT)) {
+        DfReader.option(GCS_BQ_CSV_HEADER, true)
+            .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
+            .option(GCS_BQ_CSV_DELIMITER_PROP_NAME, this.inputCSVDelimiter);
+      }
+      Dataset<Row> newPartitionTempDS = DfReader.load(path);
+
       if (newPartitionsDS == null) {
         newPartitionsDS = newPartitionTempDS;
       } else {
@@ -358,8 +365,12 @@ public class DataplexGCStoBQ implements BaseTemplate {
       this.sqlContext = new SQLContext(spark);
       checkInput();
 
+      // TODO: refactor the following DataplexUtil avoid calling the same API method more than once
       this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
       this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
+      if (this.inputFileFormat.equals("csv")) {
+        this.inputCSVDelimiter = DataplexUtil.getInputCSVDelimiter(entity);
+      }
       this.targetTableName = entity.split(FORWARD_SLASH)[entity.split(FORWARD_SLASH).length - 1];
       this.targetTable =
           String.format(BQ_TABLE_NAME_FORMAT, projectId, targetDataset, targetTableName);

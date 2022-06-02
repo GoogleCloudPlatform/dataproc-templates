@@ -15,6 +15,8 @@
  */
 package com.google.cloud.dataproc.templates.util;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
@@ -185,6 +187,24 @@ public class DataplexUtil {
     return responseJson
         .getAsJsonObject(ENTITY_FORMAT_PROP_KEY)
         .get(ENTITY_FORMAT_PROP_KEY)
+        .getAsString()
+        .toLowerCase();
+  }
+
+  /**
+   * Execute request on Google API to fetch schema of a Dataplex entity and parses out the CSV
+   * delimiter
+   *
+   * @param entity name, must be an entity with CSV format
+   * @return file format
+   * @throws IOException when request on Dataplex API fails
+   */
+  public static String getInputCSVDelimiter(String entity) throws IOException {
+    JsonObject responseJson = DataplexUtil.getEntitySchema(entity);
+    return responseJson
+        .getAsJsonObject(ENTITY_FORMAT_PROP_KEY)
+        .getAsJsonObject(GCS_BQ_CSV_FORMAT)
+        .get(GCS_BQ_CSV_DELIMITER_PROP_NAME)
         .getAsString()
         .toLowerCase();
   }
