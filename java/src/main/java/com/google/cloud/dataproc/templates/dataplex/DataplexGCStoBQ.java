@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.cli.*;
+import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
@@ -92,6 +93,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private String targetTableName;
   private String targetTable;
   private String inputFileFormat;
+  private String inputCSVDelimiter;
   private String bqTempBucket;
   private String sparkSaveMode;
   private String incrementalParittionCopy;
@@ -126,7 +128,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   /**
    * Sets value for entity
    *
-   * @throws Exception if values no value is passed for --dataplexEntity and --dataplexAsset.
+   * @throws Exception if values no value is passed for --dataplexEntity
    */
   private void checkInput() throws DataprocTemplateException, IOException {
     if (entity != null) {
@@ -142,32 +144,46 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * @param args line arguments
    * @return parsed arguments
    */
-  public static CommandLine parseArguments(String... args) {
+  public static CommandLine parseArguments(String[] args) {
     Options options = new Options();
+
+    CommandLineParser parser = new DefaultParser();
+    Option entityListOption =
+        OptionBuilder.withLongOpt(ENTITY_OPTION)
+            .hasArgs(1)
+            .isRequired(true)
+            .withDescription("Dataplex GCS table resource name")
+            .create();
+
     Option customSQLFileOption =
-        new Option(CUSTOM_SQL_GCS_PATH_OPTION, "GCS path of file containing custom sql");
-    customSQLFileOption.setRequired(false);
-    customSQLFileOption.setArgs(1);
-    options.addOption(customSQLFileOption);
+        OptionBuilder.withLongOpt(CUSTOM_SQL_GCS_PATH_OPTION)
+            .hasArgs(1)
+            .isRequired(false)
+            .withDescription("GCS path of file containing custom sql")
+            .create();
 
-    Option entityListOption = new Option(ENTITY_OPTION, "Dataplex GCS table resource name");
-    entityListOption.setRequired(false);
-    entityListOption.setArgs(2);
-    options.addOption(entityListOption);
+    Option partitionField =
+        OptionBuilder.withLongOpt(PARTITION_FIELD_OPTION)
+            .hasArgs(1)
+            .isRequired(false)
+            .withDescription("BigQuery partitionField")
+            .create();
 
-    Option partitionField = new Option(PARTITION_FIELD_OPTION, "BigQuery partitionField");
-    partitionField.setRequired(false);
-    partitionField.setArgs(4);
-    options.addOption(partitionField);
+    Option partitionType =
+        OptionBuilder.withLongOpt(PARTITION_TYPE_OPTION)
+            .hasArgs(1)
+            .isRequired(false)
+            .withDescription("BigQuery partitionType")
+            .create();
 
-    Option partitionType = new Option(PARTITION_TYPE_OPTION, "BigQuery partitionType");
-    partitionType.setRequired(false);
-    partitionType.setArgs(5);
-    options.addOption(partitionType);
-
-    CommandLineParser parser = new BasicParser();
+    options =
+        new Options()
+            .addOption(entityListOption)
+            .addOption(customSQLFileOption)
+            .addOption(partitionField)
+            .addOption(partitionType);
     try {
-      return parser.parse(options, args);
+      return parser.parse(options, args, true);
     } catch (ParseException e) {
       throw new IllegalArgumentException(e);
     }
@@ -207,7 +223,9 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private Dataset<Row> getBQTargetAvailablePartitionsDf(List<String> partitionKeysList) {
     LOGGER.info("Reading target table: {}", targetTable);
     spark.conf().set(SPARK_CONF_NAME_VIEWS_ENABLED, "true");
+    spark.conf().set(SPARK_CONF_NAME_MATERIALIZATION_PROJECT, projectId);
     spark.conf().set(SPARK_CONF_NAME_MATERIALIZATION_DATASET, targetDataset);
+
     try {
       String sql =
           String.format(
@@ -271,14 +289,19 @@ public class DataplexGCStoBQ implements BaseTemplate {
     for (Row row : result) {
       String path = row.get(0).toString() + "/*";
       LOGGER.info("Loading data from GCS path: {}", path);
-      Dataset<Row> newPartitionTempDS =
+      DataFrameReader DfReader =
           sqlContext
               .read()
               .format(inputFileFormat)
-              .option(GCS_BQ_CSV_HEADER, true)
-              .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
-              .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityBasePath)
-              .load(path);
+              .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityBasePath);
+
+      if (this.inputFileFormat.equals(GCS_BQ_CSV_FORMAT)) {
+        DfReader.option(GCS_BQ_CSV_HEADER, true)
+            .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
+            .option(GCS_BQ_CSV_DELIMITER_PROP_NAME, this.inputCSVDelimiter);
+      }
+      Dataset<Row> newPartitionTempDS = DfReader.load(path);
+
       if (newPartitionsDS == null) {
         newPartitionsDS = newPartitionTempDS;
       } else {
@@ -356,8 +379,12 @@ public class DataplexGCStoBQ implements BaseTemplate {
       this.sqlContext = new SQLContext(spark);
       checkInput();
 
+      // TODO: refactor the following DataplexUtil avoid calling the same API method more than once
       this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
       this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
+      if (this.inputFileFormat.equals("csv")) {
+        this.inputCSVDelimiter = DataplexUtil.getInputCSVDelimiter(entity);
+      }
       this.targetTableName = entity.split(FORWARD_SLASH)[entity.split(FORWARD_SLASH).length - 1];
       this.targetTable =
           String.format(BQ_TABLE_NAME_FORMAT, projectId, targetDataset, targetTableName);
