@@ -58,8 +58,6 @@ class GCStoJDBCTest {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
     ValidationException exception = assertThrows(ValidationException.class, GCSToJDBC::of);
-    ConstraintViolation<?> violation = exception.getViolations().get(0);
-    assertEquals("must not be empty", violation.getMessage());
   }
 
   static Stream<String> requiredPropertyKeys() {
