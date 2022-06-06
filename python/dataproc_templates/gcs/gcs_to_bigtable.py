@@ -95,7 +95,7 @@ class GCSToBigTableTemplate(BaseTemplate):
             catalog = f.read()
 
         # Write
-        df.write \
+        input_data.write \
             .format(constants.FORMAT_HBASE) \
             .options(catalog=catalog) \
             .option('hbase.spark.use.hbasecontext', "false") \
