@@ -47,7 +47,7 @@ public class GCSToJDBCConfig {
 
   @JsonProperty(value = GCS_JDBC_INPUT_FORMAT)
   @NotEmpty
-  @Pattern(regexp = "csv|avro|parquet|orc")
+  @Pattern(regexp = "avro|parquet|orc")
   private String inputFormat;
 
   @JsonProperty(value = PROJECT_ID_PROP)
