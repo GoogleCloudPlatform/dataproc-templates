@@ -4,8 +4,8 @@ General Execution:
 
 ```
 GCP_PROJECT=<gcp-project-id> \
-REGION=<region>  \
-SUBNET=<subnet>   \
+REGION=<region> \
+SUBNET=<subnet> \
 GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 # ID of Dataproc cluster running permanent history server to access historic logs.
 #export HISTORY_SERVER_CLUSTER=<gcp-project-dataproc-history-server-id>
@@ -14,9 +14,9 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 bin/start.sh \
 --scopes=https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/bigquery \
 -- --template PUBSUBTOBIGQUERY
---templateProperty pubsub.input.subscription==<pubsub subscription> \
+--templateProperty pubsub.input.subscription=<pubsub subscription> \
 --templateProperty pubsub.bq.output.project.id=<pubsub to bq output project id> \
---templateProperty pubsub.bq.output.dataset=<bq output dataset>
+--templateProperty pubsub.bq.output.dataset=<bq output dataset> \
 --templateProperty pubsub.bq.output.table=<bq output table>
 ```
 
