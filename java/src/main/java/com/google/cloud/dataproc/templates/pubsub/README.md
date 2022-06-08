@@ -21,7 +21,8 @@ bin/start.sh \
 ```
 
 ### Configurable Parameters
-Update Following properties in  [template.properties](../../../../../../../resources/template.properties) file:
+Following properties are avaialble in commandline or [template.properties](../../../../../../../resources/template.properties) file:
+
 ```
 ## Project that contains the input Pub/Sub subscription to be read
 pubsub.input.project.id=<pubsub project id>
@@ -68,7 +69,8 @@ bin/start.sh \
 ```
 
 ### Configurable Parameters
-Update Following properties in  [template.properties](../../../../../../../resources/template.properties) file:
+Following properties are avaialble in commandline or [template.properties](../../../../../../../resources/template.properties) file:
+
 ```
 # PubSub to GCS
 ## Project that contains the input Pub/Sub subscription to be read
