@@ -130,7 +130,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
    *
    * @throws Exception if values no value is passed for --dataplexEntity
    */
-  private void checkInput() throws DataprocTemplateException, IOException {
+  private void checkInput() {
     if (entity != null) {
       this.entity = entity;
     } else {
@@ -408,19 +408,20 @@ public class DataplexGCStoBQ implements BaseTemplate {
 
       // load data from each partition
       Dataset<Row> newPartitionsDS = getNewPartitionsDS(newPartitionsPathsDS);
-      newPartitionsDS.printSchema();
-
-      newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
-
-      newPartitionsDS = applyCustomSql(newPartitionsDS);
-
-      writeToBQ(newPartitionsDS);
+      if (newPartitionsDS != null) {
+        newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
+        newPartitionsDS = applyCustomSql(newPartitionsDS);
+        writeToBQ(newPartitionsDS);
+      } else {
+        LOGGER.info("No new partitions found");
+      }
 
     } catch (Throwable th) {
       LOGGER.error("Exception in DataplexGCStoBQ", th);
       if (Objects.nonNull(spark)) {
         spark.stop();
       }
+      throw new DataprocTemplateException(th.getMessage());
     }
   }
 }
