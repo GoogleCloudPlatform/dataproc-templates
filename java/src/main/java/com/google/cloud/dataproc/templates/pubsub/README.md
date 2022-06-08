@@ -6,11 +6,18 @@ General Execution:
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
 SUBNET=<subnet>   \
-GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
-HISTORY_SERVER_CLUSTER=<history-server> \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+# ID of Dataproc cluster running permanent history server to access historic logs.
+#export HISTORY_SERVER_CLUSTER=<gcp-project-dataproc-history-server-id>
+
+
 bin/start.sh \
 --scopes=https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/bigquery \
 -- --template PUBSUBTOBIGQUERY
+--templateProperty pubsub.input.subscription==<pubsub subscription> \
+--templateProperty pubsub.bq.output.project.id=<pubsub to bq output project id> \
+--templateProperty pubsub.bq.output.dataset=<bq output dataset>
+--templateProperty pubsub.bq.output.table=<bq output table>
 ```
 
 ### Configurable Parameters
@@ -47,7 +54,7 @@ export GCS_STAGING_LOCATION=<gcs-bucket-staging-folder-path>
 # Set optional environment variables.
 export SUBNET=<gcp-project-dataproc-clusters-subnet>
 # ID of Dataproc cluster running permanent history server to access historic logs.
-#export HISTORY_SERVER_CLUSTER=<gcp-project-dataproc-phs-server-id>
+#export HISTORY_SERVER_CLUSTER=<gcp-project-dataproc-history-server-id>
 
 # The submit spark options must be seperated with a "--" from the template options
 bin/start.sh \
