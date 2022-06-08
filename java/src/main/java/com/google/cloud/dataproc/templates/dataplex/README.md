@@ -22,6 +22,7 @@ bin/start.sh \
 --dataplexEntity "projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1}" \
 --partitionField "partition_field" \
 --partitionType "DAY" \
+--targetTableName "table_name" \
 --customSqlGcsPath "gs://bucket/path/to/custom_sql.sql" 
 ```
 
@@ -53,7 +54,10 @@ Example: `--dataplexEntityList "projects/{project_number}/locations/{location_id
 table is partitioned by this field. The field must be a top-level TIMESTAMP 
 or DATE field.
 
-`--partitionType` Supported types are: `HOUR`, `DAY`, `MONTH`, `YEAR`
+`--partitionType` supported types are: `HOUR`, `DAY`, `MONTH`, `YEAR`
+
+`--targetTableName` name of the table where data will be written to. If this 
+argument is not specified the name of the entity will be used as table name
 
 ### Custom SQL 
 
