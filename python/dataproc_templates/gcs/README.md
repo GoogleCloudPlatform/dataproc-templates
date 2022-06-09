@@ -79,7 +79,7 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
 
 ## Requirements
 
-1) Configure the [hbase-site.xml](https://cloud.google.com/bigtable/docs/hbase-connecting#creating_the_hbase-sitexml_file) with your BigTable instance reference
+1) Configure the [hbase-site.xml](./hbase-site.xml) ([reference](https://cloud.google.com/bigtable/docs/hbase-connecting#creating_the_hbase-sitexml_file)) with your BigTable instance reference
     - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.  
     - For that, you need to build and host a [customer container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) in GCP Container Registry.  
        - You can use and adapt the Dockerfile from the guide above, building and pushing it to GCP Container Registry with:
@@ -94,7 +94,7 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
     --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'
     ```
 
-2) Configure the hbase-catalog.json with your HBase catalog (table reference and schema)
+2) Configure the [hbase-catalog.json](./hbase-catalog.json) with your HBase catalog (table reference and schema)
     - The hbase-catalog.json should be passed using the --files, and it is read by the template Spark application:
     ```
     (./bin/start.sh ...)
