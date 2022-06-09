@@ -46,6 +46,7 @@ GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name"
 # GCS to BigTable
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
 GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format"
+GCS_BT_HBASE_CATALOG_PATH = "gcs.bigtable.hbase.catalog.path"
 
 # BigQuery to GCS
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
@@ -58,12 +59,12 @@ HIVE_BQ_OUTPUT_MODE = "hive.bigquery.output.mode"
 HIVE_BQ_LD_TEMP_BUCKET_NAME = "hive.bigquery.temp.bucket.name"
 HIVE_BQ_OUTPUT_DATASET = "hive.bigquery.output.dataset"
 HIVE_BQ_OUTPUT_TABLE = "hive.bigquery.output.table"
-HIVE_BQ_INPUT_DATABASE="hive.bigquery.input.database"
-HIVE_BQ_INPUT_TABLE="hive.bigquery.input.table"
+HIVE_BQ_INPUT_DATABASE = "hive.bigquery.input.database"
+HIVE_BQ_INPUT_TABLE = "hive.bigquery.input.table"
 
 # Hive to GCS
 HIVE_GCS_INPUT_DATABASE="hive.gcs.input.database"
-HIVE_GCS_INPUT_TABLE="hive.gcs.input.table"
+HIVE_GCS_INPUT_TABLE = "hive.gcs.input.table"
 HIVE_GCS_OUTPUT_LOCATION = "hive.gcs.output.location"
 HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
 HIVE_GCS_OUTPUT_MODE = "hive.gcs.output.mode"
