@@ -64,7 +64,6 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --gcs.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
 
-
 ## GCS To BigTable
 
 Template for reading files from Google Cloud Storage and writing them to a BigTable table. It supports reading JSON, CSV, Parquet and Avro formats.
@@ -135,16 +134,18 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
 
 * `gcs.bigquery.input.location`: GCS location of the input files (format: `gs://<bucket>/...`)
 * `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `gcs.bigtable.hbase.catalog.path`: Local path/folder of the hbase-catalog.json file
 
 Note: the Bigtable table output configuration is done from the hbase-catalog.json file
 
 ## Usage
 
 ```
-$ python main.py --template GCSTOBIGTABLE --help
-
+$ python main.py --template GCSTOBIGTABLE --help                
+                        
 usage: main.py [-h] --gcs.bigtable.input.location GCS.BIGTABLE.INPUT.LOCATION
                     --gcs.bigtable.input.format {avro,parquet,csv,json}
+                    --gcs.bigtable.hbase.catalog.path GCS.BIGTABLE.HBASE.CATALOG.PATH
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -152,6 +153,8 @@ optional arguments:
                         GCS location of the input files
   --gcs.bigtable.input.format {avro,parquet,csv,json}
                         Input file format (one of: avro,parquet,csv,json)
+  --gcs.bigtable.hbase.catalog.path GCS.BIGTABLE.HBASE.CATALOG.PATH
+                        Local path/folder of the hbase-catalog.json file
 ```
 
 ## Example submission
@@ -176,5 +179,6 @@ export JARS="gs://<your_bucket_to_store_dependencies>/hbase-shaded-protobuf-4.1.
 --files="./dataproc_templates/gcs/hbase-catalog.json" \
 -- --template=GCSTOBIGTABLE \
    --gcs.bigtable.input.format="<json|csv|parquet|avro>" \
-   --gcs.bigtable.input.location="<gs://bucket/path>"
+   --gcs.bigtable.input.location="<gs://bucket/path>" \
+   --gcs.bigtable.hbase.catalog.path="./"
 ```
