@@ -308,7 +308,7 @@ public class DataplexUtil {
     dataplexTypeToSparkType.put(DATAPLEX_BYTE_DATA_TYPE_NAME, DataTypes.ByteType);
     dataplexTypeToSparkType.put(DATAPLEX_INT16_DATA_TYPE_NAME, DataTypes.IntegerType);
     dataplexTypeToSparkType.put(DATAPLEX_INT32_DATA_TYPE_NAME, DataTypes.IntegerType);
-    dataplexTypeToSparkType.put(DATAPLEX_INT64_DATA_TYPE_NAME, DataTypes.IntegerType);
+    dataplexTypeToSparkType.put(DATAPLEX_INT64_DATA_TYPE_NAME, DataTypes.LongType);
     dataplexTypeToSparkType.put(DATAPLEX_FLOAT_DATA_TYPE_NAME, DataTypes.FloatType);
     dataplexTypeToSparkType.put(DATAPLEX_DOUBLE_DATA_TYPE_NAME, DataTypes.DoubleType);
     dataplexTypeToSparkType.put(DATAPLEX_DECIMAL_DATA_TYPE_NAME, DataTypes.createDecimalType());
