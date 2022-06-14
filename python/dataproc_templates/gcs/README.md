@@ -117,18 +117,10 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
     - Download it from [here](https://repo1.maven.org/maven2/com/google/cloud/bigtable/bigtable-hbase/2.3.0/bigtable-hbase-2.3.0.jar)
 
 - **HBase dependencies:**
-  - gs://<your_bucket_to_store_dependencies>/hbase-common-2.4.12.jar
-      - Download it from [here](https://repo1.maven.org/maven2/org/apache/hbase/hbase-common/2.4.12/hbase-common-2.4.12.jar)
   - gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar
       - Download it from [here](https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar)
-  - gs://<your_bucket_to_store_dependencies>/hbase-server-2.4.12.jar
-      - Download it from [here](https://repo1.maven.org/maven2/org/apache/hbase/hbase-server/2.4.12/hbase-server-2.4.12.jar)
-  - gs://<your_bucket_to_store_dependencies>/hbase-mapreduce-2.4.12.jar
-      - Download it from [here](https://repo1.maven.org/maven2/org/apache/hbase/hbase-mapreduce/2.4.12/hbase-mapreduce-2.4.12.jar)
-  - gs://<your_bucket_to_store_dependencies>/hbase-shaded-miscellaneous-4.1.0.jar
-      - Download it from [here](https://repo1.maven.org/maven2/org/apache/hbase/thirdparty/hbase-shaded-miscellaneous/4.1.0/hbase-shaded-miscellaneous-4.1.0.jar)
-  - gs://<your_bucket_to_store_dependencies>/hbase-shaded-protobuf-4.1.0.jar
-      - Download it from [here](https://repo1.maven.org/maven2/org/apache/hbase/thirdparty/hbase-shaded-protobuf/4.1.0/hbase-shaded-protobuf-4.1.0.jar)
+  - gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar
+      - Download it from [here](https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar)
 
 ## Arguments
 
@@ -163,13 +155,9 @@ optional arguments:
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
-export JARS="gs://<your_bucket_to_store_dependencies>/hbase-shaded-protobuf-4.1.0.jar, \
-             gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-common-2.4.12.jar, \
+export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar, \
              gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-server-2.4.12.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-mapreduce-2.4.12.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-shaded-miscellaneous-4.1.0.jar, \
+             gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
              file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar, \
              file:///usr/lib/spark/external/hbase-spark.jar"
 
