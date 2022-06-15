@@ -69,6 +69,13 @@ class HbaseToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        parser.add_argument(
+            f'--{constants.HBASE_GCS_CATALOG_JSON}',
+            dest=constants.HBASE_GCS_CATALOG_JSON,
+            required=True,
+            default=constants.OUTPUT_MODE_APPEND,
+            help='Hbase catalog json'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -83,14 +90,7 @@ class HbaseToGCSTemplate(BaseTemplate):
         output_location: str = args[constants.HBASE_GCS_OUTPUT_LOCATION]
         output_format: str = args[constants.HBASE_GCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.HBASE_GCS_OUTPUT_MODE]
-        catalog = ''.join("""{
-                        "table":{"namespace":"default", "name":"my_table"},
-                        "rowkey":"key",
-                        "columns":{
-                        "key":{"cf":"rowkey", "col":"key", "type":"string"},
-                        "name":{"cf":"cf", "col":"name", "type":"string"}
-                        }
-                    }""".split())
+        catalog: str = ''.join(args[constants.HBASE_GCS_CATALOG_JSON].split())
 
         logger.info(
             "Starting Hbase to GCS spark job with parameters:\n"
