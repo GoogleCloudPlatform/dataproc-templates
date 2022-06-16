@@ -111,11 +111,11 @@ optional arguments:
   --gcs.spanner.output.table GCS.SPANNER.OUTPUT.TABLE
                         Spanner output table
   --gcs.spanner.output.primary_key GCS.SPANNER.OUTPUT.PRIMARY_KEY
-                        Primary key of the table
+                        Primary key of the table. It is only required when creating a new table
   --gcs.spanner.output.mode {overwrite,append,ignore,errorifexists}
                         Output write mode (one of: <Overwrite|ErrorIfExists|Append|Ignore>) (Defaults to ErrorIfExists)
   --gcs.spanner.output.batch_size GCS.SPANNER.OUTPUT.BATCH_SIZE
-                        Spanner batch insert size
+                        Spanner batch insert size. Defaults to 1000
 
 ```
 
