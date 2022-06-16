@@ -146,15 +146,13 @@ class GCSToSpannerTemplate(BaseTemplate):
     )
 
     # Write
-    (
-      input_data.write
-      .format("jdbc")
-      .option("url", spanner_url)
-      .option("dbtable", spanner_table)
-      .option("createTableOptions", table_options)
-      .option("isolationLevel", None)
-      .option("batchsize", batch_size)
-      .option("driver", spanner_driver)
-      .mode(spanner_save_mode)
+    input_data.write \
+      .format("jdbc") \
+      .option("url", spanner_url) \
+      .option("dbtable", spanner_table) \
+      .option("createTableOptions", table_options) \
+      .option("isolationLevel", None) \
+      .option("batchsize", batch_size) \
+      .option("driver", spanner_driver) \
+      .mode(spanner_save_mode) \
       .save()
-    )
