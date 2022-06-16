@@ -101,7 +101,7 @@ class GCSToSpannerTemplate(BaseTemplate):
       dest=constants.GCS_SPANNER_OUTPUT_BATCH_INSERT_SIZE,
       required=False,
       default=1000,
-      help='Spanner batch insert size '
+      help='Spanner batch insert size. Defaults to 1000'
     )
 
     known_args: argparse.Namespace
