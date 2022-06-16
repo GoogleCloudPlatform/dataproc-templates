@@ -129,7 +129,10 @@ class GCSToSpannerTemplate(BaseTemplate):
       f"databases/{spanner_database}"
     )
     spanner_driver = "com.google.cloud.spanner.jdbc.JdbcDriver"
-    table_options = f"PRIMARY KEY ({spanner_pk})" if spanner_pk else None
+    if spanner_pk:
+      table_options = f"PRIMARY KEY ({spanner_pk})"
+    elif spanner_save_mode.lower() in ("overwrite",):
+      raise Exception("New tables in Spanner requires a Primary Key")
 
     logger.info(
       "Starting GCS to Spanner spark job with parameters:\n"
