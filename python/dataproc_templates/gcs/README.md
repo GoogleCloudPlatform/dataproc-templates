@@ -77,7 +77,8 @@ Spanner table. It supports reading Parquet, Avro and ORC formats.
 * `gcs.spanner.output.instance`: Spanner instance name
 * `gcs.spanner.output.database`: Spanner database name
 * `gcs.spanner.output.table`: Spanner table name
-* `gcs.spanner.output.primary_key`: Primary Key of the Spanner table 
+* `gcs.spanner.output.primary_key`: Primary Key of the Spanner table.
+This is only required when creating a new table
 * `gcs.spanner.output.mode`: Output write mode
 (one of: append, overwrite, ignore, errorifexists). Defaults to `errorifexists`
 * `gcs.spanner.output.batch_size`: JDBC batch size
