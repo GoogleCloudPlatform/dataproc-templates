@@ -76,7 +76,7 @@ class GCSToSpannerTemplate(BaseTemplate):
       required=False,
       help=(
         "Primary key of the table. "
-        "It is only required when the table doesn't exist"
+        "It is only required when creating a new table"
       )
     )
     parser.add_argument(
