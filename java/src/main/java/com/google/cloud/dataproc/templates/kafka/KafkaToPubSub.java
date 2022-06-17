@@ -86,12 +86,12 @@ public class KafkaToPubSub implements BaseTemplate, Serializable {
         kafkaAwaitTerminationTimeout);
 
     try {
-      // Initialize Spark session
+      // Initialize the Spark session
       spark = SparkSession.builder().appName("Spark KafkaToPubSub Job").getOrCreate();
 
       LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
 
-      /** Read stream data from Kafka topic */
+      // Stream data from Kafka topic
       Dataset<Row> inputData =
           spark
               .readStream()
@@ -134,8 +134,6 @@ public class KafkaToPubSub implements BaseTemplate, Serializable {
                   // Write string to connection
                   ByteString data = ByteString.copyFromUtf8(row.getString(0));
                   PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-
-                  // Once published, returns a server-assigned message id (unique within the topic)
                   publisher.publish(pubsubMessage);
                 }
 
@@ -147,18 +145,6 @@ public class KafkaToPubSub implements BaseTemplate, Serializable {
               })
           .start()
           .awaitTermination(kafkaAwaitTerminationTimeout);
-
-      //   processedData
-      //       .select("value")
-      //       .writeStream()
-      //       .format("pubsublite")
-      //       .option(
-      //           "pubsublite.topic",
-      //           "projects/617357862702/locations/us-west1-a/topics/kafkatopubsublite")
-      //       .option("checkpointLocation", "gs://vbhatia_test/checkpoint_lite")
-      //       .trigger(Trigger.ProcessingTime(2, TimeUnit.SECONDS))
-      //       .start()
-      //       .awaitTermination(kafkaAwaitTerminationTimeout);
 
       LOGGER.info("KakfaToPubSub job completed.");
       spark.stop();
