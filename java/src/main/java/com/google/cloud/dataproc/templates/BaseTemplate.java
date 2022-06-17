@@ -37,7 +37,8 @@ public interface BaseTemplate {
     GENERAL,
     DATAPLEXGCSTOBQ,
     PUBSUBTOGCS,
-    GCSTOJDBC
+    GCSTOJDBC,
+    KAFKATOBQ
   }
 
   default Properties getProperties() {

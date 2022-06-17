@@ -255,4 +255,12 @@ public interface TemplateConstants {
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
 
   String INTERMEDIATE_FORMAT_ORC = "orc";
+
+  /** KafkaToBQ properties */
+  String KAFKA_BQ_CHECKPOINT_LOCATION = "kafka.bq.checkpoint.location";
+
+  String KAFKA_BQ_BOOTSTRAP_SERVERS = "kafka.bq.bootstrap.servers";
+  String KAFKA_BQ_TOPIC = "kafka.bq.topic";
+  String KAFKA_BQ_STARTING_OFFSET = "kafka.bq.starting.offset";
+  String KAFKA_BQ_AWAIT_TERMINATION_TIMEOUT = "kafka.bq.await.termination.timeout";
 }
