@@ -5,62 +5,39 @@ It will identify new partitions in Dataplex GCS and load them to BigQuery.
 
 
 ### General Execution:
-For the execution you can either download or build the project jar.
-Both alternatives are explained below.
 
-#### Use precompiled jar
 Download jar and properties file
 ```
 export GCS_STAGING_LOCATION=gs://bucket/path/to/staging/folder
-gsutil cp gs://dataplex-dataproc-templates-artifacts/dataproc-templates-1.0-SNAPSHOT.jar ${GCS_STAGING_LOCATION}
-gsutil cp gs://dataplex-dataproc-templates-artifacts/log4j-spark-driver-template.properties ${GCS_STAGING_LOCATION}
+gsutil -u <billing-project-id> cp gs://dataplex-dataproc-templates-artifacts/dataproc-templates-1.0-SNAPSHOT.jar ${GCS_STAGING_LOCATION}
+gsutil -u <billing-project-id> cp gs://dataplex-dataproc-templates-artifacts/log4j-spark-driver-template.properties ${GCS_STAGING_LOCATION}
 ```
-Submit the template
-```
-export JARS=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/dataproc-templates-1.0-SNAPSHOT.jar
 
-gcloud beta dataproc batches submit spark \
+Create Dataplex Task
+```
+gcloud dataplex tasks create <task-id> \
     --project=<project-id> \
-    --region=<region> \
-    --jars=${JARS} \
-    --labels=job_type=dataproc_template \
-    --deps-bucket=${GCS_STAGING_LOCATION} \
-    --files=${GCS_STAGING_LOCATION}/log4j-spark-driver-template.properties \
-    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-    --subnet=<subnet> \
-    -- --template=DATAPLEXGCSTOBQ  \
-    --templateProperty=project.id=<project-id> \
-    --templateProperty=dataplex.gcs.bq.target.dataset=<dataset_name> \
-    --templateProperty=gcs.bigquery.temp.bucket.name=<temp-bucket-name> \
-    --templateProperty=dataplex.gcs.bq.save.mode="append" \
-    --templateProperty=dataplex.gcs.bq.incremental.partition.copy="yes" \
-    --dataplexEntity="projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1}" \
-    --partitionField="partition_field" \
-    --partitionType="DAY" \
-    --targetTableName="table_name" \
-    --customSqlGcsPath="gs://bucket/path/to/custom_sql.sql"
+    --location=<region> \
+    --vpc-sub-network-name=<subnet> \
+    --lake=<dataplex-lake> \
+    --trigger-type=ON_DEMAND \
+    --execution-service-account=<execution service account> \
+    --spark-main-class="com.google.cloud.dataproc.templates.main.DataProcTemplate" \
+    --spark-file-uris="${GCS_STAGING_LOCATION}/log4j-spark-driver-template.properties" \
+    --container-image-java-jars="${GCS_STAGING_LOCATION}/dataproc-templates-1.0-SNAPSHOT.jar" \
+    --execution-args=^::^TASK_ARGS="--template=DATAPLEXGCSTOBQ,\
+        --templateProperty=project.id=<project-id>,\
+        --templateProperty=<dataset_name>,\
+        --templateProperty=gcs.bigquery.temp.bucket.name=<temp-bucket-name>,\
+        --templateProperty=dataplex.gcs.bq.save.mode=append,\
+        --templateProperty=dataplex.gcs.bq.incremental.partition.copy=yes,\
+        --dataplexEntity=projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1},\
+        --partitionField=<partition_field>,\
+        --partitionType=<DAY>,\
+        --targetTableName=<table_name>,\
+        --customSqlGcsPath=<gs://bucket/path/to/custom_sql.sql>" 
 ```
 
-#### Build jar and submit template
-```
-GCP_PROJECT=<gcp-project-id> \
-REGION=<region>  \
-SUBNET=<subnet>   \
-GCS_STAGING_LOCATION=<gcs-staging-bucket-folder-path> \
-HISTORY_SERVER_CLUSTER=<history-server> \
-bin/start.sh \
--- --template DATAPLEXGCSTOBQ  \
---templateProperty project.id=${PROJECT} \
---templateProperty dataplex.gcs.bq.target.dataset=<dataset_name> \
---templateProperty gcs.bigquery.temp.bucket.name=<temp-bucket-name> \
---templateProperty dataplex.gcs.bq.save.mode="append" \
---templateProperty dataplex.gcs.bq.incremental.partition.copy="yes" \
---dataplexEntity "projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1}" \
---partitionField "partition_field" \
---partitionType "DAY" \
---targetTableName "table_name" \
---customSqlGcsPath "gs://bucket/path/to/custom_sql.sql" 
-```
 
 ### Template properties
 `project.id` id of the GCP project where the target BigQuery dataset and custom
