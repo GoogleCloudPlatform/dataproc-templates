@@ -73,7 +73,6 @@ class HbaseToGCSTemplate(BaseTemplate):
             f'--{constants.HBASE_GCS_CATALOG_JSON}',
             dest=constants.HBASE_GCS_CATALOG_JSON,
             required=True,
-            default=constants.OUTPUT_MODE_APPEND,
             help='Hbase catalog json'
         )
 

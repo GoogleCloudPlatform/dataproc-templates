@@ -15,7 +15,7 @@ Template for reading files from Hbase and writing to Google Cloud Storage. It su
     - You can use and adapt the Dockerfile from the guide above, building and pushing it to GCP Container Registry with:
       ```
       IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version>
-      docker build -t "${IMAGE}"
+      docker build -t "${IMAGE}" .
       docker push "${IMAGE}"
       ```
     
