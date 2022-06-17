@@ -120,7 +120,7 @@ public class KafkaToPubSub implements BaseTemplate, Serializable {
                 public boolean open(long partitionId, long version) {
                   // Open connection
                   try {
-                    topicName = TopicName.of("yadavaja-sandbox", "kafkatopubsub");
+                    topicName = TopicName.of("", "");
                     publisher = Publisher.newBuilder(topicName).build();
                     return true;
                   } catch (Exception e) {
