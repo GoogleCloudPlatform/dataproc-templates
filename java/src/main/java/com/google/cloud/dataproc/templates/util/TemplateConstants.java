@@ -255,4 +255,11 @@ public interface TemplateConstants {
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
 
   String INTERMEDIATE_FORMAT_ORC = "orc";
+
+  /** Kafka To PubSub properties */
+  String KAFKA_PUBSUB_CHECKPOINT_LOCATION = "kafka.pubsub.checkpoint.location";
+  String KAFKA_PUBSUB_BOOTSTRAP_SERVERS = "kafka.pubsub.bootstrap.servers";
+  String KAFKA_PUBSUB_TOPIC = "kafka.pubsub.topic";
+  String KAFKA_PUBSUB_STARTING_OFFSET = "kafka.pubsub.starting.offset";
+  String KAFKA_PUBSUB_AWAIT_TERMINATION_TIMEOUT = "kafka.pubsub.await.termination.timeout";
 }
