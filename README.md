@@ -29,6 +29,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [BigQueryToGCS](/python/dataproc_templates/bigquery/README.md)
 * [HiveToBigQuery](/python/dataproc_templates/hive/README.md)
 * [HiveToGCS](/python/dataproc_templates/hive/README.md)
+* [GCSToJDBC](/python/dataproc_templates/gcs/README.md)
 
 ## Getting Started
 
