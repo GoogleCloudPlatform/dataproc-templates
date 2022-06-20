@@ -33,11 +33,11 @@ class TestGCSToBigTableTemplate:
         parsed_args = gcs_to_bigtable_template.parse_args(
             ["--gcs.bigtable.input.format=parquet",
              "--gcs.bigtable.input.location=gs://test",
-             "--gcs.bigtable.hbase.catalog.path=./dataproc_templates/gcs/"])
+             "--gcs.bigtable.hbase.catalog.json={key:value}"])
 
         assert parsed_args["gcs.bigtable.input.format"] == "parquet"
         assert parsed_args["gcs.bigtable.input.location"] == "gs://test"
-        assert parsed_args["gcs.bigtable.hbase.catalog.path"] == "./dataproc_templates/gcs/"
+        assert parsed_args["gcs.bigtable.hbase.catalog.json"] == '{key:value}'
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run(self, mock_spark_session):
@@ -47,11 +47,14 @@ class TestGCSToBigTableTemplate:
         mock_parsed_args = gcs_to_bigtable_template.parse_args(
             ["--gcs.bigtable.input.format=parquet",
              "--gcs.bigtable.input.location=gs://test",
-             "--gcs.bigtable.hbase.catalog.path=./dataproc_templates/gcs/"])
+             "--gcs.bigtable.hbase.catalog.json={key:value}"])
         mock_spark_session.read.parquet.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_bigtable_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read.parquet.assert_called_once_with("gs://test")
-        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
-            constants.FORMAT_HBASE)
-        mock_spark_session.dataframe.DataFrame.write.format().options().option.assert_called_once_with('hbase.spark.use.hbasecontext', "false")
+        mock_spark_session.dataframe.DataFrame.write.format. \
+            assert_called_once_with(constants.FORMAT_HBASE)
+        mock_spark_session.dataframe.DataFrame.write.format().options. \
+            assert_called_with(catalog='{key:value}')
+        mock_spark_session.dataframe.DataFrame.write.format().options().option. \
+            assert_called_once_with('hbase.spark.use.hbasecontext', "false")
