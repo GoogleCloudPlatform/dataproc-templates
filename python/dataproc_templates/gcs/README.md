@@ -126,7 +126,7 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
    
 - **Bigtable dependency:**
   - gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar
-    - Download it using ``` wget https://repo1.maven.org/maven2/com/google/cloud/bigtable/bigtable-hbase/2.3.0/bigtable-hbase-2.3.0.jar```
+    - Download it using ``` wget https://repo1.maven.org/maven2/com/google/cloud/bigtable/bigtable-hbase-2.x-shaded/2.3.0/bigtable-hbase-2.x-shaded-2.3.0.jar```
 
 - **HBase dependencies:**
   - gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar
