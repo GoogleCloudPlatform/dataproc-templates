@@ -20,10 +20,23 @@ Template for reading files from Hbase and writing to Google Cloud Storage. It su
       ```
     
     - An SPARK_EXTRA_CLASSPATH environment variable should also be set to the same path when submitting the job.
+      ```
+      (./bin/start.sh ...)
+      --container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>"  # image with hbase-site.xml in /etc/hbase/conf/
+      --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'
+      ```
+2) Configure the desired HBase catalog json to passed as an argument (table reference and schema)
+    - The hbase-catalog.json should be passed using the --hbase.gcs.catalog.json
     ```
     (./bin/start.sh ...)
-    --container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>"  # image with hbase-site.xml in /etc/hbase/conf/
-    --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'
+    -- --hbase.gcs.catalog.json='''{
+                        "table":{"namespace":"default","name":"my_table"},
+                        "rowkey":"key",
+                        "columns":{
+                        "key":{"cf":"rowkey", "col":"key", "type":"string"},
+                        "name":{"cf":"cf", "col":"name", "type":"string"}
+                        }
+                    }'''
     ```
 
 ## Required JAR files
