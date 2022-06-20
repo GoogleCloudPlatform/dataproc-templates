@@ -46,7 +46,7 @@ GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name"
 # GCS to BigTable
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
 GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format"
-GCS_BT_HBASE_CATALOG_PATH = "gcs.bigtable.hbase.catalog.path"
+GCS_BT_HBASE_CATALOG_JSON = "gcs.bigtable.hbase.catalog.json"
 
 # BigQuery to GCS
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"

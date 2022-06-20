@@ -81,26 +81,38 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
 1) Configure the [hbase-site.xml](./hbase-site.xml) ([reference](https://cloud.google.com/bigtable/docs/hbase-connecting#creating_the_hbase-sitexml_file)) with your BigTable instance reference
     - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.  
     - For that, you need to build and host a [customer container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) in GCP Container Registry.  
-       - You can use and adapt the Dockerfile from the guide above, building and pushing it to GCP Container Registry with:
-         - _docker build -t "${IMAGE}" ._
-         - _docker push "${IMAGE}"_
-    - But first, add the following layer to the Dockerfile, for it to copy your local hbase-site.xml to the container image:
-      - _COPY hbase-site.xml /etc/hbase/conf/_ 
-    - An SPARK_EXTRA_CLASSPATH environment variable should also be set to the same path when submitting the job.
+      - Add the following layer to the [Dockerfile](./Dockerfile), for it to copy your local hbase-site.xml to the container image (already done):
+        ```
+        COPY hbase-site.xml /etc/hbase/conf/
+        ```
+      - Build the [Dockerfile](./Dockerfile), building and pushing it to GCP Container Registry with:
+        ```
+        IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version>
+        docker build -t "${IMAGE}" .
+        docker push "${IMAGE}"
+        ```
+      - An SPARK_EXTRA_CLASSPATH environment variable should also be set to the same path when submitting the job.
+        ```
+        (./bin/start.sh ...)
+        --container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>"  # image with hbase-site.xml in /etc/hbase/conf/
+        --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'
+        ```
+
+2) Configure the desired HBase catalog json to passed as an argument (table reference and schema)
+    - The hbase-catalog.json should be passed using the --gcs.bigtable.hbase.catalog.json
     ```
     (./bin/start.sh ...)
-    --container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>"  # image with hbase-site.xml in /etc/hbase/conf/
-    --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'
+    -- --gcs.bigtable.hbase.catalog.json='''{
+                        "table":{"namespace":"default","name":"<table_id>"},
+                        "rowkey":"key",
+                        "columns":{
+                        "key":{"cf":"rowkey", "col":"key", "type":"string"},
+                        "name":{"cf":"cf", "col":"name", "type":"string"}
+                        }
+                    }'''
     ```
 
-2) Configure the [hbase-catalog.json](./hbase-catalog.json) with your HBase catalog (table reference and schema)
-    - The hbase-catalog.json should be passed using the --files, and it is read by the template Spark application:
-    ```
-    (./bin/start.sh ...)
-    --files="./dataproc_templates/gcs/hbase-catalog.json" 
-    ```
-
-3) Use the [cbt tool](https://cloud.google.com/bigtable/docs/managing-tables) to manage your Bigtable table schema, column families, etc, to match the provided HBase catalog.
+3) [Create and manage](https://cloud.google.com/bigtable/docs/managing-tables) your Bigtable table schema, column families, etc, to match the provided HBase catalog.
 
 ## Required JAR files
 
@@ -114,21 +126,19 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
    
 - **Bigtable dependency:**
   - gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar
-    - Download it from [here](https://repo1.maven.org/maven2/com/google/cloud/bigtable/bigtable-hbase/2.3.0/bigtable-hbase-2.3.0.jar)
+    - Download it using ``` wget https://repo1.maven.org/maven2/com/google/cloud/bigtable/bigtable-hbase/2.3.0/bigtable-hbase-2.3.0.jar```
 
 - **HBase dependencies:**
   - gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar
-      - Download it from [here](https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar)
+      - Download it using ``` wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar```
   - gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar
-      - Download it from [here](https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar)
+      - Download it using ``` wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar```
 
 ## Arguments
 
 * `gcs.bigquery.input.location`: GCS location of the input files (format: `gs://<bucket>/...`)
 * `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json)
-* `gcs.bigtable.hbase.catalog.path`: Local path/folder of the hbase-catalog.json file
-
-Note: the Bigtable table output configuration is done from the hbase-catalog.json file
+* `gcs.bigtable.hbase.catalog.json`: HBase catalog inline json
 
 ## Usage
 
@@ -137,7 +147,7 @@ $ python main.py --template GCSTOBIGTABLE --help
                         
 usage: main.py [-h] --gcs.bigtable.input.location GCS.BIGTABLE.INPUT.LOCATION
                     --gcs.bigtable.input.format {avro,parquet,csv,json}
-                    --gcs.bigtable.hbase.catalog.path GCS.BIGTABLE.HBASE.CATALOG.PATH
+                    --gcs.bigtable.hbase.catalog.json GCS.BIGTABLE.HBASE.CATALOG.JSON
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -145,8 +155,8 @@ optional arguments:
                         GCS location of the input files
   --gcs.bigtable.input.format {avro,parquet,csv,json}
                         Input file format (one of: avro,parquet,csv,json)
-  --gcs.bigtable.hbase.catalog.path GCS.BIGTABLE.HBASE.CATALOG.PATH
-                        Local path/folder of the hbase-catalog.json file
+  --gcs.bigtable.hbase.catalog.json GCS.BIGTABLE.HBASE.CATALOG.JSON
+                        HBase catalog inline json
 ```
 
 ## Example submission
@@ -164,9 +174,15 @@ export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-
 ./bin/start.sh \
 --container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>" \
 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \ # image with hbase-site.xml in /etc/hbase/conf/
---files="./dataproc_templates/gcs/hbase-catalog.json" \
 -- --template=GCSTOBIGTABLE \
    --gcs.bigtable.input.format="<json|csv|parquet|avro>" \
    --gcs.bigtable.input.location="<gs://bucket/path>" \
-   --gcs.bigtable.hbase.catalog.path="./"
+   --gcs.bigtable.hbase.catalog.json='''{
+                        "table":{"namespace":"default","name":"my_table"},
+                        "rowkey":"key",
+                        "columns":{
+                        "key":{"cf":"rowkey", "col":"key", "type":"string"},
+                        "name":{"cf":"cf", "col":"name", "type":"string"}
+                        }
+                    }'''
 ```

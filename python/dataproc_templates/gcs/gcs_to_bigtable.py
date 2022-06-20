@@ -53,10 +53,10 @@ class GCSToBigTableTemplate(BaseTemplate):
             ]
         )
         parser.add_argument(
-            f'--{constants.GCS_BT_HBASE_CATALOG_PATH}',
-            dest=constants.GCS_BT_HBASE_CATALOG_PATH,
+            f'--{constants.GCS_BT_HBASE_CATALOG_JSON}',
+            dest=constants.GCS_BT_HBASE_CATALOG_JSON,
             required=True,
-            help='Local path/folder of the hbase-catalog.json file'
+            help='HBase catalog inline json'
         )
 
         known_args: argparse.Namespace
@@ -71,7 +71,7 @@ class GCSToBigTableTemplate(BaseTemplate):
         # Arguments
         input_file_location: str = args[constants.GCS_BT_INPUT_LOCATION]
         input_file_format: str = args[constants.GCS_BT_INPUT_FORMAT]
-        hbase_catalog_path: str = args[constants.GCS_BT_HBASE_CATALOG_PATH]
+        catalog: str = ''.join(args[constants.GCS_BT_HBASE_CATALOG_JSON].split())
 
         logger.info(
             "Starting GCS to BigTable spark job with parameters:\n"
@@ -97,9 +97,6 @@ class GCSToBigTableTemplate(BaseTemplate):
         elif input_file_format == constants.FORMAT_JSON:
             input_data = spark.read \
                 .json(input_file_location)
-
-        with open(hbase_catalog_path + 'hbase-catalog.json', 'r') as f:
-            catalog = f.read()
 
         # Write
         input_data.write \
