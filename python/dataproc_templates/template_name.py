@@ -27,6 +27,7 @@ class TemplateName(Enum):
     BIGQUERYTOGCS = "BIGQUERYTOGCS"
     HIVETOBIGQUERY = "HIVETOBIGQUERY"
     HIVETOGCS = "HIVETOGCS"
+    TEXTTOBIGQUERY = 'TEXTTOBIGQUERY'
 
     @classmethod
     def from_string(cls, template_name: str) -> TemplateName:
