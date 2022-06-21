@@ -15,7 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.util;
 
-public class DataprocTemplateException extends Exception {
+public class DataprocTemplateException extends RuntimeException {
 
   /**
    * Constructs a new DataprocTemplateException with null as its detail message. The cause is not

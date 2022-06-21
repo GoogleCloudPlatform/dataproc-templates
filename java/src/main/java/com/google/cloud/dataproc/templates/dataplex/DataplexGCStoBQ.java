@@ -55,6 +55,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   public static String ENTITY_OPTION = "dataplexEntity";
   public static String PARTITION_FIELD_OPTION = "partitionField";
   public static String PARTITION_TYPE_OPTION = "partitionType";
+  public static String TARGET_TABLE_NAME_OPTION = "targetTableName";
   public static String INCREMENTAL_PARTITION_COPY_NO = "no";
   public static String BQ_TABLE_NAME_FORMAT = "%s.%s.%s";
   public static String SPARK_SQL_SELECT_STAR = "*";
@@ -99,11 +100,16 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private String incrementalParittionCopy;
 
   public DataplexGCStoBQ(
-      String customSqlGCSPath, String entity, String partitionField, String partitionType) {
+      String customSqlGCSPath,
+      String entity,
+      String partitionField,
+      String partitionType,
+      String targetTableName) {
     this.customSqlGCSPath = customSqlGCSPath;
     this.entity = entity;
     this.partitionField = partitionField;
     this.partitionType = partitionType;
+    this.targetTableName = targetTableName;
 
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
     targetDataset = getProperties().getProperty(DATAPLEX_GCS_BQ_TARGET_DATASET);
@@ -122,7 +128,9 @@ public class DataplexGCStoBQ implements BaseTemplate {
     String entity = cmd.getOptionValue(ENTITY_OPTION);
     String partitionField = cmd.getOptionValue(PARTITION_FIELD_OPTION);
     String partitionType = cmd.getOptionValue(PARTITION_TYPE_OPTION);
-    return new DataplexGCStoBQ(customSqlGCSPath, entity, partitionField, partitionType);
+    String targetTableName = cmd.getOptionValue("targetTableName");
+    return new DataplexGCStoBQ(
+        customSqlGCSPath, entity, partitionField, partitionType, targetTableName);
   }
 
   /**
@@ -130,7 +138,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
    *
    * @throws Exception if values no value is passed for --dataplexEntity
    */
-  private void checkInput() throws DataprocTemplateException, IOException {
+  private void checkInput() {
     if (entity != null) {
       this.entity = entity;
     } else {
@@ -176,12 +184,20 @@ public class DataplexGCStoBQ implements BaseTemplate {
             .withDescription("BigQuery partitionType")
             .create();
 
+    Option targetTableName =
+        OptionBuilder.withLongOpt(TARGET_TABLE_NAME_OPTION)
+            .hasArgs(1)
+            .isRequired(false)
+            .withDescription("BigQuery table name where data will be written to")
+            .create();
+
     options =
         new Options()
             .addOption(entityListOption)
             .addOption(customSQLFileOption)
             .addOption(partitionField)
-            .addOption(partitionType);
+            .addOption(partitionType)
+            .addOption(targetTableName);
     try {
       return parser.parse(options, args, true);
     } catch (ParseException e) {
@@ -382,13 +398,14 @@ public class DataplexGCStoBQ implements BaseTemplate {
       // TODO: refactor the following DataplexUtil avoid calling the same API method more than once
       this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
       this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
-      if (this.inputFileFormat.equals("csv")) {
+      if (this.inputFileFormat.equals(GCS_BQ_CSV_FORMAT)) {
         this.inputCSVDelimiter = DataplexUtil.getInputCSVDelimiter(entity);
       }
-      this.targetTableName = entity.split(FORWARD_SLASH)[entity.split(FORWARD_SLASH).length - 1];
+      if (this.targetTableName == null) {
+        this.targetTableName = entity.split(FORWARD_SLASH)[entity.split(FORWARD_SLASH).length - 1];
+      }
       this.targetTable =
           String.format(BQ_TABLE_NAME_FORMAT, projectId, targetDataset, targetTableName);
-      LOGGER.info("Processing entity: {}", entity);
 
       List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);
       List<String> partitionsListWithLocationAndKeys =
@@ -408,19 +425,20 @@ public class DataplexGCStoBQ implements BaseTemplate {
 
       // load data from each partition
       Dataset<Row> newPartitionsDS = getNewPartitionsDS(newPartitionsPathsDS);
-      newPartitionsDS.printSchema();
-
-      newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
-
-      newPartitionsDS = applyCustomSql(newPartitionsDS);
-
-      writeToBQ(newPartitionsDS);
+      if (newPartitionsDS != null) {
+        newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
+        newPartitionsDS = applyCustomSql(newPartitionsDS);
+        writeToBQ(newPartitionsDS);
+      } else {
+        LOGGER.info("No new partitions found");
+      }
 
     } catch (Throwable th) {
       LOGGER.error("Exception in DataplexGCStoBQ", th);
       if (Objects.nonNull(spark)) {
         spark.stop();
       }
+      throw new DataprocTemplateException(th.getMessage());
     }
   }
 }
