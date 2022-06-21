@@ -73,8 +73,20 @@ class HbaseToBigtableTemplate(BaseTemplate):
                            .load()
 
         #write
-        input_data.write \
+        writer: DataFrameWriter = input_data.write.mode("append")
+        writer \
+            .option(constants.CSV_HEADER, True) \
+            .csv("gs://datproc_template_nk/output1")
+        
+        input_data1: DataFrame 
+        input_data1 = spark.read \
+                .format(constants.FORMAT_CSV) \
+                .option(constants.CSV_HEADER, True) \
+                .option(constants.CSV_INFER_SCHEMA, True) \
+                .load("gs://datproc_template_nk/output1/")   
+                
+        input_data1.write \
             .format(constants.FORMAT_HBASE) \
-            .options(catalog=bigtable_catalog) \
+            .options(catalog=hbase_catalog) \
             .option('hbase.spark.use.hbasecontext', "false") \
             .save()
