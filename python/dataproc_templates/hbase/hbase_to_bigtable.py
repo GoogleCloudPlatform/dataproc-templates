@@ -44,7 +44,7 @@ class HbaseToBigtableTemplate(BaseTemplate):
             f'--{constants.HBASE_BIGTABLE_TARGET_CATALOG_JSON}',
             dest=constants.HBASE_BIGTABLE_TARGET_CATALOG_JSON,
             required=True,
-            help='Hbase catalog json'
+            help='Bigtable catalog json'
         )
 
         known_args: argparse.Namespace
