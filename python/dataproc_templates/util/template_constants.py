@@ -24,6 +24,7 @@ FORMAT_AVRO = "avro"
 FORMAT_PRQT = "parquet"
 FORMAT_AVRO_EXTD = "com.databricks.spark.avro"
 FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery"
+FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
 TEMP_GCS_BUCKET="temporaryGcsBucket"
 
@@ -62,3 +63,9 @@ HIVE_GCS_INPUT_TABLE="hive.gcs.input.table"
 HIVE_GCS_OUTPUT_LOCATION = "hive.gcs.output.location"
 HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
 HIVE_GCS_OUTPUT_MODE = "hive.gcs.output.mode"
+
+#Hbase to Bigtable
+HBASE_GCS_OUTPUT_LOCATION = "hbase.gcs.output.location"
+HBASE_GCS_OUTPUT_FORMAT = "hbase.gcs.output.format"
+HBASE_GCS_OUTPUT_MODE = "hbase.gcs.output.mode"
+HBASE_GCS_CATALOG_JSON = "hbase.gcs.catalog.json"
