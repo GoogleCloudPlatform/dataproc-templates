@@ -38,7 +38,7 @@ class HbaseToGCSTemplate(BaseTemplate):
             f'--{constants.HBASE_GCS_OUTPUT_LOCATION}',
             dest=constants.HBASE_GCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS location for onput files'
+            help='GCS location for output files'
         )
         parser.add_argument(
             f'--{constants.HBASE_GCS_OUTPUT_FORMAT}',

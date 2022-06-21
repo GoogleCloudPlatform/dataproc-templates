@@ -8,7 +8,7 @@ Template for reading files from Hbase and writing to Google Cloud Storage. It su
     - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.  
     - Reference [hbase-site.xml](./hbase-site.xml) can be used by adding respective values for **hbase.rootdir** and **hbase.zookeeper.quorum**
     - A [customer container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) is required in GCP Container Registry. Refer [Dockerfile](./Dockerfile) for reference. 
-    - Add the following layer to the Dockerfile, for copying your local hbase-site.xml to the container image:
+    - Add the following layer to the Dockerfile, for copying your local hbase-site.xml to the container image (below command is added to [Dockerfile](./Dockerfile) for reference):
       ```
       COPY hbase-site.xml /etc/hbase/conf/
       ```

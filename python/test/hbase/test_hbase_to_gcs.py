@@ -42,7 +42,7 @@ class TestHbaseToGCSTemplate:
         assert parsed_args["hbase.gcs.catalog.json"] == '{key:value}'
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_parquet(self, mock_spark_session):
+    def test_run(self, mock_spark_session):
         """Tests HbaseToGCSTemplate runs for parquet format output"""
 
         hbase_to_gcs_template = HbaseToGCSTemplate()
