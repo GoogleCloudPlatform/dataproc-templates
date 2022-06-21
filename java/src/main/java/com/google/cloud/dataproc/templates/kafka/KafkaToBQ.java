@@ -29,17 +29,27 @@ import org.slf4j.LoggerFactory;
 
 public class KafkaToBQ implements BaseTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(KafkaToBQ.class);
+  private String projectId;
   private String kafkaBootstrapServers;
   private String kafkaTopic;
   private String checkpointLocation;
   private String kafkaStartingOffsets;
   private Long kafkaAwaitTerminationTimeout;
+  private String failOnDataLoss;
+  private String bigQueryDataset;
+  private String bigQueryTable;
+  private String tempGcsBucket;
 
   public KafkaToBQ() {
+    projectId = getProperties().getProperty(PROJECT_ID_PROP);
     kafkaBootstrapServers = getProperties().getProperty(KAFKA_BQ_BOOTSTRAP_SERVERS);
     kafkaTopic = getProperties().getProperty(KAFKA_BQ_TOPIC);
     checkpointLocation = getProperties().getProperty(KAFKA_BQ_CHECKPOINT_LOCATION);
     kafkaStartingOffsets = getProperties().getProperty(KAFKA_BQ_STARTING_OFFSET);
+    failOnDataLoss = getProperties().getProperty(KAFKA_BQ_FAIL_ON_DATA_LOSS);
+    bigQueryDataset = getProperties().getProperty(KAFKA_BQ_DATASET);
+    bigQueryTable = getProperties().getProperty(KAFKA_BQ_TABLE);
+    tempGcsBucket = getProperties().getProperty(KAFKA_BQ_TEMP_GCS_BUCKET);
     kafkaAwaitTerminationTimeout =
         Long.valueOf(getProperties().getProperty(KAFKA_BQ_AWAIT_TERMINATION_TIMEOUT));
   }
@@ -48,12 +58,20 @@ public class KafkaToBQ implements BaseTemplate {
   public void runTemplate() {
     if (StringUtils.isAllBlank(checkpointLocation)
         || StringUtils.isAllBlank(kafkaBootstrapServers)
-        || StringUtils.isAllBlank(kafkaTopic)) {
+        || StringUtils.isAllBlank(kafkaTopic)
+        || StringUtils.isAllBlank(bigQueryDataset)
+        || StringUtils.isAllBlank(bigQueryTable)
+        || StringUtils.isAllBlank(projectId)
+        || StringUtils.isAllBlank(tempGcsBucket)) {
       LOGGER.error(
-          "{},{},{} is required parameter. ",
+          "{},{},{},{},{},{},{} is required parameter. ",
+          PROJECT_ID_PROP,
           KAFKA_BQ_CHECKPOINT_LOCATION,
           KAFKA_BQ_BOOTSTRAP_SERVERS,
-          KAFKA_BQ_TOPIC);
+          KAFKA_BQ_TOPIC,
+          KAFKA_BQ_DATASET,
+          KAFKA_BQ_TABLE,
+          KAFKA_BQ_TEMP_GCS_BUCKET);
       throw new IllegalArgumentException(
           "Required parameters for KafkaToBQ not passed. "
               + "Set mandatory parameter for KafkaToBQ template "
@@ -63,11 +81,14 @@ public class KafkaToBQ implements BaseTemplate {
     SparkSession spark = null;
     LOGGER.info(
         "Starting Kafka to BQ spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}"
-            + "5, {},{}",
+            + "1. {}:{} "
+            + "2. {}:{} "
+            + "3. {}:{} "
+            + "4. {},{} "
+            + "5. {},{} "
+            + "6. {},{} "
+            + "7. {},{} "
+            + "8. {},{} ",
         KAFKA_BQ_CHECKPOINT_LOCATION,
         checkpointLocation,
         KAFKA_BQ_BOOTSTRAP_SERVERS,
@@ -77,7 +98,13 @@ public class KafkaToBQ implements BaseTemplate {
         KAFKA_BQ_STARTING_OFFSET,
         kafkaStartingOffsets,
         KAFKA_BQ_AWAIT_TERMINATION_TIMEOUT,
-        kafkaAwaitTerminationTimeout);
+        kafkaAwaitTerminationTimeout,
+        KAFKA_BQ_DATASET,
+        bigQueryDataset,
+        KAFKA_BQ_TABLE,
+        bigQueryTable,
+        KAFKA_BQ_TEMP_GCS_BUCKET,
+        tempGcsBucket);
 
     try {
       // Initialize the Spark session
@@ -89,11 +116,11 @@ public class KafkaToBQ implements BaseTemplate {
       Dataset<Row> inputData =
           spark
               .readStream()
-              .format("kafka")
-              .option("kafka.bootstrap.servers", kafkaBootstrapServers)
-              .option("subscribe", kafkaTopic)
-              .option("startingOffsets", kafkaStartingOffsets)
-              .option("failOnDataLoss", "false")
+              .format(KAFKA_BQ_SPARK_CONF_NAME_INPUT_FORMAT)
+              .option(KAFKA_BQ_SPARK_CONF_NAME_BOOTSTRAP_SERVERS, kafkaBootstrapServers)
+              .option(KAFKA_BQ_SPARK_CONF_NAME_SUBSCRIBE, kafkaTopic)
+              .option(KAFKA_BQ_SPARK_CONF_NAME_STARTING_OFFSETS, kafkaStartingOffsets)
+              .option(KAFKA_BQ_SPARK_CONF_NAME_FAIL_ON_DATA_LOSS, failOnDataLoss)
               .load();
 
       Dataset<Row> processedData;
@@ -103,11 +130,13 @@ public class KafkaToBQ implements BaseTemplate {
 
       processedData
           .writeStream()
-          .format("com.google.cloud.spark.bigquery")
-          .option("header", true)
-          .option("checkpointLocation", checkpointLocation)
-          .option("table", "yadavaja-sandbox.vbhatia_test.kafkatobq")
-          .option("temporaryGcsBucket", "vbhatia_kafkatobq_tmp")
+          .format(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_FORMAT)
+          .option(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_HEADER, true)
+          .option(KAFKA_BQ_SPARK_CONF_NAME_CHECKPOINT_LOCATION, checkpointLocation)
+          .option(
+              KAFKA_BQ_SPARK_CONF_NAME_TABLE,
+              projectId + "." + bigQueryDataset + "." + bigQueryTable)
+          .option(KAFKA_BQ_SPARK_CONF_NAME_TEMP_GCS_BUCKET, tempGcsBucket)
           .start()
           .awaitTermination(kafkaAwaitTerminationTimeout);
 
