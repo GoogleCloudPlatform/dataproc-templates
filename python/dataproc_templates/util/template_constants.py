@@ -65,7 +65,5 @@ HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
 HIVE_GCS_OUTPUT_MODE = "hive.gcs.output.mode"
 
 #Hbase to Bigtable
-HBASE_GCS_OUTPUT_LOCATION = "hbase.gcs.output.location"
-HBASE_GCS_OUTPUT_FORMAT = "hbase.gcs.output.format"
-HBASE_GCS_OUTPUT_MODE = "hbase.gcs.output.mode"
-HBASE_GCS_CATALOG_JSON = "hbase.gcs.catalog.json"
+HBASE_BIGTABLE_SOURCE_CATALOG_JSON = "hbase.bigtable.source.catalog.json"
+HBASE_BIGTABLE_TARGET_CATALOG_JSON = "hbase.bigtable.target.catalog.json"

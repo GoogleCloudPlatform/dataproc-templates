@@ -1,6 +1,6 @@
-## Hbase To GCS
+## Hbase To Bigtable
 
-Template for reading files from Hbase and writing to Google Cloud Storage. It supports writing in JSON, CSV, Parquet and Avro formats.
+Template for reading files from Hbase and writing to Cloud Bigtable. It supports writing in JSON, CSV, Parquet and Avro formats.
 
 ## Requirements
 
@@ -69,7 +69,7 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
 ## Usage
 
 ```
-$ python main.py --template HBASETOGCS --help
+$ python main.py --template HBASETOBIGTABLE --help
                         
 usage: main.py [-h] --hbase.gcs.output.location HBASE.GCS.OUTPUT.LOCATION
                     --hbase.gcs.output.format {avro,parquet,csv,json}
@@ -100,7 +100,7 @@ export JARS="gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
 ./bin/start.sh \
 --container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>" \
 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \ # image with hbase-site.xml in /etc/hbase/conf/
--- --template=HBASETOGCS \
+-- --template=HBASETOBIGTABLE \
    --hbase.gcs.output.location="<gs://bucket/path>" \
    --hbase.gcs.output.format="<json|csv|parquet|avro>" \
    --hbase.gcs.output.mode="<append|overwrite|ignore|errorifexists>" \
