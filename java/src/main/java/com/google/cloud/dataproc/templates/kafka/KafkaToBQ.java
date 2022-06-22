@@ -39,6 +39,7 @@ public class KafkaToBQ implements BaseTemplate {
   private String bigQueryDataset;
   private String bigQueryTable;
   private String tempGcsBucket;
+  private String streamOutputMode;
 
   public KafkaToBQ() {
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
@@ -52,6 +53,7 @@ public class KafkaToBQ implements BaseTemplate {
     tempGcsBucket = getProperties().getProperty(KAFKA_BQ_TEMP_GCS_BUCKET);
     kafkaAwaitTerminationTimeout =
         Long.valueOf(getProperties().getProperty(KAFKA_BQ_AWAIT_TERMINATION_TIMEOUT));
+    streamOutputMode = getProperties().getProperty(KAFKA_BQ_STREAM_OUTPUT_MODE);
   }
 
   @Override
@@ -110,8 +112,6 @@ public class KafkaToBQ implements BaseTemplate {
       // Initialize the Spark session
       spark = SparkSession.builder().appName("Spark KafkaToBQ Job").getOrCreate();
 
-      LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
-
       // Stream data from Kafka topic
       Dataset<Row> inputData =
           spark
@@ -123,30 +123,51 @@ public class KafkaToBQ implements BaseTemplate {
               .option(KAFKA_BQ_SPARK_CONF_NAME_FAIL_ON_DATA_LOSS, failOnDataLoss)
               .load();
 
-      Dataset<Row> processedData;
+      Dataset<Row> processedData =
+          inputData
+              .withColumn("value", inputData.col("value").cast(DataTypes.StringType))
+              .withColumn("key", inputData.col("key").cast(DataTypes.StringType));
 
-      processedData =
-          inputData.withColumn("value", inputData.col("value").cast(DataTypes.StringType));
+      writeToBigQuery(
+          processedData,
+          streamOutputMode,
+          checkpointLocation,
+          projectId,
+          bigQueryDataset,
+          bigQueryTable,
+          tempGcsBucket,
+          kafkaAwaitTerminationTimeout);
 
-      processedData
-          .writeStream()
-          .format(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_FORMAT)
-          .option(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_HEADER, true)
-          .option(KAFKA_BQ_SPARK_CONF_NAME_CHECKPOINT_LOCATION, checkpointLocation)
-          .option(
-              KAFKA_BQ_SPARK_CONF_NAME_TABLE,
-              projectId + "." + bigQueryDataset + "." + bigQueryTable)
-          .option(KAFKA_BQ_SPARK_CONF_NAME_TEMP_GCS_BUCKET, tempGcsBucket)
-          .start()
-          .awaitTermination(kafkaAwaitTerminationTimeout);
-
-      LOGGER.info("KakfaToBQ job completed.");
+      LOGGER.info("KafkaToBQ job completed.");
       spark.stop();
-    } catch (Throwable th) {
-      LOGGER.error("Exception in KakfaToBQ", th);
+    } catch (Throwable t) {
+      LOGGER.error("Exception in KafkaToBQ", t);
       if (Objects.nonNull(spark)) {
         spark.stop();
       }
     }
+  }
+
+  public void writeToBigQuery(
+      Dataset<Row> dataset,
+      String streamOutputMode,
+      String checkpointLocation,
+      String projectId,
+      String bigQueryDataset,
+      String bigQueryTable,
+      String tempGcsBucket,
+      Long kafkaAwaitTerminationTimeout)
+      throws Exception {
+    dataset
+        .writeStream()
+        .format(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_FORMAT)
+        .outputMode(streamOutputMode)
+        .option(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_HEADER, true)
+        .option(KAFKA_BQ_SPARK_CONF_NAME_CHECKPOINT_LOCATION, checkpointLocation)
+        .option(
+            KAFKA_BQ_SPARK_CONF_NAME_TABLE, projectId + "." + bigQueryDataset + "." + bigQueryTable)
+        .option(KAFKA_BQ_SPARK_CONF_NAME_TEMP_GCS_BUCKET, tempGcsBucket)
+        .start()
+        .awaitTermination(kafkaAwaitTerminationTimeout);
   }
 }
