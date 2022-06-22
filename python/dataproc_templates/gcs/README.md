@@ -128,7 +128,7 @@ wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
-export JARS="gs://spark-lib/jdbc/mysql-connector-java.jar"
+export JARS=<gcs-bucket-location-containing-jar-file> 
 
 ./bin/start.sh \
 -- --template=GCSTOBIGQUERY \
