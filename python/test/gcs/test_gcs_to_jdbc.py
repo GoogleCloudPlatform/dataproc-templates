@@ -33,10 +33,10 @@ class TestGCSToBigQueryTemplate:
         parsed_args = gcs_to_jdbc_template.parse_args(
             ["--gcs.jdbc.input.format=parquet",
              "--gcs.jdbc.input.location=gs://test",
+             "--gcs.jdbc.output.url=url",
              "--gcs.jdbc.output.table=table",
-             "--gcs.jdbc.output.mode=append",
              "--gcs.jdbc.output.driver=driver",
-             "--gcs.jdbc.output.url=url"])
+             "--gcs.jdbc.output.mode=append"])
 
         assert parsed_args["gcs.jdbc.input.format"] == "parquet"
         assert parsed_args["gcs.jdbc.input.location"] == "gs://test"
@@ -53,10 +53,10 @@ class TestGCSToBigQueryTemplate:
         mock_parsed_args = gcs_to_jdbc_template.parse_args(
             ["--gcs.jdbc.input.format=parquet",
              "--gcs.jdbc.input.location=gs://test",
+             "--gcs.jdbc.output.url=url",
              "--gcs.jdbc.output.table=table",
-             "--gcs.jdbc.output.mode=append",
              "--gcs.jdbc.output.driver=driver",
-             "--gcs.jdbc.output.url=url"])
+             "--gcs.jdbc.output.mode=append"])
         mock_spark_session.read.parquet.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
 
@@ -78,10 +78,10 @@ class TestGCSToBigQueryTemplate:
         mock_parsed_args = gcs_to_jdbc_template.parse_args(
             ["--gcs.jdbc.input.format=avro",
              "--gcs.jdbc.input.location=gs://test",
+             "--gcs.jdbc.output.url=url",
              "--gcs.jdbc.output.table=table",
-             "--gcs.jdbc.output.mode=append",
              "--gcs.jdbc.output.driver=driver",
-             "--gcs.jdbc.output.url=url"])
+             "--gcs.jdbc.output.mode=append"])
         mock_spark_session.read.format().load.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
 
@@ -105,10 +105,10 @@ class TestGCSToBigQueryTemplate:
         mock_parsed_args = gcs_to_jdbc_template.parse_args(
             ["--gcs.jdbc.input.format=csv",
              "--gcs.jdbc.input.location=gs://test",
+             "--gcs.jdbc.output.url=url",
              "--gcs.jdbc.output.table=table",
-             "--gcs.jdbc.output.mode=append",
              "--gcs.jdbc.output.driver=driver",
-             "--gcs.jdbc.output.url=url"])
+             "--gcs.jdbc.output.mode=append"])
         mock_spark_session.read.format().option().option(
         ).load.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
@@ -139,10 +139,10 @@ class TestGCSToBigQueryTemplate:
         mock_parsed_args = gcs_to_jdbc_template.parse_args(
             ["--gcs.jdbc.input.format=json",
              "--gcs.jdbc.input.location=gs://test",
+             "--gcs.jdbc.output.url=url",
              "--gcs.jdbc.output.table=table",
-             "--gcs.jdbc.output.mode=append",
              "--gcs.jdbc.output.driver=driver",
-             "--gcs.jdbc.output.url=url"])
+             "--gcs.jdbc.output.mode=append"])
         mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
 
