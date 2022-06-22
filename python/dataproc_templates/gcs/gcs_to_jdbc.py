@@ -141,9 +141,9 @@ class GCSToJDBCTemplate(BaseTemplate):
         # Write
         input_data.write \
             .format(constants.FORMAT_JDBC) \
-            .option("url", jdbc_url) \
-            .option("dbtable", jdbc_table) \
-            .option("driver", output_driver) \
-            .option("batchsize", batch_size) \
+            .option(constants.JDBC_URL, jdbc_url) \
+            .option(constants.JDBC_TABLE, jdbc_table) \
+            .option(constants.JDBC_DRIVER, output_driver) \
+            .option(constants.JDBC_BATCH_SIZE, batch_size) \
             .mode(output_mode) \
             .save()
