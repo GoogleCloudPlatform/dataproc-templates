@@ -1,10 +1,10 @@
-## GCS To BigQuery
+# GCS To BigQuery
 
 Template for reading files from Google Cloud Storage and writing them to a BigQuery table. It supports reading JSON, CSV, Parquet and Avro formats.
 
 It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
 
-# Arguments
+## Arguments
 
 * `gcs.bigquery.input.location`: GCS location of the input files (format: `gs://BUCKET/...`)
 * `gcs.bigquery.output.dataset`: BigQuery dataset for the output table
@@ -13,7 +13,7 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `gcs.bigquery.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
 * `gcs.bigquery.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 
-# Usage
+## Usage
 
 ```
 $ python main.py --template GCSTOBIGQUERY --help
@@ -42,11 +42,11 @@ optional arguments:
                         Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 ```
 
-# Required JAR files
+## Required JAR files
 
 This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
 
-# Example submission
+## Example submission
 
 ```
 export GCP_PROJECT=<project_id>
@@ -64,11 +64,11 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --gcs.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
 
-## GCS To JDBC
+# GCS To JDBC
 
 Template for reading files from Google Cloud Storage and writing them to a JDBC table. It supports reading JSON, CSV, Parquet and Avro formats.
 
-# Arguments
+## Arguments
 
 * `gcs.jdbc.input.format`: Input file format (one of: avro,parquet,csv,json)
 * `gcs.jdbc.input.location`: GCS location of the input files (format: `gs://BUCKET/...`)
@@ -78,7 +78,7 @@ Template for reading files from Google Cloud Storage and writing them to a JDBC 
 * `gcs.jdbc.batch.size`: JDBC output batch size
 * `gcs.jdbc.output.url`: JDBC output URL
 
-# Usage
+## Usage
 
 ```
 $ python main.py --template GCSTOJDBC --help
@@ -111,11 +111,11 @@ optional arguments:
                         JDBC Driver URL to connect with consisting of username and passwprd as well
 ```
 
-# Required JAR files
+## Required JAR files
 
 This template requires the JDBC jar file to be available in the Dataproc cluster.
 
-# Example submission
+## Example submission
 
 ```
 export GCP_PROJECT=<project_id>
