@@ -64,11 +64,11 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_JDBC)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.TABLE, "table")
+        ).option().option.assert_called_once_with(constants.JDBC_TABLE, "table")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        ).option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode().save.assert_called_once()
+        ).option().option().option().option().mode().save.assert_called_once()
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_avro(self, mock_spark_session):
@@ -91,11 +91,11 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_JDBC)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.TABLE, "table")
+        ).option().option.assert_called_once_with(constants.JDBC_TABLE, "table")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
+        ).option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode().save.assert_called_once()
+        ).option().option().option().option().mode().save.assert_called_once()
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_csv(self, mock_spark_session):
@@ -124,11 +124,11 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_JDBC)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.TABLE, "table")
+        ).option().option.assert_called_once_with(constants.JDBC_TABLE, "table")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
+        ).option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode().save.assert_called_once()
+        ).option().option().option().option().mode().save.assert_called_once()
 
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
@@ -150,8 +150,8 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_JDBC)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.TABLE, "table")
+        ).option().option.assert_called_once_with(constants.JDBC_TABLE, "table")
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_ERRORIFEXISTS)
+        ).option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode().save.assert_called_once()
+        ).option().option().option().option().mode().save.assert_called_once()
