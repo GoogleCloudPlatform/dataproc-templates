@@ -29,6 +29,7 @@ JDBC_URL = "url"
 JDBC_TABLE = "dbtable"
 JDBC_DRIVER = "driver"
 JDBC_BATCH_SIZE = "batchsize"
+FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
 TEMP_GCS_BUCKET="temporaryGcsBucket"
 
@@ -56,6 +57,11 @@ GCS_JDBC_OUTPUT_URL = "gcs.jdbc.output.url"
 GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver"
 GCS_JDBC_BATCH_SIZE = "gcs.jdbc.batch.size"
 
+# GCS to BigTable
+GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
+GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format"
+GCS_BT_HBASE_CATALOG_JSON = "gcs.bigtable.hbase.catalog.json"
+
 # BigQuery to GCS
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
 BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format"
@@ -67,12 +73,18 @@ HIVE_BQ_OUTPUT_MODE = "hive.bigquery.output.mode"
 HIVE_BQ_LD_TEMP_BUCKET_NAME = "hive.bigquery.temp.bucket.name"
 HIVE_BQ_OUTPUT_DATASET = "hive.bigquery.output.dataset"
 HIVE_BQ_OUTPUT_TABLE = "hive.bigquery.output.table"
-HIVE_BQ_INPUT_DATABASE="hive.bigquery.input.database"
-HIVE_BQ_INPUT_TABLE="hive.bigquery.input.table"
+HIVE_BQ_INPUT_DATABASE = "hive.bigquery.input.database"
+HIVE_BQ_INPUT_TABLE = "hive.bigquery.input.table"
 
 # Hive to GCS
 HIVE_GCS_INPUT_DATABASE="hive.gcs.input.database"
-HIVE_GCS_INPUT_TABLE="hive.gcs.input.table"
+HIVE_GCS_INPUT_TABLE = "hive.gcs.input.table"
 HIVE_GCS_OUTPUT_LOCATION = "hive.gcs.output.location"
 HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
 HIVE_GCS_OUTPUT_MODE = "hive.gcs.output.mode"
+
+#Hbase to GCS
+HBASE_GCS_OUTPUT_LOCATION = "hbase.gcs.output.location"
+HBASE_GCS_OUTPUT_FORMAT = "hbase.gcs.output.format"
+HBASE_GCS_OUTPUT_MODE = "hbase.gcs.output.mode"
+HBASE_GCS_CATALOG_JSON = "hbase.gcs.catalog.json"

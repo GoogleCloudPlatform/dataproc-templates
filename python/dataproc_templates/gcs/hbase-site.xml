@@ -1,0 +1,15 @@
+<!--https://cloud.google.com/bigtable/docs/hbase-connecting-->
+<configuration>
+  <property>
+    <name>hbase.client.connection.impl</name>
+    <value>com.google.cloud.bigtable.hbase2_x.BigtableConnection</value>
+  </property>
+  <property>
+    <name>google.bigtable.project.id</name>
+    <value>project_id</value>
+  </property>
+  <property>
+    <name>google.bigtable.instance.id</name>
+    <value>bigtable_instance_id</value>
+  </property>
+</configuration>
