@@ -72,11 +72,11 @@ class TestGCSToBigQueryTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_avro(self, mock_spark_session):
-        """Tests GCSToJDBCTemplate runs with parquet avro"""
+        """Tests GCSToJDBCTemplate runs with avro"""
 
         gcs_to_jdbc_template = GCSToJDBCTemplate()
         mock_parsed_args = gcs_to_jdbc_template.parse_args(
-            ["--gcs.jdbc.input.format=parquet",
+            ["--gcs.jdbc.input.format=avro",
              "--gcs.jdbc.input.location=gs://test",
              "--gcs.jdbc.output.table=table",
              "--gcs.jdbc.output.mode=append",
@@ -103,7 +103,7 @@ class TestGCSToBigQueryTemplate:
 
         gcs_to_jdbc_template = GCSToJDBCTemplate()
         mock_parsed_args = gcs_to_jdbc_template.parse_args(
-            ["--gcs.jdbc.input.format=parquet",
+            ["--gcs.jdbc.input.format=csv",
              "--gcs.jdbc.input.location=gs://test",
              "--gcs.jdbc.output.table=table",
              "--gcs.jdbc.output.mode=append",
@@ -137,7 +137,7 @@ class TestGCSToBigQueryTemplate:
 
         gcs_to_jdbc_template = GCSToJDBCTemplate()
         mock_parsed_args = gcs_to_jdbc_template.parse_args(
-            ["--gcs.jdbc.input.format=parquet",
+            ["--gcs.jdbc.input.format=json",
              "--gcs.jdbc.input.location=gs://test",
              "--gcs.jdbc.output.table=table",
              "--gcs.jdbc.output.mode=append",
