@@ -114,6 +114,13 @@ optional arguments:
 ## Required JAR files
 
 This template requires the JDBC jar file to be available in the Dataproc cluster.
+User has to download the required jar file and host it inside a GCS Bucket, so that it could be referred during the execution of code.
+
+Wget Command to download JDBC MySQL jar file is as follows :-
+
+```
+wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz. -O /tmp/mysql-connector.tar.gz 
+```
 
 ## Example submission
 
