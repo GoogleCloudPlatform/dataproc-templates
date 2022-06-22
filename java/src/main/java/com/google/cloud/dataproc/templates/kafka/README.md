@@ -28,17 +28,37 @@ Following properties are avaialble in commandline or [template.properties](../..
 ```
 # Kafka to BigQuery
 
-#Offset to start reading from. Accepted values: "earliest", "latest" (streaming only), or json string """ {"topicA":{"0":23,"1":-1},"topicB":{"0":-2}} """
+# Kafka servers
+kafka.bq.bootstrap.servers=<kafka broker list>
+
+# Kafka topics
+kafka.bq.topic=<kafka topic names>
+
+# BigQuery output dataset
+kafka.bq.dataset=<output bigquery dataset>
+
+# BigQuery output table
+kafka.bq.table=<output bigquery table>
+
+# GCS bucket name, for storing temporary files
+kafka.bq.temp.gcs.bucket=<gcs bucket name>
+
+# GCS location for maintaining checkpoint
+kafka.bq.checkpoint.location=<gcs bucket location maintains checkpoint>
+
+# Offset to start reading from. Accepted values: "earliest", "latest" (streaming only), or json string """ {"topicA":{"0":23,"1":-1},"topicB":{"0":-2}} """
 kafka.bq.starting.offset=<kafka-starting-offset>
 
-#Waits for specified time in ms before termination of stream
+# Waits for specified time in ms before termination of stream
 kafka.bq.await.termination.timeout=<stream-await-termination-timeout>
 
-#Fails the job when data is lost. Accepted values: true, false
+# Fails the job when data is lost. Accepted values: true, false
 kafka.bq.fail.on.dataloss=<spark-config-fail-on-dataloss>
 
-#Ouptut mode for writing data. Accepted values: 'append', 'complete', 'update'
+# Ouptut mode for writing data. Accepted values: 'append', 'complete', 'update'
 kafka.bq.steam.output.mode=<output-mode>
+
+Note: The option kafka.bq.starting.offset is only relevant for the very first time the application is running. After that, checkpoint files stored at kafka.bq.checkpoint.location are being used.
 ```
 
 ### Example submission
@@ -54,7 +74,7 @@ bin/start.sh \
 --templateProperty kafka.bq.checkpoint.location=<gs://bucket/path> \
 --templateProperty kafka.bq.bootstrap.servers=<host1:port1,host2:port2> \
 --templateProperty kafka.bq.topic=<topic1,topic2> \
---templateProperty kafka.bq.starting.offset=<earliest / latest / """ {"topic1":{"0":10,"1":-1},"topic2":{"0":-2}} """> \
+--templateProperty kafka.bq.starting.offset=<earliest or latest or """ {"topic1":{"0":10,"1":-1},"topic2":{"0":-2}} """> \
 --templateProperty kafka.bq.dataset=<bq_dataset> \
 --templateProperty kafka.bq.table=<bq_table> \
 --templateProperty kafka.bq.temp.gcs.bucket=<bucket> \
