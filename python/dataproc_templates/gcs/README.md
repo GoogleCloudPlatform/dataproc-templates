@@ -196,7 +196,7 @@ Template for reading files from Google Cloud Storage and writing them to a JDBC 
 
 * `gcs.jdbc.input.format`: Input file format (one of: avro,parquet,csv,json)
 * `gcs.jdbc.input.location`: GCS location of the input files (format: `gs://BUCKET/...`)
-* `gcs.jdbc.output.table`: BigQuery output table name
+* `gcs.jdbc.output.table`: JDBC output table name
 * `gcs.jdbc.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `gcs.jdbc.output.driver`: JDBC output driver name
 * `gcs.jdbc.batch.size`: JDBC output batch size
