@@ -19,6 +19,7 @@ import sys
 from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate, TemplateName
+from dataproc_templates.gcs.gcs_to_jdbc import GCSToJDBCTemplate
 from dataproc_templates.util import get_template_name, track_template_invocation
 from dataproc_templates.gcs.gcs_to_bigquery import GCSToBigQueryTemplate
 from dataproc_templates.gcs.gcs_to_bigtable import GCSToBigTableTemplate
@@ -38,6 +39,7 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.BIGQUERYTOGCS: BigQueryToGCSTemplate,
     TemplateName.HIVETOBIGQUERY: HiveToBigQueryTemplate,
     TemplateName.HIVETOGCS: HiveToGCSTemplate,
+    TemplateName.GCSTOJDBC: GCSToJDBCTemplate
     TemplateName.HBASETOGCS: HbaseToGCSTemplate
 }
 
