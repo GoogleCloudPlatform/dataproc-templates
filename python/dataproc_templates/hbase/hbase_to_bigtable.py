@@ -17,7 +17,7 @@ from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
+from pyspark.sql import SparkSession, DataFrame
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -73,21 +73,8 @@ class HbaseToBigtableTemplate(BaseTemplate):
                            .load()
 
         #write
-        writer: DataFrameWriter = input_data.write.mode("append")
-        writer \
-            .option(constants.CSV_HEADER, True) \
-            .csv("gs://datproc_template_nk/output/")
-        print("write complete in temp")
-        print(hbase_catalog)
-        print(bigtable_catalog)
-        input_data1: DataFrame
-        input_data1 = spark.read \
-                .format(constants.FORMAT_CSV) \
-                .option(constants.CSV_HEADER, True) \
-                .option(constants.CSV_INFER_SCHEMA, True) \
-                .load("gs://datproc_template_nk/output/")
             
-        input_data1.write \
+        input_data.write \
             .format(constants.FORMAT_HBASE) \
             .options(catalog=bigtable_catalog) \
             .option('hbase.spark.use.hbasecontext', "false") \
