@@ -27,7 +27,20 @@ check_required_envvar GCP_PROJECT
 check_required_envvar REGION
 check_required_envvar GCS_STAGING_LOCATION
 
-python ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
+# Do not rebuild when SKIP_BUILD is specified
+# Usage: export SKIP_BUILD=true
+if [ ! -z "$SKIP_BUILD" ]; then
+
+  #Copy egg file to GCS bucket Staging folder
+  echo_formatted "Copying dist/dataproc_templates_distribution.egg to  staging bucket: ${GCS_STAGING_LOCATION}/dependencies/dataproc_templates_distribution.egg"
+  gsutil cp dist/dataproc_templates_distribution.egg ${GCS_STAGING_LOCATION}/dependencies/dataproc_templates_distribution.egg
+  gsutil cp main.py ${GCS_STAGING_LOCATION}/dependencies/main.py
+
+else
+
+  python ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
+
+fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
