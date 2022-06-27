@@ -94,7 +94,7 @@ HBASE_GCS_OUTPUT_FORMAT = "hbase.gcs.output.format"
 HBASE_GCS_OUTPUT_MODE = "hbase.gcs.output.mode"
 HBASE_GCS_CATALOG_JSON = "hbase.gcs.catalog.json"
 
-# GCS to JDBC
+# JDBC to JDBC
 JDBCTOJDBC_INPUT_URL = "jdbctojdbc.input.url"
 JDBCTOJDBC_INPUT_DRIVER = "jdbctojdbc.input.driver"
 JDBCTOJDBC_INPUT_TABLE = "jdbctojdbc.input.table"
