@@ -127,8 +127,8 @@ class TextToBigQueryTemplate(BaseTemplate):
         input_data: DataFrame
 
         input_data = spark.read\
-            .option(constants.TEXT_HEADER, True) \
-            .option(constants.TEXT_INFER_SCHEMA, True) \
+            .option(constants.HEADER, True) \
+            .option(constants.INFER_SCHEMA, True) \
             .option(constants.INPUT_COMPRESSION, input_file_codec_format)\
             .option(constants.INPUT_DELIMITER, input_delimiter)\
             .csv(input_file_location)

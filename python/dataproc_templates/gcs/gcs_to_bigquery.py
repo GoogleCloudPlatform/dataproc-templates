@@ -123,8 +123,8 @@ class GCSToBigQueryTemplate(BaseTemplate):
         elif input_file_format == constants.FORMAT_CSV:
             input_data = spark.read \
                 .format(constants.FORMAT_CSV) \
-                .option(constants.CSV_HEADER, True) \
-                .option(constants.CSV_INFER_SCHEMA, True) \
+                .option(constants.HEADER, True) \
+                .option(constants.INFER_SCHEMA, True) \
                 .load(input_file_location)
         elif input_file_format == constants.FORMAT_JSON:
             input_data = spark.read \
