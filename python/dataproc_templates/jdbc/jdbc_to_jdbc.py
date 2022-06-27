@@ -77,7 +77,7 @@ class JDBCToJDBCTemplate(BaseTemplate):
             f'--{constants.JDBCTOJDBC_NUMPARTITIONS}',
             dest=constants.JDBCTOJDBC_NUMPARTITIONS,
             required=False,
-            default=10,
+            default="10",
             help='The maximum number of partitions that can be used for parallelism in table reading and writing. Default set to 10'
         )
         parser.add_argument(
@@ -126,7 +126,7 @@ class JDBCToJDBCTemplate(BaseTemplate):
             f'--{constants.JDBCTOJDBC_OUTPUT_BATCH_SIZE}',
             dest=constants.JDBCTOJDBC_OUTPUT_BATCH_SIZE,
             required=False,
-            default=1000,
+            default="1000",
             help='JDBC output batch size. Default set to 1000'
         )
 

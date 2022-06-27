@@ -82,8 +82,26 @@ class TestJDBCToJDBCTemplate:
              "--jdbctojdbc.output.mode=append",
              "--jdbctojdbc.output.batch.size=1000"
              ])
-        mock_spark_session.read.format().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
+        mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
+        mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
+        mock_spark_session.read.format().option().option.assert_called_with(constants.JDBC_DRIVER, "driver")
+        mock_spark_session.read.format().option().option().option.assert_called_with(constants.JDBC_TABLE, "table1")
+        mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.JDBC_PARTITIONCOLUMN, "column")
+        mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_LOWERBOUND, "1")
+        mock_spark_session.read.format().option().option().option().option().option().option.assert_called_with(constants.JDBC_UPPERBOUND, "2")
+        mock_spark_session.read.format().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "5")
+        mock_spark_session.read.format().option().option().option().option().option().option().option().load()
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(constants.FORMAT_JDBC)
+        mock_spark_session.dataframe.DataFrame.write.format().option.assert_called_once_with(constants.JDBC_URL, "url")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option.assert_called_once_with(constants.JDBC_DRIVER, "driver")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option.assert_called_once_with(constants.JDBC_TABLE, "table2")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option.assert_called_once_with(constants.JDBC_CREATE_TABLE_OPTIONS, "dummy")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option.assert_called_once_with(constants.JDBC_BATCH_SIZE, "1000")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option.assert_called_once_with(constants.JDBC_NUMPARTITIONS, "5")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode().save.assert_called_once()
 
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
@@ -104,10 +122,27 @@ class TestJDBCToJDBCTemplate:
              "--jdbctojdbc.output.driver=driver",
              "--jdbctojdbc.output.table=table2"
              ])
-        mock_spark_session.read.format().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
-        
-        
+        mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
+        mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
+        mock_spark_session.read.format().option().option.assert_called_with(constants.JDBC_DRIVER, "driver")
+        mock_spark_session.read.format().option().option().option.assert_called_with(constants.JDBC_TABLE, "table1")
+        mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.JDBC_PARTITIONCOLUMN, "column")
+        mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_LOWERBOUND, "1")
+        mock_spark_session.read.format().option().option().option().option().option().option.assert_called_with(constants.JDBC_UPPERBOUND, "2")
+        mock_spark_session.read.format().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "5")
+        mock_spark_session.read.format().option().option().option().option().option().option().option().load()
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(constants.FORMAT_JDBC)
+        mock_spark_session.dataframe.DataFrame.write.format().option.assert_called_once_with(constants.JDBC_URL, "url")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option.assert_called_once_with(constants.JDBC_DRIVER, "driver")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option.assert_called_once_with(constants.JDBC_TABLE, "table2")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option.assert_called_once_with(constants.JDBC_CREATE_TABLE_OPTIONS, "")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option.assert_called_once_with(constants.JDBC_BATCH_SIZE, "1000")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option.assert_called_once_with(constants.JDBC_NUMPARTITIONS, "5")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode().save.assert_called_once()
+             
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args3(self, mock_spark_session):
         """Tests JDBCToJDBCTemplate pass args"""
@@ -118,10 +153,24 @@ class TestJDBCToJDBCTemplate:
             ["--jdbctojdbc.input.url=url",
              "--jdbctojdbc.input.driver=driver",
              "--jdbctojdbc.input.table=table1",
-             "--jdbctojdbc.numpartitions=5",
              "--jdbctojdbc.output.url=url",
              "--jdbctojdbc.output.driver=driver",
              "--jdbctojdbc.output.table=table2"
              ])
-        mock_spark_session.read.format().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
+        mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
+        mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
+        mock_spark_session.read.format().option().option.assert_called_with(constants.JDBC_DRIVER, "driver")
+        mock_spark_session.read.format().option().option().option.assert_called_with(constants.JDBC_TABLE, "table1")
+        mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "10")
+        mock_spark_session.read.format().option().option().option().option().load()
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(constants.FORMAT_JDBC)
+        mock_spark_session.dataframe.DataFrame.write.format().option.assert_called_once_with(constants.JDBC_URL, "url")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option.assert_called_once_with(constants.JDBC_DRIVER, "driver")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option.assert_called_once_with(constants.JDBC_TABLE, "table2")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option.assert_called_once_with(constants.JDBC_CREATE_TABLE_OPTIONS, "")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option.assert_called_once_with(constants.JDBC_BATCH_SIZE, "1000")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option.assert_called_once_with(constants.JDBC_NUMPARTITIONS, "10")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode().save.assert_called_once()

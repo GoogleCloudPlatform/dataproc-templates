@@ -90,6 +90,7 @@ jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id)  (PARTITION p0 VAL
 ```
 export GCP_PROJECT=<gcp-project-id> \
 export REGION=<region>  \
+export GCS_STAGING_LOCATION=<gcs staging location> \
 export SUBNET=<subnet>   \
 export JARS=<gcs_path_to_jdbc_jar_files>
 
