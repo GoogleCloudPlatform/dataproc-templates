@@ -75,8 +75,6 @@ All solutions within this repository are provided under the [Apache 2.0](https:/
 This repository and its contents are not an official Google Product.
 
 ## Contact
-Share you feedback, ideas, thoughts [feedback-form](https://forms.gle/XXCJeWeCJJ9fNLQS6)
-
 Questions, issues, and comments should be directed to
 [professional-services-oss@google.com](mailto:professional-services-oss@google.com).
 
