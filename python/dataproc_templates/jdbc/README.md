@@ -36,7 +36,7 @@ optional arguments:
     --jdbctojdbc.input.partitioncolumn JDBCTOJDBC.INPUT.PARTITIONCOLUMN \
     --jdbctojdbc.input.lowerbound JDBCTOJDBC.INPUT.LOWERBOUND \
     --jdbctojdbc.input.upperbound JDBCTOJDBC.INPUT.UPPERBOUND \
-    --jdbctojdbc.input.numpartitions JDBCTOJDBC.INPUT.NUMPARTITIONS \
+    --jdbctojdbc.numpartitions JDBCTOJDBC.NUMPARTITIONS \
     --jdbctojdbc.output.create_table.option JDBCTOJDBC.OUTPUT.CREATE_TABLE.OPTION \
     --jdbctojdbc.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctojdbc.output.batch.size JDBCTOJDBC.OUTPUT.BATCH.SIZE \
