@@ -93,22 +93,6 @@ export REGION=<region>  \
 export SUBNET=<subnet>   \
 export JARS=<gcs_path_to_jdbc_jar_files>
 
-bin/start.sh \
--- --template JDBCTOGCS \
---templateProperty jdbctogcs.jdbc.url=<jdbc url> \
---templateProperty jdbctogcs.jdbc.driver.class.name=<jdbc-driver-class-name> \
---templateProperty jdbctogcs.output.location=<gcs-ouput-location> \
---templateProperty jdbctogcs.output.format=<csv|avro|orc|json|parquet> \
---templateProperty jdbctogcs.write.mode=<optional_write-mode> \
---templateProperty jdbct'
-//jm  gcs.sql=<input-sql> \
---templateProperty jdbc /'
-togcs.˝˚dvx qdfwwdf .sql.partitionColumn=<optional-partition-column-name> \
---templateProperty jdbctogcs.sql.lowerBound=<optional-partition-start-value> \
---templateProperty jdbctogcs.sql.upperBound=<optional-partition-end-value> \
---templateProperty jdbctogcs.sql.numPartitions=<optional-partition-number> \
---templateProperty jdbctogcs.output.partition.col=<optional_partition-col>
-
 ./bin/start.sh \
 -- --template=JDBCTOJDBC \
 --jdbctojdbc.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
