@@ -1,6 +1,6 @@
 # 1. JDBC To JDBC
 
-Template for reading files from JDBC table and writing them to a JDBC table. It supports reading partition tabels and write into partitioned or non-partitioned tables.
+Template for reading data from JDBC table and writing them to a JDBC table. It supports reading partition tabels and write into partitioned or non-partitioned tables.
 
 ## Arguments
 
@@ -60,31 +60,32 @@ Once the jar file gets downloaded, please upload the file into a GCS Bucket and 
 export JARS=<gcs-bucket-location-containing-jar-file> 
 ```
 
-Following is example JDBC URL for mysql database
+## Other important properties
+
+* Following is example JDBC URL for mysql database
 
 ```
 jdbctojdbc.input.url=jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
 ```
 
-You can either specify the source table name or have SQL query within double quotes. Example,
+* You can either specify the source table name or have SQL query within double quotes. Example,
 
 ```
 jdbctojdbc.input.table="employees"
 jdbctojdbc.input.table="(select * from employees where dept_id>10) as employees"
 ```
 
-**Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together. 
-If one is specified then all needs to be specified.
+* partitionColumn, lowerBound, upperBound and numPartitions must be used together. If one is specified then all needs to be specified.
 
-You can specify the target table properties such as partition column using below property. This is useful when target table is not present or when write mode=overwrite and you need the target table created as partitioned table.
+* You can specify the target table properties such as partition column using below property. This is useful when target table is not present or when write mode=overwrite and you need the target table to be created as partitioned table.
 
 ```
 jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id)  (PARTITION p0 VALUES LESS THAN (5),PARTITION p1 VALUES LESS THAN (10),PARTITION p2 VALUES LESS THAN (15),PARTITION p3 VALUES LESS THAN MAXVALUE)"
 ```
 
-Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
+* Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
-Example execution: 
+## Example execution: 
 
 ```
 export GCP_PROJECT=<gcp-project-id> \
