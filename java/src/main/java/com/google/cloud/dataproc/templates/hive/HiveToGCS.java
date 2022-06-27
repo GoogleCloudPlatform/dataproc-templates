@@ -96,7 +96,6 @@ public class HiveToGCS implements BaseTemplate {
         HIVE_INPUT_TABLE_DATABASE_PROP,
         hiveInputDb);
 
-    try {
       // Confiure spark session to read from hive.
       spark =
           SparkSession.builder()
@@ -127,11 +126,6 @@ public class HiveToGCS implements BaseTemplate {
 
       LOGGER.info("HiveToGcs job completed.");
       spark.stop();
-    } catch (Throwable th) {
-      LOGGER.error("Exception in HiveToGCS", th);
-      if (Objects.nonNull(spark)) {
-        spark.stop();
-      }
-    }
+
   }
 }
