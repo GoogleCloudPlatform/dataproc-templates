@@ -18,7 +18,6 @@ import mock
 import pyspark
 
 from dataproc_templates.jdbc.jdbc_to_jdbc import JDBCToJDBCTemplate
-from dataproc_templates.gcs.gcs_to_bigquery import GCSToBigQueryTemplate
 import dataproc_templates.util.template_constants as constants
 
 
@@ -126,4 +125,3 @@ class TestJDBCToJDBCTemplate:
              ])
         mock_spark_session.read.format().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
-  
