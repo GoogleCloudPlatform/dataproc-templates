@@ -16,6 +16,28 @@ set -e
 # limitations under the License.
 
 #Initialize functions and Constants
+echo "Script Started Execution"
+java --version
+java_status=$?
+
+if test $java_status -eq 0
+then
+	printf "\n Java is installed, thus we are good to go \n"
+else
+	printf "\n Java is not installed on this machine, thus we need to install that first \n"
+fi
+
+mvn --version
+mvn_status=$?
+
+if test $mvn_status -eq 0
+then
+        printf "\n Maven is installed, thus we are good to go \n"
+else
+        printf "\n Maven is not installed on this machine, thus we need to install that first \n"
+fi
+
+
 BIN_DIR="$(dirname "$BASH_SOURCE")"
 PROJECT_ROOT_DIR=${BIN_DIR}/..
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
@@ -36,13 +58,31 @@ if [ -z "$SKIP_BUILD" ]; then
   #Change PWD to root folder for Maven Build
   cd ${PROJECT_ROOT_DIR}
   mvn clean spotless:apply install -DskipTests
+  build_status=$?
+
+  if test $build_status -eq 0
+  then
+          printf "\n Code build went successful, thus we are good to go \n"
+  else
+          printf "\n We ran into some issues while buiding the jar file, seems like mvn clean install is not running fine \n"
+  fi
   mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./grpc_lb
 
   #Copy jar file to GCS bucket Staging folder
   echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_LOCATION}/${JAR_FILE}"
   gsutil cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_LOCATION}/${JAR_FILE}
+  copy1_status=$?
   gsutil cp ${PROJECT_ROOT_DIR}/grpc_lb/io/grpc/grpc-grpclb/1.40.1/grpc-grpclb-1.40.1.jar ${GCS_STAGING_LOCATION}/grpc-grpclb-1.40.1.jar
+  copy2_status=$?
   gsutil cp ${PROJECT_ROOT_DIR}/src/test/resources/log4j-spark-driver-template.properties ${GCS_STAGING_LOCATION}/log4j-spark-driver-template.properties
+  copy3_status=$?
+
+  if [ $copy1_status -ne 0 ] || [ $copy2_status -ne 0 ] || [ $copy3_status -ne 0 ];
+    then
+          printf "\n It seems like there is some issue in copying the jar file or properties file to GCS Staging location \n"
+    else
+          printf "\n Commands to copy the jar file and properties file to GCS Staging location went fine, thus we are good to go \n"
+  fi
 fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
@@ -115,3 +155,11 @@ fi
 echo "Triggering Spark Submit job"
 echo ${command} "$@"
 ${command} "$@"
+spark_status=$?
+
+if test $spark_status -eq 0
+then
+        printf "\n Spark command ran fine \n"
+else
+        printf "\n It seems like there are some issues in running spark command. Requesting you to please go through the error to identify issues in your code \n"
+fi
