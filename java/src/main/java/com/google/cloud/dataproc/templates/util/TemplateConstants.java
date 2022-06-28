@@ -56,6 +56,7 @@ public interface TemplateConstants {
   String HIVE_INPUT_TABLE_DATABASE_PROP = "hive.input.db";
   // Optional parameter to pass column name to partition the data while writing it to GCS.
   String HIVE_PARTITION_COL = "hive.partition.col";
+  String HIVE_GCS_SAVE_MODE = "hive.gcs.save.mode";
 
   /** Property values for HiveToBQ */
   String HIVE_TO_BQ_BIGQUERY_LOCATION = "hivetobq.bigquery.location";
