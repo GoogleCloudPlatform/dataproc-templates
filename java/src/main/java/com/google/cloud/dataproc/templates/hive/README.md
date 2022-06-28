@@ -52,8 +52,8 @@ hive.gcs.output.path=<gcs-output-path>
 hive.input.table=<hive-input-table>
 ## Hive input db name.
 hive.input.db=<hive-output-db>
-## GCS output format. Optional, defaults to avro.
-hive.gcs.output.format=<gcs-output-format>
+## Optional - GCS output format. avro/csv/parquet/json/orc, defaults to avro.
+hive.gcs.output.format=avro
 ## Optional, column to partition hive data.
 hive.partition.col=<hive-partition-col>
 ## Optional: Write mode to gcs append/overwrite/errorifexists/ignore, defaults to overwrite
