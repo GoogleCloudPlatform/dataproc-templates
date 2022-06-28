@@ -56,7 +56,7 @@ hive.input.db=<hive-output-db>
 hive.gcs.output.format=<gcs-output-format>
 ## Optional, column to partition hive data.
 hive.partition.col=<hive-partition-col>
-## Optional: Write mode to gcs append/overwrite/errorifexists/ignore
+## Optional: Write mode to gcs append/overwrite/errorifexists/ignore, defaults to overwrite
 hive.gcs.save.mode=overwrite
 ```
 
