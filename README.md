@@ -26,10 +26,13 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java/README.md) 
 ## Dataproc Templates (Python - PySpark)
 Please refer to the [Dataproc Templates (Python - PySpark) README](/python/README.md) for more information
 * [GCSToBigQuery](/python/dataproc_templates/gcs/README.md)
+* [GCSToBigTable](/python/dataproc_templates/gcs/README.md)
+* [GCSToJDBC](/python/dataproc_templates/gcs/README.md)
 * [BigQueryToGCS](/python/dataproc_templates/bigquery/README.md)
 * [HiveToBigQuery](/python/dataproc_templates/hive/README.md)
 * [HiveToGCS](/python/dataproc_templates/hive/README.md)
 * [TextToBiqQuery](/python/dataproc_templates/gcs/README.md)
+* [HbaseToGCS](/python/dataproc_templates/hbase/README.md)
 
 ## Getting Started
 
@@ -72,6 +75,8 @@ All solutions within this repository are provided under the [Apache 2.0](https:/
 This repository and its contents are not an official Google Product.
 
 ## Contact
+Share you feedback, ideas, thoughts [feedback-form](https://forms.gle/XXCJeWeCJJ9fNLQS6)
+
 Questions, issues, and comments should be directed to
 [professional-services-oss@google.com](mailto:professional-services-oss@google.com).
 
