@@ -19,23 +19,13 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
     private static final Logger LOGGER = LoggerFactory.getLogger(HbaseToGCS.class);
 
     private String catalogue;
-    private String projectId="anishks-poc";
-    private String instanceId="demodataproc";
     private String outputFileFormat;
     private String gcsSaveMode;
     private String gcsWritePath;
 
     public HbaseToGCS() {
 
-        //catalogue = getProperties().getProperty(HBASE_TO_BIG_TABLE_CATALOGUE);
-        catalogue = "{" + "\"table\":{\"namespace\":\"default\", \"name\":\"my_table\"}," +
-                "\"rowkey\":\"key\"," +
-                "\"columns\":{" +
-                "\"key\":{\"cf\":\"rowkey\", \"col\":\"key\", \"type\":\"string\"}," +
-                "\"name\":{\"cf\":\"cf\", \"col\":\"name\", \"type\":\"string\"}" +
-                "}" +
-                "}";
-
+        catalogue = getProperties().getProperty(HBASE_TO_BIG_TABLE_CATALOG);
         outputFileFormat = getProperties().getProperty(HBASE_TO_GCS_FILE_FORMAT);
         gcsSaveMode= getProperties().getProperty(HBASE_TO_GCS_SAVE_MODE);
         gcsWritePath=getProperties().getProperty(HBASE_TO_GCS_OUTPUT_PATH);

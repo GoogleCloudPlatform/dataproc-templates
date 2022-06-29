@@ -69,6 +69,7 @@ public interface TemplateConstants {
   String HBASE_TO_GCS_FILE_FORMAT="hbasetogcs.fileformat";
   String HBASE_TO_GCS_SAVE_MODE= "hbasetogcs.savemode";
   String HBASE_TO_GCS_OUTPUT_PATH="hbasetogcs.output.path";
+  String HBASE_TO_BIG_TABLE_CATALOG="hbasetogcs.table.catalog";
 
   /** Property values for JDBCToBQ */
   String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
