@@ -40,7 +40,7 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.BIGQUERYTOGCS: BigQueryToGCSTemplate,
     TemplateName.HIVETOBIGQUERY: HiveToBigQueryTemplate,
     TemplateName.HIVETOGCS: HiveToGCSTemplate,
-    TemplateName.TEXTTOBIGQUERY: TextToBigQueryTemplate
+    TemplateName.TEXTTOBIGQUERY: TextToBigQueryTemplate,
     TemplateName.GCSTOJDBC: GCSToJDBCTemplate,
     TemplateName.HBASETOGCS: HbaseToGCSTemplate
 }
