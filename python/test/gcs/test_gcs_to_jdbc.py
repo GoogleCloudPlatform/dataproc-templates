@@ -116,9 +116,9 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.read.format.assert_called_with(
             constants.FORMAT_CSV)
         mock_spark_session.read.format().option.assert_called_with(
-            constants.CSV_HEADER, True)
+            constants.HEADER, True)
         mock_spark_session.read.format().option().option.assert_called_with(
-            constants.CSV_INFER_SCHEMA, True)
+            constants.INFER_SCHEMA, True)
         mock_spark_session.read.format().option().option(
         ).load.assert_called_once_with("gs://test")
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
