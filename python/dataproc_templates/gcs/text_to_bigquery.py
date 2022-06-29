@@ -22,12 +22,12 @@ from pyspark.sql import SparkSession, DataFrame
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
-__all__ = ['GCSToBigQueryTemplate']
+__all__ = ['TextToBigQueryTemplate']
 
 
-class GCSToBigQueryTemplate(BaseTemplate):
+class TextToBigQueryTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from GCS into BigQuery
+    Dataproc template implementing Text loads from GCS into BigQuery
     """
 
     @staticmethod
@@ -35,44 +35,32 @@ class GCSToBigQueryTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.GCS_BQ_INPUT_LOCATION}',
-            dest=constants.GCS_BQ_INPUT_LOCATION,
+            f'--{constants.TEXT_BQ_INPUT_LOCATION}',
+            dest=constants.TEXT_BQ_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input files'
+            help='GCS location of the input text files'
         )
         parser.add_argument(
-            f'--{constants.GCS_BQ_OUTPUT_DATASET}',
-            dest=constants.GCS_BQ_OUTPUT_DATASET,
+            f'--{constants.TEXT_BQ_OUTPUT_DATASET}',
+            dest=constants.TEXT_BQ_OUTPUT_DATASET,
             required=True,
             help='BigQuery dataset for the output table'
         )
         parser.add_argument(
-            f'--{constants.GCS_BQ_OUTPUT_TABLE}',
-            dest=constants.GCS_BQ_OUTPUT_TABLE,
+            f'--{constants.TEXT_BQ_OUTPUT_TABLE}',
+            dest=constants.TEXT_BQ_OUTPUT_TABLE,
             required=True,
             help='BigQuery output table name'
         )
         parser.add_argument(
-            f'--{constants.GCS_BQ_INPUT_FORMAT}',
-            dest=constants.GCS_BQ_INPUT_FORMAT,
-            required=True,
-            help='Input file format (one of: avro,parquet,csv,json)',
-            choices=[
-                constants.FORMAT_AVRO,
-                constants.FORMAT_PRQT,
-                constants.FORMAT_CSV,
-                constants.FORMAT_JSON
-            ]
-        )
-        parser.add_argument(
-            f'--{constants.GCS_BQ_LD_TEMP_BUCKET_NAME}',
-            dest=constants.GCS_BQ_LD_TEMP_BUCKET_NAME,
+            f'--{constants.TEXT_BQ_LD_TEMP_BUCKET_NAME}',
+            dest=constants.TEXT_BQ_LD_TEMP_BUCKET_NAME,
             required=True,
             help='Spark BigQuery connector temporary bucket'
         )
         parser.add_argument(
-            f'--{constants.GCS_BQ_OUTPUT_MODE}',
-            dest=constants.GCS_BQ_OUTPUT_MODE,
+            f'--{constants.TEXT_BQ_OUTPUT_MODE}',
+            dest=constants.TEXT_BQ_OUTPUT_MODE,
             required=False,
             default=constants.OUTPUT_MODE_APPEND,
             help=(
@@ -87,6 +75,30 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        parser.add_argument(
+            f'--{constants.TEXT_INPUT_COMPRESSION}',
+            dest=constants.TEXT_INPUT_COMPRESSION,
+            required=True,
+            help='Input file compression format (one of: bzip2,deflate,lz4,gzip,None)',
+            default=None,
+            choices=[
+                constants.COMPRESSION_BZIP2,
+                constants.COMPRESSION_GZIP,
+                constants.COMPRESSION_DEFLATE,
+                constants.COMPRESSION_LZ4,
+                constants.COMPRESSION_NONE
+            ]
+        )
+        parser.add_argument(
+                    f'--{constants.TEXT_INPUT_DELIMITER}',
+                    dest=constants.TEXT_INPUT_DELIMITER,
+                    required=False,
+                    help=(
+                        'Input column delimiter '
+                        '(example: ",", ";", "|", "/","\" ) '
+                    )
+                )
+
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -98,12 +110,13 @@ class GCSToBigQueryTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.GCS_BQ_INPUT_LOCATION]
-        big_query_dataset: str = args[constants.GCS_BQ_OUTPUT_DATASET]
-        big_query_table: str = args[constants.GCS_BQ_OUTPUT_TABLE]
-        input_file_format: str = args[constants.GCS_BQ_INPUT_FORMAT]
-        bq_temp_bucket: str = args[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
-        output_mode: str = args[constants.GCS_BQ_OUTPUT_MODE]
+        input_file_location: str = args[constants.TEXT_BQ_INPUT_LOCATION]
+        big_query_dataset: str = args[constants.TEXT_BQ_OUTPUT_DATASET]
+        big_query_table: str = args[constants.TEXT_BQ_OUTPUT_TABLE]
+        bq_temp_bucket: str = args[constants.TEXT_BQ_LD_TEMP_BUCKET_NAME]
+        output_mode: str = args[constants.TEXT_BQ_OUTPUT_MODE]
+        input_delimiter: str = args[constants.TEXT_INPUT_DELIMITER]
+        input_file_codec_format: str = args[constants.TEXT_INPUT_COMPRESSION]
 
         logger.info(
             "Starting GCS to Bigquery spark job with parameters:\n"
@@ -113,27 +126,17 @@ class GCSToBigQueryTemplate(BaseTemplate):
         # Read
         input_data: DataFrame
 
-        if input_file_format == constants.FORMAT_PRQT:
-            input_data = spark.read \
-                .parquet(input_file_location)
-        elif input_file_format == constants.FORMAT_AVRO:
-            input_data = spark.read \
-                .format(constants.FORMAT_AVRO_EXTD) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_CSV:
-            input_data = spark.read \
-                .format(constants.FORMAT_CSV) \
-                .option(constants.HEADER, True) \
-                .option(constants.INFER_SCHEMA, True) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_JSON:
-            input_data = spark.read \
-                .json(input_file_location)
+        input_data = spark.read\
+            .option(constants.HEADER, True) \
+            .option(constants.INFER_SCHEMA, True) \
+            .option(constants.INPUT_COMPRESSION, input_file_codec_format)\
+            .option(constants.INPUT_DELIMITER, input_delimiter)\
+            .csv(input_file_location)
 
         # Write
         input_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
-            .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
+            .option(constants.TEXT_BQ_TEMP_BUCKET, bq_temp_bucket) \
             .mode(output_mode) \
             .save()

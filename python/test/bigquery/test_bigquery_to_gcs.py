@@ -130,7 +130,7 @@ class TestBigQueryToGCSTemplate:
             .mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
-            .option.assert_called_once_with(constants.CSV_HEADER, True)
+            .option.assert_called_once_with(constants.HEADER, True)
         mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .option() \
