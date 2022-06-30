@@ -12,8 +12,8 @@ bin/start.sh \
 -- --template KAFKATOGCS \
 --templateProperty project.id=<gcp-project-id> \
 --templateProperty kafka.gcs.output.location=<gcs path> \
---templateProperty kafka.gcs.bootstrap.servers=<kafka broker list> \
---templateProperty kafka.gcs.topic=<kafka topic name> \
+--templateProperty kafka.bootstrap.servers=<kafka broker list> \
+--templateProperty kafka.topic=<kafka topic name> \
 ```
 
 
@@ -22,11 +22,17 @@ Update Following properties in  [template.properties](../../../../../../../resou
 ```
 kafka.gcs.output.location=<gcs location>;
 kafka.gcs.output.format=<gcs output format>;
-kafka.gcs.bootstrap.servers=<kafka bootstrap server>;
-kafka.gcs.topic=<kafka topic>;
+kafka.bootstrap.servers=<kafka bootstrap server>;
+kafka.topic=<kafka topic>;
+
+#Message format can be "json" or "bytes" for bytestring
+kafka.message.format=<kafka message format>
+
+#Specifying schema is mandatory for JSON message format
+kafka.schema.url=<gcs url for schema file>
 
 #Offset to start reading from. Values can be '**earliest**' ,'latest', '<topic_name>:{<partition>:<offset>}' ...
-kafka.gcs.starting.offset=<starting offset value>
+kafka.starting.offset=<starting offset value>
 
 #Await time in milliseconds before terminating stream read
 kafka.gcs.await.termination.timeout=<stream await termination timeout>
