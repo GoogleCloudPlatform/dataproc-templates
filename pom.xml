@@ -237,6 +237,11 @@
       <artifactId>hadoop-common</artifactId>
       <version>3.2.2</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+      <version>2.1.9</version>
+    </dependency>
   </dependencies>
 
   <build>

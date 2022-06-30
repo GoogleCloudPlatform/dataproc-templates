@@ -35,8 +35,8 @@ public class KafkaToGCSTest {
   void setup() {
     PropertyUtil.getProperties().setProperty(KAFKA_GCS_OUTPUT_LOCATION, "some value");
     PropertyUtil.getProperties().setProperty(KAFKA_GCS_OUTPUT_FORMAT, "some value");
-    PropertyUtil.getProperties().setProperty(KAFKA_GCS_BOOTSTRAP_SERVERS, "value");
-    PropertyUtil.getProperties().setProperty(KAFKA_GCS_TOPIC, "value");
+    PropertyUtil.getProperties().setProperty(KAFKA_BOOTSTRAP_SERVERS, "value");
+    PropertyUtil.getProperties().setProperty(KAFKA_TOPIC, "value");
   }
 
   @ParameterizedTest
@@ -65,9 +65,6 @@ public class KafkaToGCSTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-        KAFKA_GCS_OUTPUT_LOCATION,
-        KAFKA_GCS_OUTPUT_FORMAT,
-        KAFKA_GCS_BOOTSTRAP_SERVERS,
-        KAFKA_GCS_TOPIC);
+        KAFKA_GCS_OUTPUT_LOCATION, KAFKA_GCS_OUTPUT_FORMAT, KAFKA_BOOTSTRAP_SERVERS, KAFKA_TOPIC);
   }
 }

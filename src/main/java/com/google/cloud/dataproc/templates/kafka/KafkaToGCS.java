@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,20 +40,25 @@ public class KafkaToGCS implements BaseTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(KafkaToGCS.class);
   private String gcsOutputLocation;
   private String gcsOutputFormat;
+  private String gcsCheckpointLocation;
   private String kafkaBootstrapServers;
   private String kafkaTopic;
-  private String gcsCheckpointLocation;
+  private String kafkaMessageFormat;
+  private String kafkaSchemaUrl;
   private String kafkaStartingOffsets;
   private String kafkaOutputMode;
   private Long kafkaAwaitTerminationTimeout;
 
   public KafkaToGCS() {
+
     gcsOutputLocation = getProperties().getProperty(KAFKA_GCS_OUTPUT_LOCATION);
     gcsOutputFormat = getProperties().getProperty(KAFKA_GCS_OUTPUT_FORMAT);
-    kafkaBootstrapServers = getProperties().getProperty(KAFKA_GCS_BOOTSTRAP_SERVERS);
-    kafkaTopic = getProperties().getProperty(KAFKA_GCS_TOPIC);
+    kafkaBootstrapServers = getProperties().getProperty(KAFKA_BOOTSTRAP_SERVERS);
+    kafkaTopic = getProperties().getProperty(KAFKA_TOPIC);
+    kafkaMessageFormat = getProperties().getProperty(KAFKA_MESSAGE_FORMAT);
+    kafkaSchemaUrl = getProperties().getProperty(KAFKA_SCHEMA_URL);
     gcsCheckpointLocation = gcsOutputLocation.concat("/checkpoint/");
-    kafkaStartingOffsets = getProperties().getProperty(KAFKA_GCS_STARTING_OFFSET);
+    kafkaStartingOffsets = getProperties().getProperty(KAFKA_STARTING_OFFSET);
     kafkaOutputMode = getProperties().getProperty(KAFKA_GCS_OUTPUT_MODE);
     kafkaAwaitTerminationTimeout =
         Long.valueOf(getProperties().getProperty(KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT));
@@ -68,12 +72,17 @@ public class KafkaToGCS implements BaseTemplate {
       LOGGER.error(
           "{},{},{} is required parameter. ",
           KAFKA_GCS_OUTPUT_LOCATION,
-          KAFKA_GCS_BOOTSTRAP_SERVERS,
-          KAFKA_GCS_TOPIC);
+          KAFKA_BOOTSTRAP_SERVERS,
+          KAFKA_TOPIC);
       throw new IllegalArgumentException(
           "Required parameters for KafkaToGCS not passed. "
               + "Set mandatory parameter for KafkaToGCS template "
               + "in resources/conf/template.properties file.");
+    }
+
+    if (kafkaMessageFormat.equals("json") & StringUtils.isAllBlank(kafkaSchemaUrl)) {
+      LOGGER.error("{} is a required parameter for JSON format messages", KAFKA_SCHEMA_URL);
+      throw new IllegalArgumentException("Required parameters for KafkaToGCS not passed.");
     }
 
     SparkSession spark = null;
@@ -90,11 +99,11 @@ public class KafkaToGCS implements BaseTemplate {
         gcsOutputLocation,
         KAFKA_GCS_OUTPUT_FORMAT,
         gcsOutputFormat,
-        KAFKA_GCS_BOOTSTRAP_SERVERS,
+        KAFKA_BOOTSTRAP_SERVERS,
         kafkaBootstrapServers,
-        KAFKA_GCS_TOPIC,
+        KAFKA_TOPIC,
         kafkaTopic,
-        KAFKA_GCS_STARTING_OFFSET,
+        KAFKA_STARTING_OFFSET,
         kafkaStartingOffsets,
         KAFKA_GCS_OUTPUT_MODE,
         kafkaOutputMode,
@@ -107,24 +116,12 @@ public class KafkaToGCS implements BaseTemplate {
 
       LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
 
-      /** Read stream data from Kafka topic */
-      Dataset<Row> inputData =
-          spark
-              .readStream()
-              .format("kafka")
-              .option("kafka.bootstrap.servers", kafkaBootstrapServers)
-              .option("subscribe", kafkaTopic)
-              .option("startingOffsets", kafkaStartingOffsets)
-              .option("failOnDataLoss", "false")
-              .load();
+      KafkaReader reader = new KafkaReader();
 
-      Dataset<Row> processedData;
+      LOGGER.info("Calling Kafka Reader");
 
-      // Convert the key and value from kafka message to String
-      processedData =
-          inputData
-              .withColumn("key", inputData.col("key").cast(DataTypes.StringType))
-              .withColumn("value", inputData.col("value").cast(DataTypes.StringType));
+      // Reading Kafka stream into dataframe
+      Dataset<Row> processedData = reader.readKafkaTopic(spark, getProperties());
 
       // Write the output to GCS location
       processedData

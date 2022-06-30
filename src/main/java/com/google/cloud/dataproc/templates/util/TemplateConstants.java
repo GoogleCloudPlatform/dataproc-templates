@@ -198,13 +198,18 @@ public interface TemplateConstants {
 
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
 
+  /** Common properties for all Kafka Based Templates * */
+  String KAFKA_MESSAGE_FORMAT = "kafka.message.format";
+
+  String KAFKA_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
+  String KAFKA_TOPIC = "kafka.topic";
+  String KAFKA_STARTING_OFFSET = "kafka.starting.offset";
+  String KAFKA_SCHEMA_URL = "kafka.schema.url";
+
   /** Kafka To GCS properties */
   String KAFKA_GCS_OUTPUT_LOCATION = "kafka.gcs.output.location";
 
   String KAFKA_GCS_OUTPUT_FORMAT = "kafka.gcs.output.format";
-  String KAFKA_GCS_BOOTSTRAP_SERVERS = "kafka.gcs.bootstrap.servers";
-  String KAFKA_GCS_TOPIC = "kafka.gcs.topic";
-  String KAFKA_GCS_STARTING_OFFSET = "kafka.gcs.starting.offset";
   String KAFKA_GCS_OUTPUT_MODE = "kafka.gcs.output.mode";
   String KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT = "kafka.gcs.await.termination.timeout";
 }
