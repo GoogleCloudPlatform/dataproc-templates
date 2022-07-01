@@ -10,7 +10,7 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 * `jdbctojdbc.input.partitioncolumn`: JDBC input table partition column name
 * `jdbctojdbc.input.lowerbound`: JDBC input table partition column lower bound which is used to decide the partition stride
 * `jdbctojdbc.input.upperbound`: JDBC input table partition column upper bound which is used to decide the partition stride
-* `jdbctojdbc.numpartitions`: The maximum number of partitions that can be used for parallelism in table reading and writing. Default set to 10
+* `jdbctojdbc.numpartitions`: The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
 * `jdbctojdbc.output.url`: JDBC output url
 * `jdbctojdbc.output.driver`: JDBC output driver name
 * `jdbctojdbc.output.table`: JDBC output table name
