@@ -83,9 +83,9 @@ if [ -z "$SKIP_BUILD" ]; then
   if [ $copy_project_jar_status -ne 0 ] || [ $copy_library_jar_status -ne 0 ] || [ $copy_properties_file_status -ne 0 ];
     then
           printf "\n It seems like there is some issue in copying the jar file or properties file to GCS Staging location \n"
+          exit 1
     else
           printf "\n Commands to copy the jar file and properties file to GCS Staging location went fine, thus we are good to go \n"
-          exit 1
   fi
 fi
 
