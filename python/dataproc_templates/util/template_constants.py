@@ -16,10 +16,18 @@
 PROJECT_ID_PROP = "project.id"
 
 # Data
-CSV_HEADER = "header"
-CSV_INFER_SCHEMA = "inferSchema"
+INPUT_DELIMITER = "delimiter"
+INPUT_COMPRESSION = "compression"
+COMPRESSION_BZIP2 = "bzip2"
+COMPRESSION_GZIP = "gzip"
+COMPRESSION_DEFLATE = "deflate"
+COMPRESSION_LZ4 = "lz4"
+COMPRESSION_NONE = "None"
+HEADER = "header"
+INFER_SCHEMA = "inferSchema"
 FORMAT_JSON = "json"
 FORMAT_CSV = "csv"
+FORMAT_TXT = "txt"
 FORMAT_AVRO = "avro"
 FORMAT_PRQT = "parquet"
 FORMAT_AVRO_EXTD = "com.databricks.spark.avro"
@@ -88,7 +96,18 @@ HIVE_GCS_OUTPUT_LOCATION = "hive.gcs.output.location"
 HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
 HIVE_GCS_OUTPUT_MODE = "hive.gcs.output.mode"
 
-#Hbase to GCS
+# Text to BigQuery
+TEXT_INPUT_COMPRESSION = "text.bigquery.input.compression"
+TEXT_INPUT_DELIMITER = "text.bigquery.input.delimiter"
+TEXT_BQ_INPUT_LOCATION = "text.bigquery.input.location"
+TEXT_BQ_OUTPUT_DATASET = "text.bigquery.output.dataset"
+TEXT_BQ_OUTPUT_TABLE = "text.bigquery.output.table"
+TEXT_BQ_OUTPUT_MODE = "text.bigquery.output.mode"
+TEXT_BQ_TEMP_BUCKET = "temporaryGcsBucket"
+TEXT_BQ_LD_TEMP_BUCKET_NAME = "text.bigquery.temp.bucket.name"
+TEXT_BQ_INPUT_INFERSCHEMA = "text.bigquery.input.inferschema"
+
+# Hbase to GCS
 HBASE_GCS_OUTPUT_LOCATION = "hbase.gcs.output.location"
 HBASE_GCS_OUTPUT_FORMAT = "hbase.gcs.output.format"
 HBASE_GCS_OUTPUT_MODE = "hbase.gcs.output.mode"

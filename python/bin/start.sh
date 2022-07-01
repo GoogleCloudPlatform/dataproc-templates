@@ -27,7 +27,11 @@ check_required_envvar GCP_PROJECT
 check_required_envvar REGION
 check_required_envvar GCS_STAGING_LOCATION
 
-python ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
+# Do not rebuild when SKIP_BUILD is specified
+# Usage: export SKIP_BUILD=true
+if [ -z "$SKIP_BUILD" ]; then
+    python ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
+fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
