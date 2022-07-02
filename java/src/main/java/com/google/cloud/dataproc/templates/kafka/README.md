@@ -56,27 +56,73 @@ kafka.bq.await.termination.timeout=<stream-await-termination-timeout>
 kafka.bq.fail.on.dataloss=<spark-config-fail-on-dataloss>
 
 # Ouptut mode for writing data. Accepted values: 'append', 'complete', 'update'
-kafka.bq.steam.output.mode=<output-mode>
-
-Note: The option kafka.bq.starting.offset is only relevant for the very first time the application is running. After that, checkpoint files stored at kafka.bq.checkpoint.location are being used.
+kafka.bq.stream.output.mode=<output-mode>
 ```
+
+### Important properties
+
+* Usage of `kafka.bq.starting.offset`
+    * For batch loads, use earliest, which means start point of the query is set to be the earliest offsets:
+        ```
+        kafka.bq.starting.offset=earliest
+        ```
+
+    * For streaming loads, use latest, which means just start the query from the latest offsets:
+        ```
+        kafka.bq.starting.offset=latest
+        ``` 
+
+    * To read from only specific offsets from a TopicPartition, use a json string in the following format:
+        ```
+        kafka.bq.starting.offset=""" {"click-events":{"0":15,"1":-1},"msg-events":{"0":-2}} """
+        ```
+        In the json, -2 as an offset can be used to refer to earliest, -1 to latest.
+
+    Note: The option `kafka.bq.starting.offset` is only relevant when the application is running for the very first time. After that, checkpoint files stored at `kafka.bq.checkpoint.location` are being used.
+
+    To read more this property refer [Structured Streaming + Kafka Integration Guide (Kafka broker version 0.10.0 or higher)](https://spark.apache.org/docs/2.2.0/structured-streaming-kafka-integration.html#:~:text=meaning-,startingOffsets,-%22earliest%22%2C%20%22latest%22%20\(streaming)
+
+* Usage of `kafka.bq.stream.output.mode`
+    * Append output mode is used when only the new rows in the streaming Dataset needs to be written to the sink.
+        ```
+        kafka.bq.stream.output.mode=append
+        ```
+    
+    * Complete output mode is used when all the rows in the streaming Dataset needs to be written to the sink every time there are some updates.
+        ```
+        kafka.bq.stream.output.mode=complete
+        ```
+
+    * Update output mode is used when only the rows that were updated in the streaming Dataset needs to be written to the sink every time there are some updates.
+        ```
+        kafka.bq.stream.output.mode=update
+        ```
+    For additional details refer the [OutputMode Spark JavaDoc](https://spark.apache.org/docs/2.2.1/api/java/org/apache/spark/sql/streaming/OutputMode.html)
+
+* Usage of `kafka.bq.await.termination.timeout`
+    * This property is used to prevent the process from exiting while the query is active. Otherwise, it returns whether the query has terminated or not within the timeoutMs milliseconds.
+        ```
+        kafka.bq.await.termination.timeout=1800000
+        ```
+    Note: The default value for this property is 420000
+
 
 ### Example submission
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region_name>
-export SUBNET=<subnet_name> 
-export GCS_STAGING_LOCATION=<gs://bucket>
+export GCP_PROJECT=my-gcp-project
+export REGION=us-west1
+export SUBNET=test-subnet
+export GCS_STAGING_LOCATION=gs://templates-demo-kafkatobq
 bin/start.sh \
 -- \
 --template KAFKATOBQ \
---templateProperty project.id=<project_id> \
---templateProperty kafka.bq.checkpoint.location=<gs://bucket/path> \
---templateProperty kafka.bq.bootstrap.servers=<host1:port1,host2:port2> \
---templateProperty kafka.bq.topic=<topic1,topic2> \
---templateProperty kafka.bq.starting.offset=<earliest or latest or """ {"topic1":{"0":10,"1":-1},"topic2":{"0":-2}} """> \
---templateProperty kafka.bq.dataset=<bq_dataset> \
---templateProperty kafka.bq.table=<bq_table> \
---templateProperty kafka.bq.temp.gcs.bucket=<bucket> \
---templateProperty kafka.bq.await.termination.timeout=<timeout_in_ms>
+--templateProperty project.id=$GCP_PROJECT \
+--templateProperty kafka.bq.checkpoint.location=gs://templates-demo-kafkatobq/checkpoint \
+--templateProperty kafka.bq.bootstrap.servers=102.1.1.20:9092 \
+--templateProperty kafka.bq.topic=msg-events \
+--templateProperty kafka.bq.starting.offset=earliest \
+--templateProperty kafka.bq.dataset=kafkatobq \
+--templateProperty kafka.bq.table=kafkaevents \
+--templateProperty kafka.bq.temp.gcs.bucket=templates-demo-kafkatobq \
+--templateProperty kafka.bq.await.termination.timeout=1200000
 ```
