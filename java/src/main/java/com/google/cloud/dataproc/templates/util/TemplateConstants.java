@@ -278,5 +278,5 @@ public interface TemplateConstants {
   String KAFKA_BQ_DATASET = "kafka.bq.dataset";
   String KAFKA_BQ_TABLE = "kafka.bq.table";
   String KAFKA_BQ_TEMP_GCS_BUCKET = "kafka.bq.temp.gcs.bucket";
-  String KAFKA_BQ_STREAM_OUTPUT_MODE = "kafka.bq.steam.output.mode";
+  String KAFKA_BQ_STREAM_OUTPUT_MODE = "kafka.bq.stream.output.mode";
 }
