@@ -24,7 +24,7 @@ from dataproc_templates.util.argument_parsing import get_template_name
 
 def test_get_valid_template_names():
     """Tests valid template names"""
-    template_names: List[str] = ["GCSTOBIGQUERY", "BIGQUERYTOGCS"]
+    template_names: List[str] = ["GCSTOBIGQUERY", "BIGQUERYTOGCS", "TEXTTOBIGQUERY"]
 
     for template_name in template_names:
         parsed_template_name: TemplateName = get_template_name(

@@ -22,12 +22,12 @@ from pyspark.sql import SparkSession, DataFrame
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
-__all__ = ['GCSToBigQueryTemplate']
+__all__ = ['GCSToJDBCTemplate']
 
 
-class GCSToBigQueryTemplate(BaseTemplate):
+class GCSToJDBCTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from GCS into BigQuery
+    Dataproc template implementing loads from GCS into JDBC
     """
 
     @staticmethod
@@ -35,26 +35,14 @@ class GCSToBigQueryTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.GCS_BQ_INPUT_LOCATION}',
-            dest=constants.GCS_BQ_INPUT_LOCATION,
+            f'--{constants.GCS_JDBC_INPUT_LOCATION}',
+            dest=constants.GCS_JDBC_INPUT_LOCATION,
             required=True,
             help='GCS location of the input files'
         )
         parser.add_argument(
-            f'--{constants.GCS_BQ_OUTPUT_DATASET}',
-            dest=constants.GCS_BQ_OUTPUT_DATASET,
-            required=True,
-            help='BigQuery dataset for the output table'
-        )
-        parser.add_argument(
-            f'--{constants.GCS_BQ_OUTPUT_TABLE}',
-            dest=constants.GCS_BQ_OUTPUT_TABLE,
-            required=True,
-            help='BigQuery output table name'
-        )
-        parser.add_argument(
-            f'--{constants.GCS_BQ_INPUT_FORMAT}',
-            dest=constants.GCS_BQ_INPUT_FORMAT,
+            f'--{constants.GCS_JDBC_INPUT_FORMAT}',
+            dest=constants.GCS_JDBC_INPUT_FORMAT,
             required=True,
             help='Input file format (one of: avro,parquet,csv,json)',
             choices=[
@@ -65,14 +53,14 @@ class GCSToBigQueryTemplate(BaseTemplate):
             ]
         )
         parser.add_argument(
-            f'--{constants.GCS_BQ_LD_TEMP_BUCKET_NAME}',
-            dest=constants.GCS_BQ_LD_TEMP_BUCKET_NAME,
+            f'--{constants.GCS_JDBC_OUTPUT_TABLE}',
+            dest=constants.GCS_JDBC_OUTPUT_TABLE,
             required=True,
-            help='Spark BigQuery connector temporary bucket'
+            help='JDBC output table name'
         )
         parser.add_argument(
-            f'--{constants.GCS_BQ_OUTPUT_MODE}',
-            dest=constants.GCS_BQ_OUTPUT_MODE,
+            f'--{constants.GCS_JDBC_OUTPUT_MODE}',
+            dest=constants.GCS_JDBC_OUTPUT_MODE,
             required=False,
             default=constants.OUTPUT_MODE_APPEND,
             help=(
@@ -87,6 +75,25 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        parser.add_argument(
+            f'--{constants.GCS_JDBC_OUTPUT_URL}',
+            dest=constants.GCS_JDBC_OUTPUT_URL,
+            required=True,
+            help='JDBC output URL'
+        )
+        parser.add_argument(
+            f'--{constants.GCS_JDBC_OUTPUT_DRIVER}',
+            dest=constants.GCS_JDBC_OUTPUT_DRIVER,
+            required=True,
+            help='JDBC output driver name'
+        )
+        parser.add_argument(
+            f'--{constants.GCS_JDBC_BATCH_SIZE}',
+            dest=constants.GCS_JDBC_BATCH_SIZE,
+            required=False,
+            default=1000,
+            help='JDBC output batch size'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -98,15 +105,16 @@ class GCSToBigQueryTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.GCS_BQ_INPUT_LOCATION]
-        big_query_dataset: str = args[constants.GCS_BQ_OUTPUT_DATASET]
-        big_query_table: str = args[constants.GCS_BQ_OUTPUT_TABLE]
-        input_file_format: str = args[constants.GCS_BQ_INPUT_FORMAT]
-        bq_temp_bucket: str = args[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
-        output_mode: str = args[constants.GCS_BQ_OUTPUT_MODE]
+        input_file_location: str = args[constants.GCS_JDBC_INPUT_LOCATION]
+        input_file_format: str = args[constants.GCS_JDBC_INPUT_FORMAT]
+        jdbc_url: str = args[constants.GCS_JDBC_OUTPUT_URL]
+        jdbc_table: str = args[constants.GCS_JDBC_OUTPUT_TABLE]
+        output_mode: str = args[constants.GCS_JDBC_OUTPUT_MODE]
+        output_driver: str = args[constants.GCS_JDBC_OUTPUT_DRIVER]
+        batch_size: int = args[constants.GCS_JDBC_BATCH_SIZE]
 
         logger.info(
-            "Starting GCS to Bigquery spark job with parameters:\n"
+            "Starting GCS to JDBC spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -132,8 +140,10 @@ class GCSToBigQueryTemplate(BaseTemplate):
 
         # Write
         input_data.write \
-            .format(constants.FORMAT_BIGQUERY) \
-            .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
-            .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
+            .format(constants.FORMAT_JDBC) \
+            .option(constants.JDBC_URL, jdbc_url) \
+            .option(constants.JDBC_TABLE, jdbc_table) \
+            .option(constants.JDBC_DRIVER, output_driver) \
+            .option(constants.JDBC_BATCH_SIZE, batch_size) \
             .mode(output_mode) \
             .save()

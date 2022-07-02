@@ -17,17 +17,17 @@ from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrameWriter
+from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
-__all__ = ['BigQueryToGCSTemplate']
+__all__ = ['HbaseToGCSTemplate']
 
 
-class BigQueryToGCSTemplate(BaseTemplate):
+class HbaseToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing exports from BigQuery to GCS
+    Dataproc template implementing loads from Hbase into GCS
     """
 
     @staticmethod
@@ -35,14 +35,14 @@ class BigQueryToGCSTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.BQ_GCS_INPUT_TABLE}',
-            dest=constants.BQ_GCS_INPUT_TABLE,
+            f'--{constants.HBASE_GCS_OUTPUT_LOCATION}',
+            dest=constants.HBASE_GCS_OUTPUT_LOCATION,
             required=True,
-            help='BigQuery Input table name'
+            help='GCS location for output files'
         )
         parser.add_argument(
-            f'--{constants.BQ_GCS_OUTPUT_FORMAT}',
-            dest=constants.BQ_GCS_OUTPUT_FORMAT,
+            f'--{constants.HBASE_GCS_OUTPUT_FORMAT}',
+            dest=constants.HBASE_GCS_OUTPUT_FORMAT,
             required=True,
             help='Output file format (one of: avro,parquet,csv,json)',
             choices=[
@@ -53,14 +53,8 @@ class BigQueryToGCSTemplate(BaseTemplate):
             ]
         )
         parser.add_argument(
-            f'--{constants.BQ_GCS_OUTPUT_LOCATION}',
-            dest=constants.BQ_GCS_OUTPUT_LOCATION,
-            required=True,
-            help='GCS location for output files'
-        )
-        parser.add_argument(
-            f'--{constants.BQ_GCS_OUTPUT_MODE}',
-            dest=constants.BQ_GCS_OUTPUT_MODE,
+            f'--{constants.HBASE_GCS_OUTPUT_MODE}',
+            dest=constants.HBASE_GCS_OUTPUT_MODE,
             required=False,
             default=constants.OUTPUT_MODE_APPEND,
             help=(
@@ -75,6 +69,12 @@ class BigQueryToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        parser.add_argument(
+            f'--{constants.HBASE_GCS_CATALOG_JSON}',
+            dest=constants.HBASE_GCS_CATALOG_JSON,
+            required=True,
+            help='Hbase catalog json'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -86,23 +86,24 @@ class BigQueryToGCSTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_table: str = args[constants.BQ_GCS_INPUT_TABLE]
-        output_format: str = args[constants.BQ_GCS_OUTPUT_FORMAT]
-        output_mode: str = args[constants.BQ_GCS_OUTPUT_MODE]
-        output_location: str = args[constants.BQ_GCS_OUTPUT_LOCATION]
+        output_location: str = args[constants.HBASE_GCS_OUTPUT_LOCATION]
+        output_format: str = args[constants.HBASE_GCS_OUTPUT_FORMAT]
+        output_mode: str = args[constants.HBASE_GCS_OUTPUT_MODE]
+        catalog: str = ''.join(args[constants.HBASE_GCS_CATALOG_JSON].split())
 
         logger.info(
-            "Starting Bigquery to GCS spark job with parameters:\n"
+            "Starting Hbase to GCS spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        input_data = spark.read \
-            .format(constants.FORMAT_BIGQUERY) \
-            .option(constants.TABLE, input_table) \
-            .load()
+        input_data: DataFrame
+        input_data = spark.read.format(constants.FORMAT_HBASE) \
+                           .options(catalog=catalog) \
+                           .option("hbase.spark.use.hbasecontext", "false") \
+                           .load()
 
-        # Write
+        #write
         writer: DataFrameWriter = input_data.write.mode(output_mode)
 
         if output_format == constants.FORMAT_PRQT:
@@ -113,7 +114,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
                 .save(output_location)
         elif output_format == constants.FORMAT_CSV:
             writer \
-                .option(constants.HEADER, True) \
+                .option(constants.CSV_HEADER, True) \
                 .csv(output_location)
         elif output_format == constants.FORMAT_JSON:
             writer.json(output_location)

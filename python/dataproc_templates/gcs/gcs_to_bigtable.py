@@ -22,12 +22,12 @@ from pyspark.sql import SparkSession, DataFrame
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
-__all__ = ['GCSToBigQueryTemplate']
+__all__ = ['GCSToBigTableTemplate']
 
 
-class GCSToBigQueryTemplate(BaseTemplate):
+class GCSToBigTableTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from GCS into BigQuery
+    Dataproc template implementing loads from GCS into BigTable
     """
 
     @staticmethod
@@ -35,26 +35,14 @@ class GCSToBigQueryTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.GCS_BQ_INPUT_LOCATION}',
-            dest=constants.GCS_BQ_INPUT_LOCATION,
+            f'--{constants.GCS_BT_INPUT_LOCATION}',
+            dest=constants.GCS_BT_INPUT_LOCATION,
             required=True,
             help='GCS location of the input files'
         )
         parser.add_argument(
-            f'--{constants.GCS_BQ_OUTPUT_DATASET}',
-            dest=constants.GCS_BQ_OUTPUT_DATASET,
-            required=True,
-            help='BigQuery dataset for the output table'
-        )
-        parser.add_argument(
-            f'--{constants.GCS_BQ_OUTPUT_TABLE}',
-            dest=constants.GCS_BQ_OUTPUT_TABLE,
-            required=True,
-            help='BigQuery output table name'
-        )
-        parser.add_argument(
-            f'--{constants.GCS_BQ_INPUT_FORMAT}',
-            dest=constants.GCS_BQ_INPUT_FORMAT,
+            f'--{constants.GCS_BT_INPUT_FORMAT}',
+            dest=constants.GCS_BT_INPUT_FORMAT,
             required=True,
             help='Input file format (one of: avro,parquet,csv,json)',
             choices=[
@@ -65,27 +53,10 @@ class GCSToBigQueryTemplate(BaseTemplate):
             ]
         )
         parser.add_argument(
-            f'--{constants.GCS_BQ_LD_TEMP_BUCKET_NAME}',
-            dest=constants.GCS_BQ_LD_TEMP_BUCKET_NAME,
+            f'--{constants.GCS_BT_HBASE_CATALOG_JSON}',
+            dest=constants.GCS_BT_HBASE_CATALOG_JSON,
             required=True,
-            help='Spark BigQuery connector temporary bucket'
-        )
-        parser.add_argument(
-            f'--{constants.GCS_BQ_OUTPUT_MODE}',
-            dest=constants.GCS_BQ_OUTPUT_MODE,
-            required=False,
-            default=constants.OUTPUT_MODE_APPEND,
-            help=(
-                'Output write mode '
-                '(one of: append,overwrite,ignore,errorifexists) '
-                '(Defaults to append)'
-            ),
-            choices=[
-                constants.OUTPUT_MODE_OVERWRITE,
-                constants.OUTPUT_MODE_APPEND,
-                constants.OUTPUT_MODE_IGNORE,
-                constants.OUTPUT_MODE_ERRORIFEXISTS
-            ]
+            help='HBase catalog inline json'
         )
 
         known_args: argparse.Namespace
@@ -98,15 +69,12 @@ class GCSToBigQueryTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.GCS_BQ_INPUT_LOCATION]
-        big_query_dataset: str = args[constants.GCS_BQ_OUTPUT_DATASET]
-        big_query_table: str = args[constants.GCS_BQ_OUTPUT_TABLE]
-        input_file_format: str = args[constants.GCS_BQ_INPUT_FORMAT]
-        bq_temp_bucket: str = args[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
-        output_mode: str = args[constants.GCS_BQ_OUTPUT_MODE]
+        input_file_location: str = args[constants.GCS_BT_INPUT_LOCATION]
+        input_file_format: str = args[constants.GCS_BT_INPUT_FORMAT]
+        catalog: str = ''.join(args[constants.GCS_BT_HBASE_CATALOG_JSON].split())
 
         logger.info(
-            "Starting GCS to Bigquery spark job with parameters:\n"
+            "Starting GCS to BigTable spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -123,8 +91,8 @@ class GCSToBigQueryTemplate(BaseTemplate):
         elif input_file_format == constants.FORMAT_CSV:
             input_data = spark.read \
                 .format(constants.FORMAT_CSV) \
-                .option(constants.HEADER, True) \
-                .option(constants.INFER_SCHEMA, True) \
+                .option(constants.CSV_HEADER, True) \
+                .option(constants.CSV_INFER_SCHEMA, True) \
                 .load(input_file_location)
         elif input_file_format == constants.FORMAT_JSON:
             input_data = spark.read \
@@ -132,8 +100,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
 
         # Write
         input_data.write \
-            .format(constants.FORMAT_BIGQUERY) \
-            .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
-            .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
-            .mode(output_mode) \
+            .format(constants.FORMAT_HBASE) \
+            .options(catalog=catalog) \
+            .option('hbase.spark.use.hbasecontext', "false") \
             .save()
