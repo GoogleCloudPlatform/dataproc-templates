@@ -49,15 +49,15 @@ User has to download the required jar file and host it inside a GCS Bucket, so t
 
 wget Command to download JDBC jar file is as follows :-
 
-#MYSQL
+* MYSQL
 ```
 wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz
 ```
-#POSTGRES
+* POSTGRES
 ```
 wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 ```
-#MS SQL server
+* MS SQL server
 ```
 wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/6.4.0.jre8/mssql-jdbc-6.4.0.jre8.jar
 ```
