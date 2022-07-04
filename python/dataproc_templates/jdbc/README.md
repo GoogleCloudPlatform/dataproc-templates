@@ -49,15 +49,15 @@ User has to download the required jar file and host it inside a GCS Bucket, so t
 
 wget Command to download JDBC jar file is as follows :-
 
-* MYSQL
+* MySQL
 ```
 wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz
 ```
-* POSTGRES
+* PostgreSQL
 ```
 wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 ```
-* MS SQL server
+* Microsoft SQL Server
 ```
 wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/6.4.0.jre8/mssql-jdbc-6.4.0.jre8.jar
 ```
@@ -68,13 +68,22 @@ Once the jar file gets downloaded, please upload the file into a GCS Bucket and 
 export JARS=<gcs-bucket-location-containing-jar-file> 
 ```
 
-## Other important properties
+## JDBC URL syntax
 
-* Following is example JDBC URL for mysql database
-
+* MySQL
 ```
 jdbctojdbc.input.url=jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
 ```
+* PostgreSQL
+```
+jdbctojdbc.input.url=jdbc:postgresql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
+```
+* Microsoft SQL Server
+```
+jdbctojdbc.input.url=jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;password=<password>
+```
+
+## Other important properties
 
 * You can either specify the source table name or have SQL query within double quotes. Example,
 
@@ -87,20 +96,25 @@ jdbctojdbc.input.table="(select * from employees where dept_id>10) as employees"
 
 * You can specify the target table properties such as partition column using below property. This is useful when target table is not present or when write mode=overwrite and you need the target table to be created as partitioned table.
 
-```
-jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id)  (PARTITION p0 VALUES LESS THAN (5),PARTITION p1 VALUES LESS THAN (10),PARTITION p2 VALUES LESS THAN (15),PARTITION p3 VALUES LESS THAN MAXVALUE)"
-```
+    * MySQL
+    ```
+    jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id)  (PARTITION p0 VALUES LESS THAN (5),PARTITION p1 VALUES LESS THAN (10),PARTITION p2 VALUES LESS THAN (15),PARTITION p3 VALUES LESS THAN MAXVALUE)"
+    ```
+    * PostgreSQL
+    ```
+    jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id);CREATE TABLE po0 PARTITION OF <table_name> FOR VALUES FROM (MINVALUE) TO (5);CREATE TABLE po1 PARTITION OF <table_name> FOR VALUES FROM (5) TO (10);CREATE TABLE po2 PARTITION OF <table_name> FOR VALUES FROM (10) TO (15);CREATE TABLE po3 PARTITION OF <table_name> FOR VALUES FROM (15) TO (MAXVALUE);"
+    ```
 
 * Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 ## Example execution: 
 
 ```
-export GCP_PROJECT=<gcp-project-id> \
-export REGION=<region>  \
-export GCS_STAGING_LOCATION=<gcs staging location> \
-export SUBNET=<subnet>   \
-export JARS=<gcs_path_to_jdbc_jar_files>
+export GCP_PROJECT=<gcp-project-id> 
+export REGION=<region>  
+export GCS_STAGING_LOCATION=<gcs staging location> 
+export SUBNET=<subnet>   
+export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_path_to_jdbc_jar_files>/postgresql-42.2.6.jar,<gcs_path_to_jdbc_jar_files>/mssql-jdbc-6.4.0.jre8.jar"
 
 ./bin/start.sh \
 -- --template=JDBCTOJDBC \
