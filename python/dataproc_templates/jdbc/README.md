@@ -47,11 +47,19 @@ optional arguments:
 This template requires the JDBC jar file to be available in the Dataproc cluster.
 User has to download the required jar file and host it inside a GCS Bucket, so that it could be referred during the execution of code.
 
-wget Command to download JDBC MySQL jar file is as follows :-
+wget Command to download JDBC jar file is as follows :-
 
+#MYSQL
 ```
-wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz. -O /tmp/mysql-connector.tar.gz 
-
+wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz
+```
+#POSTGRES
+```
+wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
+```
+#MS SQL server
+```
+wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/6.4.0.jre8/mssql-jdbc-6.4.0.jre8.jar
 ```
 
 Once the jar file gets downloaded, please upload the file into a GCS Bucket and export the below variable
