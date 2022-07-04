@@ -47,7 +47,7 @@ optional arguments:
 This template requires the JDBC jar file to be available in the Dataproc cluster.
 User has to download the required jar file and host it inside a GCS Bucket, so that it could be referred during the execution of code.
 
-wget Command to download JDBC jar file is as follows :-
+wget command to download JDBC jar file is as follows :-
 
 * MySQL
 ```
