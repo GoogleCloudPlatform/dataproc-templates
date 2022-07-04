@@ -72,15 +72,15 @@ export JARS=<gcs-bucket-location-containing-jar-file>
 
 * MySQL
 ```
-jdbctojdbc.input.url=jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
+jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
 ```
 * PostgreSQL
 ```
-jdbctojdbc.input.url=jdbc:postgresql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
+jdbc:postgresql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
 ```
 * Microsoft SQL Server
 ```
-jdbctojdbc.input.url=jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;password=<password>
+jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;password=<password>
 ```
 
 ## Other important properties
