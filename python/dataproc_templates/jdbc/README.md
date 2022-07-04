@@ -85,6 +85,21 @@ jdbctojdbc.input.url=jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;us
 
 ## Other important properties
 
+* Driver Class
+
+    * MySQL
+    ```
+    jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" 
+    ```
+    * PostgreSQL
+    ```
+    jdbctojdbc.input.driver="org.postgresql.Driver"
+    ```
+    * Microsoft SQL Server
+    ```
+    jdbctojdbc.input.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    ```
+
 * You can either specify the source table name or have SQL query within double quotes. Example,
 
 ```
