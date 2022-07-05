@@ -1,4 +1,4 @@
-## 1. Hive To BigQuery
+## 1. Hbase To BigQuery
 ### Required JAR files
 
 Some HBase dependencies are required to be passed when submitting the job.  
