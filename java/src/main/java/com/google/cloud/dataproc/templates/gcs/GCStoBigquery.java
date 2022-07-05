@@ -139,9 +139,6 @@ public class GCStoBigquery implements BaseTemplate {
               "Currently avro, parquet and csv are the only supported formats");
       }
 
-      System.out.println("Temporary table name is as follows " + bqTempTable);
-      System.out.println("Temporary query is as follows " + bqTempQuery);
-
       if (bqTempTable == null || bqTempQuery == null) {
         bqTempTable = "dataset";
         bqTempQuery = "select * from global_temp.dataset";
