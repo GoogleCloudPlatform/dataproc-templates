@@ -2,7 +2,6 @@ package com.google.cloud.dataproc.templates.hbase;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.TemplateConstants;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.hbase.spark.datasources.HBaseTableCatalog;
 import org.apache.spark.sql.Dataset;
@@ -53,16 +52,13 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
                         .appName("Spark HbaseToGCS Job")
                         .getOrCreate();
 
-
         Map<String, String> optionsMap = new HashMap<String, String>();
         optionsMap.put(HBaseTableCatalog.tableCatalog(), catalogue);
-
 
         // Read from HBase
         Dataset dataset = spark.read()
                 .format("org.apache.hadoop.hbase.spark")
                 .options(optionsMap)
-                .option("hbase.spark.use.hbasecontext", "false")
                 .load();
 
         //Write To GCS
