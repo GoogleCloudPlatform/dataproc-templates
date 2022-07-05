@@ -18,7 +18,12 @@ package com.google.cloud.dataproc.templates.jdbc;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
@@ -38,6 +43,7 @@ public class JDBCToGCS implements BaseTemplate {
   private String jdbcURL;
   private String jdbcDriverClassName;
   private String jdbcSQL;
+  private String jdbcSQLFile;
   private String jdbcSQLPartitionColumn;
   private String jdbcSQLLowerBound;
   private String jdbcSQLUpperBound;
@@ -47,7 +53,8 @@ public class JDBCToGCS implements BaseTemplate {
   public JDBCToGCS() {
 
     gcsOutputLocation = getProperties().getProperty(JDBC_TO_GCS_OUTPUT_LOCATION);
-    jdbcSQL = "(" + getProperties().getProperty(JDBC_TO_GCS_SQL) + ") as a";
+    jdbcSQL = getProperties().getProperty(JDBC_TO_GCS_SQL);
+    jdbcSQLFile = getProperties().getProperty(JDBC_TO_GCS_SQL_FILE);
     jdbcURL = getProperties().getProperty(JDBC_TO_GCS_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME);
     gcsPartitionColumn = getProperties().getProperty(JDBC_TO_GCS_OUTPUT_PARTITION_COLUMN);
@@ -64,16 +71,48 @@ public class JDBCToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
+    if (StringUtils.isAllBlank(jdbcSQL) && StringUtils.isAllBlank(jdbcSQLFile)) {
+      LOGGER.error(
+          "Required parameter not passed. Either {} or {} parameter must be provided. ",
+          JDBC_TO_GCS_SQL,
+          JDBC_TO_GCS_SQL_FILE);
+      throw new IllegalArgumentException(
+          "Required parameters for JDBCToGCS not passed. "
+              + "Set mandatory parameter for JDBCToGCS template "
+              + "in resources/conf/template.properties file or at runtime. "
+              + "Refer to jdbc/README.md for more instructions.");
+    } else if (StringUtils.isAllBlank(jdbcSQL)) {
+      Matcher matches = Pattern.compile("gs://(.*?)/(.*)").matcher(jdbcSQLFile);
+      matches.matches();
+      String bucket = matches.group(1);
+      String objectPath = matches.group(2);
+
+      Storage storage = StorageOptions.getDefaultInstance().getService();
+      Blob blob = storage.get(bucket, objectPath);
+      String fileContent = new String(blob.getContent());
+      jdbcSQL = "(" + fileContent + ") as a";
+    } else if (StringUtils.isAllBlank(jdbcSQLFile)) {
+      jdbcSQL = "(" + jdbcSQL + ") as a";
+    } else {
+      LOGGER.error(
+          "{} and {} parameter must not be provided together. ",
+          JDBC_TO_GCS_SQL,
+          JDBC_TO_GCS_SQL_FILE);
+      throw new IllegalArgumentException(
+          "Required parameters for JDBCToGCS not passed. "
+              + "Set mandatory parameter for JDBCToGCS template "
+              + "in resources/conf/template.properties file or at runtime. "
+              + "Refer to jdbc/README.md for more instructions.");
+    }
+
     if (StringUtils.isAllBlank(gcsOutputLocation)
         || StringUtils.isAllBlank(jdbcURL)
-        || StringUtils.isAllBlank(jdbcDriverClassName)
-        || StringUtils.isAllBlank(jdbcSQL)) {
+        || StringUtils.isAllBlank(jdbcDriverClassName)) {
       LOGGER.error(
-          "{},{},{},{} are required parameters. ",
+          "{},{},{} are required parameters. ",
           JDBC_TO_GCS_OUTPUT_LOCATION,
           JDBC_TO_GCS_JDBC_URL,
-          JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME,
-          JDBC_TO_GCS_SQL);
+          JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME);
       throw new IllegalArgumentException(
           "Required parameters for JDBCToGCS not passed. "
               + "Set mandatory parameter for JDBCToGCS template "
