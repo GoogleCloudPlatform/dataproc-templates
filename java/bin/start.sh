@@ -17,28 +17,29 @@ set -e
 
 #Initialize functions and Constants
 echo "Script Started Execution"
+
+# Auxiliary Function to check the exit status passed as an argument
+# This function is also responsible for printing the error message or success message based on the exit status
+check_status()
+{
+  if [ "$1" -eq 0 ];
+  then
+    printf "$2"
+  else
+    printf "$3"
+    exit 1
+  fi
+}
+
 java --version
 java_status=$?
 
-if test $java_status -eq 0
-then
-	printf "\n Java is installed, thus we are good to go \n"
-else
-	printf "\n Java is not installed on this machine, thus we need to install that first \n"
-	exit 1
-fi
+check_status $java_status "\n Java is installed, thus we are good to go \n" "\n Java is not installed on this machine, thus we need to install that first \n"
 
 mvn --version
 mvn_status=$?
 
-if test $mvn_status -eq 0
-then
-        printf "\n Maven is installed, thus we are good to go \n"
-else
-        printf "\n Maven is not installed on this machine, thus we need to install that first \n"
-        exit 1
-fi
-
+check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
 
 BIN_DIR="$(dirname "$BASH_SOURCE")"
 PROJECT_ROOT_DIR=${BIN_DIR}/..
@@ -62,31 +63,20 @@ if [ -z "$SKIP_BUILD" ]; then
   mvn clean spotless:apply install -DskipTests
   build_status=$?
 
-  if test $build_status -eq 0
-  then
-          printf "\n Code build went successful, thus we are good to go \n"
-  else
-          printf "\n We ran into some issues while buiding the jar file, seems like mvn clean install is not running fine \n"
-          exit 1
-  fi
+  check_status $build_status "\n Code build went successful, thus we are good to go \n" "\n We ran into some issues while buiding the jar file, seems like mvn clean install is not running fine \n"
   mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./grpc_lb
 
   #Copy jar file to GCS bucket Staging folder
   echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_LOCATION}/${JAR_FILE}"
   gsutil cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_LOCATION}/${JAR_FILE}
-  copy_project_jar_status=$?
-  gsutil cp ${PROJECT_ROOT_DIR}/grpc_lb/io/grpc/grpc-grpclb/1.40.1/grpc-grpclb-1.40.1.jar ${GCS_STAGING_LOCATION}/grpc-grpclb-1.40.1.jar
-  copy_library_jar_status=$?
-  gsutil cp ${PROJECT_ROOT_DIR}/src/test/resources/log4j-spark-driver-template.properties ${GCS_STAGING_LOCATION}/log4j-spark-driver-template.properties
-  copy_properties_file_status=$?
+  check_status $? "\n It seems like there is some issue in copying the project jar file to GCS Staging location \n" "\n Commands to copy the project jar file to GCS Staging location went fine, thus we are good to go \n"
 
-  if [ $copy_project_jar_status -ne 0 ] || [ $copy_library_jar_status -ne 0 ] || [ $copy_properties_file_status -ne 0 ];
-    then
-          printf "\n It seems like there is some issue in copying the jar file or properties file to GCS Staging location \n"
-          exit 1
-    else
-          printf "\n Commands to copy the jar file and properties file to GCS Staging location went fine, thus we are good to go \n"
-  fi
+  gsutil cp ${PROJECT_ROOT_DIR}/grpc_lb/io/grpc/grpc-grpclb/1.40.1/grpc-grpclb-1.40.1.jar ${GCS_STAGING_LOCATION}/grpc-grpclb-1.40.1.jar
+  check_status $? "\n It seems like there is some issue in copying the library jar file to GCS Staging location \n" "\n Commands to copy the library jar file to GCS Staging location went fine, thus we are good to go \n"
+
+  gsutil cp ${PROJECT_ROOT_DIR}/src/test/resources/log4j-spark-driver-template.properties ${GCS_STAGING_LOCATION}/log4j-spark-driver-template.properties
+  check_status $? "\n It seems like there is some issue in copying the properties file to GCS Staging location \n" "\n Commands to copy the properties file to GCS Staging location went fine, thus we are good to go \n"
+
 fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
@@ -161,7 +151,4 @@ echo ${command} "$@"
 ${command} "$@"
 spark_status=$?
 
-if test $spark_status -ne 0
-then
-        printf "\n It seems like there are some issues in running spark command. Requesting you to please go through the error to identify issues in your code \n"
-fi
+check_status $spark_status "\n Spark Command ran successful \n" "\n It seems like there are some issues in running spark command. Requesting you to please go through the error to identify issues in your code \n"
