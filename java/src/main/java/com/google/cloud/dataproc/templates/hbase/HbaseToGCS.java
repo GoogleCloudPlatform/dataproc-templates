@@ -37,7 +37,14 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
 
   public HbaseToGCS() {
 
-    catalogue = getProperties().getProperty(HBASE_TO_GCS_CATALOG);
+   // catalogue = getProperties().getProperty(HBASE_TO_GCS_CATALOG);
+    catalogue = "{" + "\"table\":{\"namespace\":\"default\", \"name\":\"my_table\"}," +
+            "\"rowkey\":\"key\"," +
+            "\"columns\":{" +
+            "\"key\":{\"cf\":\"rowkey\", \"col\":\"key\", \"type\":\"string\"}," +
+            "\"name\":{\"cf\":\"cf\", \"col\":\"name\", \"type\":\"string\"}" +
+            "}" +
+            "}";
     outputFileFormat = getProperties().getProperty(HBASE_TO_GCS_FILE_FORMAT);
     gcsSaveMode = getProperties().getProperty(HBASE_TO_GCS_SAVE_MODE);
     gcsWritePath = getProperties().getProperty(HBASE_TO_GCS_OUTPUT_PATH);
