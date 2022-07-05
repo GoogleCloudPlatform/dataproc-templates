@@ -99,6 +99,13 @@ Have SQL query within double quotes. Example,
 --templateProperty  'jdbctogcs.sql=select * from dbname.tablename'
 ```
 
+Instead of SQL query, cloud storage path to the SQL file can also be provided. Example,
+
+```
+--templateProperty   jdbctogcs.sql.file=gs://my_bkt/sql/demo.sql
+```
+**Note**: Template property sql and sql.file must not be used together. Either one of them must be provided at a time.
+
 **Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together. 
 If one is specified then all needs to be specified.
 
