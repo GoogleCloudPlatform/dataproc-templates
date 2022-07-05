@@ -1,7 +1,22 @@
+/*
+ * Copyright (C) 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package com.google.cloud.dataproc.templates.hbase;
+
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
-
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.stream.Stream;
@@ -13,46 +28,42 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HbaseToGCSTest {
-    private HbaseToGCS hbaseToGCSTest;
-    private static final Logger LOGGER = LoggerFactory.getLogger(HbaseToGCSTest.class);
-    @BeforeEach
-    void setUp() {
-        SparkSession spark = SparkSession.builder().master("local").getOrCreate();
-    }
+  private HbaseToGCS hbaseToGCSTest;
+  private static final Logger LOGGER = LoggerFactory.getLogger(HbaseToGCSTest.class);
 
-    @ParameterizedTest
-    @MethodSource("propertyKeys")
-    void runTemplateWithValidParameters(String propKey) {
-        LOGGER.info("Running test: runTemplateWithValidParameters");
-        PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_PATH, "gs://test-bucket");
-        PropertyUtil.getProperties().setProperty(propKey, "someValue");
-        hbaseToGCSTest = new HbaseToGCS();
+  @BeforeEach
+  void setUp() {
+    SparkSession spark = SparkSession.builder().master("local").getOrCreate();
+  }
 
-        assertDoesNotThrow(hbaseToGCSTest::runTemplate);
-    }
+  @ParameterizedTest
+  @MethodSource("propertyKeys")
+  void runTemplateWithValidParameters(String propKey) {
+    LOGGER.info("Running test: runTemplateWithValidParameters");
+    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_PATH, "gs://test-bucket");
+    PropertyUtil.getProperties().setProperty(propKey, "someValue");
+    hbaseToGCSTest = new HbaseToGCS();
 
-    @ParameterizedTest
-    @MethodSource("propertyKeys")
-    void runTemplateWithInvalidParameters(String propKey) {
-        LOGGER.info("Running test: runTemplateWithInvalidParameters");
-        PropertyUtil.getProperties().setProperty(propKey, "");
-        hbaseToGCSTest = new HbaseToGCS();
+    assertDoesNotThrow(hbaseToGCSTest::runTemplate);
+  }
 
-        Exception exception =
-                assertThrows(IllegalArgumentException.class, () -> hbaseToGCSTest.runTemplate());
-        assertEquals(
-                "Required parameters for HiveToGCS not passed. "
-                        + "Set mandatory parameter for HiveToGCS template in "
-                        + "resources/conf/template.properties file.",
-                exception.getMessage());
-    }
+  @ParameterizedTest
+  @MethodSource("propertyKeys")
+  void runTemplateWithInvalidParameters(String propKey) {
+    LOGGER.info("Running test: runTemplateWithInvalidParameters");
+    PropertyUtil.getProperties().setProperty(propKey, "");
+    hbaseToGCSTest = new HbaseToGCS();
 
-    static Stream<String> propertyKeys() {
-        return Stream.of(
-                HBASE_TO_GCS_FILE_FORMAT,
-                HBASE_TO_GCS_SAVE_MODE,
-                HBASE_TO_GCS_CATALOG);
-    }
+    Exception exception =
+        assertThrows(IllegalArgumentException.class, () -> hbaseToGCSTest.runTemplate());
+    assertEquals(
+        "Required parameters for HiveToGCS not passed. "
+            + "Set mandatory parameter for HiveToGCS template in "
+            + "resources/conf/template.properties file.",
+        exception.getMessage());
+  }
 
-
+  static Stream<String> propertyKeys() {
+    return Stream.of(HBASE_TO_GCS_FILE_FORMAT, HBASE_TO_GCS_SAVE_MODE, HBASE_TO_GCS_CATALOG);
+  }
 }
