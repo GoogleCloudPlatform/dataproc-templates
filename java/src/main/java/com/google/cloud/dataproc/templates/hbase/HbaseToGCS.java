@@ -75,7 +75,10 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
 
     // Read from HBase
     Dataset dataset =
-        spark.read().format("org.apache.hadoop.hbase.spark").options(optionsMap).load();
+        spark.read().format("org.apache.hadoop.hbase.spark")
+                .options(optionsMap)
+                .option("hbase.spark.use.hbasecontext", "false")
+                .load();
 
     // Write To GCS
     dataset.write().format(outputFileFormat).mode(gcsSaveMode).save(gcsWritePath);
