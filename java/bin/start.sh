@@ -18,22 +18,11 @@ set -e
 #Initialize functions and Constants
 echo "Script Started Execution"
 
-# Auxiliary Function to check the exit status passed as an argument
-# This function is also responsible for printing the error message or success message based on the exit status
-check_status()
-{
-  if [ "$1" -eq 0 ];
-  then
-    printf "$2"
-  else
-    printf "$3"
-    exit 1
-  fi
-}
-
 java --version
 java_status=$?
 
+BIN_DIR="$(dirname "$BASH_SOURCE")"
+source ${BIN_DIR}/dataproc_template_functions.sh
 check_status $java_status "\n Java is installed, thus we are good to go \n" "\n Java is not installed on this machine, thus we need to install that first \n"
 
 mvn --version
@@ -41,7 +30,6 @@ mvn_status=$?
 
 check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
 
-BIN_DIR="$(dirname "$BASH_SOURCE")"
 PROJECT_ROOT_DIR=${BIN_DIR}/..
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
 if [ -z "${JOB_TYPE}" ]; then
