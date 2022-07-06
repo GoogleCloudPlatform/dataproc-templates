@@ -29,6 +29,7 @@ from dataproc_templates.hive.hive_to_gcs import HiveToGCSTemplate
 from dataproc_templates.gcs.text_to_bigquery import TextToBigQueryTemplate
 from dataproc_templates.hbase.hbase_to_gcs import HbaseToGCSTemplate
 from dataproc_templates.jdbc.jdbc_to_jdbc import JDBCToJDBCTemplate
+from dataproc_templates.databases.databases_to_gcs import DatabasesToGCSTemplate
 
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
@@ -45,7 +46,8 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.TEXTTOBIGQUERY: TextToBigQueryTemplate,
     TemplateName.GCSTOJDBC: GCSToJDBCTemplate,
     TemplateName.HBASETOGCS: HbaseToGCSTemplate,
-    TemplateName.JDBCTOJDBC: JDBCToJDBCTemplate
+    TemplateName.JDBCTOJDBC: JDBCToJDBCTemplate,
+    TemplateName.DATABASESTOGCS: DatabasesToGCSTemplate
 }
 
 
