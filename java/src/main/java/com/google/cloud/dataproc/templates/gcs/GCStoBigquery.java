@@ -139,13 +139,10 @@ public class GCStoBigquery implements BaseTemplate {
               "Currently avro, parquet and csv are the only supported formats");
       }
 
-      if (bqTempTable == null || bqTempQuery == null) {
-        bqTempTable = "dataset";
-        bqTempQuery = "select * from global_temp.dataset";
+      if (bqTempTable != null && bqTempQuery != null) {
+        inputData.createOrReplaceGlobalTempView(bqTempTable);
+        inputData = spark.sql(bqTempQuery);
       }
-
-      inputData.createOrReplaceGlobalTempView(bqTempTable);
-      inputData = spark.sql(bqTempQuery);
 
       inputData
           .write()
