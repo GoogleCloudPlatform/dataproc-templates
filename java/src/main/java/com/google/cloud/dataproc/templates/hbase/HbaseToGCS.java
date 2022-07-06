@@ -37,14 +37,7 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
 
   public HbaseToGCS() {
 
-   // catalogue = getProperties().getProperty(HBASE_TO_GCS_CATALOG);
-    catalogue = "{" + "\"table\":{\"namespace\":\"default\", \"name\":\"my_table\"}," +
-            "\"rowkey\":\"key\"," +
-            "\"columns\":{" +
-            "\"key\":{\"cf\":\"rowkey\", \"col\":\"key\", \"type\":\"string\"}," +
-            "\"name\":{\"cf\":\"cf\", \"col\":\"name\", \"type\":\"string\"}" +
-            "}" +
-            "}";
+    catalogue = getProperties().getProperty(HBASE_TO_GCS_CATALOG);
     outputFileFormat = getProperties().getProperty(HBASE_TO_GCS_FILE_FORMAT);
     gcsSaveMode = getProperties().getProperty(HBASE_TO_GCS_SAVE_MODE);
     gcsWritePath = getProperties().getProperty(HBASE_TO_GCS_OUTPUT_PATH);
@@ -75,10 +68,12 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
 
     // Read from HBase
     Dataset dataset =
-        spark.read().format("org.apache.hadoop.hbase.spark")
-                .options(optionsMap)
-                .option("hbase.spark.use.hbasecontext", "false")
-                .load();
+        spark
+            .read()
+            .format("org.apache.hadoop.hbase.spark")
+            .options(optionsMap)
+            .option("hbase.spark.use.hbasecontext", "false")
+            .load();
 
     // Write To GCS
     dataset.write().format(outputFileFormat).mode(gcsSaveMode).save(gcsWritePath);
