@@ -18,11 +18,12 @@ package com.google.cloud.dataproc.templates.kafka;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +58,7 @@ public class KafkaToBQ implements BaseTemplate {
   }
 
   @Override
-  public void runTemplate() {
+  public void runTemplate() throws StreamingQueryException, TimeoutException {
     if (StringUtils.isAllBlank(checkpointLocation)
         || StringUtils.isAllBlank(kafkaBootstrapServers)
         || StringUtils.isAllBlank(kafkaTopic)
@@ -108,44 +109,37 @@ public class KafkaToBQ implements BaseTemplate {
         KAFKA_BQ_TEMP_GCS_BUCKET,
         tempGcsBucket);
 
-    try {
-      // Initialize the Spark session
-      spark = SparkSession.builder().appName("Spark KafkaToBQ Job").getOrCreate();
+    // Initialize the Spark session
+    spark = SparkSession.builder().appName("Spark KafkaToBQ Job").getOrCreate();
 
-      // Stream data from Kafka topic
-      Dataset<Row> inputData =
-          spark
-              .readStream()
-              .format(KAFKA_BQ_SPARK_CONF_NAME_INPUT_FORMAT)
-              .option(KAFKA_BQ_SPARK_CONF_NAME_BOOTSTRAP_SERVERS, kafkaBootstrapServers)
-              .option(KAFKA_BQ_SPARK_CONF_NAME_SUBSCRIBE, kafkaTopic)
-              .option(KAFKA_BQ_SPARK_CONF_NAME_STARTING_OFFSETS, kafkaStartingOffsets)
-              .option(KAFKA_BQ_SPARK_CONF_NAME_FAIL_ON_DATA_LOSS, failOnDataLoss)
-              .load();
+    // Stream data from Kafka topic
+    Dataset<Row> inputData =
+        spark
+            .readStream()
+            .format(KAFKA_BQ_SPARK_CONF_NAME_INPUT_FORMAT)
+            .option(KAFKA_BQ_SPARK_CONF_NAME_BOOTSTRAP_SERVERS, kafkaBootstrapServers)
+            .option(KAFKA_BQ_SPARK_CONF_NAME_SUBSCRIBE, kafkaTopic)
+            .option(KAFKA_BQ_SPARK_CONF_NAME_STARTING_OFFSETS, kafkaStartingOffsets)
+            .option(KAFKA_BQ_SPARK_CONF_NAME_FAIL_ON_DATA_LOSS, failOnDataLoss)
+            .load();
 
-      Dataset<Row> processedData =
-          inputData
-              .withColumn("value", inputData.col("value").cast(DataTypes.StringType))
-              .withColumn("key", inputData.col("key").cast(DataTypes.StringType));
+    Dataset<Row> processedData =
+        inputData
+            .withColumn("value", inputData.col("value").cast(DataTypes.StringType))
+            .withColumn("key", inputData.col("key").cast(DataTypes.StringType));
 
-      writeToBigQuery(
-          processedData,
-          streamOutputMode,
-          checkpointLocation,
-          projectId,
-          bigQueryDataset,
-          bigQueryTable,
-          tempGcsBucket,
-          kafkaAwaitTerminationTimeout);
+    writeToBigQuery(
+        processedData,
+        streamOutputMode,
+        checkpointLocation,
+        projectId,
+        bigQueryDataset,
+        bigQueryTable,
+        tempGcsBucket,
+        kafkaAwaitTerminationTimeout);
 
-      LOGGER.info("KafkaToBQ job completed.");
-      spark.stop();
-    } catch (Throwable t) {
-      LOGGER.error("Exception in KafkaToBQ", t);
-      if (Objects.nonNull(spark)) {
-        spark.stop();
-      }
-    }
+    LOGGER.info("KafkaToBQ job completed.");
+    spark.stop();
   }
 
   public void writeToBigQuery(
@@ -157,7 +151,7 @@ public class KafkaToBQ implements BaseTemplate {
       String bigQueryTable,
       String tempGcsBucket,
       Long kafkaAwaitTerminationTimeout)
-      throws Exception {
+      throws StreamingQueryException, TimeoutException {
     dataset
         .writeStream()
         .format(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_FORMAT)

@@ -38,6 +38,7 @@ import com.google.cloud.dataproc.templates.word.WordCount;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -47,6 +48,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,7 +127,7 @@ public class DataProcTemplate {
     }
   }
 
-  public static void main(String... args) {
+  public static void main(String... args) throws StreamingQueryException, TimeoutException {
     BaseTemplate template = createTemplateAndRegisterProperties(args);
     runSparkJob(template);
   }
@@ -177,7 +179,7 @@ public class DataProcTemplate {
    *
    * @param template the template to run.
    */
-  static void runSparkJob(BaseTemplate template) {
+  static void runSparkJob(BaseTemplate template) throws StreamingQueryException, TimeoutException {
     LOGGER.debug("Start runSparkJob");
     template.runTemplate();
     LOGGER.debug("End runSparkJob");
