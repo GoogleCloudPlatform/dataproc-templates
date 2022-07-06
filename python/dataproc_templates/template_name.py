@@ -31,6 +31,7 @@ class TemplateName(Enum):
     TEXTTOBIGQUERY = "TEXTTOBIGQUERY"
     GCSTOJDBC = "GCSTOJDBC"
     HBASETOGCS = "HBASETOGCS"
+    JDBCTOJDBC = "JDBCTOJDBC"
 
     @classmethod
     def from_string(cls, template_name: str) -> TemplateName:
