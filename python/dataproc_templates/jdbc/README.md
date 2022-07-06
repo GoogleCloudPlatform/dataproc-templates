@@ -7,16 +7,16 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 * `jdbctojdbc.input.url`: JDBC input URL
 * `jdbctojdbc.input.driver`: JDBC input driver name
 * `jdbctojdbc.input.table`: JDBC input table name
-* `jdbctojdbc.input.partitioncolumn`: JDBC input table partition column name
-* `jdbctojdbc.input.lowerbound`: JDBC input table partition column lower bound which is used to decide the partition stride
-* `jdbctojdbc.input.upperbound`: JDBC input table partition column upper bound which is used to decide the partition stride
-* `jdbctojdbc.numpartitions`: The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
+* `jdbctojdbc.input.partitioncolumn` (Optional): JDBC input table partition column name
+* `jdbctojdbc.input.lowerbound` (Optional): JDBC input table partition column lower bound which is used to decide the partition stride
+* `jdbctojdbc.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
+* `jdbctojdbc.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
 * `jdbctojdbc.output.url`: JDBC output url
 * `jdbctojdbc.output.driver`: JDBC output driver name
 * `jdbctojdbc.output.table`: JDBC output table name
-* `jdbctojdbc.output.create_table.option`: This option allows setting of database-specific table and partition options when creating a output table
-* `jdbctojdbc.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
-* `jdbctojdbc.output.batch.size`: JDBC output batch size. Default set to 1000
+* `jdbctojdbc.output.create_table.option` (Optional): This option allows setting of database-specific table and partition options when creating a output table
+* `jdbctojdbc.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+* `jdbctojdbc.output.batch.size` (Optional): JDBC output batch size. Default set to 1000
 
 ## Usage
 
@@ -122,7 +122,7 @@ jdbctojdbc.input.table="(select * from employees where dept_id>10) as employees"
 
 * Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
-## Example execution: 
+## General execution: 
 
 ```
 export GCP_PROJECT=<gcp-project-id> 
@@ -146,4 +146,107 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctojdbc.output.create_table.option=<optional_output-table-properties> \
 --jdbctojdbc.output.mode="<optional_write-mode> \
 --jdbctojdbc.output.batch.size=<optional_batch-size>
+```
+
+## Example execution: 
+
+```
+export GCP_PROJECT=my-gcp-proj
+export REGION=us-central1 
+export GCS_STAGING_LOCATION=gs://my-gcp-proj/staging
+export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default   
+export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-proj/jars/postgresql-42.2.6.jar,gs://my-gcp-proj/jars/mssql-jdbc-6.4.0.jre8.jar"
+```
+* MySQL to MySQL
+```
+./bin/start.sh \
+-- --template=JDBCTOJDBC \
+--jdbctojdbc.input.url="jdbc:mysql://1.1.1.1:3306/mydb?user=root&password=password123" \
+--jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+--jdbctojdbc.input.table="(select * from employees where id <10) as employees" \
+--jdbctojdbc.input.partitioncolumn=id \
+--jdbctojdbc.input.lowerbound="1" \
+--jdbctojdbc.input.upperbound="10" \
+--jdbctojdbc.numpartitions="4" \
+--jdbctojdbc.output.url="jdbc:mysql://1.1.1.1:3306/mydb?user=root&password=password123" \
+--jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+--jdbctojdbc.output.table="employees_out" \
+--jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id)  (PARTITION p0 VALUES LESS THAN (5),PARTITION p1 VALUES LESS THAN (10),PARTITION p2 VALUES LESS THAN (15),PARTITION p3 VALUES LESS THAN MAXVALUE)" \
+--jdbctojdbc.output.mode="overwrite" \
+--jdbctojdbc.output.batch.size="1000"
+```
+
+* PostgreSQL to PostgreSQL
+```
+./bin/start.sh \
+-- --template=JDBCTOJDBC \
+--jdbctojdbc.input.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
+--jdbctojdbc.input.driver="org.postgresql.Driver" \
+--jdbctojdbc.input.table="(select * from employees) as employees" \
+--jdbctojdbc.input.partitioncolumn=id \
+--jdbctojdbc.input.lowerbound="11" \
+--jdbctojdbc.input.upperbound="20" \
+--jdbctojdbc.numpartitions="4" \
+--jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
+--jdbctojdbc.output.driver="org.postgresql.Driver" \
+--jdbctojdbc.output.table="employees_out" \
+--jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id);CREATE TABLE po0 PARTITION OF employees_out FOR VALUES FROM (MINVALUE) TO (5);CREATE TABLE po1 PARTITION OF employees_out FOR VALUES FROM (5) TO (10);CREATE TABLE po2 PARTITION OF employees_out FOR VALUES FROM (10) TO (15);CREATE TABLE po3 PARTITION OF employees_out FOR VALUES FROM (15) TO (MAXVALUE);" \
+--jdbctojdbc.output.mode="overwrite" \
+--jdbctojdbc.output.batch.size="1000"
+```
+
+* Microsoft SQL Server to Microsoft SQL Server
+```
+./bin/start.sh \
+-- --template=JDBCTOJDBC \
+--jdbctojdbc.input.url="jdbc:sqlserver://1.1.1.1:1433;databaseName=mydb;user=sqlserver;password=password123" \
+--jdbctojdbc.input.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" \
+--jdbctojdbc.input.table="employees" \
+--jdbctojdbc.input.partitioncolumn=id \
+--jdbctojdbc.input.lowerbound="11" \
+--jdbctojdbc.input.upperbound="20" \
+--jdbctojdbc.numpartitions="4" \
+--jdbctojdbc.output.url="jdbc:sqlserver://1.1.1.1:1433;databaseName=mydb;user=sqlserver;password=password123" \
+--jdbctojdbc.output.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" \
+--jdbctojdbc.output.table="employees_out" \
+--jdbctojdbc.output.mode="overwrite" \
+--jdbctojdbc.output.batch.size="1000"
+```
+
+* MySQL to PostgreSQL
+
+```
+./bin/start.sh \
+-- --template=JDBCTOJDBC \
+--jdbctojdbc.input.url="jdbc:mysql://1.1.1.1:3306/mydb?user=root&password=password123" \
+--jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+--jdbctojdbc.input.table="employees" \
+--jdbctojdbc.input.partitioncolumn=id \
+--jdbctojdbc.input.lowerbound="11" \
+--jdbctojdbc.input.upperbound="20" \
+--jdbctojdbc.numpartitions="4" \
+--jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
+--jdbctojdbc.output.driver="org.postgresql.Driver" \
+--jdbctojdbc.output.table="employees_out" \
+--jdbctojdbc.output.mode="overwrite" \
+--jdbctojdbc.output.batch.size="1000"
+```
+
+* MySQL to Microsoft SQL Server
+
+```
+./bin/start.sh \
+-- --template=JDBCTOJDBC \
+--jdbctojdbc.input.url="jdbc:mysql://1.1.1.1:3306/mydb?user=root&password=password123" \
+--jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+--jdbctojdbc.input.table="employees" \
+--jdbctojdbc.input.partitioncolumn=id \
+--jdbctojdbc.input.lowerbound="11" \
+--jdbctojdbc.input.upperbound="20" \
+--jdbctojdbc.numpartitions="4" \
+--jdbctojdbc.output.url="jdbc:sqlserver://1.1.1.1:1433;databaseName=mydb;user=sqlserver;password=password123" \
+--jdbctojdbc.output.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" \
+--jdbctojdbc.output.table="employees_out" \
+--jdbctojdbc.output.mode="overwrite" \
+--jdbctojdbc.output.batch.size="1000"
 ```
