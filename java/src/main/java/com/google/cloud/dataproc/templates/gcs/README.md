@@ -21,8 +21,8 @@ bin/start.sh \
 There are two optional properties as well with "GCS to BigQuery" Template. Please find below the details :-
 
 ```
---templateProperty gcs.bigquery.temp.table='dataset' 
---templateProperty gcs.bigquery.temp.query='select * from global_temp.dataset'
+--templateProperty gcs.bigquery.temp.table='table_name' 
+--templateProperty gcs.bigquery.temp.query='select * from global_temp.table_name'
 ```
 These properties are responsible for applying some spark sql transformations while loading data into BigQuery.
 The only thing needs to keep in mind is that, the name of dataset and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
