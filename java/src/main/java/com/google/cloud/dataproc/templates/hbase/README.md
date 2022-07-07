@@ -52,8 +52,8 @@ bin/start.sh \
 --container-image=$IMAGE \
 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
 -- --template HBASETOGCS \
---templateProperty hbasetogcs.fileformat=<avro|csv|parquet|json|orc>  \
---templateProperty hbasetogcs.savemode=<Append|Overwrite|ErrorIfExists|Ignore> \
+--templateProperty hbasetogcs.output.fileformat=<avro|csv|parquet|json|orc>  \
+--templateProperty hbasetogcs.output.savemode=<Append|Overwrite|ErrorIfExists|Ignore> \
 --templateProperty hbasetogcs.output.path=<output-gcs-path>
 --templateProperty hbasetogcs.table.catalog=$CATALOG
 ```
@@ -71,8 +71,8 @@ bin/start.sh \
 --container-image=$IMAGE \
 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
 -- --template HBASETOGCS \
---templateProperty hbasetogcs.fileformat=csv \
---templateProperty hbasetogcs.savemode=append \
+--templateProperty hbasetogcs.output.fileformat=csv \
+--templateProperty hbasetogcs.output.savemode=append \
 --templateProperty hbasetogcs.output.path=gs://myproject/output  \
 --templateProperty hbasetogcs.table.catalog=$CATALOG
 ```

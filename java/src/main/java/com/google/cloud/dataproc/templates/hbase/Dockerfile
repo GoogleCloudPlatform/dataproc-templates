@@ -27,6 +27,7 @@ RUN apt update && apt install -y procps tini
 ENV SPARK_EXTRA_JARS_DIR=/opt/spark/jars/
 ENV SPARK_EXTRA_CLASSPATH='/opt/spark/jars/*'
 RUN mkdir -p "${SPARK_EXTRA_JARS_DIR}"
+# hbase-site.xml to be altered based to set server connection details, ref-: src/main/resources/hbase-site.xml
 COPY hbase-site.xml /etc/hbase/conf/
 
 # (Required) Create the 'spark' group/user.
