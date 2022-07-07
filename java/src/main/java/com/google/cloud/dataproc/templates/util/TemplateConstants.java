@@ -146,6 +146,10 @@ public interface TemplateConstants {
 
   String GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name";
 
+  String GCS_BQ_TEMP_TABLE = "gcs.bigquery.temp.table";
+
+  String GCS_BQ_TEMP_QUERY = "gcs.bigquery.temp.query";
+
   String GCS_BQ_OUTPUT = "table";
 
   String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";

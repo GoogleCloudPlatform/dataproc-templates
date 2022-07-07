@@ -27,6 +27,8 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_OUTPUT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_PRQT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_TEMP_BUCKET;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_TEMP_QUERY;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_TEMP_TABLE;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_DATASET_NAME;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_TABLE_NAME;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
@@ -52,6 +54,10 @@ public class GCStoBigquery implements BaseTemplate {
   private String inputFileFormat;
   private String bqTempBucket;
 
+  private String bqTempTable;
+
+  private String bqTempQuery;
+
   public GCStoBigquery() {
 
     projectID = getProperties().getProperty(PROJECT_ID_PROP);
@@ -60,6 +66,8 @@ public class GCStoBigquery implements BaseTemplate {
     bigQueryTable = getProperties().getProperty(GCS_OUTPUT_TABLE_NAME);
     inputFileFormat = getProperties().getProperty(GCS_BQ_INPUT_FORMAT);
     bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
+    bqTempTable = getProperties().getProperty(GCS_BQ_TEMP_TABLE);
+    bqTempQuery = getProperties().getProperty(GCS_BQ_TEMP_QUERY);
   }
 
   @Override
@@ -128,7 +136,12 @@ public class GCStoBigquery implements BaseTemplate {
           break;
         default:
           throw new IllegalArgumentException(
-              "Currenlty avro, parquet and csv are the only supported formats");
+              "Currently avro, parquet and csv are the only supported formats");
+      }
+
+      if (bqTempTable != null && bqTempQuery != null) {
+        inputData.createOrReplaceGlobalTempView(bqTempTable);
+        inputData = spark.sql(bqTempQuery);
       }
 
       inputData
