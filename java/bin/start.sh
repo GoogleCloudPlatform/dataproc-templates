@@ -95,7 +95,16 @@ fi
 if [ -n "${SPARK_PROPERTIES}" ]; then
   OPT_PROPERTIES="${OPT_PROPERTIES},${SPARK_PROPERTIES}"
 fi
-
+#if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
+if [ -n "${CATALOG}" ]; then
+  wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar
+  wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar
+  gsutil copy hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
+  gsutil copy hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
+  OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+  rm hbase-client-2.4.12.jar
+  rm hbase-shaded-mapreduce-2.4.12.jar
+fi
 # Running on an existing dataproc cluster or run on serverless spark
 if [ "${JOB_TYPE}" == "CLUSTER" ]; then
   echo "JOB_TYPE is CLUSTER, so will submit on existing dataproc cluster"
