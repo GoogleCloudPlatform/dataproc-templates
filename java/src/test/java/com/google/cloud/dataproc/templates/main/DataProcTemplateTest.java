@@ -23,8 +23,10 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 import org.apache.commons.cli.CommandLine;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,7 +37,8 @@ class DataProcTemplateTest {
 
   @ParameterizedTest
   @MethodSource("stringValidInputArgs")
-  void testRunSparkJobWithValidInputArgs(List<String> args) {
+  void testRunSparkJobWithValidInputArgs(List<String> args)
+      throws StreamingQueryException, TimeoutException {
     DataProcTemplate.main(args.toArray(new String[0]));
   }
 
