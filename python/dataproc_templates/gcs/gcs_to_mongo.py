@@ -87,6 +87,13 @@ class GCSToMONGOTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        parser.add_argument(
+            f'--{constants.GCS_MONGO_BATCH_SIZE}',
+            dest=constants.GCS_MONGO_BATCH_SIZE,
+            required=False,
+            default=constants.MONGO_DEFAULT_BATCH_SIZE,
+            help='GCS MONGO Output Batch Size'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -104,6 +111,7 @@ class GCSToMONGOTemplate(BaseTemplate):
         output_database:str = args[constants.GCS_MONGO_OUTPUT_DATABASE]
         output_collection:str = args[constants.GCS_MONGO_OUTPUT_COLLECTION]
         output_mode:str = args[constants.GCS_MONGO_OUTPUT_MODE]
+        batch_size:int = args[constants.GCS_MONGO_BATCH_SIZE]
 
         logger.info(
             "Starting GCS to MONGO spark job with parameters:\n"
@@ -130,13 +138,11 @@ class GCSToMONGOTemplate(BaseTemplate):
             input_data = spark.read \
                 .json(input_file_location)
 
-        # Write
-        input_data.show()
-
         input_data.write.format(constants.FORMAT_MONGO)\
             .option(constants.MONGO_URL, output_uri) \
             .option(constants.MONGO_DATABASE, output_database) \
             .option(constants.MONGO_COLLECTION, output_collection) \
+            .option(constants.MONGO_BATCH_SIZE, batch_size) \
             .mode(output_mode) \
             .save()
 

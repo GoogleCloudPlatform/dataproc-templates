@@ -49,6 +49,8 @@ MONGO_URL = "spark.mongodb.output.uri"
 MONGO_DATABASE = "database"
 MONGO_COLLECTION = "collection"
 FORMAT_MONGO = "com.mongodb.spark.sql.DefaultSource"
+MONGO_DEFAULT_BATCH_SIZE = 512
+MONGO_BATCH_SIZE = "maxBatchSize"
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -81,6 +83,7 @@ GCS_MONGO_OUTPUT_URI = "gcs.mongo.output.uri"
 GCS_MONGO_OUTPUT_DATABASE = "gcs.mongo.output.database"
 GCS_MONGO_OUTPUT_COLLECTION = "gcs.mongo.output.collection"
 GCS_MONGO_OUTPUT_MODE = "gcs.mongo.output.mode"
+GCS_MONGO_BATCH_SIZE = "gcs.mongo.batch.size"
 
 # GCS to BigTable
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
