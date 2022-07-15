@@ -278,7 +278,7 @@ Template for reading files from Google Cloud Storage and writing them to a Mongo
 * `gcs.mongo.output.database`: MongoDB Output Database Name
 * `gcs.mongo.output.collection`: MongoDB Output Collection Name
 * `gcs.mongo.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
-
+* `gcs.mongo.batch.size`: Output Batch Size (Defaults to 512)
 
 ## Usage
 
@@ -290,11 +290,12 @@ usage: main.py --template GCSTOMONGO [-h] \
     --gcs.mongo.input.format {avro,parquet,csv,json} \
     --gcs.mongo.output.uri GCS.MONGO.OUTPUT.URI \
     --gcs.mongo.output.database GCS.MONGO.OUTPUT.DATABASE \        
-    --gcs.mongo.output.table GCS.MONGO.OUTPUT.TABLE \
+    --gcs.mongo.output.collection GCS.MONGO.OUTPUT.COLLECTION \
+    --gcs.mongo.batch.size GCS.MONGO.BATCH.SIZE \
     --gcs.mongo.output.mode {overwrite,append,ignore,errorifexists}
 
 
-optional arguments:
+Required arguments:
   -h, --help            show this help message and exit
   --gcs.mongo.input.location GCS.MONGO.INPUT.LOCATION
                         GCS location of the input files
@@ -306,6 +307,8 @@ optional arguments:
                         MongoDB Database Name
   --gcs.mongo.output.collection GCS.MONGO.OUTPUT.COLLECTION
                         MongoDB output Collection name
+  --gcs.mongo.batch.size GCS.MONGO.BATCH.SIZE
+                        MongoDB output Batch size
   --gcs.mongo.output.mode {overwrite,append,ignore,errorifexists}
                         Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)                        
 ```
@@ -333,6 +336,7 @@ export JARS=<gcs-bucket-location-containing-jar-file>
     --gcs.mongo.output.uri="mongodb://<username>:<password>@<Host_Name>:<Port_Number>" \
     --gcs.mongo.output.database="<Database_Name>" \
     --gcs.mongo.output.collection="<Collection_Name>" \
+    --gcs.mongo.batch.size=512 \
     --gcs.mongo.output.mode="<append|overwrite|ignore|errorifexists>"
 ```
 
