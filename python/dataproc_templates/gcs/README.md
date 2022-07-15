@@ -295,7 +295,7 @@ usage: main.py --template GCSTOMONGO [-h] \
     --gcs.mongo.output.mode {overwrite,append,ignore,errorifexists}
 
 
-Required arguments:
+optional arguments:
   -h, --help            show this help message and exit
   --gcs.mongo.input.location GCS.MONGO.INPUT.LOCATION
                         GCS location of the input files
