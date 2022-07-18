@@ -61,38 +61,10 @@ public class HiveToGCS implements BaseTemplate {
   @Override
   public void runTemplate() {
 
-    if (StringUtils.isAllBlank(outputPath)
-        || StringUtils.isAllBlank(hiveInputTable)
-        || StringUtils.isAllBlank(hiveInputDb)) {
-      LOGGER.error(
-          "{},{},{} is required parameter. ",
-          HIVE_INPUT_TABLE_PROP,
-          HIVE_INPUT_TABLE_DATABASE_PROP,
-          HIVE_TO_GCS_OUTPUT_PATH_PROP);
-      throw new IllegalArgumentException(
-          "Required parameters for HiveToGCS not passed. "
-              + "Set mandatory parameter for HiveToGCS template "
-              + "in resources/conf/template.properties file.");
-    }
-
-    SparkSession spark = null;
-    LOGGER.info(
-        "Starting Hive to GCS spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}",
-        HIVE_TO_GCS_OUTPUT_PATH_PROP,
-        outputPath,
-        HIVE_WAREHOUSE_LOCATION_PROP,
-        warehouseLocation,
-        HIVE_INPUT_TABLE_PROP,
-        hiveInputTable,
-        HIVE_INPUT_TABLE_DATABASE_PROP,
-        hiveInputDb);
+    validateInput();
 
     // Confiure spark session to read from hive.
-    spark =
+    SparkSession spark =
         SparkSession.builder()
             .appName("Spark HiveToGcs Job")
             .config(HIVE_WAREHOUSE_LOCATION_PROP, warehouseLocation)
@@ -121,5 +93,36 @@ public class HiveToGCS implements BaseTemplate {
 
     LOGGER.info("HiveToGcs job completed.");
     spark.stop();
+  }
+
+  void validateInput() {
+    if (StringUtils.isAllBlank(outputPath)
+        || StringUtils.isAllBlank(hiveInputTable)
+        || StringUtils.isAllBlank(hiveInputDb)) {
+      LOGGER.error(
+          "{},{},{} is required parameter. ",
+          HIVE_INPUT_TABLE_PROP,
+          HIVE_INPUT_TABLE_DATABASE_PROP,
+          HIVE_TO_GCS_OUTPUT_PATH_PROP);
+      throw new IllegalArgumentException(
+          "Required parameters for HiveToGCS not passed. "
+              + "Set mandatory parameter for HiveToGCS template "
+              + "in resources/conf/template.properties file.");
+    }
+
+    LOGGER.info(
+        "Starting Hive to GCS spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {},{}",
+        HIVE_TO_GCS_OUTPUT_PATH_PROP,
+        outputPath,
+        HIVE_WAREHOUSE_LOCATION_PROP,
+        warehouseLocation,
+        HIVE_INPUT_TABLE_PROP,
+        hiveInputTable,
+        HIVE_INPUT_TABLE_DATABASE_PROP,
+        hiveInputDb);
   }
 }
