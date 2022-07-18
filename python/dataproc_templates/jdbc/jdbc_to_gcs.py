@@ -192,7 +192,7 @@ class JDBCToGCSTemplate(BaseTemplate):
                 .save(output_location)
         elif output_format == constants.FORMAT_CSV:
             writer \
-                .option(constants.CSV_HEADER, True) \
+                .option(constants.FORMAT_CSV, True) \
                 .csv(output_location)
         elif output_format == constants.FORMAT_JSON:
             writer \
