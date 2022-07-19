@@ -1,23 +1,12 @@
 ## 1. Hbase To BigQuery
 ### Required JAR files
 
-Some HBase dependencies are required to be passed when submitting the job.  
-These dependencies need to be passed by using the --jars flag, or, in the case of Dataproc Templates, using the JARS environment variable.  
-Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrepository.com/) and stored your GCS bucket (create one to store the dependencies).
-
+Some HBase dependencies are required to be passed when submitting the job. These dependencies are automatically set by script when CATALOG environment variable is set for hbase table configuration. If not, 
+these dependencies need to be passed by using the --jars flag, or, in the case of Dataproc Templates, using the JARS environment variable. 
 - **[Apache HBase Spark Connector](https://mvnrepository.com/artifact/org.apache.hbase.connectors.spark/hbase-spark) dependencies (already mounted in Dataproc Serverless, so you refer to them using file://):**
     - file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar
     - file:///usr/lib/spark/external/hbase-spark.jar
-
-- **HBase dependencies:**
-    - gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar
-      ```
-      wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar
-      ```
-    - gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar
-      ```
-      wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar
-      ```
+    - All other dependencies are automatically downloaded and set once CATALOG environment variable is used for hbase table configuration. Lib link - [hbase-client](https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar), [hbase-shaded-mapreduce](https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar)
     
   ### Configure the [hbase-site.xml](./hbase-site.xml)
     1) Configure the [hbase-site.xml](./hbase-site.xml)
@@ -35,18 +24,17 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
       docker push "${IMAGE}"
       ```
       
-General Execution:
+###General Execution:
 
+*It is important to set CATALOG Environment variable here to provide hbase connection and for script to download required dependencies*
 ```
 export GCP_PROJECT=<gcp-project-id> \
 export REGION=<region>  \
 export SUBNET=<subnet>   \
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 export CATALOG=<catalog of hbase table>
-xport IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version> #use the image which was created to congigure hbase-site.xml
-export JARS=gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
-             file:///usr/lib/spark/external/hbase-spark.jar
+export IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version> #use the image which was created to congigure hbase-site.xml
+
  \
 bin/start.sh \
 --container-image=$IMAGE \
@@ -57,13 +45,12 @@ bin/start.sh \
 --templateProperty hbasetogcs.output.path=<output-gcs-path>
 --templateProperty hbasetogcs.table.catalog=$CATALOG
 ```
-Example Execution -:
+###Example Execution -:
 ```export GCP_PROJECT=myproject
 export REGION=us-central1
 export GCS_STAGING_LOCATION=gs://staging_bucket
 export JOB_TYPE=SERVERLESS 
 export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
-export JARS=/home/myproject/hbase-client-2.4.11.jar,file:///usr/lib/spark/external/hbase-spark.jar,/home/myproject/hbase-shaded-mapreduce-2.4.12.jar
 export CATALOG={“table":{"namespace":"default", "name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey", "col":"key", "type":"string"},"name":{"cf":"cf", "col":"name", "type":"string”}}}
 export IMAGE=gcr.io/myproject/dataproc-hbase:1  #use the image which was created to congigure hbase-site.xml
 
