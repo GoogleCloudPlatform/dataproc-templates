@@ -40,7 +40,10 @@ public class HbaseToGCSTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_PATH, "gs://test-bucket");
+    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_PATH, "gs://test-bucket/output");
+    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_TABLE_CATALOG, "{\"table\":{\"namespace\":\"default\",\"name\":\"my_table\"},\"rowkey\":\"key\",\"columns\":{\"key\":{\"cf\":\"rowkey\",\"col\":\"key\",\"type\":\"string\"},\"name\":{\"cf\":\"cf\",\"col\":\"name\",\"type\":\"string\"}}}");
+    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_SAVE_MODE, "append");
+    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_FILE_FORMAT, "csv");
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
     hbaseToGCSTest = new HbaseToGCS();
 
@@ -57,13 +60,13 @@ public class HbaseToGCSTest {
     Exception exception =
         assertThrows(IllegalArgumentException.class, () -> hbaseToGCSTest.runTemplate());
     assertEquals(
-        "Required parameters for HiveToGCS not passed. "
-            + "Set mandatory parameter for HiveToGCS template in "
+        "Required parameters for HbaseToGCS not passed. "
+            + "Set mandatory parameter for HbaseToGCS template in "
             + "resources/conf/template.properties file.",
         exception.getMessage());
   }
 
   static Stream<String> propertyKeys() {
-    return Stream.of(HBASE_TO_GCS_FILE_FORMAT, HBASE_TO_GCS_SAVE_MODE, HBASE_TO_GCS_CATALOG);
+    return Stream.of(HBASE_TO_GCS_OUTPUT_FILE_FORMAT, HBASE_TO_GCS_OUTPUT_SAVE_MODE, HBASE_TO_GCS_OUTPUT_PATH, HBASE_TO_GCS_TABLE_CATALOG);
   }
 }
