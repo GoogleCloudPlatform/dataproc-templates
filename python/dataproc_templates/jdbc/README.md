@@ -1,50 +1,8 @@
-# 1. JDBC To JDBC
-
-Template for reading data from JDBC table and writing them to a JDBC table. It supports reading partition tabels and write into partitioned or non-partitioned tables.
-
-## Arguments
-
-* `jdbctojdbc.input.url`: JDBC input URL
-* `jdbctojdbc.input.driver`: JDBC input driver name
-* `jdbctojdbc.input.table`: JDBC input table name
-* `jdbctojdbc.input.partitioncolumn` (Optional): JDBC input table partition column name
-* `jdbctojdbc.input.lowerbound` (Optional): JDBC input table partition column lower bound which is used to decide the partition stride
-* `jdbctojdbc.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
-* `jdbctojdbc.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
-* `jdbctojdbc.output.url`: JDBC output url
-* `jdbctojdbc.output.driver`: JDBC output driver name
-* `jdbctojdbc.output.table`: JDBC output table name
-* `jdbctojdbc.output.create_table.option` (Optional): This option allows setting of database-specific table and partition options when creating a output table
-* `jdbctojdbc.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
-* `jdbctojdbc.output.batch.size` (Optional): JDBC output batch size. Default set to 1000
-
-## Usage
-
-```
-$ python main.py --template JDBCTOJDBC --help
-
-usage: main.py --template JDBCTOJDBC \
-    --jdbctojdbc.input.url JDBCTOJDBC.INPUT.URL \
-    --jdbctojdbc.input.driver JDBCTOJDBC.INPUT.DRIVER \
-    --jdbctojdbc.input.table JDBCTOJDBC.INPUT.TABLE \
-    --jdbctojdbc.output.url JDBCTOJDBC.OUTPUT.URL \
-    --jdbctojdbc.output.driver JDBCTOJDBC.OUTPUT.DRIVER \
-    --jdbctojdbc.output.table JDBCTOJDBC.OUTPUT.TABLE \
-
-optional arguments:
-    -h, --help            show this help message and exit
-    --jdbctojdbc.input.partitioncolumn JDBCTOJDBC.INPUT.PARTITIONCOLUMN \
-    --jdbctojdbc.input.lowerbound JDBCTOJDBC.INPUT.LOWERBOUND \
-    --jdbctojdbc.input.upperbound JDBCTOJDBC.INPUT.UPPERBOUND \
-    --jdbctojdbc.numpartitions JDBCTOJDBC.NUMPARTITIONS \
-    --jdbctojdbc.output.create_table.option JDBCTOJDBC.OUTPUT.CREATE_TABLE.OPTION \
-    --jdbctojdbc.output.mode {overwrite,append,ignore,errorifexists} \
-    --jdbctojdbc.output.batch.size JDBCTOJDBC.OUTPUT.BATCH.SIZE \
-```
+# Prerequisites
 
 ## Required JAR files
 
-This template requires the JDBC jar file to be available in the Dataproc cluster.
+These templates requires the JDBC jar file to be available in the Dataproc cluster.
 User has to download the required jar file and host it inside a GCS Bucket, so that it could be referred during the execution of code.
 
 wget command to download JDBC jar file is as follows :-
@@ -109,6 +67,52 @@ jdbctojdbc.input.table="(select * from employees where dept_id>10) as employees"
 
 * partitionColumn, lowerBound, upperBound and numPartitions must be used together. If one is specified then all needs to be specified.
 
+* Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
+
+# 1. JDBC To JDBC
+
+Template for reading data from JDBC table and writing them to a JDBC table. It supports reading partition tabels and write into partitioned or non-partitioned tables.
+
+## Arguments
+
+* `jdbctojdbc.input.url`: JDBC input URL
+* `jdbctojdbc.input.driver`: JDBC input driver name
+* `jdbctojdbc.input.table`: JDBC input table name
+* `jdbctojdbc.output.url`: JDBC output url
+* `jdbctojdbc.output.driver`: JDBC output driver name
+* `jdbctojdbc.output.table`: JDBC output table name
+* `jdbctojdbc.input.partitioncolumn` (Optional): JDBC input table partition column name
+* `jdbctojdbc.input.lowerbound` (Optional): JDBC input table partition column lower bound which is used to decide the partition stride
+* `jdbctojdbc.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
+* `jdbctojdbc.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
+* `jdbctojdbc.output.create_table.option` (Optional): This option allows setting of database-specific table and partition options when creating a output table
+* `jdbctojdbc.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+* `jdbctojdbc.output.batch.size` (Optional): JDBC output batch size. Default set to 1000
+
+## Usage
+
+```
+$ python main.py --template JDBCTOJDBC --help
+
+usage: main.py --template JDBCTOJDBC \
+    --jdbctojdbc.input.url JDBCTOJDBC.INPUT.URL \
+    --jdbctojdbc.input.driver JDBCTOJDBC.INPUT.DRIVER \
+    --jdbctojdbc.input.table JDBCTOJDBC.INPUT.TABLE \
+    --jdbctojdbc.output.url JDBCTOJDBC.OUTPUT.URL \
+    --jdbctojdbc.output.driver JDBCTOJDBC.OUTPUT.DRIVER \
+    --jdbctojdbc.output.table JDBCTOJDBC.OUTPUT.TABLE \
+
+optional arguments:
+    -h, --help            show this help message and exit
+    --jdbctojdbc.input.partitioncolumn JDBCTOJDBC.INPUT.PARTITIONCOLUMN \
+    --jdbctojdbc.input.lowerbound JDBCTOJDBC.INPUT.LOWERBOUND \
+    --jdbctojdbc.input.upperbound JDBCTOJDBC.INPUT.UPPERBOUND \
+    --jdbctojdbc.numpartitions JDBCTOJDBC.NUMPARTITIONS \
+    --jdbctojdbc.output.create_table.option JDBCTOJDBC.OUTPUT.CREATE_TABLE.OPTION \
+    --jdbctojdbc.output.mode {overwrite,append,ignore,errorifexists} \
+    --jdbctojdbc.output.batch.size JDBCTOJDBC.OUTPUT.BATCH.SIZE \
+```
+## Note:
 * You can specify the target table properties such as partition column using below property. This is useful when target table is not present or when write mode=overwrite and you need the target table to be created as partitioned table.
 
     * MySQL
@@ -119,8 +123,6 @@ jdbctojdbc.input.table="(select * from employees where dept_id>10) as employees"
     ```
     jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id);CREATE TABLE po0 PARTITION OF <table_name> FOR VALUES FROM (MINVALUE) TO (5);CREATE TABLE po1 PARTITION OF <table_name> FOR VALUES FROM (5) TO (10);CREATE TABLE po2 PARTITION OF <table_name> FOR VALUES FROM (10) TO (15);CREATE TABLE po3 PARTITION OF <table_name> FOR VALUES FROM (15) TO (MAXVALUE);"
     ```
-
-* Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 ## General execution: 
 
@@ -260,13 +262,13 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 * `jdbctogcs.input.url`: JDBC input URL
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
+* `jdbctogcs.output.location`: GCS location for output files (format: `gs://BUCKET/...`)
+* `jdbctogcs.output.format`: Output file format (one of: avro,parquet,csv,json)
 * `jdbctogcs.input.partitioncolumn` (Optional): JDBC input table partition column name
 * `jdbctogcs.input.lowerbound` (Optional): JDBC input table partition column lower bound which is used to decide the partition stride
 * `jdbctogcs.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbctogcs.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
-* `jdbctogcs.output.format`: Output file format (one of: avro,parquet,csv,json)
-* `jdbctogcs.output.location`: GCS location for output files (format: `gs://BUCKET/...`)
-* `jdbctogcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+* `jdbctogcs.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 * `jdbctogcs.output.partitioncolumn` (Optional): Output partition column name
 
 ## Usage
@@ -290,75 +292,6 @@ optional arguments:
     --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN \
 ```
-
-## Required JAR files
-
-This template requires the JDBC jar file to be available in the Dataproc cluster.
-User has to download the required jar file and host it inside a GCS Bucket, so that it could be referred during the execution of code.
-
-wget command to download JDBC jar file is as follows :-
-
-* MySQL
-```
-wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz
-```
-* PostgreSQL
-```
-wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
-```
-* Microsoft SQL Server
-```
-wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/6.4.0.jre8/mssql-jdbc-6.4.0.jre8.jar
-```
-
-Once the jar file gets downloaded, please upload the file into a GCS Bucket and export the below variable
-
-```
-export JARS=<gcs-bucket-location-containing-jar-file> 
-```
-
-## JDBC URL syntax
-
-* MySQL
-```
-jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
-```
-* PostgreSQL
-```
-jdbc:postgresql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
-```
-* Microsoft SQL Server
-```
-jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;password=<password>
-```
-
-## Other important properties
-
-* Driver Class
-
-    * MySQL
-    ```
-    jdbctogcs.input.driver="com.mysql.cj.jdbc.Driver" 
-    ```
-    * PostgreSQL
-    ```
-    jdbctogcs.input.driver="org.postgresql.Driver"
-    ```
-    * Microsoft SQL Server
-    ```
-    jdbctogcs.input.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
-    ```
-
-* You can either specify the source table name or have SQL query within double quotes. Example,
-
-```
-jdbctogcs.input.table="employees"
-jdbctogcs.input.table="(select * from employees where dept_id>10) as employees"
-```
-
-* partitionColumn, lowerBound, upperBound and numPartitions must be used together. If one is specified then all needs to be specified.
-
-* Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 ## General execution: 
 
