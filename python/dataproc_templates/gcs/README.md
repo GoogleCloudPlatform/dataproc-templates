@@ -319,9 +319,11 @@ This template requires the MongoDB-Java Driver jar file to be available in the D
 User has to download both the required jar files and host it inside a GCS Bucket, so that it could be referred during the execution of code.
 Once the jar file gets downloaded, please upload the file into a GCS Bucket.
 
+Wget Command to download these jar files is as follows :-
+
 ```
-gs://<Bucket_Name>/mongo-java-driver-3.9.1.jar
-gs://<Bucket_Name>/mongo-spark-connector_2.12-2.4.0.jar
+sudo wget https://repo1.maven.org/maven2/org/mongodb/spark/mongo-spark-connector_2.12/2.4.0/mongo-spark-connector_2.12-2.4.0.jar
+sudo wget https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.9.1/mongo-java-driver-3.9.1.jar
 ```
 
 ## Example submission
