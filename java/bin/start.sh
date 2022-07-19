@@ -106,6 +106,8 @@ if [ -n "${CATALOG}" ]; then
   OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar,file:///usr/lib/spark/external/hbase-spark.jar"
   rm hbase-client-2.4.12.jar
   rm hbase-shaded-mapreduce-2.4.12.jar
+fi
+if [ -n "${HBASE_SITE_PATH}" ]; then
   export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
   docker build -t "${IMAGE}" .
   docker push "${IMAGE}"
