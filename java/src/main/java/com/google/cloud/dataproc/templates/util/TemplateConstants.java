@@ -66,11 +66,10 @@ public interface TemplateConstants {
   String HIVE_TO_BQ_TEMP_GCS_BUCKET = "hivetobq.temp.gcs.bucket";
 
   /** Property values for HbaseToGCS */
-  String HBASE_TO_GCS_FILE_FORMAT = "hbasetogcs.output.fileformat";
-
-  String HBASE_TO_GCS_SAVE_MODE = "hbasetogcs.output.savemode";
+  String HBASE_TO_GCS_OUTPUT_FILE_FORMAT = "hbasetogcs.output.fileformat";
+  String HBASE_TO_GCS_OUTPUT_SAVE_MODE = "hbasetogcs.output.savemode";
   String HBASE_TO_GCS_OUTPUT_PATH = "hbasetogcs.output.path";
-  String HBASE_TO_GCS_CATALOG = "hbasetogcs.table.catalog";
+  String HBASE_TO_GCS_TABLE_CATALOG = "hbasetogcs.table.catalog";
 
   /** Property values for JDBCToBQ */
   String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
