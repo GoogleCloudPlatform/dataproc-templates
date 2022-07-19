@@ -23,7 +23,7 @@ these dependencies need to be passed by using the --jars flag, or, in the case o
       docker build -t "${IMAGE}" .
       docker push "${IMAGE}"
       ```
-      
+      This process has been automated in the start-up script when environment variable HBASE_SITE_PATH is set. The container registry path can be found in IMAGE environment variable after the script has run.
 ###General Execution:
 
 *It is important to set CATALOG Environment variable here to provide hbase connection and for script to download required dependencies*
