@@ -67,6 +67,7 @@ public interface TemplateConstants {
 
   /** Property values for HbaseToGCS */
   String HBASE_TO_GCS_FILE_FORMAT = "hbasetogcs.output.fileformat";
+
   String HBASE_TO_GCS_SAVE_MODE = "hbasetogcs.output.savemode";
   String HBASE_TO_GCS_OUTPUT_PATH = "hbasetogcs.output.path";
   String HBASE_TO_GCS_CATALOG = "hbasetogcs.table.catalog";

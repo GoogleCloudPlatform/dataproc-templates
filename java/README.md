@@ -5,6 +5,7 @@
 Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  for more information
 * [HiveToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
 * [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+* [HbaseToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hbase/README.md)
 * [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
 * [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
 * [GCSToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))

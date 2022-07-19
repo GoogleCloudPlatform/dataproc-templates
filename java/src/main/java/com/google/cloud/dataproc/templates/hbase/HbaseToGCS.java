@@ -64,7 +64,7 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
     SparkSession spark = SparkSession.builder().appName("Spark HbaseToGCS Job").getOrCreate();
 
     Map<String, String> optionsMap = new HashMap<>();
-    optionsMap.put(HBaseTableCatalog.tableCatalog(), catalogue);
+    optionsMap.put(HBaseTableCatalog.tableCatalog(), catalogue.replaceAll("\\s", ""));
 
     // Read from HBase
     Dataset dataset =
