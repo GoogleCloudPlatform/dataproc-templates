@@ -314,7 +314,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctogcs.output.location=<gcs-output-location> \
 --jdbctogcs.output.mode=<optional-write-mode> \
 --jdbctogcs.output.format=<output-write-format> \
---jdbctogcs.output.partitioncolumn=<optional-output-format>
+--jdbctogcs.output.partitioncolumn=<optional-output-partition-column-name>
 ```
 
 ## Example execution: 
