@@ -57,10 +57,10 @@
     </property>
     <property>
         <name>hbase.rootdir</name>
-        <value>hdfs://ipaddress/hbase</value>
+        <value>hdfs://10.128.0.46/hbase</value>
     </property>
     <property>
         <name>hbase.zookeeper.quorum</name>
-        <value>hostname:port</value>
+        <value>10.128.0.46:2181</value>
     </property>
 </configuration>
