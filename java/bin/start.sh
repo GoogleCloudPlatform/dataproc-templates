@@ -95,6 +95,10 @@ fi
 if [ -n "${SPARK_PROPERTIES}" ]; then
   OPT_PROPERTIES="${OPT_PROPERTIES},${SPARK_PROPERTIES}"
 fi
+<<<<<<< HEAD
+=======
+
+>>>>>>> 34dbb0d (updated template and start script)
 #if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
 if [ -n "${CATALOG}" ]; then
   echo "Downloading Hbase jar dependency"
@@ -107,11 +111,21 @@ if [ -n "${CATALOG}" ]; then
   rm hbase-client-2.4.12.jar
   rm hbase-shaded-mapreduce-2.4.12.jar
 fi
+<<<<<<< HEAD
 if [ -n "${HBASE_SITE_PATH}" ]; then
   export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
   docker build -t "${IMAGE}" .
   docker push "${IMAGE}"
 fi
+=======
+
+if [ -n "${HBASE_SITE_PATH}" ]; then
+  export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
+  docker build -t "${IMAGE}" -f src/main/java/com/google/cloud/dataproc/templates/hbase/Dockerfile --build-arg HBASE_SITE_PATH=${HBASE_SITE_PATH} .
+  docker push "${IMAGE}"
+fi
+
+>>>>>>> 34dbb0d (updated template and start script)
 # Running on an existing dataproc cluster or run on serverless spark
 if [ "${JOB_TYPE}" == "CLUSTER" ]; then
   echo "JOB_TYPE is CLUSTER, so will submit on existing dataproc cluster"
