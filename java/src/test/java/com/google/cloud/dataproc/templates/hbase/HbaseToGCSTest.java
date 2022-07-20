@@ -41,7 +41,10 @@ public class HbaseToGCSTest {
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_PATH, "gs://test-bucket/output");
-    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_TABLE_CATALOG, "{\"table\":{\"namespace\":\"default\",\"name\":\"my_table\"},\"rowkey\":\"key\",\"columns\":{\"key\":{\"cf\":\"rowkey\",\"col\":\"key\",\"type\":\"string\"},\"name\":{\"cf\":\"cf\",\"col\":\"name\",\"type\":\"string\"}}}");
+    PropertyUtil.getProperties()
+        .setProperty(
+            HBASE_TO_GCS_TABLE_CATALOG,
+            "{\"table\":{\"namespace\":\"default\",\"name\":\"my_table\"},\"rowkey\":\"key\",\"columns\":{\"key\":{\"cf\":\"rowkey\",\"col\":\"key\",\"type\":\"string\"},\"name\":{\"cf\":\"cf\",\"col\":\"name\",\"type\":\"string\"}}}");
     PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_SAVE_MODE, "append");
     PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_FILE_FORMAT, "csv");
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
@@ -67,6 +70,10 @@ public class HbaseToGCSTest {
   }
 
   static Stream<String> propertyKeys() {
-    return Stream.of(HBASE_TO_GCS_OUTPUT_FILE_FORMAT, HBASE_TO_GCS_OUTPUT_SAVE_MODE, HBASE_TO_GCS_OUTPUT_PATH, HBASE_TO_GCS_TABLE_CATALOG);
+    return Stream.of(
+        HBASE_TO_GCS_OUTPUT_FILE_FORMAT,
+        HBASE_TO_GCS_OUTPUT_SAVE_MODE,
+        HBASE_TO_GCS_OUTPUT_PATH,
+        HBASE_TO_GCS_TABLE_CATALOG);
   }
 }
