@@ -51,9 +51,9 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
       LOGGER.error(
           "{}, {}, {}, {} is required parameter. ",
           HBASE_TO_GCS_OUTPUT_PATH,
-              HBASE_TO_GCS_OUTPUT_FILE_FORMAT,
-              HBASE_TO_GCS_OUTPUT_SAVE_MODE,
-              HBASE_TO_GCS_TABLE_CATALOG);
+          HBASE_TO_GCS_OUTPUT_FILE_FORMAT,
+          HBASE_TO_GCS_OUTPUT_SAVE_MODE,
+          HBASE_TO_GCS_TABLE_CATALOG);
       throw new IllegalArgumentException(
           "Required parameters for HbaseToGCS not passed. "
               + "Set mandatory parameter for HbaseToGCS template "
