@@ -23,7 +23,12 @@ these dependencies need to be passed by using the --jars flag, or, in the case o
       docker build -t "${IMAGE}" .
       docker push "${IMAGE}"
       ```
-      This process has been automated in the start-up script when environment variable HBASE_SITE_PATH is set. The container registry path can be found in IMAGE environment variable after the script has run.
+    
+  ### Configure the [hbase-site.xml](java/src/main/resources/hbase-site.xml)
+    - The hbase-site.xml needs to be available in some path so that serverless container can gain access to it. For Java, it can be done by placing hbase-site.xml file in the resource folder and pass that root path to SPARK_EXTRA_CLASSPATH like below-:
+    ```properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=src/main/resources/hbase-site.xml'```
+    This process has been automated in the start-up script when environment variable HBASE_SITE_PATH is set. The container registry path can be found in IMAGE environment variable after the script has run.
+
 ###General Execution:
 
 *It is important to set CATALOG Environment variable here to provide hbase connection and for script to download required dependencies*
