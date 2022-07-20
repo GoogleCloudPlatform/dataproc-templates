@@ -260,4 +260,28 @@ public interface TemplateConstants {
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
 
   String INTERMEDIATE_FORMAT_ORC = "orc";
+
+  /** KafkaToBQ properties */
+  String KAFKA_BQ_CHECKPOINT_LOCATION = "kafka.bq.checkpoint.location";
+
+  String KAFKA_BQ_SPARK_CONF_NAME_INPUT_FORMAT = "kafka";
+  String KAFKA_BQ_SPARK_CONF_NAME_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
+  String KAFKA_BQ_SPARK_CONF_NAME_SUBSCRIBE = "subscribe";
+  String KAFKA_BQ_SPARK_CONF_NAME_STARTING_OFFSETS = "startingOffsets";
+  String KAFKA_BQ_SPARK_CONF_NAME_FAIL_ON_DATA_LOSS = "failOnDataLoss";
+  String KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_FORMAT = "com.google.cloud.spark.bigquery";
+  String KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_HEADER = "header";
+  String KAFKA_BQ_SPARK_CONF_NAME_CHECKPOINT_LOCATION = "checkpointLocation";
+  String KAFKA_BQ_SPARK_CONF_NAME_TABLE = "table";
+  String KAFKA_BQ_SPARK_CONF_NAME_TEMP_GCS_BUCKET = "temporaryGcsBucket";
+
+  String KAFKA_BQ_BOOTSTRAP_SERVERS = "kafka.bq.bootstrap.servers";
+  String KAFKA_BQ_TOPIC = "kafka.bq.topic";
+  String KAFKA_BQ_STARTING_OFFSET = "kafka.bq.starting.offset";
+  String KAFKA_BQ_AWAIT_TERMINATION_TIMEOUT = "kafka.bq.await.termination.timeout";
+  String KAFKA_BQ_FAIL_ON_DATA_LOSS = "kafka.bq.fail.on.dataloss";
+  String KAFKA_BQ_DATASET = "kafka.bq.dataset";
+  String KAFKA_BQ_TABLE = "kafka.bq.table";
+  String KAFKA_BQ_TEMP_GCS_BUCKET = "kafka.bq.temp.gcs.bucket";
+  String KAFKA_BQ_STREAM_OUTPUT_MODE = "kafka.bq.stream.output.mode";
 }
