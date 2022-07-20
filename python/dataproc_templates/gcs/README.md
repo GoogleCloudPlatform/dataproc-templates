@@ -329,6 +329,9 @@ sudo wget https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.9.1/mon
 ## Example submission
 
 ```
+export GCP_PROJECT=<project_id>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
 export JARS=<gcs-bucket-location-containing-jar-file> 
 
 ./bin/start.sh \
