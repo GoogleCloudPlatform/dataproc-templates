@@ -40,7 +40,7 @@ export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 export IMAGE_NAME_VERSION=<name:version of image>
 export HBASE_SITE_PATH=<path to hbase-site.xml>
 export CATALOG=<catalog of hbase table>
-export IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version> #use the image which was created to congigure hbase-site.xml
+export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION} #use the image which was created to congigure hbase-site.xml
 
 bin/start.sh \
 --container-image=$IMAGE \
@@ -61,7 +61,7 @@ export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
 export IMAGE_NAME_VERSION=dataproc-hbase:1
 export HBASE_SITE_PATH=src/main/resources/hbase-site.xml
 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-export IMAGE=gcr.io/myproject/dataproc-hbase:1  #use the image which was created to congigure hbase-site.xml
+export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}  #use the image which was created to congigure hbase-site.xml
 
 bin/start.sh \
 --container-image=$IMAGE \
