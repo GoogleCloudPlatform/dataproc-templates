@@ -33,6 +33,7 @@ class TemplateName(Enum):
     GCSTOMONGO = "GCSTOMONGO"
     HBASETOGCS = "HBASETOGCS"
     JDBCTOJDBC = "JDBCTOJDBC"
+    JDBCTOGCS = "JDBCTOGCS"
 
     @classmethod
     def from_string(cls, template_name: str) -> TemplateName:
