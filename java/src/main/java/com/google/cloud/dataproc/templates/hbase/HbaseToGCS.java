@@ -36,10 +36,9 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
   private String gcsWritePath;
 
   public HbaseToGCS() {
-
-    catalogue = getProperties().getProperty(HBASE_TO_GCS_CATALOG);
-    outputFileFormat = getProperties().getProperty(HBASE_TO_GCS_FILE_FORMAT);
-    gcsSaveMode = getProperties().getProperty(HBASE_TO_GCS_SAVE_MODE);
+    catalogue = getProperties().getProperty(HBASE_TO_GCS_TABLE_CATALOG);
+    outputFileFormat = getProperties().getProperty(HBASE_TO_GCS_OUTPUT_FILE_FORMAT);
+    gcsSaveMode = getProperties().getProperty(HBASE_TO_GCS_OUTPUT_SAVE_MODE);
     gcsWritePath = getProperties().getProperty(HBASE_TO_GCS_OUTPUT_PATH);
   }
 
@@ -52,9 +51,9 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
       LOGGER.error(
           "{}, {}, {}, {} is required parameter. ",
           HBASE_TO_GCS_OUTPUT_PATH,
-          HBASE_TO_GCS_FILE_FORMAT,
-          HBASE_TO_GCS_SAVE_MODE,
-          HBASE_TO_GCS_CATALOG);
+          HBASE_TO_GCS_OUTPUT_FILE_FORMAT,
+          HBASE_TO_GCS_OUTPUT_SAVE_MODE,
+          HBASE_TO_GCS_TABLE_CATALOG);
       throw new IllegalArgumentException(
           "Required parameters for HbaseToGCS not passed. "
               + "Set mandatory parameter for HbaseToGCS template "

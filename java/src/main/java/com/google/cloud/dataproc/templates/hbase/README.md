@@ -1,4 +1,4 @@
-## 1. Hbase To BigQuery
+## 1. HBase To BigQuery
 ### Required JAR files
 
 Some HBase dependencies are required to be passed when submitting the job. These dependencies are automatically set by script when CATALOG environment variable is set for hbase table configuration. If not, 
@@ -23,19 +23,25 @@ these dependencies need to be passed by using the --jars flag, or, in the case o
       docker build -t "${IMAGE}" .
       docker push "${IMAGE}"
       ```
-      This process has been automated in the start-up script when environment variable HBASE_SITE_PATH is set. The container registry path can be found in IMAGE environment variable after the script has run.
+    
+  ### Configure the [hbase-site.xml](java/src/main/resources/hbase-site.xml)
+    - The hbase-site.xml needs to be available in some path so that serverless container can gain access to it. For Java, it can be done by placing hbase-site.xml file in the resource folder and pass that root path to SPARK_EXTRA_CLASSPATH like below-:
+    ```properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=src/main/resources/hbase-site.xml'```
+    This process has been automated in the start-up script when environment variable HBASE_SITE_PATH is set. The container registry path can be found in IMAGE environment variable after the script has run.
+
 ###General Execution:
 
 *It is important to set CATALOG Environment variable here to provide hbase connection and for script to download required dependencies*
 ```
-export GCP_PROJECT=<gcp-project-id> \
-export REGION=<region>  \
-export SUBNET=<subnet>   \
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+export GCP_PROJECT=<gcp-project-id>
+export REGION=<region>
+export SUBNET=<subnet>
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export IMAGE_NAME_VERSION=<name:version of image>
+export HBASE_SITE_PATH=<path to hbase-site.xml>
 export CATALOG=<catalog of hbase table>
-export IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version> #use the image which was created to congigure hbase-site.xml
+export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION} #use the image which was created to congigure hbase-site.xml
 
- \
 bin/start.sh \
 --container-image=$IMAGE \
 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
@@ -46,13 +52,16 @@ bin/start.sh \
 --templateProperty hbasetogcs.table.catalog=$CATALOG
 ```
 ###Example Execution -:
-```export GCP_PROJECT=myproject
+```
+export GCP_PROJECT=myproject
 export REGION=us-central1
 export GCS_STAGING_LOCATION=gs://staging_bucket
 export JOB_TYPE=SERVERLESS 
 export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
-export CATALOG={“table":{"namespace":"default", "name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey", "col":"key", "type":"string"},"name":{"cf":"cf", "col":"name", "type":"string”}}}
-export IMAGE=gcr.io/myproject/dataproc-hbase:1  #use the image which was created to congigure hbase-site.xml
+export IMAGE_NAME_VERSION=dataproc-hbase:1
+export HBASE_SITE_PATH=src/main/resources/hbase-site.xml
+export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}  #use the image which was created to congigure hbase-site.xml
 
 bin/start.sh \
 --container-image=$IMAGE \
@@ -62,4 +71,27 @@ bin/start.sh \
 --templateProperty hbasetogcs.output.savemode=append \
 --templateProperty hbasetogcs.output.path=gs://myproject/output  \
 --templateProperty hbasetogcs.table.catalog=$CATALOG
+```
+
+##Example Catalog
+```
+{
+   "table":{
+      "namespace":"default",
+      "name":"my_table"
+   },
+   "rowkey":"key",
+   "columns":{
+      "key":{
+         "cf":"rowkey",
+         "col":"key",
+         "type":"string"
+      },
+      "name":{
+         "cf":"cf",
+         "col":"name",
+         "type":"string"
+      }
+   }
+}
 ```
