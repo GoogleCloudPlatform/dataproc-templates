@@ -31,6 +31,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [GCSToBigQuery](/python/dataproc_templates/gcs/README.md) (blogpost [link](https://medium.com/@ppaglilla/getting-started-with-dataproc-serverless-pyspark-templates-e32278a6a06e))
 * [GCSToBigTable](/python/dataproc_templates/gcs/README.md)
 * [GCSToJDBC](/python/dataproc_templates/gcs/README.md)
+* [GCSToMongo](/python/dataproc_templates/gcs/README.md)
 * [HiveToBigQuery](/python/dataproc_templates/hive/README.md) (blogpost [link](https://medium.com/google-cloud/processing-data-from-hive-to-bigquery-using-pyspark-and-dataproc-serverless-217c7cb9e4f8))
 * [HiveToGCS](/python/dataproc_templates/hive/README.md)
 * [HbaseToGCS](/python/dataproc_templates/hbase/README.md)
