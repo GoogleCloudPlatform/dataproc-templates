@@ -45,6 +45,12 @@ JDBC_CREATE_TABLE_OPTIONS = "createTableOptions"
 FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
 TEMP_GCS_BUCKET="temporaryGcsBucket"
+MONGO_URL = "spark.mongodb.output.uri"
+MONGO_DATABASE = "database"
+MONGO_COLLECTION = "collection"
+FORMAT_MONGO = "com.mongodb.spark.sql.DefaultSource"
+MONGO_DEFAULT_BATCH_SIZE = 512
+MONGO_BATCH_SIZE = "maxBatchSize"
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -69,6 +75,15 @@ GCS_JDBC_OUTPUT_MODE = "gcs.jdbc.output.mode"
 GCS_JDBC_OUTPUT_URL = "gcs.jdbc.output.url"
 GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver"
 GCS_JDBC_BATCH_SIZE = "gcs.jdbc.batch.size"
+
+#GCS to Mongo
+GCS_MONGO_INPUT_LOCATION = "gcs.mongo.input.location"
+GCS_MONGO_INPUT_FORMAT = "gcs.mongo.input.format"
+GCS_MONGO_OUTPUT_URI = "gcs.mongo.output.uri"
+GCS_MONGO_OUTPUT_DATABASE = "gcs.mongo.output.database"
+GCS_MONGO_OUTPUT_COLLECTION = "gcs.mongo.output.collection"
+GCS_MONGO_OUTPUT_MODE = "gcs.mongo.output.mode"
+GCS_MONGO_BATCH_SIZE = "gcs.mongo.batch.size"
 
 # GCS to BigTable
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
