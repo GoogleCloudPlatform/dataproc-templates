@@ -46,7 +46,7 @@ class HiveToGCSTest {
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
     hiveToGCSTest = new HiveToGCS();
 
-    assertDoesNotThrow(hiveToGCSTest::runTemplate);
+    assertDoesNotThrow(hiveToGCSTest::validateInput);
   }
 
   @ParameterizedTest

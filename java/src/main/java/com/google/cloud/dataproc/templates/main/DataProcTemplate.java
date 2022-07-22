@@ -92,10 +92,7 @@ public class DataProcTemplate {
           .withDescription("Value for given property")
           .create();
   private static final Options options =
-      // new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
-      new Options()
-          .addOption(null, TEMPLATE_NAME_LONG_OPT, true, "test")
-          .addOption(PROPERTY_OPTION);
+      new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
 
   /**
    * Parse command line arguments
@@ -107,7 +104,7 @@ public class DataProcTemplate {
     CommandLineParser parser = new DefaultParser();
     LOGGER.info("Parsing arguments {}", (Object) args);
     try {
-      return parser.parse(options, args, true);
+      return parser.parse(options, args, false);
     } catch (ParseException e) {
       throw new IllegalArgumentException(e.getMessage(), e);
     }
@@ -120,6 +117,8 @@ public class DataProcTemplate {
    */
   public static TemplateName parseTemplateName(String templateNameString) {
     try {
+      // if (templateNameString == null) throw new IllegalArgumentException("Missing required
+      // option: template");
       return TemplateName.valueOf(templateNameString.trim().toUpperCase());
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException(

@@ -47,7 +47,7 @@ class KafkaToBQTest {
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
 
     kafkaToBQ = new KafkaToBQ();
-    assertDoesNotThrow(kafkaToBQ::runTemplate);
+    assertDoesNotThrow(kafkaToBQ::validateInputs);
   }
 
   @ParameterizedTest
