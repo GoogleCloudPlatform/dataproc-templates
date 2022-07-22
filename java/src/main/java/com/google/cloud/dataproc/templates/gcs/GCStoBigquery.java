@@ -75,7 +75,7 @@ public class GCStoBigquery implements BaseTemplate {
     validateInput();
 
     SparkSession spark = null;
-    LOGGER.info("input format: " + inputFileFormat);
+    LOGGER.info("input format: {}", inputFileFormat);
 
     try {
       spark = SparkSession.builder().appName("GCS to Bigquery load").getOrCreate();
