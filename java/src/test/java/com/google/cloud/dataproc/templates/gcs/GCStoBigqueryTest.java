@@ -21,9 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -37,19 +39,22 @@ public class GCStoBigqueryTest {
 
   @BeforeEach
   void setUp() {
+    System.setProperty("hadoop.home.dir", "/");
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
 
-  @ParameterizedTest
-  @MethodSource("propertyKeys")
-  void runTemplateWithValidParameters(String propKey) {
+  @Test
+  void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    PropertyUtil.getProperties().setProperty(GCS_BQ_INPUT_LOCATION, "gs://test-bucket");
-    PropertyUtil.getProperties().setProperty(GCS_OUTPUT_DATASET_NAME, "bigqueryDataset");
-    PropertyUtil.getProperties().setProperty(GCS_OUTPUT_TABLE_NAME, "bigqueryTable");
+    Properties props = PropertyUtil.getProperties();
+    props.setProperty(GCS_BQ_INPUT_LOCATION, "gs://test-bucket");
+    props.setProperty(GCS_OUTPUT_DATASET_NAME, "bigqueryDataset");
+    props.setProperty(GCS_OUTPUT_TABLE_NAME, "bigqueryTable");
+    props.setProperty(GCS_BQ_INPUT_FORMAT, "parquet");
+    props.setProperty(GCS_BQ_LD_TEMP_BUCKET_NAME, "gs://temp-bucket");
     gcsCsvToBiqueryTest = new GCStoBigquery();
 
-    assertDoesNotThrow(gcsCsvToBiqueryTest::runTemplate);
+    assertDoesNotThrow(gcsCsvToBiqueryTest::validateInput);
   }
 
   @ParameterizedTest
@@ -68,6 +73,7 @@ public class GCStoBigqueryTest {
   }
 
   static Stream<String> propertyKeys() {
-    return Stream.of(GCS_BQ_INPUT_LOCATION, GCS_OUTPUT_DATASET_NAME, GCS_OUTPUT_TABLE_NAME);
+    return Stream.of(
+        GCS_BQ_INPUT_LOCATION, GCS_OUTPUT_DATASET_NAME, GCS_OUTPUT_TABLE_NAME, GCS_BQ_INPUT_FORMAT);
   }
 }
