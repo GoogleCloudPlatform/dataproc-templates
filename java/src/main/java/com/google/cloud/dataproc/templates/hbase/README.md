@@ -9,26 +9,23 @@ these dependencies need to be passed by using the --jars flag, or, in the case o
     - All other dependencies are automatically downloaded and set once CATALOG environment variable is used for hbase table configuration. Lib link - [hbase-client](https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar), [hbase-shaded-mapreduce](https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar)
     
   ### Configure the [hbase-site.xml](./hbase-site.xml)
-    1) Configure the [hbase-site.xml](./hbase-site.xml)
-    - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.
-    - Reference [hbase-site.xml](./hbase-site.xml) can be used by adding respective values for **hbase.rootdir** and **hbase.zookeeper.quorum**
-    - A [customer container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) is required in GCP Container Registry. Refer [Dockerfile](./Dockerfile) for reference.
-    - Add the following layer to the Dockerfile, for copying your local hbase-site.xml to the container image (below command is added to [Dockerfile](./Dockerfile) for reference):
-      ```
-      COPY hbase-site.xml /etc/hbase/conf/
-      ```
-    - You can use and adapt the Dockerfile from the guide above, building and pushing it to GCP Container Registry with:
-      ```
-      IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version>
-      docker build -t "${IMAGE}" .
-      docker push "${IMAGE}"
-      ```
     
-  ### Configure the [hbase-site.xml](java/src/main/resources/hbase-site.xml)
-    - The hbase-site.xml needs to be available in some path so that serverless container can gain access to it. For Java, it can be done by placing hbase-site.xml file in the resource folder and pass that root path to SPARK_EXTRA_CLASSPATH like below-:
-    ```properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=src/main/resources/hbase-site.xml'```
-    This process has been automated in the start-up script when environment variable HBASE_SITE_PATH is set. The container registry path can be found in IMAGE environment variable after the script has run.
-
+    
+1) **Automatic process of creating custom container**-: The process is automatically done in the start-up script, when environment variable HBASE_SITE_PATH is set.
+2) **Configure the [hbase-site.xml](./hbase-site.xml) manually and create container**
+  - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.
+  - Reference [hbase-site.xml](./hbase-site.xml) can be used by adding respective values for **hbase.rootdir** and **hbase.zookeeper.quorum**
+  - A [custom container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) is required in GCP Container Registry. Refer [Dockerfile](./Dockerfile) for reference.
+  - Add the following layer to the Dockerfile, for copying your local hbase-site.xml to the container image (below command is added to [Dockerfile](./Dockerfile) for reference):
+    ```
+    COPY hbase-site.xml /etc/hbase/conf/
+    ```
+  - You can use and adapt the Dockerfile from the guide above, building and pushing it to GCP Container Registry with:
+    ```
+    IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version>
+    docker build -t "${IMAGE}" .
+    docker push "${IMAGE}"
+    ```
 ###General Execution:
 
 *It is important to set CATALOG Environment variable here to provide hbase connection and for script to download required dependencies*
@@ -61,7 +58,7 @@ export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
 export IMAGE_NAME_VERSION=dataproc-hbase:1
 export HBASE_SITE_PATH=src/main/resources/hbase-site.xml
 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}  #use the image which was created to congigure hbase-site.xml
+export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}  #While creating image manually,set this to pass image name
 
 bin/start.sh \
 --container-image=$IMAGE \
