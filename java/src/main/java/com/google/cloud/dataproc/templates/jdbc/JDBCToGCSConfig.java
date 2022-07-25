@@ -85,7 +85,7 @@ public class JDBCToGCSConfig {
 
   @AssertTrue(
       message =
-          "Required parameters for JDBCToGCS not passed. Template property should be provided for either the SQL Query or the SQL File, but should not be provided together. Refer to jdbc/README.md for more instructions.")
+          "Required parameters for JDBCToGCS not passed. Template property pertaining to SQL Query and SQL File must not be used together. Either one of them must be provided at a time. Refer to jdbc/README.md for more instructions.")
   private boolean isSqlPropertyValid() {
     return (StringUtils.isBlank(jdbcSQL) || StringUtils.isBlank(jdbcSQLFile))
         && (StringUtils.isNotBlank(jdbcSQL) || StringUtils.isNotBlank(jdbcSQLFile));
