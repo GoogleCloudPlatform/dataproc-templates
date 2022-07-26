@@ -28,6 +28,7 @@ import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToBigQuery;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
+import com.google.cloud.dataproc.templates.kafka.KafkaToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
@@ -37,6 +38,7 @@ import com.google.cloud.dataproc.templates.word.WordCount;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -46,6 +48,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +69,7 @@ public class DataProcTemplate {
           .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
           .put(TemplateName.JDBCTOGCS, JDBCToGCS::of)
+          .put(TemplateName.KAFKATOBQ, (args) -> new KafkaToBQ())
           .put(TemplateName.GCSTOJDBC, GCSToJDBC::of)
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
@@ -88,10 +92,7 @@ public class DataProcTemplate {
           .withDescription("Value for given property")
           .create();
   private static final Options options =
-      // new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
-      new Options()
-          .addOption(null, TEMPLATE_NAME_LONG_OPT, true, "test")
-          .addOption(PROPERTY_OPTION);
+      new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
 
   /**
    * Parse command line arguments
@@ -103,7 +104,7 @@ public class DataProcTemplate {
     CommandLineParser parser = new DefaultParser();
     LOGGER.info("Parsing arguments {}", (Object) args);
     try {
-      return parser.parse(options, args, true);
+      return parser.parse(options, args, false);
     } catch (ParseException e) {
       throw new IllegalArgumentException(e.getMessage(), e);
     }
@@ -116,6 +117,8 @@ public class DataProcTemplate {
    */
   public static TemplateName parseTemplateName(String templateNameString) {
     try {
+      // if (templateNameString == null) throw new IllegalArgumentException("Missing required
+      // option: template");
       return TemplateName.valueOf(templateNameString.trim().toUpperCase());
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException(
@@ -123,7 +126,7 @@ public class DataProcTemplate {
     }
   }
 
-  public static void main(String... args) {
+  public static void main(String... args) throws StreamingQueryException, TimeoutException {
     BaseTemplate template = createTemplateAndRegisterProperties(args);
     runSparkJob(template);
   }
@@ -175,7 +178,7 @@ public class DataProcTemplate {
    *
    * @param template the template to run.
    */
-  static void runSparkJob(BaseTemplate template) {
+  static void runSparkJob(BaseTemplate template) throws StreamingQueryException, TimeoutException {
     LOGGER.debug("Start runSparkJob");
     template.runTemplate();
     LOGGER.debug("End runSparkJob");

@@ -16,8 +16,7 @@
 package com.google.cloud.dataproc.templates.main;
 
 import static java.util.Arrays.asList;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -25,7 +24,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.commons.cli.CommandLine;
+import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -33,10 +34,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class DataProcTemplateTest {
 
-  @ParameterizedTest
-  @MethodSource("stringValidInputArgs")
-  void testRunSparkJobWithValidInputArgs(List<String> args) {
-    DataProcTemplate.main(args.toArray(new String[0]));
+  @BeforeEach
+  void setUp() {
+    System.setProperty("hadoop.home.dir", "/");
+    SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
 
   @Test

@@ -29,6 +29,20 @@ check_required_envvar() {
   fi
 }
 
+# Auxiliary Function to check the exit status passed as an argument
+# This function is also responsible for printing the error message or success message based on the exit status
+check_status()
+{
+  if [ "$1" -eq 0 ];
+  then
+    printf "$2"
+  else
+    printf "$3"
+    exit 1
+  fi
+}
+
+
 #Mandatory vs optional  specify
 Help() {
   # Display Help
