@@ -110,12 +110,11 @@ if [ -n "${CATALOG}" ]; then
 fi
 
 if [ -n "${HBASE_SITE_PATH}" ]; then
-  export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
   #Copy the hbase-site.xml to docker context
   cp $HBASE_SITE_PATH .
   export HBASE_SITE_NAME=`basename $HBASE_SITE_PATH`
   docker build -t "${IMAGE}" -f src/main/java/com/google/cloud/dataproc/templates/hbase/Dockerfile --build-arg HBASE_SITE_NAME=${HBASE_SITE_NAME} .
-  rm $HBASE_SITE_PATH
+  rm $HBASE_SITE_NAME
   docker push "${IMAGE}"
 fi
 
