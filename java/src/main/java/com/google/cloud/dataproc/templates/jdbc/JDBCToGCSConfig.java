@@ -65,11 +65,11 @@ public class JDBCToGCSConfig {
 
   @JsonProperty(value = JDBC_TO_GCS_WRITE_MODE)
   @NotEmpty
-  @Pattern(regexp = "(?i)(Overwritey|ErrorIfExists|Append|Ignore)")
+  @Pattern(regexp = "(?i)(Overwrite|ErrorIfExists|Append|Ignore)")
   private String gcsWriteMode;
 
   @JsonProperty(value = JDBC_TO_GCS_SQL_PARTITION_COLUMN)
-  private String gcsPartitionColumn;
+  private String jdbcSQLPartitionColumn;
 
   @JsonProperty(value = JDBC_TO_GCS_SQL_LOWER_BOUND)
   private String jdbcSQLLowerBound;
@@ -81,7 +81,7 @@ public class JDBCToGCSConfig {
   private String jdbcSQLNumPartitions;
 
   @JsonProperty(value = JDBC_TO_GCS_OUTPUT_PARTITION_COLUMN)
-  private String jdbcSQLPartitionColumn;
+  private String gcsPartitionColumn;
 
   @AssertTrue(
       message =
@@ -94,7 +94,7 @@ public class JDBCToGCSConfig {
   @AssertTrue(
       message =
           "Required parameters for JDBCToGCS not passed. Set mandatory parameter for JDBCToGCS template in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.")
-  private boolean isValid() {
+  private boolean isPartitionsPropertyValid() {
     return StringUtils.isBlank(getConcatedPartitionProps())
         || (StringUtils.isNotBlank(jdbcSQLPartitionColumn)
             && StringUtils.isNotBlank(jdbcSQLLowerBound)
