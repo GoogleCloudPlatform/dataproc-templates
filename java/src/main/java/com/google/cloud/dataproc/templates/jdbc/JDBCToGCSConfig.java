@@ -65,7 +65,7 @@ public class JDBCToGCSConfig {
 
   @JsonProperty(value = JDBC_TO_GCS_WRITE_MODE)
   @NotEmpty
-  @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
+  @Pattern(regexp = "(?i)(Overwritey|ErrorIfExists|Append|Ignore)")
   private String gcsWriteMode;
 
   @JsonProperty(value = JDBC_TO_GCS_SQL_PARTITION_COLUMN)
@@ -85,7 +85,7 @@ public class JDBCToGCSConfig {
 
   @AssertTrue(
       message =
-          "Required parameters for JDBCToGCS not passed. Template property pertaining to SQL Query and SQL File must not be used together. Either one of them must be provided at a time. Refer to jdbc/README.md for more instructions.")
+          "Required parameters for JDBCToGCS not passed. Template property should be provided for either the SQL Query or the SQL File, but not both. Refer to jdbc/README.md for more instructions.")
   private boolean isSqlPropertyValid() {
     return (StringUtils.isBlank(jdbcSQL) || StringUtils.isBlank(jdbcSQLFile))
         && (StringUtils.isNotBlank(jdbcSQL) || StringUtils.isNotBlank(jdbcSQLFile));
