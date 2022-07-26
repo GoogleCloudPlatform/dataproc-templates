@@ -58,7 +58,7 @@ export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
 export IMAGE_NAME_VERSION=dataproc-hbase:1
 export HBASE_SITE_PATH=src/main/resources/hbase-site.xml
 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}  #While creating image manually,set this to pass image name
+export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}  #set this to pass custom image during job submit
 
 bin/start.sh \
 --container-image=$IMAGE \
