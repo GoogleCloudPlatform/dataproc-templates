@@ -18,18 +18,15 @@ package com.google.cloud.dataproc.templates.util;
 public interface TemplateConstants {
 
   String DEFAULT_PROPERTY_FILE = "template.properties";
-
   String PROJECT_ID_PROP = "project.id";
   String BIGTABLE_INSTANCE_ID_PROP = "project.id";
   String BIGTABLE_OUTPUT_TABLE_NAME_PROP = "bigtable.output.table.name";
-
   String SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID = "spanner.gcs.input.spanner.id";
   String SPANNER_GCS_INPUT_DATABASE_ID = "spanner.gcs.input.database.id";
   String SPANNER_GCS_INPUT_TABLE_ID = "spanner.gcs.input.table.id";
   String SPANNER_GCS_OUTPUT_GCS_PATH = "spanner.gcs.output.gcs.path";
   String SPANNER_GCS_OUTPUT_GCS_SAVEMODE = "spanner.gcs.output.gcs.saveMode";
   String SPANNER_GCS_OUTPUT_FORMAT = "spanner.gcs.output.gcs.format";
-
   /**
    * Column to be used as row key for BigTable. Required for GCSToBigTable template.
    *
@@ -38,11 +35,9 @@ public interface TemplateConstants {
   String BIGTABLE_KEY_COL_PROP = "bigtable.key.col";
 
   String BIGTABLE_COL_FAMILY_NAME_PROP = "bigtable.col.family.name";
-
   String GCS_STAGING_BUCKET_PATH = "gcs.staging.bucket.path";
 
   // HiveToGCS Template configs.
-
   // Hive warehouse location.
   String HIVE_TO_GCS_OUTPUT_PATH_PROP = "hive.gcs.output.path";
   // Hive warehouse location.
@@ -106,7 +101,6 @@ public interface TemplateConstants {
   String WORD_COUNT_INPUT_FORMAT_PROP = "word.count.input.format";
 
   // PubSubToBQ Template configs.
-
   // Project that contains the input PubSub subscription to be read
   String PUBSUB_INPUT_PROJECT_ID_PROP = "pubsub.input.project.id";
   // PubSub subscription name
@@ -130,91 +124,71 @@ public interface TemplateConstants {
   String GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location";
 
   String GCS_OUTPUT_DATASET_NAME = "gcs.bigquery.output.dataset";
-
   String GCS_BQ_INPUT_FORMAT = "gcs.bigquery.input.format";
-
   String GCS_OUTPUT_TABLE_NAME = "gcs.bigquery.output.table";
-
   String GCS_BQ_CSV_FORMAT = "csv";
-
   String GCS_BQ_AVRO_FORMAT = "avro";
-
   String GCS_BQ_PRQT_FORMAT = "parquet";
-
   String GCS_BQ_CSV_HEADER = "header";
-
   String GCS_BQ_OUTPUT_FORMAT = "com.google.cloud.spark.bigquery";
-
   String GCS_BQ_CSV_INFOR_SCHEMA = "inferSchema";
-
   String GCS_BQ_CSV_DELIMITER_PROP_NAME = "delimiter";
-
   String GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket";
-
   String GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name";
-
   String GCS_BQ_TEMP_TABLE = "gcs.bigquery.temp.table";
-
   String GCS_BQ_TEMP_QUERY = "gcs.bigquery.temp.query";
-
   String GCS_BQ_OUTPUT = "table";
-
   String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
+
+  /** GCS to GCS properties */
+  String GCS_GCS_INPUT_LOCATION = "gcs.gcs.input.location";
+
+  String GCS_GCS_INPUT_FORMAT = "gcs.gcs.input.format";
+  String GCS_GCS_CSV_FORMAT = "csv";
+  String GCS_GCS_AVRO_FORMAT = "avro";
+  String GCS_GCS_PRQT_FORMAT = "parquet";
+  String GCS_GCS_CSV_HEADER = "header";
+  String GCS_GCS_CSV_INFOR_SCHEMA = "inferSchema";
+  String GCS_GCS_CSV_DELIMITER_PROP_NAME = "delimiter";
+  String GCS_GCS_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
+  String GCS_GCS_OUTPUT_LOCATION = "gcs.gcs.output.location";
+  String GCS_GCS_OUTPUT_FORMAT = "gcs.gcs.output.format";
+  String GCS_GCS_WRITE_MODE = "gcs.gcs.write.mode";
+  String GCS_GCS_OUTPUT_PARTITION_COLUMN = "gcs.gcs.output.partition.col";
+  String GCS_GCS_TEMP_TABLE = "gcs.gcs.temp.table";
+  String GCS_GCS_TEMP_QUERY = "gcs.gcs.temp.query";
 
   /** S3 to Bigquery properties */
   String S3_BQ_INPUT_LOCATION = "s3.bq.input.location";
 
   String S3_BQ_ACCESS_KEY_CONFIG_NAME = "fs.s3a.access.key";
-
   String S3_BQ_ACCESS_KEY = "s3.bq.access.key";
-
   String S3_BQ_SECRET_KEY_CONFIG_NAME = "fs.s3a.secret.key";
-
   String S3_BQ_SECRET_KEY = "s3.bq.secret.key";
-
   String S3_BQ_ENDPOINT_CONFIG_NAME = "fs.s3a.endpoint";
-
   String S3_BQ_ENDPOINT_CONFIG_VALUE = "s3.amazonaws.com";
-
   String S3_BQ_OUTPUT_DATASET_NAME = "s3.bq.output.dataset.name";
-
   String S3_BQ_OUTPUT_TABLE_NAME = "s3.bq.output.table.name";
-
   String S3_BQ_LD_TEMP_BUCKET_NAME = "s3.bq.ld.temp.bucket.name";
-
   String S3_BQ_OUTPUT_FORMAT = "com.google.cloud.spark.bigquery";
-
   String S3_BQ_HEADER = "header";
-
   String S3_BQ_OUTPUT = "table";
-
   String S3_BQ_TEMP_BUCKET = "temporaryGcsBucket";
-
   String S3_BQ_INPUT_FORMAT = "s3.bq.input.format";
-
   String S3_BQ_INFER_SCHEMA = "inferSchema";
-
   String S3_BQ_CSV_FORMAT = "csv";
-
   String S3_BQ_AVRO_FORMAT = "avro";
-
   String S3_BQ_PRQT_FORMAT = "parquet";
-
   String S3_BQ_JSON_FORMAT = "json";
 
   /** Bigquery to GCS properties */
   String BQ_GCS_INPUT_TABLE_NAME = "bigquery.gcs.input.table";
 
   String BQ_GCS_OUTPUT_FORMAT_CSV = "csv";
-
   String BQ_GCS_OUTPUT_FORMAT_AVRO = "avro";
-
   String BQ_GCS_OUTPUT_FORMAT_PARQUET = "parquet";
-
   String BQ_GCS_OUTPUT_FORMAT_JSON = "json";
-
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
-
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
 
   /** PubSubToGCS Template configs. */
@@ -243,29 +217,17 @@ public interface TemplateConstants {
   String DATAPLEX_GCS_BQ_TARGET_DATASET = "dataplex.gcs.bq.target.dataset";
 
   String DATAPLEX_GCS_BQ_SAVE_MODE = "dataplex.gcs.bq.save.mode";
-
   String DATAPLEX_GCS_BQ_INCREMENTAL_PARTITION_COPY = "dataplex.gcs.bq.incremental.partition.copy";
-
   String DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME = "basePath";
-
   String DATAPLEX_GCS_BQ_CREATE_DISPOSITION_PROP_NAME = "createDisposition";
-
   String DATAPLEX_GCS_BQ_CREATE_DISPOSITION_CREATE_IF_NEEDED = "CREATE_IF_NEEDED";
-
   String DATAPLEX_GCS_BQ_PARTITION_FIELD_PROP_NAME = "partitionField";
-
   String DATAPLEX_GCS_BQ_PARTITION_TYPE_PROP_NAME = "partitionType";
-
   String SPARK_CONF_NAME_VIEWS_ENABLED = "viewsEnabled";
-
   String SPARK_CONF_NAME_MATERIALIZATION_PROJECT = "materializationProject";
-
   String SPARK_CONF_NAME_MATERIALIZATION_DATASET = "materializationDataset";
-
   String SPARK_READ_FORMAT_BIGQUERY = "bigquery";
-
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
-
   String INTERMEDIATE_FORMAT_ORC = "orc";
 
   /** KafkaToBQ properties */
@@ -281,7 +243,6 @@ public interface TemplateConstants {
   String KAFKA_BQ_SPARK_CONF_NAME_CHECKPOINT_LOCATION = "checkpointLocation";
   String KAFKA_BQ_SPARK_CONF_NAME_TABLE = "table";
   String KAFKA_BQ_SPARK_CONF_NAME_TEMP_GCS_BUCKET = "temporaryGcsBucket";
-
   String KAFKA_BQ_BOOTSTRAP_SERVERS = "kafka.bq.bootstrap.servers";
   String KAFKA_BQ_TOPIC = "kafka.bq.topic";
   String KAFKA_BQ_STARTING_OFFSET = "kafka.bq.starting.offset";
