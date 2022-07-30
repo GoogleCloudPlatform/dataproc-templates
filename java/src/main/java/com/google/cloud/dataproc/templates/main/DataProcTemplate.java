@@ -32,6 +32,7 @@ import com.google.cloud.dataproc.templates.kafka.KafkaToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
+import com.google.cloud.dataproc.templates.snowflake.SnowflakeToGCS;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.TemplateUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
@@ -74,6 +75,7 @@ public class DataProcTemplate {
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
+          .put(TemplateName.SNOWFLAKETOGCS, SnowflakeToGCS::of)
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
