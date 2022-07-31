@@ -79,7 +79,7 @@ public class GCStoGCS implements BaseTemplate {
         GCS_GCS_WRITE_MODE,
         gcsWriteMode);
 
-    try {
+
       spark = SparkSession.builder().appName("GCS to GCS load").getOrCreate();
 
       Dataset<Row> inputData = null;
@@ -126,12 +126,7 @@ public class GCStoGCS implements BaseTemplate {
       spark.conf().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");
       writer.save(gcsOutputLocation);
 
-    } catch (Throwable th) {
-      LOGGER.error("Exception in GCStoGCS", th);
-      if (Objects.nonNull(spark)) {
-        spark.stop();
-      }
-    }
+      spark.stop();
   }
 
   void validateInput() {
