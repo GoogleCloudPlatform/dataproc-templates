@@ -66,26 +66,7 @@ public class GCStoGCS implements BaseTemplate {
 
       Dataset<Row> inputData = null;
 
-      switch (inputFileFormat) {
-        case GCS_GCS_CSV_FORMAT:
-          inputData =
-              spark
-                  .read()
-                  .format(GCS_GCS_CSV_FORMAT)
-                  .option(GCS_GCS_CSV_HEADER, true)
-                  .option(GCS_GCS_CSV_INFOR_SCHEMA, true)
-                  .load(inputFileLocation);
-          break;
-        case GCS_GCS_AVRO_FORMAT:
-          inputData = spark.read().format(GCS_GCS_AVRO_EXTD_FORMAT).load(inputFileLocation);
-          break;
-        case GCS_GCS_PRQT_FORMAT:
-          inputData = spark.read().parquet(inputFileLocation);
-          break;
-        default:
-          throw new IllegalArgumentException(
-              "Currently avro, parquet and csv are the only supported formats");
-      }
+    inputData = spark.read().format(inputFileFormat).load(inputFileLocation);
 
       if (tempTable != null && tempQuery != null) {
         inputData.createOrReplaceGlobalTempView(tempTable);
