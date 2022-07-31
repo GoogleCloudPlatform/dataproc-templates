@@ -137,13 +137,6 @@ public interface TemplateConstants {
   String GCS_GCS_INPUT_LOCATION = "gcs.gcs.input.location";
 
   String GCS_GCS_INPUT_FORMAT = "gcs.gcs.input.format";
-  String GCS_GCS_CSV_FORMAT = "csv";
-  String GCS_GCS_AVRO_FORMAT = "avro";
-  String GCS_GCS_PRQT_FORMAT = "parquet";
-  String GCS_GCS_CSV_HEADER = "header";
-  String GCS_GCS_CSV_INFOR_SCHEMA = "inferSchema";
-  String GCS_GCS_CSV_DELIMITER_PROP_NAME = "delimiter";
-  String GCS_GCS_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
   String GCS_GCS_OUTPUT_LOCATION = "gcs.gcs.output.location";
   String GCS_GCS_OUTPUT_FORMAT = "gcs.gcs.output.format";
   String GCS_GCS_WRITE_MODE = "gcs.gcs.write.mode";
