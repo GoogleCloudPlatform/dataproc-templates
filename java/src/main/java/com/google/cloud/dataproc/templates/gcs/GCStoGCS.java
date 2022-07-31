@@ -61,24 +61,6 @@ public class GCStoGCS implements BaseTemplate {
     validateInput();
 
     SparkSession spark = null;
-    LOGGER.info(
-        "Starting GCS to GCS spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {}:{}"
-            + "5. {}:{}",
-        GCS_GCS_INPUT_LOCATION,
-        inputFileLocation,
-        GCS_GCS_INPUT_FORMAT,
-        inputFileFormat,
-        GCS_GCS_OUTPUT_LOCATION,
-        gcsOutputLocation,
-        GCS_GCS_OUTPUT_FORMAT,
-        gcsOutputFormat,
-        GCS_GCS_WRITE_MODE,
-        gcsWriteMode);
-
 
       spark = SparkSession.builder().appName("GCS to GCS load").getOrCreate();
 
