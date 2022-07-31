@@ -92,8 +92,6 @@ public class GCStoGCS implements BaseTemplate {
         inputData = spark.sql(tempQuery);
       }
 
-      inputData.show();
-
       DataFrameWriter<Row> writer = inputData.write().mode(gcsWriteMode).format(gcsOutputFormat);
 
       /*
