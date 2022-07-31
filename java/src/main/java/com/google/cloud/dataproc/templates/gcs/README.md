@@ -103,7 +103,7 @@ Example execution:-
 bin/start.sh \
 -- --template GCSTOJDBC \
 --templateProperty project.id=my-gcp-project \
---templateProperty gcs.gcs.input.location=gs://my-gcp-project-input-bucket/empavro \
+--templateProperty gcs.gcs.input.location=gs://my-gcp-project-input-bucket/filename.avro \
 --templateProperty gcs.gcs.input.format=avro \
 --templateProperty gcs.gcs.output.location=gs://my-gcp-project-output-bucket \
 --templateProperty gcs.gcs.output.format=csv \
