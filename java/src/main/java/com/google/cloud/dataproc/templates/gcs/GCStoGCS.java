@@ -75,15 +75,6 @@ public class GCStoGCS implements BaseTemplate {
 
       DataFrameWriter<Row> writer = inputData.write().mode(gcsWriteMode).format(gcsOutputFormat);
 
-      /*
-       * If optional partition column is passed than partition data by partition
-       * column before writing to GCS.
-       * */
-      if (StringUtils.isNotBlank(gcsPartitionColumn)) {
-        LOGGER.info("Partitioning data by :{} cols", gcsPartitionColumn);
-        writer = writer.partitionBy(gcsPartitionColumn);
-      }
-
       spark.conf().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");     // This default property will make sure that no SUCCESS file should be created after transformation in the target folder/directory
       writer.save(gcsOutputLocation);
 
