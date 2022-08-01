@@ -8,8 +8,8 @@ these dependencies need to be passed by using the --jars flag, or, in the case o
     - file:///usr/lib/spark/external/hbase-spark.jar
     - All other dependencies are automatically downloaded and set once CATALOG environment variable is used for hbase table configuration. Lib link - [hbase-client](https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar), [hbase-shaded-mapreduce](https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar)
     
-  ### Configure the [hbase-site.xml](./hbase-site.xml)
-    
+  ### Pass the [hbase-site.xml](./hbase-site.xml) to the Job
+    There are two ways to do it. One by automatic process and another by manually creating a custom container for dataproc cluster. Both of them are illustrated below-: 
     
 1) **Automatic process of creating custom container**-: The process is automatically done in the start-up script, when environment variable HBASE_SITE_PATH is set.
 2) **Configure the [hbase-site.xml](./hbase-site.xml) manually and create container**
