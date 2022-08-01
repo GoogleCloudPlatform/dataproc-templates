@@ -299,5 +299,5 @@ public interface TemplateConstants {
   String SNOWFLAKE_GCS_OUTPUT_LOCATION = "snowflake.gcs.output.location";
   String SNOWFLAKE_GCS_OUTPUT_FORMAT = "snowflake.gcs.output.format";
   String SNOWFLAKE_GCS_OUTPUT_MODE = "snowflake.gcs.output.mode";
-  String SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN = "snowflake.gcs.output.partitioncolumn";
+  String SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN = "snowflake.gcs.output.partitionColumn";
 }
