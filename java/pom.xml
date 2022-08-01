@@ -15,7 +15,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-
   <properties>
     <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
@@ -62,14 +61,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency> <!-- Spark dependency -->
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-sql_2.12</artifactId>
       <version>${spark.version}</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
@@ -89,14 +86,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>${junit-platform.version}</version>
       <scope>test</scope>
     </dependency>
-
     <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-hive -->
     <dependency>
       <groupId>org.apache.spark</groupId>
@@ -104,20 +99,17 @@
       <version>${spark.version}</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.bahir</groupId>
       <artifactId>spark-streaming-pubsub_2.12</artifactId>
       <version>2.4.0</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-sql-kafka-0-10_${scala.binary.version}</artifactId>
@@ -129,25 +121,21 @@
       <artifactId>google-oauth-client</artifactId>
       <version>1.33.3</version>
     </dependency>
-
     <dependency>
       <groupId>com.google.api-client</groupId>
       <artifactId>google-api-client</artifactId>
       <version>1.32.1</version>
     </dependency>
-
     <dependency>
       <groupId>com.google.cloud.spark</groupId>
       <artifactId>spark-bigquery-with-dependencies_2.12</artifactId>
       <version>0.22.0</version>
     </dependency>
-
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-spanner-jdbc</artifactId>
       <version>2.4.2</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-aws</artifactId>
@@ -163,13 +151,24 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk</artifactId>
       <version>1.7.4</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.hbase.connectors.spark</groupId>
+      <artifactId>hbase-spark</artifactId>
+      <version>1.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.hbase.connectors.spark/hbase-spark-protocol -->
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-client</artifactId>
+      <version>2.2.0</version>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
@@ -180,13 +179,11 @@
       <artifactId>log4j-core</artifactId>
       <version>2.17.1</version>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.33</version>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -213,7 +210,6 @@
       <artifactId>jackson-annotations</artifactId>
       <version>2.12.6</version>
     </dependency>
-
     <!-- for jakarta.validation -->
     <dependency>
       <groupId>org.hibernate.validator</groupId>
@@ -230,13 +226,11 @@
       <artifactId>hibernate-validator-cdi</artifactId>
       <version>7.0.1.Final</version>
     </dependency>
-
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-common</artifactId>
       <version>3.2.3</version>
     </dependency>
-
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
@@ -256,7 +250,6 @@
 
   <build>
     <plugins>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
@@ -269,7 +262,6 @@
           </dependency>
         </dependencies>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -310,7 +302,6 @@
           </execution>
         </executions>
       </plugin>
-
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
@@ -328,7 +319,6 @@
             </format>
           </formats>
           <java>
-
             <googleJavaFormat>
               <version>1.7</version>
               <style>GOOGLE</style>
