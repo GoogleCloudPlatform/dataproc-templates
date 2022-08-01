@@ -52,6 +52,9 @@ public class SnowflakeToGCSConfig {
   @NotEmpty
   private String sfWarehouse;
 
+  @JsonProperty(value = SNOWFLAKE_GCS_AUTOPUSHDOWN)
+  private String sfAutoPushdown;
+
   @JsonProperty(value = SNOWFLAKE_GCS_TABLE)
   private String sfTable;
 
@@ -69,6 +72,9 @@ public class SnowflakeToGCSConfig {
   @JsonProperty(value = SNOWFLAKE_GCS_OUTPUT_FORMAT)
   @NotEmpty
   private String gcsWriteFormat;
+
+  @JsonProperty(value = SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN)
+  private String gcsPartitionColumn;
 
   public String getSfUrl() {
     return this.sfUrl;
@@ -114,6 +120,14 @@ public class SnowflakeToGCSConfig {
     return this.gcsWriteFormat;
   }
 
+  public String getSfAutoPushdown() {
+    return this.sfAutoPushdown;
+  }
+
+  public String getGcsPartitionColumn() {
+    return this.gcsPartitionColumn;
+  }
+
   @Override
   public String toString() {
     return "{"
@@ -133,6 +147,9 @@ public class SnowflakeToGCSConfig {
         + ", sfWarehouse='"
         + getSfWarehouse()
         + "'"
+        + ", sfAutoPushdown='"
+        + getSfAutoPushdown()
+        + "'"
         + ", sfTable='"
         + getSfTable()
         + "'"
@@ -147,6 +164,9 @@ public class SnowflakeToGCSConfig {
         + "'"
         + ", gcsWriteFormat='"
         + getGcsWriteFormat()
+        + "'"
+        + ", gcsPartitionColumn='"
+        + getGcsPartitionColumn()
         + "'"
         + "}";
   }

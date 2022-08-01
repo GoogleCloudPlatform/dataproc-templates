@@ -293,9 +293,11 @@ public interface TemplateConstants {
   String SNOWFLAKE_GCS_SFDATABASE = "snowflake.gcs.sfdatabase";
   String SNOWFLAKE_GCS_SFSCHEMA = "snowflake.gcs.sfschema";
   String SNOWFLAKE_GCS_SFWAREHOUSE = "snowflake.gcs.sfwarehouse";
+  String SNOWFLAKE_GCS_AUTOPUSHDOWN = "snowflake.gcs.autopushdown";
   String SNOWFLAKE_GCS_TABLE = "snowflake.gcs.table";
   String SNOWFLAKE_GCS_QUERY = "snowflake.gcs.query";
   String SNOWFLAKE_GCS_OUTPUT_LOCATION = "snowflake.gcs.output.location";
   String SNOWFLAKE_GCS_OUTPUT_FORMAT = "snowflake.gcs.output.format";
   String SNOWFLAKE_GCS_OUTPUT_MODE = "snowflake.gcs.output.mode";
+  String SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN = "snowflake.gcs.output.partitioncolumn";
 }

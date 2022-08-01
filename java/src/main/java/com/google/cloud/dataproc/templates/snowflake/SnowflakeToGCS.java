@@ -19,6 +19,7 @@ import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.HashMap;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -57,6 +58,7 @@ public class SnowflakeToGCS implements BaseTemplate {
     properties.put("sfDatabase", config.getSfDatabase());
     properties.put("sfSchema", config.getSfSchema());
     properties.put("sfWarehouse", config.getSfWarehouse());
+    properties.put("autopushdown", config.getSfAutoPushdown());
 
     String SNOWFLAKE_SOURCE_NAME = "net.snowflake.spark.snowflake";
     Dataset<Row> inputData =
@@ -69,6 +71,10 @@ public class SnowflakeToGCS implements BaseTemplate {
 
     DataFrameWriter<Row> writer =
         inputData.write().mode(config.getGcsWriteMode()).format(config.getGcsWriteFormat());
+
+    if (StringUtils.isNotBlank(config.getGcsPartitionColumn())) {
+      writer = writer.partitionBy(config.getGcsPartitionColumn());
+    }
 
     writer.save(config.getGcsLocation());
   }
