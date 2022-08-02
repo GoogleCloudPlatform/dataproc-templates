@@ -161,6 +161,12 @@
       <artifactId>hbase-spark</artifactId>
       <version>1.0.0</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.glassfish</groupId>
+          <artifactId>javax.el</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.hbase.connectors.spark/hbase-spark-protocol -->
     <dependency>
