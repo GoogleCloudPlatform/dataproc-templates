@@ -20,8 +20,11 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
 import java.util.Properties;
+import org.apache.commons.lang3.StringUtils;
 
 public class SnowflakeToGCSConfig {
 
@@ -53,6 +56,7 @@ public class SnowflakeToGCSConfig {
   private String sfWarehouse;
 
   @JsonProperty(value = SNOWFLAKE_GCS_AUTOPUSHDOWN)
+  @Pattern(regexp = "on|off")
   private String sfAutoPushdown;
 
   @JsonProperty(value = SNOWFLAKE_GCS_TABLE)
@@ -63,14 +67,17 @@ public class SnowflakeToGCSConfig {
 
   @JsonProperty(value = SNOWFLAKE_GCS_OUTPUT_LOCATION)
   @NotEmpty
+  @Pattern(regexp = "gs://(.+)")
   private String gcsLocation;
 
   @JsonProperty(value = SNOWFLAKE_GCS_OUTPUT_MODE)
   @NotEmpty
+  @Pattern(regexp = "(?i)(Overwrite|ErrorIfExists|Append|Ignore)")
   private String gcsWriteMode;
 
   @JsonProperty(value = SNOWFLAKE_GCS_OUTPUT_FORMAT)
   @NotEmpty
+  @Pattern(regexp = "(?i)(csv|avro|orc|json|parquet)")
   private String gcsWriteFormat;
 
   @JsonProperty(value = SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN)
@@ -128,6 +135,14 @@ public class SnowflakeToGCSConfig {
     return this.gcsPartitionColumn;
   }
 
+  @AssertTrue(
+      message =
+          "Required parameters for SnowflakeToGCS not passed. Template property should be provided for either the input table or an equivalent query, but not both. Refer to snowflake/README.md for more instructions.")
+  private boolean isPropertyValid() {
+    return (StringUtils.isBlank(sfTable) || StringUtils.isBlank(sfQuery))
+        && (StringUtils.isNotBlank(sfTable) || StringUtils.isNotBlank(sfQuery));
+  }
+
   @Override
   public String toString() {
     return "{"
@@ -170,8 +185,6 @@ public class SnowflakeToGCSConfig {
         + "'"
         + "}";
   }
-
-  // TODO: Add check for only one provided query or table
 
   public static SnowflakeToGCSConfig fromProperties(Properties properties) {
     return mapper.convertValue(properties, SnowflakeToGCSConfig.class);

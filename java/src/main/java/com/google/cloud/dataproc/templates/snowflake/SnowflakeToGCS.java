@@ -60,14 +60,14 @@ public class SnowflakeToGCS implements BaseTemplate {
     properties.put("sfWarehouse", config.getSfWarehouse());
     properties.put("autopushdown", config.getSfAutoPushdown());
 
+    if (StringUtils.isNotBlank(config.getSfTable())) {
+      properties.put("dbtable", config.getSfTable());
+    } else {
+      properties.put("query", config.getSfQuery());
+    }
+
     String SNOWFLAKE_SOURCE_NAME = "net.snowflake.spark.snowflake";
-    Dataset<Row> inputData =
-        spark
-            .read()
-            .format(SNOWFLAKE_SOURCE_NAME)
-            .options(properties)
-            .option("dbtable", config.getSfTable())
-            .load();
+    Dataset<Row> inputData = spark.read().format(SNOWFLAKE_SOURCE_NAME).options(properties).load();
 
     DataFrameWriter<Row> writer =
         inputData.write().mode(config.getGcsWriteMode()).format(config.getGcsWriteFormat());
