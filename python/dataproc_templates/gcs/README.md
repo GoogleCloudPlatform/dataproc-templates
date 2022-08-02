@@ -414,3 +414,85 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --text.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
     --text.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
+# GCS To GCS - SQL Transformation
+
+Template for reading files from Google Cloud Storage, applying data transformations using Spark SQL and then writing the tranformed data back to Google Cloud Storage. It supports reading and writing JSON, CSV, Parquet and Avro formats.
+
+## Arguments
+
+* `gcs.to.gcs.input.location`: GCS location of the input files (format: `gs://BUCKET/...`)
+* `gcs.to.gcs.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `gcs.to.gcs.temp.view.name`: Temp view name for creating a spark sql view on source data
+* `gcs.to.gcs.sql.query`: SQL query for data transformation. This must use the
+                        temp view name as the table to query from.
+* `gcs.to.gcs.output.format`: Output file format (one of: avro,parquet,csv,json)
+* `gcs.to.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+* `gcs.to.gcs.output.partition.column`: Partition column name to partition the final output in destination bucket'
+* `gcs.to.gcs.output.location`: destination GCS location
+## Usage
+
+```
+$ python main.py --template GCSTOGCS --help
+
+usage: main.py [-h] --gcs.to.gcs.input.location GCS.TO.GCS.INPUT.LOCATION
+               --gcs.to.gcs.input.format {avro,parquet,csv,json}
+               [--gcs.to.gcs.temp.view.name GCS.TO.GCS.TEMP.VIEW.NAME]
+               [--gcs.to.gcs.sql.query GCS.TO.GCS.SQL.QUERY]
+               [--gcs.to.gcs.output.partition.column GCS.TO.GCS.OUTPUT.PARTITION.COLUMN]
+               [--gcs.to.gcs.output.format {avro,parquet,csv,json}]
+               [--gcs.to.gcs.output.mode {overwrite,append,ignore,errorifexists}]
+               --gcs.to.gcs.output.location GCS.TO.GCS.OUTPUT.LOCATION
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --gcs.to.gcs.input.location GCS.TO.GCS.INPUT.LOCATION
+                        GCS location of the input files
+  --gcs.to.gcs.input.format {avro,parquet,csv,json}
+                        GCS input file format (one of: avro,parquet,csv,json)
+  --gcs.to.gcs.temp.view.name GCS.TO.GCS.TEMP.VIEW.NAME
+                        Temp view name for creating a spark sql view on 
+                        source data
+  --gcs.to.gcs.sql.query GCS.TO.GCS.SQL.QUERY
+                        SQL query for data transformation. This must use the
+                        temp view name as the table to query from.
+  --gcs.to.gcs.output.partition.column GCS.TO.GCS.OUTPUT.PARTITION.COLUMN
+                        Partition column name to partition the 
+                        final output in destination bucket
+  --gcs.to.gcs.output.format {avro,parquet,csv,json}
+                        Output write format (one of:
+                        avro,parquet,csv,json)(Defaults to parquet)
+  --gcs.to.gcs.output.mode {overwrite,append,ignore,errorifexists}
+                        Output write mode (one of:
+                        append,overwrite,ignore,errorifexists) (Defaults to
+                        append)
+  --gcs.to.gcs.output.location GCS.TO.GCS.OUTPUT.LOCATION
+                        destination GCS location                     
+```
+
+## Required JAR files
+
+```
+
+No specific jar files are needed for this template. For using AVRO file format, spark-avro.jar is neede. However, this is already accessible to dataproc serverless.
+
+```
+
+
+## Example submission
+
+```
+export GCP_PROJECT=<project_id>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export JARS=<gcs-bucket-location-containing-jar-file> 
+
+./bin/start.sh \
+-- --template=GCSTOGCS 
+    --gcs.to.gcs.input.location="<gs://bucket/path>" \
+    --gcs.to.gcs.input.format="<json|csv|parquet|avro>" \
+    --gcs.to.gcs.temp.view.name="<view-name>" \
+    --gcs.to.gcs.sql.query="<sql-query>" \
+    --gcs.to.gcs.output.format="<json|csv|parquet|avro>" \
+    --gcs.to.gcs.output.mode="<append|overwrite|ignore|errorifexists>" \
+    --gcs.to.gcs.output.location="<gs://bucket/path>"
+```

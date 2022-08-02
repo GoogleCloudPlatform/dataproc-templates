@@ -96,6 +96,16 @@ BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format"
 BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode"
 BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location"
 
+# GCS To GCS with transformations
+GCS_TO_GCS_INPUT_LOCATION = "gcs.to.gcs.input.location"
+GCS_TO_GCS_INPUT_FORMAT = "gcs.to.gcs.input.format"
+GCS_TO_GCS_TEMP_VIEW_NAME = "gcs.to.gcs.temp.view.name"
+GCS_TO_GCS_SQL_QUERY = "gcs.to.gcs.sql.query"
+GCS_TO_GCS_OUTPUT_FORMAT = "gcs.to.gcs.output.format"
+GCS_TO_GCS_OUTPUT_MODE = "gcs.to.gcs.output.mode"
+GCS_TO_GCS_OUTPUT_PARTITION_COLUMN = "gcs.to.gcs.output.partition.column"
+GCS_TO_GCS_OUTPUT_LOCATION = "gcs.to.gcs.output.location"
+
 # Hive to BigQuery
 HIVE_BQ_OUTPUT_MODE = "hive.bigquery.output.mode"
 HIVE_BQ_LD_TEMP_BUCKET_NAME = "hive.bigquery.temp.bucket.name"
