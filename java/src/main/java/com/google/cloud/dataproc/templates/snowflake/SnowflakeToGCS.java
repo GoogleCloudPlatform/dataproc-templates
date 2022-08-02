@@ -19,6 +19,7 @@ import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.HashMap;
+import net.snowflake.spark.snowflake.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.Dataset;
@@ -26,10 +27,6 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-// import net.snowflake.spark.snowflake.Utils;
-
-// import net.snowflake.spark.snowflake.Utils.SNOWFLAKE_SOURCE_NAME;
 
 public class SnowflakeToGCS implements BaseTemplate {
 
@@ -66,8 +63,8 @@ public class SnowflakeToGCS implements BaseTemplate {
       properties.put("query", config.getSfQuery());
     }
 
-    String SNOWFLAKE_SOURCE_NAME = "net.snowflake.spark.snowflake";
-    Dataset<Row> inputData = spark.read().format(SNOWFLAKE_SOURCE_NAME).options(properties).load();
+    Dataset<Row> inputData =
+        spark.read().format(Utils.SNOWFLAKE_SOURCE_NAME()).options(properties).load();
 
     DataFrameWriter<Row> writer =
         inputData.write().mode(config.getGcsWriteMode()).format(config.getGcsWriteFormat());
