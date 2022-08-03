@@ -75,7 +75,9 @@ public class GCStoGCS implements BaseTemplate {
 
       DataFrameWriter<Row> writer = inputData.write().mode(gcsWriteMode).format(gcsOutputFormat);
 
-      spark.conf().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");     // This default property will make sure that no SUCCESS file should be created after transformation in the target folder/directory
+      spark.conf().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");    // This default property will make sure that
+                                                                                        // no SUCCESS file should be created after transformation
+                                                                                        // in the target folder/directory
       writer.save(gcsOutputLocation);
 
       spark.stop();
