@@ -52,7 +52,6 @@ public class SnowflakeToGCSConfig {
   private String sfSchema;
 
   @JsonProperty(value = SNOWFLAKE_GCS_SFWAREHOUSE)
-  @NotEmpty
   private String sfWarehouse;
 
   @JsonProperty(value = SNOWFLAKE_GCS_AUTOPUSHDOWN)

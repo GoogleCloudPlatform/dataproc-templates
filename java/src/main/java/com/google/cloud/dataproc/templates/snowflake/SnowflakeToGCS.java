@@ -54,8 +54,11 @@ public class SnowflakeToGCS implements BaseTemplate {
     properties.put("sfPassword", config.getSfPassword());
     properties.put("sfDatabase", config.getSfDatabase());
     properties.put("sfSchema", config.getSfSchema());
-    properties.put("sfWarehouse", config.getSfWarehouse());
     properties.put("autopushdown", config.getSfAutoPushdown());
+
+    if (StringUtils.isNotBlank(config.getSfWarehouse())) {
+      properties.put("sfWarehouse", config.getSfWarehouse());
+    }
 
     if (StringUtils.isNotBlank(config.getSfTable())) {
       properties.put("dbtable", config.getSfTable());
