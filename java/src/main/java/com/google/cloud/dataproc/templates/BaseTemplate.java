@@ -41,7 +41,8 @@ public interface BaseTemplate {
     PUBSUBTOGCS,
     HBASETOGCS,
     GCSTOJDBC,
-    KAFKATOBQ
+    KAFKATOBQ,
+    KAFKATOGCS
   }
 
   default Properties getProperties() {
