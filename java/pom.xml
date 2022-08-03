@@ -115,6 +115,12 @@
       <artifactId>spark-sql-kafka-0-10_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
+
+    <dependency>
+        <groupId>net.snowflake</groupId>
+        <artifactId>spark-snowflake_2.12</artifactId>
+        <version>2.10.0-spark_3.2</version>
+    </dependency>
     
     <dependency>
       <groupId>com.google.oauth-client</groupId>
