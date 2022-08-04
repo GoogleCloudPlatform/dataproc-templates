@@ -78,7 +78,7 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
               + "in resources/conf/template.properties file.");
     }
     LOGGER.info(
-        "Starting Hive to GCS spark job with following parameters:"
+        "Starting Hbase to GCS spark job with following parameters:"
             + "1. {}:{}"
             + "2. {}:{}"
             + "3. {}:{}"
