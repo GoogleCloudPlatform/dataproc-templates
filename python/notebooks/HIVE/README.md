@@ -36,9 +36,9 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 
 ### Audit Table
 
-Beside going into each log, the template stores audit data for each table load in CSV format in GCS bucket provided.
+The template stores audit data for each table load in CSV format in GCS bucket provided.
 
-In order to view the data create an external table pointing to the GCS bucket.
+In order to view the data create an external table pointing to the GCS bucket as below.
 
 
 ```
