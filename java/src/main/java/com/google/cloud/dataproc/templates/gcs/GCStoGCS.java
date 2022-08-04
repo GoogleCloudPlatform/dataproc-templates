@@ -18,7 +18,6 @@ package com.google.cloud.dataproc.templates.gcs;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
@@ -62,25 +61,29 @@ public class GCStoGCS implements BaseTemplate {
 
     SparkSession spark = null;
 
-      spark = SparkSession.builder().appName("GCS to GCS load").getOrCreate();
+    spark = SparkSession.builder().appName("GCS to GCS load").getOrCreate();
 
-      Dataset<Row> inputData = null;
+    Dataset<Row> inputData = null;
 
     inputData = spark.read().format(inputFileFormat).load(inputFileLocation);
 
-      if (tempTable != null && tempQuery != null) {
-        inputData.createOrReplaceGlobalTempView(tempTable);
-        inputData = spark.sql(tempQuery);
-      }
+    if (tempTable != null && tempQuery != null) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
 
-      DataFrameWriter<Row> writer = inputData.write().mode(gcsWriteMode).format(gcsOutputFormat);
+    DataFrameWriter<Row> writer = inputData.write().mode(gcsWriteMode).format(gcsOutputFormat);
 
-      spark.conf().set("mapreduce.fileoutputcommitter.marksuccessfuljobs", "false");    // This default property will make sure that
-                                                                                        // no SUCCESS file should be created after transformation
-                                                                                        // in the target folder/directory
-      writer.save(gcsOutputLocation);
+    spark
+        .conf()
+        .set(
+            "mapreduce.fileoutputcommitter.marksuccessfuljobs",
+            "false"); // This default property will make sure that
+    // no SUCCESS file should be created after transformation
+    // in the target folder/directory
+    writer.save(gcsOutputLocation);
 
-      spark.stop();
+    spark.stop();
   }
 
   void validateInput() {
