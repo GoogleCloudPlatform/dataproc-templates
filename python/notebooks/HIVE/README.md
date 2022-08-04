@@ -6,7 +6,7 @@ Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook 
 
 ### Overview
 
-[HiveToBQ- PySpark Notebook](./HIVEtoBigquery_vertex_pipeline_pyspark.ipynb) is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
+[HiveToBQ- PySpark Notebook](./HIVEtoBigquery_vertex_pipeline_pyspark.ipynb) dataproc template is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
 
 ### Requirements
 
@@ -31,12 +31,13 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 * Add user configuration in Step 1
 * Run all the cells from Menu->Run->Run All Cells
 * Get the status of Dataproc Jobs from VertexAI UI using the link printed after running Step 8 (Get List of Tables from Hive) and Step 12 (Migrate Tables)
-* Detailed logs can be seen from Dataproc Batch UI [here](https://console.cloud.google.com/dataproc/batches?_ga=2.45339748.1795356115.1659430333-470209831.1657040299)
-  * Dataproc Job naming convention: "b-"+INPUT_HIVE_DATABASE+"-"+ datetime
+* Detailed logs can be seen from [Dataproc Batch UI](https://console.cloud.google.com/dataproc/batches?_ga=2.45339748.1795356115.1659430333-470209831.1657040299)
+  * Dataproc Job naming convention: "b-"+INPUT_HIVE_DATABASE+"-"+ CURRENT_DATETIME
 
 ### Audit Table
 
 Beside going into each log, the template stores audit data for each table load in CSV format in GCS bucket provided.
+
 In order to view the data create an external table pointing to the GCS bucket.
 
 
