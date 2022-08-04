@@ -31,8 +31,29 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 * Add user configuration in Step 1
 * Run all the cells from Menu->Run->Run All Cells
 * Get the status of Dataproc Jobs from VertexAI UI using the link printed after running Step 8 (Get List of Tables from Hive) and Step 12 (Migrate Tables)
-* Detailed logs can be seen from Dataproc Batch UI.
-[![Go To Dataproc batches](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/dataproc/batches?_ga=2.45339748.1795356115.1659430333-470209831.1657040299)
+* Detailed logs can be seen from Dataproc Batch UI [here](https://console.cloud.google.com/dataproc/batches?_ga=2.45339748.1795356115.1659430333-470209831.1657040299)
+  * Dataproc Job naming convention: "b-"+INPUT_HIVE_DATABASE+"-"+ datetime
+
+### Audit Table
+
+Beside going into each log, the template stores audit data for each table load in CSV format in GCS bucket provided.
+In order to view the data create an external table pointing to the GCS bucket.
 
 
-
+```
+ CREATE EXTERNAL TABLE `project-id.dataset-name.hive_bq_audit`
+(
+  Migration_id STRING,
+  Source_DB_Name STRING,
+  Source_Table_Name STRING,
+  Target_DB_Name STRING,
+  Target_Table_Name STRING,
+  Job_Start_Time STRING,
+  Job_End_Time STRING,
+  Job_Status STRING
+)
+OPTIONS(
+  format="CSV",
+  uris=["gs://<bucket-name>/audit/*"]
+);
+```
