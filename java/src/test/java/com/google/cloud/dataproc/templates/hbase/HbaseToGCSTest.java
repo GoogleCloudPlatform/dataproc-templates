@@ -49,9 +49,7 @@ public class HbaseToGCSTest {
     PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_FILE_FORMAT, "csv");
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
     hbaseToGCSTest = new HbaseToGCS();
-    Runnable runnable = hbaseToGCSTest::runTemplate;
-    runnable.run();
-    assertDoesNotThrow(hbaseToGCSTest::runTemplate);
+    assertDoesNotThrow(hbaseToGCSTest::validateInput);
   }
 
   @ParameterizedTest
@@ -62,7 +60,7 @@ public class HbaseToGCSTest {
     hbaseToGCSTest = new HbaseToGCS();
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> hbaseToGCSTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> hbaseToGCSTest.validateInput());
     assertEquals(
         "Required parameters for HbaseToGCS not passed. "
             + "Set mandatory parameter for HbaseToGCS template in "
