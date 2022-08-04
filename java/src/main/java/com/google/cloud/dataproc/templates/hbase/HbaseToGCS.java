@@ -61,20 +61,26 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
     }
 
     SparkSession spark = SparkSession.builder().appName("Spark HbaseToGCS Job").getOrCreate();
-
-    Map<String, String> optionsMap = new HashMap<>();
-    optionsMap.put(HBaseTableCatalog.tableCatalog(), catalogue.replaceAll("\\s", ""));
-
-    // Read from HBase
-    Dataset dataset =
-        spark
-            .read()
-            .format("org.apache.hadoop.hbase.spark")
-            .options(optionsMap)
-            .option("hbase.spark.use.hbasecontext", "false")
-            .load();
-
-    // Write To GCS
-    dataset.write().format(outputFileFormat).mode(gcsSaveMode).save(gcsWritePath);
+    Dataset dataset = null;
+    try {
+      Map<String, String> optionsMap = new HashMap<>();
+      optionsMap.put(HBaseTableCatalog.tableCatalog(), catalogue.replaceAll("\\s", ""));
+      // Read from HBase
+      dataset =
+          spark
+              .read()
+              .format("org.apache.hadoop.hbase.spark")
+              .options(optionsMap)
+              .option("hbase.spark.use.hbasecontext", "false")
+              .load();
+    } catch (NoClassDefFoundError error) {
+      LOGGER.error(
+          "Unable to use Hbase format. This might be because dependency are  not loaded properly for Hbase-Spark Connector. "
+              + "Please refer Readme [Required Jar] to pass right dependency jar."
+              + error.getMessage());
+    }
+    if (dataset != null)
+      // Write To GCS
+      dataset.write().format(outputFileFormat).mode(gcsSaveMode).save(gcsWritePath);
   }
 }
