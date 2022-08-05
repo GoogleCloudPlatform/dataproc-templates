@@ -28,7 +28,7 @@ __all__ = ['GCSToGCSTemplate']
 
 class GCSToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from GCS into BigQuery
+    Dataproc template implementing loads from GCS into GCS post SQL transformation
     """
     
     @staticmethod
@@ -59,7 +59,7 @@ class GCSToGCSTemplate(BaseTemplate):
             dest=constants.GCS_TO_GCS_TEMP_VIEW_NAME,
             required=False,
             default="",
-            help='Temp view name for creating a spark sql view on source data'
+            help='Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query'
         )
         parser.add_argument(
             f'--{constants.GCS_TO_GCS_SQL_QUERY}',

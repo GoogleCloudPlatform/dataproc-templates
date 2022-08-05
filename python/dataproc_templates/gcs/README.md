@@ -422,9 +422,11 @@ Template for reading files from Google Cloud Storage, applying data transformati
 
 * `gcs.to.gcs.input.location`: GCS location of the input files (format: `gs://BUCKET/...`)
 * `gcs.to.gcs.input.format`: Input file format (one of: avro,parquet,csv,json)
-* `gcs.to.gcs.temp.view.name`: Temp view name for creating a spark sql view on source data
+* `gcs.to.gcs.temp.view.name`: Temp view name for creating a spark sql view on 
+  source data. 
+  This name has to match with the table name that will be used in the SQLquery
 * `gcs.to.gcs.sql.query`: SQL query for data transformation. This must use the
-                        temp view name as the table to query from.
+                          temp view name as the table to query from.
 * `gcs.to.gcs.output.format`: Output file format (one of: avro,parquet,csv,json)
 * `gcs.to.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `gcs.to.gcs.output.partition.column`: Partition column name to partition the final output in destination bucket'
@@ -451,7 +453,8 @@ optional arguments:
                         GCS input file format (one of: avro,parquet,csv,json)
   --gcs.to.gcs.temp.view.name GCS.TO.GCS.TEMP.VIEW.NAME
                         Temp view name for creating a spark sql view on 
-                        source data
+                        source data. This name has to match with the 
+                        table name that will be used in the SQL query
   --gcs.to.gcs.sql.query GCS.TO.GCS.SQL.QUERY
                         SQL query for data transformation. This must use the
                         temp view name as the table to query from.
@@ -490,8 +493,8 @@ export JARS=<gcs-bucket-location-containing-jar-file>
 -- --template=GCSTOGCS 
     --gcs.to.gcs.input.location="<gs://bucket/path>" \
     --gcs.to.gcs.input.format="<json|csv|parquet|avro>" \
-    --gcs.to.gcs.temp.view.name="<view-name>" \
-    --gcs.to.gcs.sql.query="<sql-query>" \
+    --gcs.to.gcs.temp.view.name="temp" \
+    --gcs.to.gcs.sql.query="select *, 1 as col from temp" \
     --gcs.to.gcs.output.format="<json|csv|parquet|avro>" \
     --gcs.to.gcs.output.mode="<append|overwrite|ignore|errorifexists>" \
     --gcs.to.gcs.output.location="<gs://bucket/path>"
