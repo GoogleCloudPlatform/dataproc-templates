@@ -44,6 +44,24 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
 
   @Override
   public void runTemplate() {
+    validateInput();
+    SparkSession spark = SparkSession.builder().appName("Spark HbaseToGCS Job").getOrCreate();
+    Map<String, String> optionsMap = new HashMap<>();
+    optionsMap.put(HBaseTableCatalog.tableCatalog(), catalogue.replaceAll("\\s", ""));
+    // Read from HBase
+    Dataset dataset =
+        spark
+            .read()
+            .format("org.apache.hadoop.hbase.spark")
+            .options(optionsMap)
+            .option("hbase.spark.use.hbasecontext", "false")
+            .load();
+    if (dataset != null)
+      // Write To GCS
+      dataset.write().format(outputFileFormat).mode(gcsSaveMode).save(gcsWritePath);
+  }
+
+  public void validateInput() {
     if (StringUtils.isAllBlank(outputFileFormat)
         || StringUtils.isAllBlank(gcsSaveMode)
         || StringUtils.isAllBlank(gcsWritePath)
@@ -59,22 +77,19 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
               + "Set mandatory parameter for HbaseToGCS template "
               + "in resources/conf/template.properties file.");
     }
-
-    SparkSession spark = SparkSession.builder().appName("Spark HbaseToGCS Job").getOrCreate();
-
-    Map<String, String> optionsMap = new HashMap<>();
-    optionsMap.put(HBaseTableCatalog.tableCatalog(), catalogue.replaceAll("\\s", ""));
-
-    // Read from HBase
-    Dataset dataset =
-        spark
-            .read()
-            .format("org.apache.hadoop.hbase.spark")
-            .options(optionsMap)
-            .option("hbase.spark.use.hbasecontext", "false")
-            .load();
-
-    // Write To GCS
-    dataset.write().format(outputFileFormat).mode(gcsSaveMode).save(gcsWritePath);
+    LOGGER.info(
+        "Starting Hbase to GCS spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {},{}",
+        HBASE_TO_GCS_OUTPUT_PATH,
+        gcsWritePath,
+        HBASE_TO_GCS_OUTPUT_FILE_FORMAT,
+        outputFileFormat,
+        HBASE_TO_GCS_OUTPUT_SAVE_MODE,
+        gcsSaveMode,
+        HBASE_TO_GCS_TABLE_CATALOG,
+        catalogue);
   }
 }
