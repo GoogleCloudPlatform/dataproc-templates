@@ -2,7 +2,8 @@
 
 Template for reading tables from HIVE Database and writing to BigQuery Dataset.
 
-Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to dataproc-templates/python/notebooks/HIVE folder and open HIVEtoBigquery_vertex_pipeline_pyspark notebook.
+Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
+[dataproc-templates/python/notebooks/HIVE](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/hive2bq/python/notebooks/HIVE) folder and open HIVEtoBigquery_vertex_pipeline_pyspark notebook.
 
 ### Overview
 
