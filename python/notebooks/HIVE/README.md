@@ -28,7 +28,8 @@ Below configurations are required before proceeding further.
 
 This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
 
-### Required JAR files
+### Procedure to load BQ tables from HIVE:
+Step by Step instructions ar given before each cell in the python notebook.
 
 * Add user configuration in Step 1
 * Run all the cells from Menu->Run->Run All Cells
