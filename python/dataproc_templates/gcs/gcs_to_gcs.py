@@ -16,9 +16,9 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
+import sys
 
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
-from google.cloud import storage
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -123,6 +123,9 @@ class GCSToGCSTemplate(BaseTemplate):
         
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
+        
+        if getattr(known_args, constants.GCS_TO_GCS_SQL_QUERY) and not getattr(known_args, constants.GCS_TO_GCS_TEMP_VIEW_NAME):
+            sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
 
         return vars(known_args)
     
@@ -164,19 +167,16 @@ class GCSToGCSTemplate(BaseTemplate):
             input_data = spark.read \
                 .json(gcs_input_location)
         
-        if ((gcs_temp_view != "") & (sql_query != "")):
+        if sql_query:
             # Create temp view on source data
             input_data.createOrReplaceTempView(gcs_temp_view)
-            
             # Execute SQL
             output_data = spark.sql(sql_query)
-            
-        elif (gcs_temp_view == "" & sql_query != ""):
-            logger.error("Temp view name cannot be null if you want to do data transformations with query")
-            exit (1)
+        else:
+            output_data = input_data
         
         # Write
-        if (output_partition_column != ""):
+        if output_partition_column:
             writer: DataFrameWriter = output_data.write.mode(gcs_output_mode).partitionBy(output_partition_column)
         else:
             writer: DataFrameWriter = output_data.write.mode(gcs_output_mode)
