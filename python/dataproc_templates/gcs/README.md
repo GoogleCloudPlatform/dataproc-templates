@@ -490,7 +490,7 @@ export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 export JARS=<gcs-bucket-location-containing-jar-file> 
 
 ./bin/start.sh \
--- --template=GCSTOGCS 
+-- --template=GCSTOGCS \ 
     --gcs.to.gcs.input.location="<gs://bucket/path>" \
     --gcs.to.gcs.input.format="<json|csv|parquet|avro>" \
     --gcs.to.gcs.temp.view.name="temp" \
