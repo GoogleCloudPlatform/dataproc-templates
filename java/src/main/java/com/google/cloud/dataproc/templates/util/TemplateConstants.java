@@ -67,6 +67,12 @@ public interface TemplateConstants {
   String HBASE_TO_GCS_OUTPUT_PATH = "hbasetogcs.output.path";
   String HBASE_TO_GCS_TABLE_CATALOG = "hbasetogcs.table.catalog";
 
+  /** Property values for HbaseToBQ */
+  String HBASE_TO_BQ_OUTPUT_DATASET_NAME = "hbasetobq.output.dataset";
+
+  String HBASE_TO_BQ_TABLE_NAME = "hbasetobq.output.table";
+  String HBASE_TO_BQ_TABLE_CATALOG = "hbasetobq.input.hbase.catalog";
+  String HBASE_TO_BQ_TEMP_BUCKET_NAME = "hbasetobq.temp.bucket";
   /** Property values for JDBCToBQ */
   String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
 
