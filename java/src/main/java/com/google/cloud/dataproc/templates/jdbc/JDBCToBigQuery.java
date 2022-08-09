@@ -64,34 +64,8 @@ public class JDBCToBigQuery implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(bqLocation)
-        || StringUtils.isAllBlank(jdbcURL)
-        || StringUtils.isAllBlank(jdbcDriverClassName)
-        || StringUtils.isAllBlank(jdbcSQL)
-        || StringUtils.isAllBlank(temporaryGcsBucket)) {
-      LOGGER.error(
-          "{},{},{},{},{} are required parameters. ",
-          JDBC_TO_BQ_BIGQUERY_LOCATION,
-          JDBC_TO_BQ_JDBC_URL,
-          JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME,
-          JDBC_TO_BQ_SQL,
-          JDBC_TO_BQ_TEMP_GCS_BUCKET);
-      throw new IllegalArgumentException(
-          "Required parameters for JDBCToBQ not passed. "
-              + "Set mandatory parameter for JDBCToBQ template "
-              + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
-    }
-
-    if (StringUtils.isNotBlank(concatedPartitionProps)
-        && ((StringUtils.isBlank(jdbcSQLPartitionColumn)
-                || StringUtils.isBlank(jdbcSQLLowerBound)
-                || StringUtils.isBlank(jdbcSQLUpperBound))
-            || StringUtils.isBlank(jdbcSQLNumPartitions))) {
-      throw new IllegalArgumentException(
-          "Required parameters for JDBCToGCS not passed. "
-              + "Set all the sql partitioning parameters together"
-              + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
-    }
+	validateInput();
+	
     LOGGER.info(
         "Starting JDBC to BigQuery spark job with following parameters:"
             + "1. {}:{}"
@@ -142,5 +116,37 @@ public class JDBCToBigQuery implements BaseTemplate {
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
     inputData.write().mode(bqWriteMode).format("bigquery").option("table", bqLocation).save();
+  }
+  
+  void validateInput() {
+	 LOGGER.info("information msg");
+	   if (StringUtils.isAllBlank(bqLocation)
+		        || StringUtils.isAllBlank(jdbcURL)
+		        || StringUtils.isAllBlank(jdbcDriverClassName)
+		        || StringUtils.isAllBlank(jdbcSQL)
+		        || StringUtils.isAllBlank(temporaryGcsBucket)) {
+		      LOGGER.error(
+		          "{},{},{},{},{} are required parameters. ",
+		          JDBC_TO_BQ_BIGQUERY_LOCATION,
+		          JDBC_TO_BQ_JDBC_URL,
+		          JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME,
+		          JDBC_TO_BQ_SQL,
+		          JDBC_TO_BQ_TEMP_GCS_BUCKET);
+		      throw new IllegalArgumentException(
+		          "Required parameters for JDBCToBQ not passed. "
+		              + "Set mandatory parameter for JDBCToBQ template "
+		              + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
+		    }
+
+		    if (StringUtils.isNotBlank(concatedPartitionProps)
+		        && ((StringUtils.isBlank(jdbcSQLPartitionColumn)
+		                || StringUtils.isBlank(jdbcSQLLowerBound)
+		                || StringUtils.isBlank(jdbcSQLUpperBound))
+		            || StringUtils.isBlank(jdbcSQLNumPartitions))) {
+		      throw new IllegalArgumentException(
+		          "Required parameters for JDBCToGCS not passed. "
+		              + "Set all the sql partitioning parameters together"
+		              + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
+		    }
   }
 }
