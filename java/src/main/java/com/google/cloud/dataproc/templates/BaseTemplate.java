@@ -43,7 +43,7 @@ public interface BaseTemplate {
     HBASETOGCS,
     GCSTOJDBC,
     KAFKATOBQ,
-    GCSTOHBASE
+    GCSTOBIGTABLE
   }
 
   default Properties getProperties() {

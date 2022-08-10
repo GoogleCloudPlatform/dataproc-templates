@@ -75,7 +75,7 @@ public class DataProcTemplate {
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
-          .put(TemplateName.GCSTOHBASE, (args) -> new GCSToBigTable())
+          .put(TemplateName.GCSTOBIGTABLE, (args) -> new GCSToBigTable())
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
