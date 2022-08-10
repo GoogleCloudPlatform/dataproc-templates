@@ -20,10 +20,7 @@ import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
-import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
-import com.google.cloud.dataproc.templates.gcs.GCSToSpanner;
-import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
-import com.google.cloud.dataproc.templates.gcs.GCStoGCS;
+import com.google.cloud.dataproc.templates.gcs.*;
 import com.google.cloud.dataproc.templates.general.GeneralTemplate;
 import com.google.cloud.dataproc.templates.hbase.HbaseToGCS;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
@@ -78,6 +75,7 @@ public class DataProcTemplate {
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
+          .put(TemplateName.GCSTOHBASE, (args) -> new GCSToBigTable())
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";

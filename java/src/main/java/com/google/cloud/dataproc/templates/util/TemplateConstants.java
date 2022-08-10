@@ -184,6 +184,14 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
 
+  /** GCS to Bigtable properties */
+  String GCS_TO_BT_PROJECT_ID = "gcstobt.project.id";
+
+  String GCS_TO_BT_INSTANCE_ID = "gcstobt.instance.id";
+  String GCS_TO_BT_INPUT_PATH = "gcstobt.input.path";
+  String GCS_TO_BT_INPUT_FILE_FORMAT = "gcstobt.input.fileformat";
+  String GCS_TO_BT_OUTPUT_CATALOG = "gcstobt.output.catalog";
+
   /** PubSubToGCS Template configs. */
   // Project that contains the input PubSub subscription to be read
   String PUBSUB_GCS_INPUT_PROJECT_ID_PROP = "pubsubtogcs.input.project.id";
