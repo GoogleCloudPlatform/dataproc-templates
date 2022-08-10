@@ -16,7 +16,6 @@
 
 import mock
 import pyspark
-from google.cloud import storage
 
 from dataproc_templates.gcs.gcs_to_gcs import GCSToGCSTemplate
 import dataproc_templates.util.template_constants as constants
