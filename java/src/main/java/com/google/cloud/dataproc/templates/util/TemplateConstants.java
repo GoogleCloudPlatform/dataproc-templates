@@ -88,6 +88,7 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME = "jdbctogcs.jdbc.driver.class.name";
   String JDBC_TO_GCS_WRITE_MODE = "jdbctogcs.write.mode";
   String JDBC_TO_GCS_SQL = "jdbctogcs.sql";
+  String JDBC_TO_GCS_SQL_FILE = "jdbctogcs.sql.file";
   String JDBC_TO_GCS_SQL_PARTITION_COLUMN = "jdbctogcs.sql.partitionColumn";
   String JDBC_TO_GCS_SQL_LOWER_BOUND = "jdbctogcs.sql.lowerBound";
   String JDBC_TO_GCS_SQL_UPPER_BOUND = "jdbctogcs.sql.upperBound";
