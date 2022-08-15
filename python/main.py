@@ -22,6 +22,7 @@ from dataproc_templates import BaseTemplate, TemplateName
 from dataproc_templates.gcs.gcs_to_jdbc import GCSToJDBCTemplate
 from dataproc_templates.util import get_template_name, track_template_invocation
 from dataproc_templates.gcs.gcs_to_bigquery import GCSToBigQueryTemplate
+from dataproc_templates.gcs.gcs_to_gcs import GCSToGCSTemplate
 from dataproc_templates.gcs.gcs_to_mongo import GCSToMONGOTemplate
 from dataproc_templates.gcs.gcs_to_bigtable import GCSToBigTableTemplate
 from dataproc_templates.bigquery.bigquery_to_gcs import BigQueryToGCSTemplate
@@ -39,6 +40,7 @@ LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
 # of BaseTemplate
 TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.GCSTOBIGQUERY: GCSToBigQueryTemplate,
+    TemplateName.GCSTOGCS: GCSToGCSTemplate,
     TemplateName.GCSTOBIGTABLE: GCSToBigTableTemplate,
     TemplateName.BIGQUERYTOGCS: BigQueryToGCSTemplate,
     TemplateName.HIVETOBIGQUERY: HiveToBigQueryTemplate,
