@@ -5,7 +5,7 @@
 * Customize the subnet using following command
 
   ```
-   export SUBNET=projects/<gcp-project>/regions/<region>/subnetworks/test-subnet1
+   export SUBNET=projects/<gcp-project>/regions/<region>/subnetworks/<subnet-name>
   ```
 
 
