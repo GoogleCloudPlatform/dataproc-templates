@@ -46,6 +46,7 @@ FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
 TEMP_GCS_BUCKET="temporaryGcsBucket"
 MONGO_URL = "spark.mongodb.output.uri"
+MONGO_INPUT_URI = "spark.mongodb.input.uri"
 MONGO_DATABASE = "database"
 MONGO_COLLECTION = "collection"
 FORMAT_MONGO = "com.mongodb.spark.sql.DefaultSource"
@@ -84,6 +85,14 @@ GCS_MONGO_OUTPUT_DATABASE = "gcs.mongo.output.database"
 GCS_MONGO_OUTPUT_COLLECTION = "gcs.mongo.output.collection"
 GCS_MONGO_OUTPUT_MODE = "gcs.mongo.output.mode"
 GCS_MONGO_BATCH_SIZE = "gcs.mongo.batch.size"
+
+# Mongo to GCS
+MONGO_GCS_OUTPUT_LOCATION = "mongo.gcs.output.location"
+MONGO_GCS_OUTPUT_FORMAT = "mongo.gcs.output.format"
+MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode"
+MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri"
+MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database"
+MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection"
 
 # GCS to BigTable
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
