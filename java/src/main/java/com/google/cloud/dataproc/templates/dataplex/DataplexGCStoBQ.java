@@ -73,7 +73,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   public static String SPARK_SQL_COMPARE_COLS = "t1.%s=t2.%s";
   public static String SPARK_SQL_AND = " AND ";
   public static String SPARK_SQL_GET_NEW_PATHS =
-      "SELECT %s FROM %s t1 LEFT JOIN %s t2 ON %s WHERE t2.id is null";
+      "SELECT %s FROM %s t1 LEFT JOIN %s t2 ON %s WHERE t2.%s is null";
   public static String SPARK_SQL_OUTPUT_TABLE_TEMP_VIEW_NAME = "__table__";
   public static String GCS_PATH_PREFIX = "gs://";
   public static String EMPTY_STRING = "";
@@ -288,7 +288,8 @@ public class DataplexGCStoBQ implements BaseTemplate {
                 SPARK_SQL_GCS_LOCATION_PATH_COL_NAME,
                 SPARK_SQL_DATAPLEX_PARTITION_KEYS_TEMP_VIEW_NAME,
                 SPARK_SQL_BQ_PARTITION_KEYS_TEMP_VIEW,
-                joinClause));
+                joinClause,
+                partitionKeysList.get(0)));
     return newPartitionsDS;
   }
 
