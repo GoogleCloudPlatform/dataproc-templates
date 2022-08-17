@@ -108,7 +108,7 @@ public class DataProcTemplate {
     CommandLineParser parser = new DefaultParser();
     LOGGER.info("Parsing arguments {}", (Object) args);
     try {
-      return parser.parse(options, args, false);
+      return parser.parse(options, args, true);
     } catch (ParseException e) {
       throw new IllegalArgumentException(e.getMessage(), e);
     }

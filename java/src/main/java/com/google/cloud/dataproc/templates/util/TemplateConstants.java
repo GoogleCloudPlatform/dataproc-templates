@@ -220,7 +220,7 @@ public interface TemplateConstants {
   String SPARK_CONF_NAME_VIEWS_ENABLED = "viewsEnabled";
   String SPARK_CONF_NAME_MATERIALIZATION_PROJECT = "materializationProject";
   String SPARK_CONF_NAME_MATERIALIZATION_DATASET = "materializationDataset";
-  String SPARK_READ_FORMAT_BIGQUERY = "bigquery";
+  String SPARK_READ_FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery";
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
   String INTERMEDIATE_FORMAT_ORC = "orc";
 
