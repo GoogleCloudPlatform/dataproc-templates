@@ -18,6 +18,8 @@ package com.google.cloud.dataproc.templates.redshift;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +32,23 @@ public class RedshiftToGCS implements BaseTemplate {
   public void runTemplate() {
     SparkSession spark = SparkSession.builder().appName("Spark HiveToGcs Job").getOrCreate();
     LOGGER.info("RedshiftToGcs job started.");
+
+    spark.sparkContext().hadoopConfiguration().set("fs.s3n.awsAccessKeyId", "AKIAS6LKVVNKHFJBAVV2");
+    spark
+        .sparkContext()
+        .hadoopConfiguration()
+        .set("fs.s3n.awsSecretAccessKey", "VTHvQdo/4zcZh1EEq1b6uctj4YjJ+SC2B8VW9EWs");
+
+    Dataset<Row> df =
+        spark
+            .read()
+            .format("com.databricks.spark.redshift")
+            .option("url", "jdbc:redshift://redshifthost:5439/database?user=username&password=pass")
+            .option("dbtable", "table_name")
+            .option("tempdir", "s3n://path/for/temp/data")
+            .load();
+
+    df.show();
 
     LOGGER.info("RedshiftToGcs job completed.");
     spark.stop();
