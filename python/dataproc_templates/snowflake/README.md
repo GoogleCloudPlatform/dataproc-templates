@@ -42,7 +42,11 @@ snowflake.to.gcs.sf.database
 
 # Optional Parameter: Snowflake schema name
 snowflake.to.gcs.sf.schema
-Note: Schema name is mandatory when you use snowflake.to.gcs.sf.table property. Incase of snowflake.to.gcs.sf.query, if the query contains joins on multiple tables from different schemas, make sure to mention all the schemas within the query. As for the snowflake.to.gcs.sf.schema property in this case, you can either not use it at all or provide name of one of the schemas being used in the query.
+Note: Schema name is mandatory when you use snowflake.to.gcs.sf.table property. Incase of snowflake.to.gcs.sf.query, if the query contains joins on 
+multiple tables from different schemas, make sure to mention all the schemas 
+within the query. As for the snowflake.to.gcs.sf.schema property in this 
+case, you can either not use it at all or provide name of one of the schemas 
+being used in the query.
 
 # Optional Parameter: Snowflake warehouse
 snowflake.to.gcs.sf.warehouse
