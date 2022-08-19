@@ -52,6 +52,7 @@ MONGO_COLLECTION = "collection"
 FORMAT_MONGO = "com.mongodb.spark.sql.DefaultSource"
 MONGO_DEFAULT_BATCH_SIZE = 512
 MONGO_BATCH_SIZE = "maxBatchSize"
+FORMAT_SNOWFLAKE = "net.snowflake.spark.snowflake"
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -174,3 +175,18 @@ JDBCTOGCS_OUTPUT_LOCATION = "jdbctogcs.output.location"
 JDBCTOGCS_OUTPUT_FORMAT = "jdbctogcs.output.format"
 JDBCTOGCS_OUTPUT_MODE = "jdbctogcs.output.mode"
 JDBCTOGCS_OUTPUT_PARTITIONCOLUMN = "jdbctogcs.output.partitioncolumn"
+
+# Snowflake To GCS
+SNOWFLAKE_TO_GCS_SF_URL = "snowflake.to.gcs.sf.url"
+SNOWFLAKE_TO_GCS_SF_USER = "snowflake.to.gcs.sf.user"
+SNOWFLAKE_TO_GCS_SF_PASSWORD = "snowflake.to.gcs.sf.password"
+SNOWFLAKE_TO_GCS_SF_DATABASE = "snowflake.to.gcs.sf.database"
+SNOWFLAKE_TO_GCS_SF_SCHEMA = "snowflake.to.gcs.sf.schema"
+SNOWFLAKE_TO_GCS_SF_WAREHOUSE = "snowflake.to.gcs.sf.warehouse"
+SNOWFLAKE_TO_GCS_SF_AUTOPUSHDOWN = "snowflake.to.gcs.sf.autopushdown"
+SNOWFLAKE_TO_GCS_SF_TABLE = "snowflake.to.gcs.sf.table"
+SNOWFLAKE_TO_GCS_SF_QUERY = "snowflake.to.gcs.sf.query"
+SNOWFLAKE_TO_GCS_OUTPUT_LOCATION = "snowflake.to.gcs.output.location"
+SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
+SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
+SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
