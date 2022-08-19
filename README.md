@@ -44,6 +44,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [HiveToGCS](/python/dataproc_templates/hive/README.md) (blogpost [link](https://medium.com/@surjitsh/processing-large-data-tables-from-hive-to-gcs-using-pyspark-and-dataproc-serverless-35d3d16daaf))
 * [HbaseToGCS](/python/dataproc_templates/hbase/README.md)
 * [MongoToGCS](/python/dataproc_templates/mongo/README.md)
+* [SnowflakeToGCS](/python/dataproc_templates/snowflake/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
 * [TextToBiqQuery](/python/dataproc_templates/gcs/README.md)
