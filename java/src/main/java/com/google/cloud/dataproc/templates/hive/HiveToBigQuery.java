@@ -38,12 +38,16 @@ public class HiveToBigQuery implements BaseTemplate {
   private String temporaryGcsBucket;
   private String hiveSQL;
   private String bqAppendMode;
+  private String tempTable;
+  private String tempQuery;
 
   public HiveToBigQuery() {
     bqLocation = getProperties().getProperty(HIVE_TO_BQ_BIGQUERY_LOCATION);
     temporaryGcsBucket = getProperties().getProperty(HIVE_TO_BQ_TEMP_GCS_BUCKET);
     hiveSQL = getProperties().getProperty(HIVE_TO_BQ_SQL);
     bqAppendMode = getProperties().getProperty(HIVE_TO_BQ_APPEND_MODE);
+    tempTable = getProperties().getProperty(HIVE_TO_BQ_TEMP_TABLE);
+    tempQuery = getProperties().getProperty(HIVE_TO_BQ_TEMP_QUERY);
   }
 
   @Override
@@ -90,6 +94,12 @@ public class HiveToBigQuery implements BaseTemplate {
 
     /** Read Input data from Hive table */
     Dataset<Row> inputData = spark.sql(hiveSQL);
+
+    if (tempTable != null && tempQuery != null) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
+
     inputData
         .write()
         .mode(bqAppendMode.toLowerCase())
