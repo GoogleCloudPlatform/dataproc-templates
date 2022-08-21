@@ -16,7 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
-
+import sys
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
@@ -122,9 +122,26 @@ class JDBCToGCSTemplate(BaseTemplate):
             default="",
             help='GCS partition column name'
         )
+        parser.add_argument(
+            f'--{constants.JDBCTOGCS_TEMP_VIEW_NAME}',
+            dest=constants.JDBCTOGCS_TEMP_VIEW_NAME,
+            required=False,
+            default="",
+            help='Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query'
+        )
+        parser.add_argument(
+            f'--{constants.JDBCTOGCS_SQL_QUERY}',
+            dest=constants.JDBCTOGCS_SQL_QUERY,
+            required=False,
+            default="",
+            help='SQL query for data transformation. This must use the temp view name as the table to query from.'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
+
+        if getattr(known_args, constants.JDBCTOGCS_SQL_QUERY) and not getattr(known_args, constants.JDBCTOGCS_TEMP_VIEW_NAME):
+            sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
 
         return vars(known_args)
 
@@ -144,6 +161,8 @@ class JDBCToGCSTemplate(BaseTemplate):
         output_format: str = args[constants.JDBCTOGCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.JDBCTOGCS_OUTPUT_MODE]
         output_partitioncolumn: str = args[constants.JDBCTOGCS_OUTPUT_PARTITIONCOLUMN]
+        temp_view: str = args[constants.JDBCTOGCS_TEMP_VIEW_NAME]
+        sql_query:str = args[constants.JDBCTOGCS_SQL_QUERY]
 
         logger.info(
             "Starting JDBC to GCS spark job with parameters:\n"
@@ -177,11 +196,19 @@ class JDBCToGCSTemplate(BaseTemplate):
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
                 .load()
 
+        if sql_query:
+            # Create temp view on source data
+            input_data.createOrReplaceTempView(temp_view)
+            # Execute SQL
+            output_data = spark.sql(sql_query)
+        else:
+            output_data = input_data
+
         # Write
         if (output_partitioncolumn != ""):
-            writer: DataFrameWriter = input_data.write.mode(output_mode).partitionBy(output_partitioncolumn)
+            writer: DataFrameWriter = output_data.write.mode(output_mode).partitionBy(output_partitioncolumn)
         else:
-            writer: DataFrameWriter = input_data.write.mode(output_mode)
+            writer: DataFrameWriter = output_data.write.mode(output_mode)
             
         if output_format == constants.FORMAT_PRQT:
             writer \

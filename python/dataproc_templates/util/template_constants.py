@@ -122,6 +122,8 @@ HIVE_BQ_OUTPUT_DATASET = "hive.bigquery.output.dataset"
 HIVE_BQ_OUTPUT_TABLE = "hive.bigquery.output.table"
 HIVE_BQ_INPUT_DATABASE = "hive.bigquery.input.database"
 HIVE_BQ_INPUT_TABLE = "hive.bigquery.input.table"
+HIVE_BQ_TEMP_VIEW_NAME = "hive.bigquery.temp.view.name"
+HIVE_BQ_SQL_QUERY = "hive.bigquery.sql.query"
 
 # Hive to GCS
 HIVE_GCS_INPUT_DATABASE="hive.gcs.input.database"
@@ -129,6 +131,8 @@ HIVE_GCS_INPUT_TABLE = "hive.gcs.input.table"
 HIVE_GCS_OUTPUT_LOCATION = "hive.gcs.output.location"
 HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
 HIVE_GCS_OUTPUT_MODE = "hive.gcs.output.mode"
+HIVE_GCS_TEMP_VIEW_NAME = "hive.gcs.temp.view.name"
+HIVE_GCS_SQL_QUERY = "hive.gcs.sql.query"
 
 # Text to BigQuery
 TEXT_INPUT_COMPRESSION = "text.bigquery.input.compression"
@@ -161,6 +165,8 @@ JDBCTOJDBC_OUTPUT_TABLE = "jdbctojdbc.output.table"
 JDBCTOJDBC_OUTPUT_CREATE_TABLE_OPTION = "jdbctojdbc.output.create_table.option"
 JDBCTOJDBC_OUTPUT_MODE = "jdbctojdbc.output.mode"
 JDBCTOJDBC_OUTPUT_BATCH_SIZE = "jdbctojdbc.output.batch.size"
+JDBCTOJDBC_TEMP_VIEW_NAME = "jdbctojdbc.temp.view.name"
+JDBCTOJDBC_SQL_QUERY = "jdbctojdbc.sql.query"
 
 # JDBC to GCS
 JDBCTOGCS_INPUT_URL = "jdbctogcs.input.url"
@@ -174,3 +180,5 @@ JDBCTOGCS_OUTPUT_LOCATION = "jdbctogcs.output.location"
 JDBCTOGCS_OUTPUT_FORMAT = "jdbctogcs.output.format"
 JDBCTOGCS_OUTPUT_MODE = "jdbctogcs.output.mode"
 JDBCTOGCS_OUTPUT_PARTITIONCOLUMN = "jdbctogcs.output.partitioncolumn"
+JDBCTOGCS_TEMP_VIEW_NAME = "jdbctogcs.temp.view.name"
+JDBCTOGCS_SQL_QUERY = "jdbctogcs.sql.query"

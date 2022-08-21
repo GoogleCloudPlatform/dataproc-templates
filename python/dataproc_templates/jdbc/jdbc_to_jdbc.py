@@ -16,7 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
-
+import sys
 from pyspark.sql import SparkSession, DataFrame
 
 from dataproc_templates import BaseTemplate
@@ -129,10 +129,26 @@ class JDBCToJDBCTemplate(BaseTemplate):
             default="1000",
             help='JDBC output batch size. Default set to 1000'
         )
-
+        parser.add_argument(
+            f'--{constants.JDBCTOGCS_TEMP_VIEW_NAME}',
+            dest=constants.JDBCTOGCS_TEMP_VIEW_NAME,
+            required=False,
+            default="",
+            help='Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query'
+        )
+        parser.add_argument(
+            f'--{constants.JDBCTOJDBC_SQL_QUERY}',
+            dest=constants.JDBCTOJDBC_SQL_QUERY,
+            required=False,
+            default="",
+            help='SQL query for data transformation. This must use the temp view name as the table to query from.'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
+
+        if getattr(known_args, constants.JDBCTOJDBC_SQL_QUERY) and not getattr(known_args, constants.JDBCTOGCS_TEMP_VIEW_NAME):
+            sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
 
         return vars(known_args)
 
@@ -154,7 +170,8 @@ class JDBCToJDBCTemplate(BaseTemplate):
         output_jdbc_create_table_option: str = args[constants.JDBCTOJDBC_OUTPUT_CREATE_TABLE_OPTION]
         output_jdbc_mode: str = args[constants.JDBCTOJDBC_OUTPUT_MODE]
         output_jdbc_batch_size: int = args[constants.JDBCTOJDBC_OUTPUT_BATCH_SIZE]
-
+        temp_view: str = args[constants.JDBCTOGCS_TEMP_VIEW_NAME]
+        sql_query: str = args[constants.JDBCTOJDBC_SQL_QUERY]
 
         logger.info(
             "Starting JDBC to JDBC spark job with parameters:\n"
@@ -188,8 +205,16 @@ class JDBCToJDBCTemplate(BaseTemplate):
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
                 .load()
 
+        if sql_query:
+            # Create temp view on source data
+            input_data.createOrReplaceTempView(gcs_temp_view)
+            # Execute SQL
+            output_data = spark.sql(sql_query)
+        else:
+            output_data = input_data
+
         # Write
-        input_data.write \
+        output_data.write \
             .format(constants.FORMAT_JDBC) \
             .option(constants.JDBC_URL, output_jdbc_url) \
             .option(constants.JDBC_DRIVER, output_jdbc_driver) \
