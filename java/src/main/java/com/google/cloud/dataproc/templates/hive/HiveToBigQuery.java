@@ -93,7 +93,7 @@ public class HiveToBigQuery implements BaseTemplate {
     inputData
         .write()
         .mode(bqAppendMode.toLowerCase())
-        .format("bigquery")
+        .format("com.google.cloud.spark.bigquery")
         .option("table", bqLocation)
         .save();
   }

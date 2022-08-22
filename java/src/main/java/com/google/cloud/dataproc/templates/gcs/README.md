@@ -79,3 +79,36 @@ bin/start.sh \
 --templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver'
 
 ```
+
+## 4. GCS to GCS
+
+```
+
+GCP_PROJECT=<gcp-project-id> \
+REGION=<region>  \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+bin/start.sh \
+-- --template GCSTOGCS \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty gcs.gcs.input.format=<avro | parquet | orc> \
+--templateProperty gcs.gcs.input.location=<gcs path> \
+--templateProperty gcs.gcs.output.format=<avro | parquet | orc> \
+--templateProperty gcs.gcs.output.location=<gcs path> \
+--templateProperty gcs.gcs.write.mode=<Append|Overwrite|ErrorIfExists|Ignore>
+--templateProperty gcs.gcs.temp.table=<temporary table name for data processing> \
+--templateProperty gcs.gcs.temp.query=<sql query to process data from temporary table>
+
+Example execution:-
+
+bin/start.sh \
+-- --template GCSTOJDBC \
+--templateProperty project.id=my-gcp-project \
+--templateProperty gcs.gcs.input.location=gs://my-gcp-project-input-bucket/filename.avro \
+--templateProperty gcs.gcs.input.format=avro \
+--templateProperty gcs.gcs.output.location=gs://my-gcp-project-output-bucket \
+--templateProperty gcs.gcs.output.format=csv \
+--templateProperty gcs.jdbc.output.saveMode=Overwrite 
+--templateProperty gcs.gcs.temp.table=tempTable \
+--templateProperty gcs.gcs.temp.query='select * from global_temp.tempTable where sal>1500'
+
+```

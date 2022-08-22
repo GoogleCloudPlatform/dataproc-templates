@@ -17,17 +17,17 @@ from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
+from pyspark.sql import SparkSession, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
-__all__ = ['HbaseToGCSTemplate']
+__all__ = ['MongoToGCSTemplate']
 
 
-class HbaseToGCSTemplate(BaseTemplate):
+class MongoToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from Hbase into GCS
+    Dataproc template implementing exports from Mongo to GCS
     """
 
     @staticmethod
@@ -35,14 +35,26 @@ class HbaseToGCSTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.HBASE_GCS_OUTPUT_LOCATION}',
-            dest=constants.HBASE_GCS_OUTPUT_LOCATION,
+            f'--{constants.MONGO_GCS_INPUT_URI}',
+            dest=constants.MONGO_GCS_INPUT_URI,
             required=True,
-            help='GCS location for output files'
+            help='MONGO GCS Input Connection Uri'
         )
         parser.add_argument(
-            f'--{constants.HBASE_GCS_OUTPUT_FORMAT}',
-            dest=constants.HBASE_GCS_OUTPUT_FORMAT,
+            f'--{constants.MONGO_GCS_INPUT_DATABASE}',
+            dest=constants.MONGO_GCS_INPUT_DATABASE,
+            required=True,
+            help='MONGO GCS Input Database Name'
+        )
+        parser.add_argument(
+            f'--{constants.MONGO_GCS_INPUT_COLLECTION}',
+            dest=constants.MONGO_GCS_INPUT_COLLECTION,
+            required=True,
+            help='MONGO GCS Input Collection Name'
+        )
+        parser.add_argument(
+            f'--{constants.MONGO_GCS_OUTPUT_FORMAT}',
+            dest=constants.MONGO_GCS_OUTPUT_FORMAT,
             required=True,
             help='Output file format (one of: avro,parquet,csv,json)',
             choices=[
@@ -53,8 +65,14 @@ class HbaseToGCSTemplate(BaseTemplate):
             ]
         )
         parser.add_argument(
-            f'--{constants.HBASE_GCS_OUTPUT_MODE}',
-            dest=constants.HBASE_GCS_OUTPUT_MODE,
+            f'--{constants.MONGO_GCS_OUTPUT_LOCATION}',
+            dest=constants.MONGO_GCS_OUTPUT_LOCATION,
+            required=True,
+            help='GCS location for output files'
+        )
+        parser.add_argument(
+            f'--{constants.MONGO_GCS_OUTPUT_MODE}',
+            dest=constants.MONGO_GCS_OUTPUT_MODE,
             required=False,
             default=constants.OUTPUT_MODE_APPEND,
             help=(
@@ -69,12 +87,6 @@ class HbaseToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
-        parser.add_argument(
-            f'--{constants.HBASE_GCS_CATALOG_JSON}',
-            dest=constants.HBASE_GCS_CATALOG_JSON,
-            required=True,
-            help='Hbase catalog json'
-        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -86,24 +98,27 @@ class HbaseToGCSTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        output_location: str = args[constants.HBASE_GCS_OUTPUT_LOCATION]
-        output_format: str = args[constants.HBASE_GCS_OUTPUT_FORMAT]
-        output_mode: str = args[constants.HBASE_GCS_OUTPUT_MODE]
-        catalog: str = ''.join(args[constants.HBASE_GCS_CATALOG_JSON].split())
+        input_uri: str = args[constants.MONGO_GCS_INPUT_URI]
+        input_database: str = args[constants.MONGO_GCS_INPUT_DATABASE]
+        input_collection: str = args[constants.MONGO_GCS_INPUT_COLLECTION]
+        output_format: str = args[constants.MONGO_GCS_OUTPUT_FORMAT]
+        output_mode: str = args[constants.MONGO_GCS_OUTPUT_MODE]
+        output_location: str = args[constants.MONGO_GCS_OUTPUT_LOCATION]
 
         logger.info(
-            "Starting Hbase to GCS spark job with parameters:\n"
+            "Starting Mongo to GCS spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        input_data: DataFrame
-        input_data = spark.read.format(constants.FORMAT_HBASE) \
-                           .options(catalog=catalog) \
-                           .option("hbase.spark.use.hbasecontext", "false") \
-                           .load()
+        input_data = spark.read \
+            .format(constants.FORMAT_MONGO) \
+            .option(constants.MONGO_INPUT_URI, input_uri) \
+            .option(constants.MONGO_DATABASE, input_database) \
+            .option(constants.MONGO_COLLECTION, input_collection) \
+            .load()
 
-        #write
+        # Write
         writer: DataFrameWriter = input_data.write.mode(output_mode)
 
         if output_format == constants.FORMAT_PRQT:

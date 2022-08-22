@@ -266,6 +266,86 @@ export JARS=<gcs-bucket-location-containing-jar-file>
     --gcs.jdbc.output.url="jdbc:mysql://12.345.678.9:3306/test?user=root&password=root"
 ```
 
+# GCS To MongoDB
+
+Template for reading files from Google Cloud Storage and writing them to a MongoDB Collection. It supports reading JSON, CSV, Parquet and Avro formats.
+
+## Arguments
+
+* `gcs.mongo.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `gcs.mongo.input.location`: GCS location of the input files (format: `gs://BUCKET/...`)
+* `gcs.mongo.output.uri`: MongoDB Output URI for connection
+* `gcs.mongo.output.database`: MongoDB Output Database Name
+* `gcs.mongo.output.collection`: MongoDB Output Collection Name
+* `gcs.mongo.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+* `gcs.mongo.batch.size`: Output Batch Size (Defaults to 512)
+
+## Usage
+
+```
+$ python main.py --template GCSTOMONGO --help
+
+usage: main.py --template GCSTOMONGO [-h] \
+    --gcs.mongo.input.location GCS.MONGO.INPUT.LOCATION \
+    --gcs.mongo.input.format {avro,parquet,csv,json} \
+    --gcs.mongo.output.uri GCS.MONGO.OUTPUT.URI \
+    --gcs.mongo.output.database GCS.MONGO.OUTPUT.DATABASE \        
+    --gcs.mongo.output.collection GCS.MONGO.OUTPUT.COLLECTION \
+    --gcs.mongo.batch.size GCS.MONGO.BATCH.SIZE \
+    --gcs.mongo.output.mode {overwrite,append,ignore,errorifexists}
+
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --gcs.mongo.input.location GCS.MONGO.INPUT.LOCATION
+                        GCS location of the input files
+  --gcs.mongo.input.format {avro,parquet,csv,json}
+                        Input file format (one of: avro,parquet,csv,json)                        
+  --gcs.mongo.output.uri GCS.MONGO.OUTPUT.URI
+                        Driver URI to connect with MongoDB Instance consisting of username and passwprd as well
+  --gcs.mongo.output.database GCS.MONGO.OUTPUT.DATABASE
+                        MongoDB Database Name
+  --gcs.mongo.output.collection GCS.MONGO.OUTPUT.COLLECTION
+                        MongoDB output Collection name
+  --gcs.mongo.batch.size GCS.MONGO.BATCH.SIZE
+                        MongoDB output Batch size
+  --gcs.mongo.output.mode {overwrite,append,ignore,errorifexists}
+                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)                        
+```
+
+## Required JAR files
+
+This template requires the MongoDB-Java Driver jar file to be available in the Dataproc cluster. Aprt from that, MongoDB-Spark connector jar file is also required to Export and Import Dataframe via Spark.
+User has to download both the required jar files and host it inside a GCS Bucket, so that it could be referred during the execution of code.
+Once the jar file gets downloaded, please upload the file into a GCS Bucket.
+
+Wget Command to download these jar files is as follows :-
+
+```
+sudo wget https://repo1.maven.org/maven2/org/mongodb/spark/mongo-spark-connector_2.12/2.4.0/mongo-spark-connector_2.12-2.4.0.jar
+sudo wget https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.9.1/mongo-java-driver-3.9.1.jar
+```
+
+## Example submission
+
+```
+export GCP_PROJECT=<project_id>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export JARS=<gcs-bucket-location-containing-jar-file> 
+
+./bin/start.sh \
+-- --template=GCSTOMONGO \
+    --gcs.mongo.input.format="<json|csv|parquet|avro>" \
+    --gcs.mongo.input.location="<gs://bucket/path>" \
+    --gcs.mongo.output.uri="mongodb://<username>:<password>@<Host_Name>:<Port_Number>" \
+    --gcs.mongo.output.database="<Database_Name>" \
+    --gcs.mongo.output.collection="<Collection_Name>" \
+    --gcs.mongo.batch.size=512 \
+    --gcs.mongo.output.mode="<append|overwrite|ignore|errorifexists>"
+```
+
+
 # Text To BigQuery
 
 Template for reading TEXT files from Google Cloud Storage and writing them to a BigQuery table. It supports reading Text files with compression GZIP, BZIP2, LZ4, DEFLATE, NONE.
@@ -333,4 +413,89 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --text.bigquery.output.table="<table>" \
     --text.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
     --text.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
+```
+# GCS To GCS - SQL Transformation
+
+Template for reading files from Google Cloud Storage, applying data transformations using Spark SQL and then writing the tranformed data back to Google Cloud Storage. It supports reading and writing JSON, CSV, Parquet and Avro formats.
+
+## Arguments
+
+* `gcs.to.gcs.input.location`: GCS location of the input files (format: `gs://BUCKET/...`)
+* `gcs.to.gcs.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `gcs.to.gcs.temp.view.name`: Temp view name for creating a spark sql view on 
+  source data. 
+  This name has to match with the table name that will be used in the SQLquery
+* `gcs.to.gcs.sql.query`: SQL query for data transformation. This must use the
+                          temp view name as the table to query from.
+* `gcs.to.gcs.output.format`: Output file format (one of: avro,parquet,csv,json)
+* `gcs.to.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+* `gcs.to.gcs.output.partition.column`: Partition column name to partition the final output in destination bucket'
+* `gcs.to.gcs.output.location`: destination GCS location
+## Usage
+
+```
+$ python main.py --template GCSTOGCS --help
+
+usage: main.py [-h] --gcs.to.gcs.input.location GCS.TO.GCS.INPUT.LOCATION
+               --gcs.to.gcs.input.format {avro,parquet,csv,json}
+               [--gcs.to.gcs.temp.view.name GCS.TO.GCS.TEMP.VIEW.NAME]
+               [--gcs.to.gcs.sql.query GCS.TO.GCS.SQL.QUERY]
+               [--gcs.to.gcs.output.partition.column GCS.TO.GCS.OUTPUT.PARTITION.COLUMN]
+               [--gcs.to.gcs.output.format {avro,parquet,csv,json}]
+               [--gcs.to.gcs.output.mode {overwrite,append,ignore,errorifexists}]
+               --gcs.to.gcs.output.location GCS.TO.GCS.OUTPUT.LOCATION
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --gcs.to.gcs.input.location GCS.TO.GCS.INPUT.LOCATION
+                        GCS location of the input files
+  --gcs.to.gcs.input.format {avro,parquet,csv,json}
+                        GCS input file format (one of: avro,parquet,csv,json)
+  --gcs.to.gcs.temp.view.name GCS.TO.GCS.TEMP.VIEW.NAME
+                        Temp view name for creating a spark sql view on 
+                        source data. This name has to match with the 
+                        table name that will be used in the SQL query
+  --gcs.to.gcs.sql.query GCS.TO.GCS.SQL.QUERY
+                        SQL query for data transformation. This must use the
+                        temp view name as the table to query from.
+  --gcs.to.gcs.output.partition.column GCS.TO.GCS.OUTPUT.PARTITION.COLUMN
+                        Partition column name to partition the 
+                        final output in destination bucket
+  --gcs.to.gcs.output.format {avro,parquet,csv,json}
+                        Output write format (one of:
+                        avro,parquet,csv,json)(Defaults to parquet)
+  --gcs.to.gcs.output.mode {overwrite,append,ignore,errorifexists}
+                        Output write mode (one of:
+                        append,overwrite,ignore,errorifexists) (Defaults to
+                        append)
+  --gcs.to.gcs.output.location GCS.TO.GCS.OUTPUT.LOCATION
+                        destination GCS location                     
+```
+
+## Required JAR files
+
+```
+
+No specific jar files are needed for this template. For using AVRO file format, spark-avro.jar is neede. However, this is already accessible to dataproc serverless.
+
+```
+
+
+## Example submission
+
+```
+export GCP_PROJECT=<project_id>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export JARS=<gcs-bucket-location-containing-jar-file> 
+
+./bin/start.sh \
+-- --template=GCSTOGCS \ 
+    --gcs.to.gcs.input.location="<gs://bucket/path>" \
+    --gcs.to.gcs.input.format="<json|csv|parquet|avro>" \
+    --gcs.to.gcs.temp.view.name="temp" \
+    --gcs.to.gcs.sql.query="select *, 1 as col from temp" \
+    --gcs.to.gcs.output.format="<json|csv|parquet|avro>" \
+    --gcs.to.gcs.output.mode="<append|overwrite|ignore|errorifexists>" \
+    --gcs.to.gcs.output.location="<gs://bucket/path>"
 ```

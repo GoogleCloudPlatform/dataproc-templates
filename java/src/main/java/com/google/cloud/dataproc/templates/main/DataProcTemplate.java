@@ -23,7 +23,9 @@ import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
 import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
 import com.google.cloud.dataproc.templates.gcs.GCSToSpanner;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
+import com.google.cloud.dataproc.templates.gcs.GCStoGCS;
 import com.google.cloud.dataproc.templates.general.GeneralTemplate;
+import com.google.cloud.dataproc.templates.hbase.HbaseToGCS;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToBigQuery;
@@ -65,11 +67,13 @@ public class DataProcTemplate {
           .put(TemplateName.PUBSUBTOBQ, (args) -> new PubSubToBQ())
           .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
+          .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
           .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
-          .put(TemplateName.JDBCTOGCS, (args) -> new JDBCToGCS())
+          .put(TemplateName.JDBCTOGCS, JDBCToGCS::of)
+          .put(TemplateName.HBASETOGCS, (args) -> new HbaseToGCS())
           .put(TemplateName.KAFKATOBQ, (args) -> new KafkaToBQ())
           .put(TemplateName.KAFKATOGCS, (args) -> new KafkaToGCS())
           .put(TemplateName.GCSTOJDBC, GCSToJDBC::of)
@@ -94,10 +98,7 @@ public class DataProcTemplate {
           .withDescription("Value for given property")
           .create();
   private static final Options options =
-      // new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
-      new Options()
-          .addOption(null, TEMPLATE_NAME_LONG_OPT, true, "test")
-          .addOption(PROPERTY_OPTION);
+      new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
 
   /**
    * Parse command line arguments
@@ -122,6 +123,8 @@ public class DataProcTemplate {
    */
   public static TemplateName parseTemplateName(String templateNameString) {
     try {
+      // if (templateNameString == null) throw new IllegalArgumentException("Missing required
+      // option: template");
       return TemplateName.valueOf(templateNameString.trim().toUpperCase());
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException(

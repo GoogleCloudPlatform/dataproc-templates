@@ -121,5 +121,5 @@ export SUBNET=<subnet>
     --hive.gcs.input.table="<table>" \
     --hive.gcs.output.location="<gs://bucket/path>" \
     --hive.gcs.output.format="<csv|parquet|avro|json>" \
-    --hive.gcs.output.mode="<append|overwrite|ignore|errorifexists>" \
+    --hive.gcs.output.mode="<append|overwrite|ignore|errorifexists>"
 ```

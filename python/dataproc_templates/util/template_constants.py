@@ -45,6 +45,13 @@ JDBC_CREATE_TABLE_OPTIONS = "createTableOptions"
 FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
 TEMP_GCS_BUCKET="temporaryGcsBucket"
+MONGO_URL = "spark.mongodb.output.uri"
+MONGO_INPUT_URI = "spark.mongodb.input.uri"
+MONGO_DATABASE = "database"
+MONGO_COLLECTION = "collection"
+FORMAT_MONGO = "com.mongodb.spark.sql.DefaultSource"
+MONGO_DEFAULT_BATCH_SIZE = 512
+MONGO_BATCH_SIZE = "maxBatchSize"
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -70,6 +77,23 @@ GCS_JDBC_OUTPUT_URL = "gcs.jdbc.output.url"
 GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver"
 GCS_JDBC_BATCH_SIZE = "gcs.jdbc.batch.size"
 
+#GCS to Mongo
+GCS_MONGO_INPUT_LOCATION = "gcs.mongo.input.location"
+GCS_MONGO_INPUT_FORMAT = "gcs.mongo.input.format"
+GCS_MONGO_OUTPUT_URI = "gcs.mongo.output.uri"
+GCS_MONGO_OUTPUT_DATABASE = "gcs.mongo.output.database"
+GCS_MONGO_OUTPUT_COLLECTION = "gcs.mongo.output.collection"
+GCS_MONGO_OUTPUT_MODE = "gcs.mongo.output.mode"
+GCS_MONGO_BATCH_SIZE = "gcs.mongo.batch.size"
+
+# Mongo to GCS
+MONGO_GCS_OUTPUT_LOCATION = "mongo.gcs.output.location"
+MONGO_GCS_OUTPUT_FORMAT = "mongo.gcs.output.format"
+MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode"
+MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri"
+MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database"
+MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection"
+
 # GCS to BigTable
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
 GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format"
@@ -80,6 +104,16 @@ BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
 BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format"
 BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode"
 BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location"
+
+# GCS To GCS with transformations
+GCS_TO_GCS_INPUT_LOCATION = "gcs.to.gcs.input.location"
+GCS_TO_GCS_INPUT_FORMAT = "gcs.to.gcs.input.format"
+GCS_TO_GCS_TEMP_VIEW_NAME = "gcs.to.gcs.temp.view.name"
+GCS_TO_GCS_SQL_QUERY = "gcs.to.gcs.sql.query"
+GCS_TO_GCS_OUTPUT_FORMAT = "gcs.to.gcs.output.format"
+GCS_TO_GCS_OUTPUT_MODE = "gcs.to.gcs.output.mode"
+GCS_TO_GCS_OUTPUT_PARTITION_COLUMN = "gcs.to.gcs.output.partition.column"
+GCS_TO_GCS_OUTPUT_LOCATION = "gcs.to.gcs.output.location"
 
 # Hive to BigQuery
 HIVE_BQ_OUTPUT_MODE = "hive.bigquery.output.mode"

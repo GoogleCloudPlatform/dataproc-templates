@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Google LLC
+ * Copyright (C) 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -31,11 +31,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GCStoBigqueryTest {
+public class GCStoGCSTest {
 
-  private GCStoBigquery gcsCsvToBiqueryTest;
+  private GCStoGCS GCScsvToGCSTest;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigqueryTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GCStoGCSTest.class);
 
   @BeforeEach
   void setUp() {
@@ -47,14 +47,14 @@ public class GCStoBigqueryTest {
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     Properties props = PropertyUtil.getProperties();
-    props.setProperty(GCS_BQ_INPUT_LOCATION, "gs://test-bucket");
-    props.setProperty(GCS_OUTPUT_DATASET_NAME, "bigqueryDataset");
-    props.setProperty(GCS_OUTPUT_TABLE_NAME, "bigqueryTable");
-    props.setProperty(GCS_BQ_INPUT_FORMAT, "parquet");
-    props.setProperty(GCS_BQ_LD_TEMP_BUCKET_NAME, "gs://temp-bucket");
-    gcsCsvToBiqueryTest = new GCStoBigquery();
+    props.setProperty(GCS_GCS_INPUT_LOCATION, "gs://input-bucket");
+    props.setProperty(GCS_GCS_INPUT_FORMAT, "parquet");
+    props.setProperty(GCS_GCS_OUTPUT_LOCATION, "gs://output-bucket");
+    props.setProperty(GCS_GCS_OUTPUT_FORMAT, "parquet");
+    props.setProperty(GCS_GCS_WRITE_MODE, "overwrite");
+    GCScsvToGCSTest = new GCStoGCS();
 
-    assertDoesNotThrow(gcsCsvToBiqueryTest::validateInput);
+    assertDoesNotThrow(GCScsvToGCSTest::validateInput);
   }
 
   @ParameterizedTest
@@ -62,18 +62,22 @@ public class GCStoBigqueryTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    gcsCsvToBiqueryTest = new GCStoBigquery();
+    GCScsvToGCSTest = new GCStoGCS();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> gcsCsvToBiqueryTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> GCScsvToGCSTest.runTemplate());
     assertEquals(
-        "Required parameters for GCStoBQ not passed. "
-            + "Set mandatory parameter for GCStoBQ template"
+        "Required parameters for GCStoGCS not passed. "
+            + "Set mandatory parameter for GCStoGCS template"
             + " in resources/conf/template.properties file.",
         exception.getMessage());
   }
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-        GCS_BQ_INPUT_LOCATION, GCS_OUTPUT_DATASET_NAME, GCS_OUTPUT_TABLE_NAME, GCS_BQ_INPUT_FORMAT);
+        GCS_GCS_INPUT_LOCATION,
+        GCS_GCS_INPUT_FORMAT,
+        GCS_GCS_OUTPUT_LOCATION,
+        GCS_GCS_OUTPUT_FORMAT,
+        GCS_GCS_WRITE_MODE);
   }
 }

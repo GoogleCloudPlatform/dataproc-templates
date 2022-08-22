@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates.kafka;
+package com.google.cloud.dataproc.templates.hbase;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,54 +24,55 @@ import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class KafkaToBQTest {
-
-  private KafkaToBQ kafkaToBQ;
+public class HbaseToGCSTest {
+  private HbaseToGCS hbaseToGCSTest;
+  private static final Logger LOGGER = LoggerFactory.getLogger(HbaseToGCSTest.class);
 
   @BeforeEach
   void setUp() {
-    PropertyUtil.getProperties().setProperty(KAFKA_BQ_BOOTSTRAP_SERVERS, "some_value");
-    PropertyUtil.getProperties().setProperty(KAFKA_BQ_TOPIC, "some_value");
-    PropertyUtil.getProperties().setProperty(KAFKA_BQ_CHECKPOINT_LOCATION, "some_value");
-    PropertyUtil.getProperties().setProperty(KAFKA_BQ_DATASET, "some_value");
-    PropertyUtil.getProperties().setProperty(KAFKA_BQ_TABLE, "some_value");
-    PropertyUtil.getProperties().setProperty(KAFKA_BQ_TEMP_GCS_BUCKET, "some_value");
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
 
   @ParameterizedTest
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
-
+    LOGGER.info("Running test: runTemplateWithValidParameters");
+    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_PATH, "gs://test-bucket/output");
+    PropertyUtil.getProperties()
+        .setProperty(
+            HBASE_TO_GCS_TABLE_CATALOG,
+            "{\"table\":{\"namespace\":\"default\",\"name\":\"my_table\"},\"rowkey\":\"key\",\"columns\":{\"key\":{\"cf\":\"rowkey\",\"col\":\"key\",\"type\":\"string\"},\"name\":{\"cf\":\"cf\",\"col\":\"name\",\"type\":\"string\"}}}");
+    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_SAVE_MODE, "append");
+    PropertyUtil.getProperties().setProperty(HBASE_TO_GCS_OUTPUT_FILE_FORMAT, "csv");
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
-
-    kafkaToBQ = new KafkaToBQ();
-    assertDoesNotThrow(kafkaToBQ::validateInputs);
+    hbaseToGCSTest = new HbaseToGCS();
+    assertDoesNotThrow(hbaseToGCSTest::validateInput);
   }
 
   @ParameterizedTest
   @MethodSource("propertyKeys")
   void runTemplateWithInvalidParameters(String propKey) {
+    LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    kafkaToBQ = new KafkaToBQ();
+    hbaseToGCSTest = new HbaseToGCS();
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> kafkaToBQ.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> hbaseToGCSTest.runTemplate());
     assertEquals(
-        "Required parameters for KafkaToBQ not passed. "
-            + "Set mandatory parameter for KafkaToBQ template "
-            + "in resources/conf/template.properties file.",
+        "Required parameters for HbaseToGCS not passed. "
+            + "Set mandatory parameter for HbaseToGCS template in "
+            + "resources/conf/template.properties file.",
         exception.getMessage());
   }
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-        KAFKA_BQ_BOOTSTRAP_SERVERS,
-        KAFKA_BQ_TOPIC,
-        KAFKA_BQ_CHECKPOINT_LOCATION,
-        KAFKA_BQ_DATASET,
-        KAFKA_BQ_TABLE,
-        KAFKA_BQ_TEMP_GCS_BUCKET);
+        HBASE_TO_GCS_OUTPUT_FILE_FORMAT,
+        HBASE_TO_GCS_OUTPUT_SAVE_MODE,
+        HBASE_TO_GCS_OUTPUT_PATH,
+        HBASE_TO_GCS_TABLE_CATALOG);
   }
 }

@@ -1,3 +1,8 @@
+![Java Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=java-build)
+[![Java Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-java&&subject=integration-tests-java)](https://dataproctemplatesci.com/job/dataproc-templates-build/job/integration-tests-java/)
+![Python Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build) 
+[![Python Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-python&&subject=integration-tests-python)](https://dataproctemplatesci.com/job/dataproc-templates-build/job/integration-tests-python/)
+
 # Dataproc Templates
 Dataproc templates are an effort to solve simple, but large, in-Cloud data tasks, including data import/export/backup/restore and bulk API operations. The technology under the hood which makes these operations possible is the serverless spark functionality based on [Google Cloud's Dataproc](https://cloud.google.com/dataproc/).
 
@@ -12,14 +17,16 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java/README.md) 
 * [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
 * [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
 * [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
+* [GCSToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
 * [GCSToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
+* [HBaseToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hbase/README.md)
 * [SpannerToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases/README.md) (blogpost [link](https://medium.com/google-cloud/cloud-spanner-export-query-results-using-dataproc-serverless-6f2f65b583a4))
 * [S3ToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/s3/README.md)
 * [JDBCToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md)
 * [JDBCToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc/README.md) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
 * [PubSubToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md#2-pubsub-to-gcs) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-cloud-storage-using-dataproc-serverless-7a1e4823926e))
 * [GCSToJDBC](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-databases-via-jdbc-using-dataproc-serverless-7ed75eab93ba))
-* [KafkaToBQ](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md)
+* [KafkaToBQ](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md) (blogpost [link](https://medium.com/google-cloud/export-data-from-apache-kafka-to-bigquery-using-dataproc-serverless-4a666535117c))
 * [DataplexGCStoBQ](/java/src/main//java/com/google/cloud/dataproc/templates/dataplex/README.md)
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](/java/src/main/java/com/google/cloud/dataproc/templates/general/README.md)
@@ -31,9 +38,12 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [GCSToBigQuery](/python/dataproc_templates/gcs/README.md) (blogpost [link](https://medium.com/@ppaglilla/getting-started-with-dataproc-serverless-pyspark-templates-e32278a6a06e))
 * [GCSToBigTable](/python/dataproc_templates/gcs/README.md)
 * [GCSToJDBC](/python/dataproc_templates/gcs/README.md)
+* [GCSToMongo](/python/dataproc_templates/gcs/README.md) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-mongodb-using-dataproc-serverless-fed58904633a))
+* [GCSToGCS](/python/dataproc_templates/gcs/README.md)
 * [HiveToBigQuery](/python/dataproc_templates/hive/README.md) (blogpost [link](https://medium.com/google-cloud/processing-data-from-hive-to-bigquery-using-pyspark-and-dataproc-serverless-217c7cb9e4f8))
-* [HiveToGCS](/python/dataproc_templates/hive/README.md)
+* [HiveToGCS](/python/dataproc_templates/hive/README.md) (blogpost [link](https://medium.com/@surjitsh/processing-large-data-tables-from-hive-to-gcs-using-pyspark-and-dataproc-serverless-35d3d16daaf))
 * [HbaseToGCS](/python/dataproc_templates/hbase/README.md)
+* [MongoToGCS](/python/dataproc_templates/mongo/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
 * [TextToBiqQuery](/python/dataproc_templates/gcs/README.md)
@@ -81,8 +91,7 @@ This repository and its contents are not an official Google Product.
 ## Contact
 Share you feedback, ideas, thoughts [feedback-form](https://forms.gle/XXCJeWeCJJ9fNLQS6)
 
-Questions, issues, and comments should be directed to
-[professional-services-oss@google.com](mailto:professional-services-oss@google.com).
+Questions, issues, and comments should be directed to dataproc-templates-support-external@googlegroups.com
 
 [gcf]: https://cloud.google.com/functions/
 [gcf-bg]: https://cloud.google.com/functions/docs/writing/background
