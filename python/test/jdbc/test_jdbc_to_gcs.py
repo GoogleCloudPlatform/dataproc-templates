@@ -237,5 +237,5 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.mode().partitionBy.assert_called_once_with("column")
-        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option.assert_called_once_with(constants.FORMAT_CSV, True)
+        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option.assert_called_once_with(constants.HEADER, True)
         mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option().csv.assert_called_once_with("gs://test")
