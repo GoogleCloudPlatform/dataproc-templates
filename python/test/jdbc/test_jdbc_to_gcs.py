@@ -151,7 +151,7 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "5")
         mock_spark_session.read.format().option().option().option().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
-        mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.FORMAT_CSV, True)
+        mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.HEADER, True)
         mock_spark_session.dataframe.DataFrame.write.mode().option().csv.assert_called_once_with("gs://test")
         
     @mock.patch.object(pyspark.sql, 'SparkSession')
@@ -209,7 +209,7 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "10")
         mock_spark_session.read.format().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
-        mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.FORMAT_CSV, True)
+        mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.HEADER, True)
         mock_spark_session.dataframe.DataFrame.write.mode().option().csv.assert_called_once_with("gs://test")
         
     @mock.patch.object(pyspark.sql, 'SparkSession')
