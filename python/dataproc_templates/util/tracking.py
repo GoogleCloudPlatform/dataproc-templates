@@ -35,11 +35,11 @@ def track_template_invocation(template_name: TemplateName) -> None:
 
     try:
         client_info = http_client_info.ClientInfo(user_agent=f"google-pso-tool/dataproc-templates/0.1.0-{template_name.value}")
-        with bigquery.Client(project=project_id, client_info=client_info) as client:
-            client.list_datasets(
-                project='bigquery-public-data',
-                page_size=1
-            )
+        client = bigquery.Client(project=project_id, client_info=client_info)
+        dataset_list = client.list_datasets(
+            project='bigquery-public-data',
+            page_size=1
+        )
     except Exception:
         # Do nothing
         pass
