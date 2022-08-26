@@ -11,7 +11,7 @@ class TestSnowflakeToGCSTemplate:
     Test suite for SnowflakeToGCSTemplate
     """
 
-    def test_parse_args_1(self):
+    def test_parse_args_query(self):
         """Tests SnowflakeToGCSTemplate.parse_args()"""
 
         snowflake_to_gcs_template = SnowflakeToGCSTemplate()
@@ -35,7 +35,7 @@ class TestSnowflakeToGCSTemplate:
         assert parsed_args["snowflake.to.gcs.output.format"] == "csv"
         assert parsed_args["snowflake.to.gcs.partition.column"] == "col" 
         
-    def test_parse_args_2(self):
+    def test_parse_args_table(self):
         """Tests SnowflakeToGCSTemplate.parse_args()"""
 
         snowflake_to_gcs_template = SnowflakeToGCSTemplate()
@@ -61,7 +61,7 @@ class TestSnowflakeToGCSTemplate:
         assert parsed_args["snowflake.to.gcs.output.format"] == "csv"
         assert parsed_args["snowflake.to.gcs.partition.column"] == "col"
         
-    def test_parse_args_3(self):
+    def test_parse_args_warehouse(self):
         """Tests SnowflakeToGCSTemplate.parse_args()"""
 
         snowflake_to_gcs_template = SnowflakeToGCSTemplate()
