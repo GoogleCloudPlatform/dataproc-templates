@@ -33,9 +33,9 @@ Step by Step instructions ar given before each cell in the python notebook.
 
 * Add user configuration in Step 1
 * Run all the cells from Menu->Run->Run All Cells
-* Get the status of Dataproc Jobs from VertexAI UI using the link printed after running Step 8 (Get List of Tables from Hive) and Step 12 (Migrate Tables)
+* Get the status of Dataproc Jobs from VertexAI UI using the link printed after running Step 11
 * Detailed logs can be seen from [Dataproc Batch UI](https://console.cloud.google.com/dataproc/batches?_ga=2.45339748.1795356115.1659430333-470209831.1657040299)
-  * Dataproc Job naming convention: "hive2bq-"+INPUT_HIVE_TABLE+"-"+ CURRENT_DATETIME
+  * Dataproc Job naming convention: "hive2bq-"+HIVE_TABLE+"-"+ CURRENT_DATETIME
 
 ### Audit Table
 
