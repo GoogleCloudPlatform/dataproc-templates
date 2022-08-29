@@ -21,6 +21,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.util.DataplexUtil;
+import com.google.cloud.dataproc.templates.util.DataplexUtil.DataplexUtilNoPartitionError;
 import com.google.cloud.dataproc.templates.util.DataprocTemplateException;
 import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.connector.common.BigQueryConnectorException;
 import com.google.cloud.storage.Blob;
@@ -83,6 +84,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private SQLContext sqlContext;
 
   private List<String> entityList;
+  private Dataset<Row> newDataDS;
   private String entity;
   private String partitionField;
   private String partitionType;
@@ -206,6 +208,24 @@ public class DataplexGCStoBQ implements BaseTemplate {
   }
 
   /**
+   * Execute request on Google API to fetch schema of a Dataplex entity and parses out a list of
+   * partition Keys
+   *
+   * @param entity name
+   * @return list with partition keys of the entity, return null if Dataplex entity has no
+   *     partitions
+   * @throws IOException when request on Dataplex API fails
+   */
+  private List<String> getPartitionKeyList(String entity) throws IOException {
+    try {
+      return DataplexUtil.getPartitionKeyList(entity);
+    } catch (DataplexUtilNoPartitionError e) {
+      LOGGER.info("Source data has no partitions, performing a full load");
+      return null;
+    }
+  }
+
+  /**
    * Parse partitionsListWithLocationAndKeys into a Dataset partition path and key values for each
    * partition in Dataplex Entity
    *
@@ -294,6 +314,26 @@ public class DataplexGCStoBQ implements BaseTemplate {
   }
 
   /**
+   * Creates DataFrameReader taking into account input file format and csv delimeter when applicable
+   *
+   * @return a DataFrameReader
+   */
+  private DataFrameReader getDataFrameReader() {
+    DataFrameReader DfReader =
+        sqlContext
+            .read()
+            .format(inputFileFormat)
+            .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityBasePath);
+
+    if (this.inputFileFormat.equals(GCS_BQ_CSV_FORMAT)) {
+      DfReader.option(GCS_BQ_CSV_HEADER, true)
+          .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
+          .option(GCS_BQ_CSV_DELIMITER_PROP_NAME, this.inputCSVDelimiter);
+    }
+    return DfReader;
+  }
+
+  /**
    * Loads from GCS all new partitions
    *
    * @param newPartitionsPathsDf a dataset with the GCS paths of new partitions
@@ -303,20 +343,10 @@ public class DataplexGCStoBQ implements BaseTemplate {
     Row[] result =
         (Row[]) newPartitionsPathsDf.select(SPARK_SQL_GCS_LOCATION_PATH_COL_NAME).collect();
     Dataset<Row> newPartitionsDS = null;
+    DataFrameReader DfReader = getDataFrameReader();
     for (Row row : result) {
       String path = row.get(0).toString() + "/*";
       LOGGER.info("Loading data from GCS path: {}", path);
-      DataFrameReader DfReader =
-          sqlContext
-              .read()
-              .format(inputFileFormat)
-              .option(DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME, entityBasePath);
-
-      if (this.inputFileFormat.equals(GCS_BQ_CSV_FORMAT)) {
-        DfReader.option(GCS_BQ_CSV_HEADER, true)
-            .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
-            .option(GCS_BQ_CSV_DELIMITER_PROP_NAME, this.inputCSVDelimiter);
-      }
       Dataset<Row> newPartitionTempDS = DfReader.load(path);
 
       if (newPartitionsDS == null) {
@@ -399,37 +429,51 @@ public class DataplexGCStoBQ implements BaseTemplate {
       // TODO: refactor the following DataplexUtil avoid calling the same API method more than once
       this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
       this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
+
+      // checking for CSV delimiter when applicable
       if (this.inputFileFormat.equals(GCS_BQ_CSV_FORMAT)) {
         this.inputCSVDelimiter = DataplexUtil.getInputCSVDelimiter(entity);
       }
+
+      // checking for user providede target table name
       if (this.targetTableName == null) {
         this.targetTableName = entity.split(FORWARD_SLASH)[entity.split(FORWARD_SLASH).length - 1];
       }
       this.targetTable =
           String.format(BQ_TABLE_NAME_FORMAT, projectId, targetDataset, targetTableName);
 
-      List<String> partitionKeysList = DataplexUtil.getPartitionKeyList(entity);
-      List<String> partitionsListWithLocationAndKeys =
-          DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
+      // listing source data partitions
+      List<String> partitionKeysList = getPartitionKeyList(entity);
 
-      // Building dataset with all partitions keys in Dataplex Entity
-      Dataset<Row> dataplexPartitionsKeysDS =
-          getAllPartitionsDf(partitionsListWithLocationAndKeys, partitionKeysList);
+      // if source data has no partitions a full load and overwrite is performed
+      if (partitionKeysList == null) {
+        newDataDS = getDataFrameReader().load(this.entityBasePath);
+        this.sparkSaveMode = SPARK_SAVE_MODE_OVERWRITE;
+      } else {
+        List<String> partitionsListWithLocationAndKeys =
+            DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
 
-      // Querying BQ for all partition keys currently present in target table
-      Dataset<Row> bqPartitionsKeysDS = getBQTargetAvailablePartitionsDf(partitionKeysList);
+        // Building dataset with all partitions keys in Dataplex Entity
+        Dataset<Row> dataplexPartitionsKeysDS =
+            getAllPartitionsDf(partitionsListWithLocationAndKeys, partitionKeysList);
 
-      // Compare dataplexPartitionsKeysDS and bqPartitionsKeysDS to indetify new
-      // partitions
-      Dataset<Row> newPartitionsPathsDS =
-          getNewPartitionsPathsDS(partitionKeysList, dataplexPartitionsKeysDS, bqPartitionsKeysDS);
+        // Querying BQ for all partition keys currently present in target table
+        Dataset<Row> bqPartitionsKeysDS = getBQTargetAvailablePartitionsDf(partitionKeysList);
 
-      // load data from each partition
-      Dataset<Row> newPartitionsDS = getNewPartitionsDS(newPartitionsPathsDS);
-      if (newPartitionsDS != null) {
-        newPartitionsDS = DataplexUtil.castDatasetToDataplexSchema(newPartitionsDS, entity);
-        newPartitionsDS = applyCustomSql(newPartitionsDS);
-        writeToBQ(newPartitionsDS);
+        // Compare dataplexPartitionsKeysDS and bqPartitionsKeysDS to indetify new
+        // partitions
+        Dataset<Row> newPartitionsPathsDS =
+            getNewPartitionsPathsDS(
+                partitionKeysList, dataplexPartitionsKeysDS, bqPartitionsKeysDS);
+
+        // load data from each partition
+        newDataDS = getNewPartitionsDS(newPartitionsPathsDS);
+      }
+
+      if (newDataDS != null) {
+        newDataDS = DataplexUtil.castDatasetToDataplexSchema(newDataDS, entity);
+        newDataDS = applyCustomSql(newDataDS);
+        writeToBQ(newDataDS);
       } else {
         LOGGER.info("No new partitions found");
       }
