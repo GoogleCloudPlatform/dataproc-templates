@@ -5,7 +5,9 @@ Template for reading files from Hbase and writing to Google Cloud Storage. It su
 ## Requirements
 
 1) Configure the [hbase-site.xml](./hbase-site.xml)
-    - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.  
+    - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.
+    - This can be done in **Automated** way by passing path to hbase-site.xml in  HBASE_SITE_PATH environment variable. Example -: ```export HBASE_SITE_PATH=/<your_path>/hbase-site.xml```
+    - This can also be done with manually by creating a custome container as mentioned below
     - Reference [hbase-site.xml](./hbase-site.xml) can be used by adding respective values for **hbase.rootdir** and **hbase.zookeeper.quorum**
     - A [customer container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) is required in GCP Container Registry. Refer [Dockerfile](./Dockerfile) for reference. 
     - Add the following layer to the Dockerfile, for copying your local hbase-site.xml to the container image (below command is added to [Dockerfile](./Dockerfile) for reference):
@@ -41,7 +43,8 @@ Template for reading files from Hbase and writing to Google Cloud Storage. It su
 
 ## Required JAR files
 
-Some HBase dependencies are required to be passed when submitting the job.  
+Some HBase dependencies are required to be passed when submitting the job. In order to avoid additional manual steps, startup script has **automated this process**. Just by setting **CATALOG** environment variable, script will automatically download and pass required dependency. Example: ```export CATALOG=<your-hbase-table-catalog>``` .
+Or else manual steps has to be followed as discussed below-:
 These dependencies need to be passed by using the --jars flag, or, in the case of Dataproc Templates, using the JARS environment variable.  
 Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrepository.com/) and stored your GCS bucket (create one to store the dependencies).  
 
@@ -88,12 +91,15 @@ optional arguments:
 ```
 
 ## Example submission
-
+###Manual Process
 ```
+
 export GCP_PROJECT=<project_id>
 export SUBNET=<subnet>
 export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+
+#For manual process JARS environment variable need to be set. Not required for automated process
 export JARS="gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
              gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
              file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar, \
@@ -114,4 +120,24 @@ export JARS="gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
                         "name":{"cf":"cf", "col":"name", "type":"string"}
                         }
                     }'''
+```
+###Automated process
+```
+export GCP_PROJECT=<project_id>
+export SUBNET=<subnet>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+export IMAGE_NAME_VERSION=<image-name>:<version>
+export HBASE_SITE_PATH=/home/anishks/hbase-site.xml
+export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
+
+bin/start.sh \
+--container-image=$IMAGE \
+--properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
+-- --template=HBASETOGCS \
+   --hbase.gcs.output.location=gs://myproject/output \
+   --hbase.gcs.output.format=csv \
+   --hbase.gcs.output.mode=append \
+   --hbase.gcs.catalog.json=$CATALOG
 ```
