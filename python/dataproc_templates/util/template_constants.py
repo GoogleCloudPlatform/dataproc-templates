@@ -184,7 +184,6 @@ JDBC_BQ_INPUT_LOWERBOUND = "jdbc.bigquery.input.lowerbound"
 JDBC_BQ_INPUT_UPPERBOUND = "jdbc.bgiquery.input.upperbound"
 JDBC_BQ_NUMPARTITIONS = "jdbc.bigquery.numpartitions"
 JDBC_BQ_OUTPUT_MODE = "jdbc.bigquery.output.mode"
-
 JDBC_BQ_OUTPUT_DATASET = "jdbc.bigquery.output.dataset"
 JDBC_BQ_OUTPUT_TABLE = "jdbc.bigquery.output.table"
 JDBC_BQ_OUTPUT_MODE = "jdbc.bigquery.output.mode"

@@ -52,7 +52,6 @@ class JDBCToBigQueryTemplate(BaseTemplate):
             required=True,
             help='Spark BigQuery connector temporary bucket'
         )
-
         parser.add_argument(
             f'--{constants.JDBC_BQ_INPUT_URL}',
             dest=constants.JDBC_BQ_INPUT_URL,
@@ -130,7 +129,6 @@ class JDBCToBigQueryTemplate(BaseTemplate):
         big_query_dataset: str = args[constants.JDBC_BQ_OUTPUT_DATASET]
         big_query_table: str = args[constants.JDBC_BQ_OUTPUT_TABLE]
         bq_temp_bucket: str = args[constants.JDBC_BQ_LD_TEMP_BUCKET_NAME]
-
         input_jdbc_url: str = args[constants.JDBC_BQ_INPUT_URL]
         input_jdbc_driver: str = args[constants.JDBC_BQ_INPUT_DRIVER]
         input_jdbc_table: str = args[constants.JDBC_BQ_INPUT_TABLE]
