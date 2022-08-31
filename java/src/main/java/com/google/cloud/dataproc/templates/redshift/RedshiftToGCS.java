@@ -18,6 +18,7 @@ package com.google.cloud.dataproc.templates.redshift;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -28,27 +29,48 @@ public class RedshiftToGCS implements BaseTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RedshiftToGCS.class);
 
+  private final String inputUrl;
+  private final String inputTable;
+  private final String tempDir;
+  private final String iamRole;
+  private final String accessKey;
+  private final String secretKey;
+  private final String fileFormat;
+  private final String fileLocation;
+  private final String outputMode;
+
+  public RedshiftToGCS() {
+    inputUrl = getProperties().getProperty(REDSHIFT_GCS_INPUT_URL);
+    inputTable = getProperties().getProperty(REDSHIFT_GCS_INPUT_TABLE);
+    tempDir = getProperties().getProperty(REDSHIFT_GCS_TEMP_DIR);
+    iamRole = getProperties().getProperty(REDSHIFT_GCS_IAM_ROLE);
+    accessKey = getProperties().getProperty(REDSHIFT_GCS_ACCESS_KEY);
+    secretKey = getProperties().getProperty(REDSHIFT_GCS_SECRET_KEY);
+    fileFormat = getProperties().getProperty(REDSHIFT_GCS_FILE_FORMAT);
+    fileLocation = getProperties().getProperty(REDSHIFT_GCS_FILE_LOCATION);
+    outputMode = getProperties().getProperty(REDSHIFT_GCS_OUTPUT_MODE);
+  }
+
   @Override
   public void runTemplate() {
     SparkSession spark = SparkSession.builder().appName("Spark HiveToGcs Job").getOrCreate();
     LOGGER.info("RedshiftToGcs job started.");
 
-    spark.sparkContext().hadoopConfiguration().set("fs.s3n.awsAccessKeyId", "AKIAS6LKVVNKHFJBAVV2");
-    spark
-        .sparkContext()
-        .hadoopConfiguration()
-        .set("fs.s3n.awsSecretAccessKey", "VTHvQdo/4zcZh1EEq1b6uctj4YjJ+SC2B8VW9EWs");
+    spark.sparkContext().hadoopConfiguration().set("fs.s3a.access.key", accessKey);
+    spark.sparkContext().hadoopConfiguration().set("fs.s3a.secret.key", secretKey);
 
-    Dataset<Row> df =
+    Dataset<Row> inputData =
         spark
             .read()
-            .format("com.databricks.spark.redshift")
-            .option("url", "jdbc:redshift://redshifthost:5439/database?user=username&password=pass")
-            .option("dbtable", "table_name")
-            .option("tempdir", "s3n://path/for/temp/data")
+            .format("io.github.spark_redshift_community.spark.redshift")
+            .option("url", inputUrl)
+            .option("dbtable", inputTable)
+            .option("tempdir", tempDir)
+            .option("aws_iam_role", iamRole)
             .load();
 
-    df.show();
+    DataFrameWriter<Row> writer = inputData.write().format(fileFormat);
+    writer.mode(outputMode).save(fileLocation);
 
     LOGGER.info("RedshiftToGcs job completed.");
     spark.stop();
