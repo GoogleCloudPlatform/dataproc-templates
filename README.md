@@ -47,6 +47,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [MongoToGCS](/python/dataproc_templates/mongo/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
+* [JDBCToBigQuery](/python/dataproc_templates/jdbc/README.md)
 * [TextToBiqQuery](/python/dataproc_templates/gcs/README.md)
 
 ## Getting Started
