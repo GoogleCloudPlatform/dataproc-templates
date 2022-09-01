@@ -13,16 +13,30 @@ Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook 
 ### Requirements
 
 Below configurations are required before proceeding further.
+#### Common Parameters
 
-* `REGION`: GCP Region  to unload HIVE tables in BQ.
-* `GCS_STAGING_LOCATION`: GCS bucket to store artefacts.
-* `SUBNET`: VPC Subnet
-* `INPUT_HIVE_DATABASE`: Hive database for input tables
-* `INPUT_HIVE_TABLES`: Comma seperated hive tablenames to move, in case you want to move all the tables put "*"
-* `OUTPUT_BIGQUERY_DATASET`: BigQuery dataset for the output tables
-* `TEMP_BUCKET`: Temporary GCS bucket to store intermediate files.
-* `HIVE_METASTORE`: Hive metastore URI
-* `MAX_PARALLELISM`: Number of parallel Dataproc Jobs to run (default=10)
+* `PROJECT` : GCP project-id
+* `REGION` : GCP region
+* `GCS_STAGING_LOCATION` : GCS staging location to be used for this notebook to store artifacts
+* `SUBNET` : VPC subnet
+* `JARS` : list of jars. For this notebook mysql connector and avro jar is required in addition with the dataproc template jars
+* `MAX_PARALLELISM` : Parameter for number of jobs to run in parallel default value is 2
+
+#### MYSQL to GCS Parameters
+* `MYSQL_HOST` : MYSQL instance ip address
+* `MYSQL_PORT` : MySQL instance port
+* `MYSQL_USERNAME` : MYSQL username
+* `MYSQL_PASSWORD` : MYSQL password
+* `MYSQL_DATABASE` : name of database that you want to migrate
+* `MYSQLTABLE_LIST` : list of tables you want to migrate eg: ['table1','table2'] else provide an empty list for migration whole database eg : [] 
+* `MYSQL_OUTPUT_GCS_LOCATION` : gcs location where mysql output will be writtes eg :"gs://bucket/[folder]"
+* `MYSQL_OUTPUT_GCS_MODE` : output mode for MYSQL data one of (overwrite|append)
+* `MYSQL_OUTPUT_GCS_FORMAT` : output file formate for MYSQL data one of (avro|parquet|orc)
+
+#### GCS to SPANNER Parameters
+* `SPANNER_INSTANCE` : cloud spanner instance name
+* `SPANNER_DATABASE` : cloud spanner database name
+* `SPANNER_TABLE_PRIMARY_KEYS` : provide dictionary of format {"table_name":"primary_key"} for tables which do not have primary key in MYSQL
 
 ### Required JAR files
 
