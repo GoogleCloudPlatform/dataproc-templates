@@ -49,7 +49,6 @@ jdbc:redshift://[Redshift Endpoint]:[PORT]/<dbname>?user=<username>&password=<pa
 
 ```
 redshifttogcs.input.table="employees"
-redshifttogcs.input.table="(select * from employees where dept_id>10) as employees"
 ```
 
 # Redshift To GCS
