@@ -37,6 +37,12 @@ Step by Step instructions ar given before each cell in the python notebook.
 * Detailed logs can be seen from [Dataproc Batch UI](https://console.cloud.google.com/dataproc/batches?_ga=2.45339748.1795356115.1659430333-470209831.1657040299)
   * Dataproc Job naming convention: "hive2bq-"+HIVE_TABLE+"-"+ CURRENT_DATETIME
 
+### Parallel Jobs
+Once the notebook is triggered, a Vertex AI DAG link will get generated after Step 11 as below which can be used to visualize and check status of parallel jobs.
+
+![workbench](./../images/HiveToBQ_Flow.png)
+
+
 ### Audit Table
 
 The template stores audit data for each load in CSV format in GCS bucket provided.
@@ -64,5 +70,5 @@ OPTIONS(
 ### Limitations:
 
 * The current version does not currently migrate hive table partitions to Bigquery.
-* User has to implement Kerberos authentication themselves if needed.
 * The current version does not support incremetal load.
+* User has to implement Kerberos authentication themselves if needed.
