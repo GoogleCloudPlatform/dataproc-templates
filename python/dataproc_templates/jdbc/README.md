@@ -501,7 +501,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
 ```
 
-* PostgreSQL to GCS
+* PostgreSQL to BigQuery
 
 ```
 ./bin/start.sh \
@@ -519,7 +519,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
 ```
 
-* Microsoft SQL Server to GCS
+* Microsoft SQL Server to BigQuery 
 
 ```
 ./bin/start.sh \
