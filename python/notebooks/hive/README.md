@@ -1,24 +1,24 @@
-## Dataproc Template to Migrate HIVE tables to Bigquery using Jupyter Notebooks
+## Dataproc Template to Migrate Hive tables to Bigquery using Jupyter Notebooks
 
-Template for reading tables from HIVE Database and writing to BigQuery Dataset.
+Template for reading tables from Hive Database and writing to BigQuery Dataset.
 
 Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
-[dataproc-templates/python/notebooks/HIVE](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/hive2bq/python/notebooks/HIVE) folder and open [HIVEtoBigquery_vertex_pipeline_pyspark](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/hive2bq/python/notebooks/HIVE/HIVEtoBigquery_vertex_pipeline_pyspark.ipynb) notebook.
+[dataproc-templates/python/notebooks/hive](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/hive2bq/python/notebooks/hive) folder and open [HivetoBigquery_vertex_pipeline_pyspark](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/hive2bq/python/notebooks/hive/Hive.ipynb) notebook.
 
 ### Overview
 
-[HiveToBQ- PySpark Notebook](./HIVEtoBigquery_vertex_pipeline_pyspark.ipynb) dataproc template is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
+[HiveToBQ- PySpark Notebook](./HivetoBigquery_vertex_pipeline_pyspark.ipynb) dataproc template is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
 
 
 ### Requirements
 
 Below configurations are required before proceeding further.
 
-* `REGION`: GCP Region  to unload HIVE tables in BQ.
+* `REGION`: GCP Region  to unload Hive tables in BQ.
 * `GCS_STAGING_LOCATION`: GCS bucket to store artefacts.
 * `SUBNET`: VPC Subnet
 * `INPUT_HIVE_DATABASE`: Hive database for input tables
-* `INPUT_HIVE_TABLES`: Comma seperated hive tablenames to move, in case you want to move all the tables put "*"
+* `INPUT_HIVE_TABLES`: Comma seperated Hive tablenames to move, in case you want to move all the tables put "*"
 * `OUTPUT_BIGQUERY_DATASET`: BigQuery dataset for the output tables
 * `TEMP_BUCKET`: Temporary GCS bucket to store intermediate files.
 * `HIVE_METASTORE`: Hive metastore URI
@@ -28,7 +28,7 @@ Below configurations are required before proceeding further.
 
 This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
 
-### Procedure to load BQ tables from HIVE:
+### Procedure to load BQ tables from Hive:
 Step by Step instructions ar given before each cell in the python notebook.
 
 * Add user configuration in Step 1
