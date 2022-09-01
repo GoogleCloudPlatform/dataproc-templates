@@ -1,13 +1,14 @@
 ## Dataproc Template to Migrate Hive tables to Bigquery using Jupyter Notebooks
 
-Template for reading tables from Hive Database and writing to BigQuery Dataset.
+Template for reading tables from Hive Database and writing to BigQuery Dataset. 
+This Vertex AI notebook leverages the [HiveToBQ template](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/main/python/dataproc_templates/hive) and performs an orchestrated submission of several PySpark jobs using Dataproc Serverless to load multiple tables from Hive database to Bigquery dataset simultaneously.
 
 Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
 [dataproc-templates/python/notebooks/hive](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/main/python/notebooks/hive) folder and open [HivetoBigquery_vertex_pipeline_pyspark](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/main/python/notebooks/hive/HiveToBigquery_vertex_pipeline_pyspark.ipynb) notebook.
 
 ### Overview
 
-[HiveToBQ- PySpark Notebook](./HivetoBigquery_vertex_pipeline_pyspark.ipynb) dataproc template is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
+[HiveToBQ- PySpark Notebook](./HiveToBigquery_vertex_pipeline_pyspark.ipynb) dataproc template is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
 
 
 ### Requirements
