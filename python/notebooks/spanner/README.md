@@ -40,7 +40,7 @@ Below configurations are required before proceeding further.
 
 ### Required JAR files
 
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
+This notebook requires the MYSQL connector jar. Installation information is present in the notebook
 
 ### Notebook contains step by step process for migrating MySQL database to Cloud Spanner
 
