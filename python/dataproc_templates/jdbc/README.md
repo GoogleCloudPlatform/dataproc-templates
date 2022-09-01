@@ -413,7 +413,7 @@ usage: main.py [-h] --jdbc.bigquery.output.dataset
                --jdbc.bigquery.input.table JDBC.BIGQUERY.INPUT.TABLE
                [--jdbc.bigquery.input.partitioncolumn JDBC.BIGQUERY.INPUT.PARTITIONCOLUMN]
                [--jdbc.bigquery.input.lowerbound JDBC.BIGQUERY.INPUT.LOWERBOUND]
-               [--jdbc.bgiquery.input.upperbound JDBC.BGIQUERY.INPUT.UPPERBOUND]
+               [--jdbc.bigquery.input.upperbound JDBC.BIGQUERY.INPUT.UPPERBOUND]
                [--jdbc.bigquery.numpartitions JDBC.BIGQUERY.NUMPARTITIONS]
                [--jdbc.bigquery.output.mode {overwrite,append,ignore,errorifexists}]
 
@@ -437,7 +437,7 @@ optional arguments:
                         JDBC input table partition column lower
                         bound which is used to decide the partition
                         stride
-  --jdbc.bgiquery.input.upperbound JDBC.BGIQUERY.INPUT.UPPERBOUND
+  --jdbc.bigquery.input.upperbound JDBC.BIGQUERY.INPUT.UPPERBOUND
                         JDBC input table partition column upper
                         bound which is used to decide the partition
                         stride
@@ -467,10 +467,6 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbc.bigquery.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
 --jdbc.bigquery.input.driver="<jdbc-driver-class-name>" \
 --jdbc.bigquery.input.table="input table name or subquery with where clause filter" \
---jdbc.bigquery.input.partitioncolumn="optional-partition-column-name" \
---jdbc.bigquery.input.lowerbound="optional-partition-start-value" \
---jdbc.bigquery.input.upperbound="optional-partition-end-value" \
---jdbc.bigquery.input.numpartitions="<optional-partition-number>" \
 --jdbc.bigquery.output.mode="<append|overwrite|ignore|errorifexists>" \
 --jdbc.bigquery.output.dataset="<bigquery-dataset-name>" \
 --jdbc.bigquery.output.table="<bigquery-dataset-table>" \
@@ -478,66 +474,3 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 
 ```
 
-## Example execution: 
-
-```
-export GCP_PROJECT=my-gcp-proj 
-export REGION=us-central1  
-export GCS_STAGING_LOCATION=gs://my-gcp-proj/staging 
-export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default  
-export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-proj/jars/spark-bigquery-latest_2.12.jar"
-```
-
-* MySQL to BigQuery
-
-```
-./bin/start.sh \
--- --template=JDBCTOBIGQUERY \
---jdbc.bigquery.input.url="jdbc:mysql://1.1.1.1:3306/mydb?user=root&password=password123" \
---jdbc.bigquery.input.driver="com.mysql.cj.jdbc.Driver" \
---jdbc.bigquery.input.table="(select * from employees where id < 10) as employees" \
---jdbc.bigquery.input.partitioncolumn=id \
---jdbc.bigquery.input.lowerbound="11" \
---jdbc.bigquery.input.upperbound="20" \
---jdbc.bigquery.input.numpartitions="4" \
---jdbc.bigquery.output.mode="overwrite" \
---jdbc.bigquery.output.dataset="bq-dataset" \
---jdbc.bigquery.output.table="bq-table" \
---jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
-```
-
-* PostgreSQL to GCS
-
-```
-./bin/start.sh \
--- --template=JDBCTOBIGQUERY \
---jdbc.bigquery.input.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
---jdbc.bigquery.input.driver="org.postgresql.Driver" \
---jdbc.bigquery.input.table="(select * from employees where id < 10) as employees" \
---jdbc.bigquery.input.partitioncolumn=id \
---jdbc.bigquery.input.lowerbound="11" \
---jdbc.bigquery.input.upperbound="20" \
---jdbc.bigquery.input.numpartitions="4" \
---jdbc.bigquery.output.mode="overwrite" \
---jdbc.bigquery.output.dataset="bq-dataset" \
---jdbc.bigquery.output.table="bq-table" \
---jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
-```
-
-* Microsoft SQL Server to GCS
-
-```
-./bin/start.sh \
--- --template=JDBCTOBIGQUERY \
---jdbc.bigquery.input.url="jdbc:sqlserver://1.1.1.1:1433;databaseName=mydb;user=sqlserver;password=password123" \
---jdbc.bigquery.input.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" \
---jdbc.bigquery.input.table=" employees" \
---jdbc.bigquery.input.partitioncolumn=id \
---jdbc.bigquery.input.lowerbound="11" \
---jdbc.bigquery.input.upperbound="20" \
---jdbc.bigquery.input.numpartitions="4" \
---jdbc.bigquery.output.mode="overwrite" \
---jdbc.bigquery.output.dataset="bq-dataset" \
---jdbc.bigquery.output.table="bq-table" \
---jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
-```

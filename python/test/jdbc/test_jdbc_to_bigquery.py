@@ -54,16 +54,16 @@ class TestJDBCToGCSTemplate:
         assert parsed_args["jdbc.bigquery.output.table"] == "bq-table"  
         assert parsed_args["jdbc.bigquery.temp.bucket.name"] == "bucket-name"  
 
-    def test_run_pass_args2(self, mock_spark_session):
+    def test_run_pass_args2(self):
         """Tests JDBCToBigQueryTemplate pass args"""
 
         jdbc_to_bigquery_template = JDBCToBigQueryTemplate()
 
-        mock_parsed_args = jdbc_to_bigquery_template.parse_args(
-            ["--jdbctogcs.input.url=url",
-             "--jdbctogcs.input.driver=driver",
-             "--jdbctogcs.input.table=table1",
-             "--jdbctogcs.output.mode=append",
+        parsed_args = jdbc_to_bigquery_template.parse_args(
+            ["--jdbc.bigquery.input.url=url",
+             "--jdbc.bigquery.input.driver=driver",
+             "--jdbc.bigquery.input.table=table1",
+             "--jdbc.bigquery.output.mode=append",
              "--jdbc.bigquery.output.dataset=bq-dataset",
              "--jdbc.bigquery.output.table=bq-table",
              "--jdbc.bigquery.temp.bucket.name=bucket-name",
