@@ -1,4 +1,4 @@
-## Jupyter Notebook Solution for migrating MySQL database to CLoud Spanner using Dataproc Templates
+## Jupyter Notebook Solution for migrating MySQL database to lLoud Spanner using Dataproc Templates
 
 Template for reading tables from HIVE Database and writing to BigQuery Dataset.
 
@@ -7,7 +7,7 @@ Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook 
 
 ### Overview
 
-[mysql_to_spanner.ipynb](./mysql_to_spanner.ipynb) notebook solution is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
+[mysql_to_spanner.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/spanner/mysql-to-spanner.ipynb) notebook solution is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
 
 
 ### Requirements
