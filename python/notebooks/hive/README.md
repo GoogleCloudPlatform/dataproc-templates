@@ -1,7 +1,6 @@
 ## Dataproc Template to Migrate Hive tables to Bigquery using Jupyter Notebooks
 
-Template for reading tables from Hive Database and writing to BigQuery Dataset. 
-This Vertex AI notebook leverages the [HiveToBQ template](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/main/python/dataproc_templates/hive) and performs an orchestrated submission of several PySpark jobs using Dataproc Serverless to load multiple tables from Hive database to Bigquery dataset simultaneously.
+This Vertex AI notebook leverages the [HiveToBQ template](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/main/python/dataproc_templates/hive) and performs an orchestrated submission of several PySpark jobs using Dataproc Serverless to load multiple tables simultaneously from Hive database to Bigquery dataset.
 
 Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
 [dataproc-templates/python/notebooks/hive](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/main/python/notebooks/hive) folder and open [HivetoBigquery_vertex_pipeline_pyspark](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/main/python/notebooks/hive/HiveToBigquery_vertex_pipeline_pyspark.ipynb) notebook.
@@ -46,7 +45,7 @@ In order to view the data create an external table pointing to the GCS bucket as
 
 
 ```
- CREATE EXTERNAL TABLE `project-id.dataset-name.hive_bq_audit`
+ CREATE EXTERNAL TABLE `<project-id>.<dataset-name>.hive_bq_audit`
 (
   Source_DB_Name STRING,
   Source_Table_Set STRING,
@@ -62,3 +61,8 @@ OPTIONS(
 );
 ```
 
+### Limitations:
+
+* The current version does not currently migrate hive table partitions to Bigquery.
+* User has to implement Kerberos authentication themselves if needed.
+* The current version does not support incremetal load.
