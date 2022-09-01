@@ -38,7 +38,7 @@ Step by Step instructions ar given before each cell in the python notebook.
   * Dataproc Job naming convention: "hive2bq-"+HIVE_TABLE+"-"+ CURRENT_DATETIME
 
 ### Parallel Jobs
-Once the notebook is triggered, we can visualize parallel jobs by either using the link generated after Step 11 or by finding your job in [VertexAI Pipelines](https://console.cloud.google.com/vertex-ai/pipelines/).
+Once the notebook is triggered, you can visualize parallel jobs by either using the link generated after Step 11 or by finding your job in [VertexAI Pipelines](https://console.cloud.google.com/vertex-ai/pipelines/).
 
 ![workbench](./../images/HiveToBQ_Flow.png)
 
