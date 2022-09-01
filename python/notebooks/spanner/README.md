@@ -7,7 +7,7 @@ Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook 
 
 ### Overview
 
-[mysql_to_spanner.ipynb](./mysql_to_spanner.ipynb) dataproc template is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
+[mysql_to_spanner.ipynb](./mysql_to_spanner.ipynb) notebook solution is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
 
 
 ### Requirements
@@ -28,12 +28,5 @@ Below configurations are required before proceeding further.
 
 This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
 
-### Procedure to load BQ tables from HIVE:
-Step by Step instructions ar given before each cell in the python notebook.
-
-* Add user configuration in Step 1
-* Run all the cells from Menu->Run->Run All Cells
-* Get the status of Dataproc Jobs from VertexAI UI using the link printed after running Step 11
-* Detailed logs can be seen from [Dataproc Batch UI](https://console.cloud.google.com/dataproc/batches?_ga=2.45339748.1795356115.1659430333-470209831.1657040299)
-  * Dataproc Job naming convention: "hive2bq-"+HIVE_TABLE+"-"+ CURRENT_DATETIME
+### Notebook contains step by step process for migrating MySQL database to Cloud Spanner
 
