@@ -7,7 +7,7 @@ Template for reading files from Hbase and writing to Google Cloud Storage. It su
 1) Configure the [hbase-site.xml](./hbase-site.xml)
     - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.
     - This can be done in **Automated** way by passing path to hbase-site.xml in  HBASE_SITE_PATH environment variable. Example -: ```export HBASE_SITE_PATH=/<your_path>/hbase-site.xml```
-    - This can also be done with manually by creating a custome container as mentioned below
+    - This can also be done with manually by creating a custom container as mentioned below
     - Reference [hbase-site.xml](./hbase-site.xml) can be used by adding respective values for **hbase.rootdir** and **hbase.zookeeper.quorum**
     - A [customer container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) is required in GCP Container Registry. Refer [Dockerfile](./Dockerfile) for reference. 
     - Add the following layer to the Dockerfile, for copying your local hbase-site.xml to the container image (below command is added to [Dockerfile](./Dockerfile) for reference):
@@ -91,7 +91,7 @@ optional arguments:
 ```
 
 ## Example submission
-###Manual Process
+**Manual Process**
 ```
 
 export GCP_PROJECT=<project_id>
@@ -121,7 +121,7 @@ export JARS="gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
                         }
                     }'''
 ```
-###Automated process
+**Automated process**
 ```
 export GCP_PROJECT=<project_id>
 export SUBNET=<subnet>
@@ -141,3 +141,13 @@ bin/start.sh \
    --hbase.gcs.output.mode=append \
    --hbase.gcs.catalog.json=$CATALOG
 ```
+
+**Note-: For some versions of Hbase, htrace module is missing, hence might encounter-:**
+```
+Caused by: java.lang.ClassNotFoundException: org.apache.htrace.core.HTraceConfiguration
+at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:476)
+at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
+at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+... 124 more
+```
+In automatic process, this module is downloaded and passed during runtime. However, in manual process, [htrace module](https://repo1.maven.org/maven2/org/apache/htrace/htrace-core4/4.2.0-incubating/htrace-core4-4.2.0-incubating.jar) jar can be downloaded and passed using JARS environment variable while submitting the job.
