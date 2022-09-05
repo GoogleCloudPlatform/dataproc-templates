@@ -82,54 +82,54 @@ public class RedshiftToGCS implements BaseTemplate {
 
   void validateInput() {
     if (StringUtils.isAllBlank(inputUrl)
-            || StringUtils.isAllBlank(inputTable)
-            || StringUtils.isAllBlank(tempDir)
-            || StringUtils.isAllBlank(iamRole)
-            || StringUtils.isAllBlank(accessKey)
-            || StringUtils.isAllBlank(secretKey)
-            || StringUtils.isAllBlank(fileFormat)
-            || StringUtils.isAllBlank(fileLocation)) {
+        || StringUtils.isAllBlank(inputTable)
+        || StringUtils.isAllBlank(tempDir)
+        || StringUtils.isAllBlank(iamRole)
+        || StringUtils.isAllBlank(accessKey)
+        || StringUtils.isAllBlank(secretKey)
+        || StringUtils.isAllBlank(fileFormat)
+        || StringUtils.isAllBlank(fileLocation)) {
       LOGGER.error(
-              "{},{},{},{},{},{},{},{} is required parameter. ",
-              REDSHIFT_GCS_INPUT_URL,
-              REDSHIFT_GCS_INPUT_TABLE,
-              REDSHIFT_GCS_TEMP_DIR,
-              REDSHIFT_GCS_IAM_ROLE,
-              REDSHIFT_GCS_ACCESS_KEY,
-              REDSHIFT_GCS_SECRET_KEY,
-              REDSHIFT_GCS_FILE_FORMAT,
-              REDSHIFT_GCS_FILE_LOCATION);
+          "{},{},{},{},{},{},{},{} is required parameter. ",
+          REDSHIFT_GCS_INPUT_URL,
+          REDSHIFT_GCS_INPUT_TABLE,
+          REDSHIFT_GCS_TEMP_DIR,
+          REDSHIFT_GCS_IAM_ROLE,
+          REDSHIFT_GCS_ACCESS_KEY,
+          REDSHIFT_GCS_SECRET_KEY,
+          REDSHIFT_GCS_FILE_FORMAT,
+          REDSHIFT_GCS_FILE_LOCATION);
       throw new IllegalArgumentException(
-              "Required parameters for RedshiftToGCS not passed. "
-                      + "Set mandatory parameter for RedshiftToGCS template "
-                      + "in resources/conf/template.properties file.");
+          "Required parameters for RedshiftToGCS not passed. "
+              + "Set mandatory parameter for RedshiftToGCS template "
+              + "in resources/conf/template.properties file.");
     }
 
     LOGGER.info(
-            "Starting Hive to GCS spark job with following parameters:"
-                    + "1. {}:{}"
-                    + "2. {}:{}"
-                    + "3. {}:{}"
-                    + "4. {},{}"
-                    + "5. {},{}"
-                    + "6. {},{}"
-                    + "7. {},{}"
-                    + "8. {},{}",
-            REDSHIFT_GCS_INPUT_URL,
-            inputUrl,
-            REDSHIFT_GCS_INPUT_TABLE,
-            inputTable,
-            REDSHIFT_GCS_TEMP_DIR,
-            tempDir,
-            REDSHIFT_GCS_IAM_ROLE,
-            iamRole,
-            REDSHIFT_GCS_ACCESS_KEY,
-            accessKey,
-            REDSHIFT_GCS_SECRET_KEY,
-            secretKey,
-            REDSHIFT_GCS_FILE_FORMAT,
-            fileFormat,
-            REDSHIFT_GCS_FILE_LOCATION,
-            fileLocation);
+        "Starting Hive to GCS spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {},{}"
+            + "5. {},{}"
+            + "6. {},{}"
+            + "7. {},{}"
+            + "8. {},{}",
+        REDSHIFT_GCS_INPUT_URL,
+        inputUrl,
+        REDSHIFT_GCS_INPUT_TABLE,
+        inputTable,
+        REDSHIFT_GCS_TEMP_DIR,
+        tempDir,
+        REDSHIFT_GCS_IAM_ROLE,
+        iamRole,
+        REDSHIFT_GCS_ACCESS_KEY,
+        accessKey,
+        REDSHIFT_GCS_SECRET_KEY,
+        secretKey,
+        REDSHIFT_GCS_FILE_FORMAT,
+        fileFormat,
+        REDSHIFT_GCS_FILE_LOCATION,
+        fileLocation);
   }
 }

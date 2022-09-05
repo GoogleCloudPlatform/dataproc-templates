@@ -6,6 +6,7 @@ export GCP_PROJECT=<gcp-project-id>
 export REGION=<region>  
 export SUBNET=<subnet>   
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export JARS=gs://<cloud-storage-bucket-name>/spark-redshift_<version>.jar
 
 bin/start.sh \
 -- --template REDSHIFTTOGCS \
