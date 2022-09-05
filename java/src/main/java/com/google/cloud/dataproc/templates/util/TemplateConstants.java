@@ -88,6 +88,7 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME = "jdbctogcs.jdbc.driver.class.name";
   String JDBC_TO_GCS_WRITE_MODE = "jdbctogcs.write.mode";
   String JDBC_TO_GCS_SQL = "jdbctogcs.sql";
+  String JDBC_TO_GCS_SQL_FILE = "jdbctogcs.sql.file";
   String JDBC_TO_GCS_SQL_PARTITION_COLUMN = "jdbctogcs.sql.partitionColumn";
   String JDBC_TO_GCS_SQL_LOWER_BOUND = "jdbctogcs.sql.lowerBound";
   String JDBC_TO_GCS_SQL_UPPER_BOUND = "jdbctogcs.sql.upperBound";
@@ -231,9 +232,10 @@ public interface TemplateConstants {
   String SPARK_CONF_NAME_VIEWS_ENABLED = "viewsEnabled";
   String SPARK_CONF_NAME_MATERIALIZATION_PROJECT = "materializationProject";
   String SPARK_CONF_NAME_MATERIALIZATION_DATASET = "materializationDataset";
-  String SPARK_READ_FORMAT_BIGQUERY = "bigquery";
+  String SPARK_READ_FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery";
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
   String INTERMEDIATE_FORMAT_ORC = "orc";
+  String SPARK_SAVE_MODE_OVERWRITE = "overwrite";
 
   /** KafkaToBQ properties */
   String KAFKA_BQ_CHECKPOINT_LOCATION = "kafka.bq.checkpoint.location";
@@ -257,4 +259,20 @@ public interface TemplateConstants {
   String KAFKA_BQ_TABLE = "kafka.bq.table";
   String KAFKA_BQ_TEMP_GCS_BUCKET = "kafka.bq.temp.gcs.bucket";
   String KAFKA_BQ_STREAM_OUTPUT_MODE = "kafka.bq.stream.output.mode";
+
+  /** SnowflakeToGCS properties */
+  String SNOWFLAKE_GCS_SFURL = "snowflake.gcs.sfurl";
+
+  String SNOWFLAKE_GCS_SFUSER = "snowflake.gcs.sfuser";
+  String SNOWFLAKE_GCS_SFPASSWORD = "snowflake.gcs.sfpassword";
+  String SNOWFLAKE_GCS_SFDATABASE = "snowflake.gcs.sfdatabase";
+  String SNOWFLAKE_GCS_SFSCHEMA = "snowflake.gcs.sfschema";
+  String SNOWFLAKE_GCS_SFWAREHOUSE = "snowflake.gcs.sfwarehouse";
+  String SNOWFLAKE_GCS_AUTOPUSHDOWN = "snowflake.gcs.autopushdown";
+  String SNOWFLAKE_GCS_TABLE = "snowflake.gcs.table";
+  String SNOWFLAKE_GCS_QUERY = "snowflake.gcs.query";
+  String SNOWFLAKE_GCS_OUTPUT_LOCATION = "snowflake.gcs.output.location";
+  String SNOWFLAKE_GCS_OUTPUT_FORMAT = "snowflake.gcs.output.format";
+  String SNOWFLAKE_GCS_OUTPUT_MODE = "snowflake.gcs.output.mode";
+  String SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN = "snowflake.gcs.output.partitionColumn";
 }

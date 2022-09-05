@@ -10,9 +10,12 @@
 * [HiveToBigQuery](/python/dataproc_templates/hive/README.md) (blogpost [link](https://medium.com/google-cloud/processing-data-from-hive-to-bigquery-using-pyspark-and-dataproc-serverless-217c7cb9e4f8))
 * [HiveToGCS](/python/dataproc_templates/hive/README.md)(blogpost [link](https://medium.com/@surjitsh/processing-large-data-tables-from-hive-to-gcs-using-pyspark-and-dataproc-serverless-35d3d16daaf))
 * [HbaseToGCS](/python/dataproc_templates/hbase/README.md)
+* [MongoToGCS](/python/dataproc_templates/mongo/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
 * [TextToBigQuery](/python/dataproc_templates/gcs/README.md)
+* [GCSToGCS](/python/dataproc_templates/gcs/README.md)
+* [SnowflakeoGCS](/python/dataproc_templates/snowflake/README.md)
 
 Dataproc Templates (Python - PySpark) submit jobs to Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
 

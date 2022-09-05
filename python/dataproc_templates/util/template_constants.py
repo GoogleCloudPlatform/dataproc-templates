@@ -46,11 +46,13 @@ FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
 TEMP_GCS_BUCKET="temporaryGcsBucket"
 MONGO_URL = "spark.mongodb.output.uri"
+MONGO_INPUT_URI = "spark.mongodb.input.uri"
 MONGO_DATABASE = "database"
 MONGO_COLLECTION = "collection"
 FORMAT_MONGO = "com.mongodb.spark.sql.DefaultSource"
 MONGO_DEFAULT_BATCH_SIZE = 512
 MONGO_BATCH_SIZE = "maxBatchSize"
+FORMAT_SNOWFLAKE = "net.snowflake.spark.snowflake"
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -84,6 +86,14 @@ GCS_MONGO_OUTPUT_DATABASE = "gcs.mongo.output.database"
 GCS_MONGO_OUTPUT_COLLECTION = "gcs.mongo.output.collection"
 GCS_MONGO_OUTPUT_MODE = "gcs.mongo.output.mode"
 GCS_MONGO_BATCH_SIZE = "gcs.mongo.batch.size"
+
+# Mongo to GCS
+MONGO_GCS_OUTPUT_LOCATION = "mongo.gcs.output.location"
+MONGO_GCS_OUTPUT_FORMAT = "mongo.gcs.output.format"
+MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode"
+MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri"
+MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database"
+MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection"
 
 # GCS to BigTable
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
@@ -165,3 +175,18 @@ JDBCTOGCS_OUTPUT_LOCATION = "jdbctogcs.output.location"
 JDBCTOGCS_OUTPUT_FORMAT = "jdbctogcs.output.format"
 JDBCTOGCS_OUTPUT_MODE = "jdbctogcs.output.mode"
 JDBCTOGCS_OUTPUT_PARTITIONCOLUMN = "jdbctogcs.output.partitioncolumn"
+
+# Snowflake To GCS
+SNOWFLAKE_TO_GCS_SF_URL = "snowflake.to.gcs.sf.url"
+SNOWFLAKE_TO_GCS_SF_USER = "snowflake.to.gcs.sf.user"
+SNOWFLAKE_TO_GCS_SF_PASSWORD = "snowflake.to.gcs.sf.password"
+SNOWFLAKE_TO_GCS_SF_DATABASE = "snowflake.to.gcs.sf.database"
+SNOWFLAKE_TO_GCS_SF_SCHEMA = "snowflake.to.gcs.sf.schema"
+SNOWFLAKE_TO_GCS_SF_WAREHOUSE = "snowflake.to.gcs.sf.warehouse"
+SNOWFLAKE_TO_GCS_SF_AUTOPUSHDOWN = "snowflake.to.gcs.sf.autopushdown"
+SNOWFLAKE_TO_GCS_SF_TABLE = "snowflake.to.gcs.sf.table"
+SNOWFLAKE_TO_GCS_SF_QUERY = "snowflake.to.gcs.sf.query"
+SNOWFLAKE_TO_GCS_OUTPUT_LOCATION = "snowflake.to.gcs.output.location"
+SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
+SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
+SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"

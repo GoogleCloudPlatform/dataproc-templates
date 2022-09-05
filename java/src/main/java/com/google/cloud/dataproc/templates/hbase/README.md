@@ -1,4 +1,4 @@
-## 1. HBase To BigQuery
+## 1. HBase To GCS
 ### Required JAR files
 
 Some HBase dependencies are required to be passed when submitting the job. These dependencies are automatically set by script when CATALOG environment variable is set for hbase table configuration. If not, 
@@ -8,13 +8,13 @@ these dependencies need to be passed by using the --jars flag, or, in the case o
     - file:///usr/lib/spark/external/hbase-spark.jar
     - All other dependencies are automatically downloaded and set once CATALOG environment variable is used for hbase table configuration. Lib link - [hbase-client](https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar), [hbase-shaded-mapreduce](https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar)
     
-  ### Pass the [hbase-site.xml](./hbase-site.xml) to the Job
+  ### Pass the [hbase-site.xml](/java/src/main/resources/hbase-site.xml) to the Job
     There are two ways to do it. One by automatic process and another by manually creating a custom container for dataproc cluster. Both of them are illustrated below-: 
     
 1) **Automatic process of creating custom container**-: The process is automatically done in the start-up script, when environment variable HBASE_SITE_PATH is set.
-2) **Configure the [hbase-site.xml](./hbase-site.xml) manually and create container**
+2) **Configure the [hbase-site.xml](/java/src/main/resources/hbase-site.xml) manually and create container**
   - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.
-  - Reference [hbase-site.xml](./hbase-site.xml) can be used by adding respective values for **hbase.rootdir** and **hbase.zookeeper.quorum**
+  - Reference [hbase-site.xml](/java/src/main/resources/hbase-site.xml) can be used by adding respective values for **hbase.rootdir** and **hbase.zookeeper.quorum**
   - A [custom container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) is required in GCP Container Registry. Refer [Dockerfile](./Dockerfile) for reference.
   - Add the following layer to the Dockerfile, for copying your local hbase-site.xml to the container image (below command is added to [Dockerfile](./Dockerfile) for reference):
     ```
