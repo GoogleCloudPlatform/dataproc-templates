@@ -223,6 +223,7 @@ public interface TemplateConstants {
   String SPARK_READ_FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery";
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
   String INTERMEDIATE_FORMAT_ORC = "orc";
+  String SPARK_SAVE_MODE_OVERWRITE = "overwrite";
 
   /** KafkaToBQ properties */
   String KAFKA_BQ_CHECKPOINT_LOCATION = "kafka.bq.checkpoint.location";
