@@ -1,7 +1,7 @@
 ![Java Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=java-build)
-[![Java Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-java&&subject=integration-tests-java)](https://dataproctemplatesci.com/job/dataproc-templates-build/job/integration-tests-java/)
+![Java Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-java&&subject=integration-tests-java)
 ![Python Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build) 
-[![Python Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-python&&subject=integration-tests-python)](https://dataproctemplatesci.com/job/dataproc-templates-build/job/integration-tests-python/)
+![Python Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-python&&subject=integration-tests-python)
 
 # Dataproc Templates
 Dataproc templates are an effort to solve simple, but large, in-Cloud data tasks, including data import/export/backup/restore and bulk API operations. The technology under the hood which makes these operations possible is the serverless spark functionality based on [Google Cloud's Dataproc](https://cloud.google.com/dataproc/).
@@ -45,6 +45,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [HiveToGCS](/python/dataproc_templates/hive/README.md) (blogpost [link](https://medium.com/@surjitsh/processing-large-data-tables-from-hive-to-gcs-using-pyspark-and-dataproc-serverless-35d3d16daaf))
 * [HbaseToGCS](/python/dataproc_templates/hbase/README.md)
 * [MongoToGCS](/python/dataproc_templates/mongo/README.md)
+* [SnowflakeToGCS](/python/dataproc_templates/snowflake/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToBigQuery](/python/dataproc_templates/jdbc/README.md)
