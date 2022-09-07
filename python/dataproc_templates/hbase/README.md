@@ -20,7 +20,8 @@ Template for reading files from Hbase and writing to Google Cloud Storage. It su
       docker build -t "${IMAGE}" .
       docker push "${IMAGE}"
       ```
-    
+    In some OS, --platform flag might have to be utilised while building the image. Please refer official doc [here](https://docs.docker.com/engine/reference/builder/#automatic-platform-args-in-the-global-scope). 
+    Usage ```docker build -t "${IMAGE}" --platform <your-platform> . ```
     - An SPARK_EXTRA_CLASSPATH environment variable should also be set to the same path when submitting the job.
       ```
       (./bin/start.sh ...)
@@ -40,6 +41,8 @@ Template for reading files from Hbase and writing to Google Cloud Storage. It su
                         }
                     }'''
     ```
+3) Docker to build image. Please follow the official link -:  [Install Docker](https://docs.docker.com/engine/install/)  
+4) If script is run locally, it is essential to connect local machine with GCP Container Registry and to push/pull images. Please refer the steps given in the official doc [here](https://cloud.google.com/container-registry/docs/pushing-and-pulling)
 
 ## Required JAR files
 
@@ -131,6 +134,7 @@ export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key
 export IMAGE_NAME_VERSION=<image-name>:<version>
 export HBASE_SITE_PATH=/home/anishks/hbase-site.xml
 export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
+export SKIP_IMAGE_BUILD=FALSE #It is a required envrironment variable. Set it to true if you want to use existing IMAGE
 
 bin/start.sh \
 --container-image=$IMAGE \
@@ -150,4 +154,8 @@ at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
 at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
 ... 124 more
 ```
-In automatic process, this module is downloaded and passed during runtime. However, in manual process, [htrace module](https://repo1.maven.org/maven2/org/apache/htrace/htrace-core4/4.2.0-incubating/htrace-core4-4.2.0-incubating.jar) jar can be downloaded and passed using JARS environment variable while submitting the job.
+In automatic process, this module is downloaded and passed during runtime. However, in manual process, [htrace module](https://repo1.maven.org/maven2/org/apache/htrace/htrace-core4/4.2.0-incubating/htrace-core4-4.2.0-incubating.jar) jar can be downloaded and passed using JARS environment variable while submitting the job. The jar can be downloaded and put along with other dependency jar and can also be passed similarly. 
+Example-:
+```
+export JARS=$JARS,gs://<your_bucket_to_store_dependencies>/htrace-core4-4.2.0-incubating.jar
+```

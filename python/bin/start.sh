@@ -79,12 +79,16 @@ if [ -n "${CATALOG}" ]; then
 fi
 
 if [ -n "${HBASE_SITE_PATH}" ]; then
-  #Copy the hbase-site.xml to docker context
-  cp $HBASE_SITE_PATH .
-  export HBASE_SITE_NAME=`basename $HBASE_SITE_PATH`
-  docker build -t "${IMAGE}" -f dataproc_templates/hbase/Dockerfile --build-arg HBASE_SITE_NAME=${HBASE_SITE_NAME} .
-  rm $HBASE_SITE_NAME
-  docker push "${IMAGE}"
+  check_required_envvar SKIP_IMAGE_BUILD
+  if [ "${SKIP_IMAGE_BUILD}" = "FALSE" ]; then
+    echo "Building Custom Image"
+    #Copy the hbase-site.xml to docker context
+    cp $HBASE_SITE_PATH .
+    export HBASE_SITE_NAME=`basename $HBASE_SITE_PATH`
+    docker build -t "${IMAGE}" -f dataproc_templates/hbase/Dockerfile --build-arg HBASE_SITE_NAME=${HBASE_SITE_NAME} .
+    rm $HBASE_SITE_NAME
+    docker push "${IMAGE}"
+    fi
 fi
 
 
