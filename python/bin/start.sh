@@ -88,7 +88,7 @@ if [ -n "${HBASE_SITE_PATH}" ]; then
     docker build -t "${IMAGE}" -f dataproc_templates/hbase/Dockerfile --build-arg HBASE_SITE_NAME=${HBASE_SITE_NAME} .
     rm $HBASE_SITE_NAME
     docker push "${IMAGE}"
-    fi
+  fi
 fi
 
 

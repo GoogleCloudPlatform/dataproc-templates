@@ -105,7 +105,6 @@ export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 #For manual process JARS environment variable need to be set. Not required for automated process
 export JARS="gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
              gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
-             file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar, \
              file:///usr/lib/spark/external/hbase-spark.jar"
 
 ./bin/start.sh \
