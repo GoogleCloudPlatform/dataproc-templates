@@ -1,3 +1,7 @@
+# Redshift To GCS
+
+Template for reading data from Redshift table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
+
 # Prerequisites
 
 ## Required JAR files
@@ -6,9 +10,21 @@ These templates requires the jar file to be available in the Dataproc cluster.
 User has to download the required jar file and host it inside a GCS Bucket, so that it could be referred during the execution of code.
 
 * spark-redshift.jar
+```
+wget https://repo1.maven.org/maven2/io/github/spark-redshift-community/spark-redshift_2.12/5.0.3/spark-redshift_2.12-5.0.3.jar
+```
 * spark-avro.jar
+```
+wget https://repo1.maven.org/maven2/org/apache/spark/spark-avro_2.12/3.3.0/spark-avro_2.12-3.3.0.jar
+```
 * RedshiftJDBC.jar
+```
+wget https://repo1.maven.org/maven2/com/amazon/redshift/redshift-jdbc42/2.1.0.9/redshift-jdbc42-2.1.0.9.jar
+```
 * minimal-json.jar
+```
+wget https://repo1.maven.org/maven2/com/eclipsesource/minimal-json/minimal-json/0.9.5/minimal-json-0.9.5.jar
+```
 
 Once the jar file gets downloaded, please upload the file into a GCS Bucket and export the below variable
 
@@ -45,15 +61,11 @@ jdbc:redshift://[Redshift Endpoint]:[PORT]/<dbname>?user=<username>&password=<pa
     redshifttogcs.s3.secretkey="xxxxxxxx"
     ```
 
-* You can either specify the source table name or have SQL query within double quotes. Example,
+* You can specify the source table name. Example,
 
 ```
 redshifttogcs.input.table="employees"
 ```
-
-# Redshift To GCS
-
-Template for reading data from Redshift table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
 
 ## Arguments
 
