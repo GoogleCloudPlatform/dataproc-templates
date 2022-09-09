@@ -33,6 +33,7 @@ FORMAT_PRQT = "parquet"
 FORMAT_AVRO_EXTD = "com.databricks.spark.avro"
 FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery"
 FORMAT_JDBC = "jdbc"
+FORMAT_REDSHIFT = "io.github.spark_redshift_community.spark.redshift"
 JDBC_URL = "url"
 JDBC_TABLE = "dbtable"
 JDBC_DRIVER = "driver"
@@ -53,6 +54,11 @@ FORMAT_MONGO = "com.mongodb.spark.sql.DefaultSource"
 MONGO_DEFAULT_BATCH_SIZE = 512
 MONGO_BATCH_SIZE = "maxBatchSize"
 FORMAT_SNOWFLAKE = "net.snowflake.spark.snowflake"
+REDSHIFT_TEMPDIR = "tempdir"
+REDSHIFT_IAMROLE = "aws_iam_role"
+AWS_S3ACCESSKEY = "fs.s3a.access.key"
+AWS_S3SECRETKEY = "fs.s3a.secret.key"
+
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -190,6 +196,18 @@ JDBC_BQ_OUTPUT_TABLE = "jdbc.bigquery.output.table"
 JDBC_BQ_OUTPUT_MODE = "jdbc.bigquery.output.mode"
 JDBC_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 JDBC_BQ_LD_TEMP_BUCKET_NAME = "jdbc.bigquery.temp.bucket.name"
+
+#REDSHIFT to GCS
+REDSHIFTTOGCS_INPUT_URL = "redshifttogcs.input.url"
+REDSHIFTTOGCS_S3_TEMPDIR = "redshifttogcs.s3.tempdir"
+REDSHIFTTOGCS_INPUT_TABLE = "redshifttogcs.input.table"
+REDSHIFTTOGCS_IAM_ROLEARN = "redshifttogcs.iam.rolearn"
+REDSHIFTTOGCS_S3_ACCESSKEY = "redshifttogcs.s3.accesskey"
+REDSHIFTTOGCS_S3_SECRETKEY = "redshifttogcs.s3.secretkey"
+REDSHIFTTOGCS_OUTPUT_LOCATION = "redshifttogcs.output.location"
+REDSHIFTTOGCS_OUTPUT_FORMAT = "redshifttogcs.output.format"
+REDSHIFTTOGCS_OUTPUT_MODE = "redshifttogcs.output.mode"
+REDSHIFTTOGCS_OUTPUT_PARTITIONCOLUMN = "redshifttogcs.output.partitioncolumn"
 
 # Snowflake To GCS
 SNOWFLAKE_TO_GCS_SF_URL = "snowflake.to.gcs.sf.url"
