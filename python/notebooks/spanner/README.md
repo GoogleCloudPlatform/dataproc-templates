@@ -1,4 +1,4 @@
-## Jupyter Notebook Solution for migrating MySQL database to CLoud Spanner using Dataproc Templates
+## Jupyter Notebook Solution for migrating MySQL database to Cloud Spanner using Dataproc Templates
 
 Notebook solution utilizing dataproc templates for migrating databases from MySQL to Cloud Spanner. Notebook contains step by step process for migrating MySQL database to Cloud Spanner. The migration is done in 2 steps. Firstly data is exported from MySQL to GCS. Finally, data is read from GCS to Cloud Spanner.
 
@@ -33,7 +33,7 @@ Below configurations are required before proceeding further.
 * `MYSQL_OUTPUT_GCS_MODE` : output mode for MYSQL data one of (overwrite|append)
 * `MYSQL_OUTPUT_GCS_FORMAT` : output file formate for MYSQL data one of (avro|parquet|orc)
 
-#### GCS to SPANNER Parameters
+#### GCS to Cloud Spanner Parameters
 * `SPANNER_INSTANCE` : cloud spanner instance name
 * `SPANNER_DATABASE` : cloud spanner database name
 * `SPANNER_TABLE_PRIMARY_KEYS` : provide dictionary of format {"table_name":"primary_key"} for tables which do not have primary key in MYSQL
