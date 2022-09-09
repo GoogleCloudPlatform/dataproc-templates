@@ -56,7 +56,7 @@ class TestJDBCToBigQueryTemplate:
         assert parsed_args["jdbc.bigquery.output.table"] == "bq-table"  
         assert parsed_args["jdbc.bigquery.temp.bucket.name"] == "bucket-name"  
 
-    def test_run_pass_args3(self):
+    def test_run_pass_args2(self):
         """Tests JDBCToBigQueryTemplate pass args"""
 
         jdbc_to_bigquery_template = JDBCToBigQueryTemplate()
