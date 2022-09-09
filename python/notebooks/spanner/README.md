@@ -1,13 +1,13 @@
-## Jupyter Notebook Solution for migrating MySQL database to lLoud Spanner using Dataproc Templates
+## Jupyter Notebook Solution for migrating MySQL database to CLoud Spanner using Dataproc Templates
 
-Template for reading tables from HIVE Database and writing to BigQuery Dataset.
+Notebook solution utilizing dataproc templates for migrating databases from MySQL to Cloud Spanner. Notebook contains step by step process for migrating MySQL database to Cloud Spanner. The migration is done in 2 steps. Firstly data is exported from MySQL to GCS. Finally, data is read from GCS to Cloud Spanner.
 
 Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
-[dataproc-templates/python/notebooks/spanner](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/spanner/) folder and open [mysql_to_spanner.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/spanner/mysql-to-spanner.ipynb) notebook.
+[dataproc-templates/python/notebooks/spanner](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/spanner/) folder and open [MySqlToSpanner_vertex_pipeline_pyspark.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/spanner/mysql-to-spanner.ipynb) notebook.
 
 ### Overview
 
-[mysql_to_spanner.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/spanner/mysql-to-spanner.ipynb) notebook solution is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
+[MySqlToSpanner_vertex_pipeline_pyspark.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/spanner/mysql-to-spanner.ipynb) notebook solution is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
 
 
 ### Requirements
@@ -42,5 +42,5 @@ Below configurations are required before proceeding further.
 
 This notebook requires the MYSQL connector jar. Installation information is present in the notebook
 
-### Notebook contains step by step process for migrating MySQL database to Cloud Spanner
+
 
