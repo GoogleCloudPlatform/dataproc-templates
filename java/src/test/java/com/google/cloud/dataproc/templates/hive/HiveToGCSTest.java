@@ -15,8 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.hive;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.HIVE_INPUT_TABLE_DATABASE_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.HIVE_TO_GCS_OUTPUT_PATH_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -43,6 +42,8 @@ class HiveToGCSTest {
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     PropertyUtil.getProperties().setProperty(HIVE_TO_GCS_OUTPUT_PATH_PROP, "gs://test-bucket");
+    PropertyUtil.getProperties().setProperty(HIVE_TO_GCS_TEMP_TABLE, "temp");
+    PropertyUtil.getProperties().setProperty(HIVE_TO_GCS_TEMP_QUERY, "select * from global_temp.temp");
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
     hiveToGCSTest = new HiveToGCS();
 
@@ -69,6 +70,8 @@ class HiveToGCSTest {
     return Stream.of(
         HIVE_INPUT_TABLE_DATABASE_PROP,
         HIVE_INPUT_TABLE_DATABASE_PROP,
-        HIVE_TO_GCS_OUTPUT_PATH_PROP);
+        HIVE_TO_GCS_OUTPUT_PATH_PROP,
+        HIVE_TO_GCS_TEMP_TABLE,
+        HIVE_TO_GCS_TEMP_QUERY);
   }
 }
