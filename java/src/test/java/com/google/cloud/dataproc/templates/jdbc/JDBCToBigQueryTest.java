@@ -30,18 +30,39 @@ public class JDBCToBigQueryTest {
     @Test
     void runTemplateWithValidParameters(){
         logger.info("Running test: runTemplateWithValidParameters");
-        Properties props = new Properties();
-        props.setProperty(JDBC_TO_BQ_BIGQUERY_LOCATION, "bqtable");
-        props.setProperty(JDBC_TO_BQ_TEMP_GCS_BUCKET, "bqtable");
-        props.setProperty(JDBC_TO_BQ_JDBC_URL, "append"); 
-        props.setProperty(JDBC_TO_BQ_WRITE_MODE, "append");
-        props.setProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME, "bqtable");
-        props.setProperty(JDBC_TO_BQ_SQL, "append");
-        props.setProperty(JDBC_TO_BQ_SQL_PARTITION_COLUMN, "bqtable");
-        props.setProperty(JDBC_TO_BQ_SQL_LOWER_BOUND, "append");
-        props.setProperty(JDBC_TO_BQ_SQL_UPPER_BOUND, "bqtable");
-        props.setProperty(JDBC_TO_BQ_SQL_NUM_PARTITIONS, "append");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_BIGQUERY_LOCATION, "bqtable");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_TEMP_GCS_BUCKET, "bqtable");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_JDBC_URL, "append"); 
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_WRITE_MODE, "append");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME, "bqtable");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_SQL, "append");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_SQL_PARTITION_COLUMN, "bqtable");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_SQL_LOWER_BOUND, "append");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_SQL_UPPER_BOUND, "bqtable");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_SQL_NUM_PARTITIONS, "append");
         jdbcToBigQueryTest = new JDBCToBigQuery();
         assertDoesNotThrow(jdbcToBigQueryTest::validateInput);
+    }
+    
+    
+    @Test
+    void runTemplateWithInValidParameters(){
+        logger.info("Running test: runTemplateWithValidParameters");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_TEMP_GCS_BUCKET, "bqtable");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_JDBC_URL, "append"); 
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_WRITE_MODE, "append");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME, "bqtable");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_SQL, "append");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_SQL_PARTITION_COLUMN, "bqtable");
+        PropertyUtil.getProperties().setProperty(JDBC_TO_BQ_SQL_LOWER_BOUND, "append");
+        jdbcToBigQueryTest = new JDBCToBigQuery();
+        Exception exception =
+                assertThrows(IllegalArgumentException.class, () -> jdbcToBigQueryTest.validateInput());
+            assertEquals(
+                "Required parameters for JDBCToBQ not passed. "
+                    + "Set mandatory parameter for JDBCToBQ template in "
+                    + "resources/conf/template.properties file or at runtime."
+                    + " Refer to jdbc/README.md for more instructions.",
+                exception.getMessage());
     }
 }

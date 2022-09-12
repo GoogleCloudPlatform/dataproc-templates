@@ -119,7 +119,6 @@ public class JDBCToBigQuery implements BaseTemplate {
   }
   
   void validateInput() {
-	 LOGGER.info("information msg");
 	   if (StringUtils.isAllBlank(bqLocation)
 		        || StringUtils.isAllBlank(jdbcURL)
 		        || StringUtils.isAllBlank(jdbcDriverClassName)

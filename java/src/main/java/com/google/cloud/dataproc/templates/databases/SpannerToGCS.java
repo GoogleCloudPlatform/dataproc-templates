@@ -19,6 +19,8 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -52,6 +54,7 @@ public class SpannerToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
+	validateInput();
     String spannerUrl =
         String.format(
             "jdbc:cloudspanner:/projects/%s/instances/%s/databases/%s?lenient=true",
@@ -62,7 +65,7 @@ public class SpannerToGCS implements BaseTemplate {
 
     SparkSession spark = SparkSession.builder().appName("DatabaseToGCS Dataproc job").getOrCreate();
 
-    LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
+   // LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
     Dataset<Row> jdbcDF =
         spark
             .read()
@@ -77,4 +80,29 @@ public class SpannerToGCS implements BaseTemplate {
 
     spark.stop();
   }
+
+ void validateInput() {
+	   if (StringUtils.isAllBlank(projectId)
+		        || StringUtils.isAllBlank(instanceId)
+		        || StringUtils.isAllBlank(databaseId)
+		        || StringUtils.isAllBlank(tableId)
+		        || StringUtils.isAllBlank(gcsWritePath)
+		        || StringUtils.isAllBlank(gcsSaveMode)
+		        || StringUtils.isAllBlank(outputFormat)) {
+		      LOGGER.error(
+		          "{},{},{},{},{},{},{} are required parameters. ",
+		          PROJECT_ID_PROP,
+		          SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID,
+		          SPANNER_GCS_INPUT_DATABASE_ID,
+		          SPANNER_GCS_INPUT_TABLE_ID,
+		          SPANNER_GCS_OUTPUT_GCS_PATH,
+		          SPANNER_GCS_OUTPUT_GCS_SAVEMODE,
+		          SPANNER_GCS_OUTPUT_FORMAT);
+		      throw new IllegalArgumentException(
+		          "Required parameters for SpannerToGCS not passed. "
+		              + "Set mandatory parameter for SpannerToGCS template "
+		              + "in resources/conf/template.properties file or at runtime. Refer to d/README.md for more instructions.");
+		    }
+	
+}
 }
