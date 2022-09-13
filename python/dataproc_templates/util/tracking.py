@@ -18,11 +18,14 @@ import google.auth
 from google.api_core import client_info as http_client_info
 from google.cloud import bigquery
 
-def track_template_invocation(template_name: TemplateName) -> None:
+from pyspark.sql import SparkSession
+
+def track_template_invocation(spark: SparkSession, template_name: TemplateName) -> None:
     """
     Track template invocation
 
     Args:
+        spark (SparkSession): SparkSession
         template_name (TemplateName): The TemplateName of the template
             class being run.
 
@@ -33,6 +36,8 @@ def track_template_invocation(template_name: TemplateName) -> None:
     project_id: str
     _, project_id = google.auth.default()
 
+    logger = spark.sparkContext._jvm.org.apache.log4j.LogManager.getLogger(__name__)
+
     try:
         client_info = http_client_info.ClientInfo(user_agent=f"google-pso-tool/dataproc-templates/0.1.0-{template_name.value}")
         client = bigquery.Client(project=project_id, client_info=client_info)
@@ -40,6 +45,7 @@ def track_template_invocation(template_name: TemplateName) -> None:
             project='bigquery-public-data',
             page_size=1
         )
+        logger.info("Tracked invocation")
     except Exception:
         # Do nothing
         pass
