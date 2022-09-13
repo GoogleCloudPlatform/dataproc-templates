@@ -71,8 +71,7 @@ public class HiveToBigQuery implements BaseTemplate {
             + "1. {}:{}"
             + "2. {}:{}"
             + "3. {}:{}"
-            + "4. {},{}"
-            + "5. {},{}",
+            + "4. {},{}",
         HIVE_TO_BQ_BIGQUERY_LOCATION,
         bqLocation,
         HIVE_TO_BQ_TEMP_GCS_BUCKET,
