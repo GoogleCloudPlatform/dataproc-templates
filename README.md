@@ -49,7 +49,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
 * [RedshiftToGCS](/python/dataproc_templates/redshift/README.md)
-* [TextToBiqQuery](/python/dataproc_templates/gcs/README.md)
+* [TextToBigQuery](/python/dataproc_templates/gcs/README.md)
 
 ## Getting Started
 
