@@ -67,6 +67,15 @@ public interface TemplateConstants {
   String HBASE_TO_GCS_OUTPUT_PATH = "hbasetogcs.output.path";
   String HBASE_TO_GCS_TABLE_CATALOG = "hbasetogcs.table.catalog";
 
+  /** Property values for CassandraToGCS */
+  String CASSANDRA_TO_GSC_INPUT_KEYSPACE = "cassandratogcs.input.keyspace";
+
+  String CASSANDRA_TO_GSC_INPUT_TABLE = "cassandratogcs.input.table";
+  String CASSANDRA_TO_GSC_INPUT_HOST = "cassandratogcs.input.host";
+  String CASSANDRA_TO_GSC_OUTPUT_FORMAT = "cassandratogcs.output.format";
+  String CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE = "cassandratogcs.output.savemode";
+  String CASSANDRA_TO_GSC_OUTPUT_PATH = "cassandratogcs.output.path";
+
   /** Property values for JDBCToBQ */
   String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
 
