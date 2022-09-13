@@ -253,6 +253,16 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.output.batch.size="1000"
 ```
 
+There are two optional properties as well with "Hive to JDBC" Template. Please find below the details :-
+
+```
+--templateProperty jdbctojdbc.temp.view.name='temporary_view_name' 
+--templateProperty jdbctojdbc.sql.query='select * from global_temp.temporary_view_name'
+```
+These properties are responsible for applying some spark sql transformations before loading data into JDBC.
+The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
+
+
 # 2. JDBC To GCS
 
 Template for reading data from JDBC table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
@@ -376,6 +386,16 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.output.format="csv" \
 --jdbctogcs.output.partitioncolumn="department_id"
 ```
+
+There are two optional properties as well with "JDBC to GCS" Template. Please find below the details :-
+
+```
+--templateProperty jdbctogcs.temp.view.name='temporary_view_name' 
+--templateProperty jdbctogcs.sql.query='select * from global_temp.temporary_view_name'
+```
+These properties are responsible for applying some spark sql transformations before loading data into GCS.
+The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
+
 
 # 3. JDBC To BigQuery
 
