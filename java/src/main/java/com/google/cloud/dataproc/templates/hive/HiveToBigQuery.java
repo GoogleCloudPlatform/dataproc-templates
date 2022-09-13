@@ -94,7 +94,7 @@ public class HiveToBigQuery implements BaseTemplate {
     /** Read Input data from Hive table */
     Dataset<Row> inputData = spark.sql(hiveSQL);
 
-    if (tempTable != null && tempQuery != null) {
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
       inputData.createOrReplaceGlobalTempView(tempTable);
       inputData = spark.sql(tempQuery);
     }

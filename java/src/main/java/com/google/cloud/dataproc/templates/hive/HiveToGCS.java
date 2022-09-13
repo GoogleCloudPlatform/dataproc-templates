@@ -83,7 +83,7 @@ public class HiveToGCS implements BaseTemplate {
     LOGGER.info("Total row count: {}", inputData.count());
     LOGGER.info("Writing data to outputPath: {}", outputPath);
 
-    if (tempTable != null && tempQuery != null) {
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
       inputData.createOrReplaceGlobalTempView(tempTable);
       inputData = spark.sql(tempQuery);
     }

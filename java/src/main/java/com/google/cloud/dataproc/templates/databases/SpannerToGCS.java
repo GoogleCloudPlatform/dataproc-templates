@@ -19,6 +19,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -79,7 +80,7 @@ public class SpannerToGCS implements BaseTemplate {
 
     LOGGER.info("Data load complete from table/query: " + tableId);
 
-    if (tempTable != null && tempQuery != null) {
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
       jdbcDF.createOrReplaceGlobalTempView(tempTable);
       jdbcDF = spark.sql(tempQuery);
     }

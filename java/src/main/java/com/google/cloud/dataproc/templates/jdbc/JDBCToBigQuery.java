@@ -145,7 +145,7 @@ public class JDBCToBigQuery implements BaseTemplate {
     /** Read Input data from JDBC table */
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
-    if (tempTable != null && tempQuery != null) {
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
       inputData.createOrReplaceGlobalTempView(tempTable);
       inputData = spark.sql(tempQuery);
     }

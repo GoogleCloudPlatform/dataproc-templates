@@ -70,6 +70,12 @@ public class JDBCToGCS implements BaseTemplate {
       inputData = spark.sql(config.getTempQuery());
     }
 
+    if (StringUtils.isNotBlank(config.getTempTable())
+        && StringUtils.isNotBlank(config.getTempQuery())) {
+      inputData.createOrReplaceGlobalTempView(config.getTempTable());
+      inputData = spark.sql(config.getTempQuery());
+    }
+
     DataFrameWriter<Row> writer =
         inputData.write().mode(config.getGcsWriteMode()).format(config.getGcsOutputFormat());
 
