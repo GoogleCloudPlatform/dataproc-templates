@@ -42,9 +42,8 @@ class HiveToGCSTest {
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     PropertyUtil.getProperties().setProperty(HIVE_TO_GCS_OUTPUT_PATH_PROP, "gs://test-bucket");
-    PropertyUtil.getProperties().setProperty(HIVE_TO_GCS_TEMP_TABLE, "temp");
-    PropertyUtil.getProperties()
-        .setProperty(HIVE_TO_GCS_TEMP_QUERY, "select * from global_temp.temp");
+    PropertyUtil.getProperties().setProperty(HIVE_GCS_TEMP_TABLE, "demo");
+    PropertyUtil.getProperties().setProperty(HIVE_GCS_TEMP_QUERY, "select * from global_temp.demo");
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
     hiveToGCSTest = new HiveToGCS();
 
@@ -72,7 +71,7 @@ class HiveToGCSTest {
         HIVE_INPUT_TABLE_DATABASE_PROP,
         HIVE_INPUT_TABLE_DATABASE_PROP,
         HIVE_TO_GCS_OUTPUT_PATH_PROP,
-        HIVE_TO_GCS_TEMP_TABLE,
-        HIVE_TO_GCS_TEMP_QUERY);
+        HIVE_GCS_TEMP_TABLE,
+        HIVE_GCS_TEMP_QUERY);
   }
 }

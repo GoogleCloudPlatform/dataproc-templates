@@ -45,8 +45,8 @@ public interface TemplateConstants {
   // Hive warehouse location.
   String HIVE_TO_GCS_OUTPUT_FORMAT_PROP = "hive.gcs.output.format";
   String HIVE_TO_GCS_OUTPUT_FORMAT_DEFAULT = "avro";
-  String HIVE_TO_GCS_TEMP_TABLE = "hive.gcs.temp.table";
-  String HIVE_TO_GCS_TEMP_QUERY = "hive.gcs.temp.query";
+  String HIVE_GCS_TEMP_TABLE = "hive.gcs.temp.table";
+  String HIVE_GCS_TEMP_QUERY = "hive.gcs.temp.query";
   // Hive warehouse location.
   String HIVE_WAREHOUSE_LOCATION_PROP = "spark.sql.warehouse.dir";
   // Hive warehouse location.
@@ -85,8 +85,8 @@ public interface TemplateConstants {
   String JDBC_TO_BQ_SQL_UPPER_BOUND = "jdbctobq.sql.upperBound";
   String JDBC_TO_BQ_SQL_NUM_PARTITIONS = "jdbctobq.sql.numPartitions";
   String JDBC_TO_BQ_WRITE_MODE = "jdbctobq.write.mode";
-  String JDBC_TO_BQ_TEMP_TABLE = "jdbctobq.temp.table";
-  String JDBC_TO_BQ_TEMP_QUERY = "jdbctobq.temp.query";
+  String JDBC_BQ_TEMP_TABLE = "jdbc.bq.temp.table";
+  String JDBC_BQ_TEMP_QUERY = "jdbc.bq.temp.query";
 
   /** Property values for JDBCToGCS */
   String JDBC_TO_GCS_OUTPUT_LOCATION = "jdbctogcs.output.location";

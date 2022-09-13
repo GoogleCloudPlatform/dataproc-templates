@@ -62,8 +62,8 @@ public class JDBCToBigQuery implements BaseTemplate {
     jdbcSQLNumPartitions = getProperties().getProperty(JDBC_TO_BQ_SQL_NUM_PARTITIONS);
     concatedPartitionProps =
         jdbcSQLPartitionColumn + jdbcSQLLowerBound + jdbcSQLUpperBound + jdbcSQLNumPartitions;
-    tempTable = getProperties().getProperty(JDBC_TO_BQ_TEMP_TABLE);
-    tempQuery = getProperties().getProperty(JDBC_TO_BQ_TEMP_QUERY);
+    tempTable = getProperties().getProperty(JDBC_BQ_TEMP_TABLE);
+    tempQuery = getProperties().getProperty(JDBC_BQ_TEMP_QUERY);
   }
 
   @Override

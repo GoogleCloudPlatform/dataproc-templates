@@ -58,8 +58,8 @@ public class HiveToGCS implements BaseTemplate {
             .getProperty(HIVE_TO_GCS_OUTPUT_FORMAT_PROP, HIVE_TO_GCS_OUTPUT_FORMAT_DEFAULT);
     partitionColumn = getProperties().getProperty(HIVE_PARTITION_COL);
     gcsSaveMode = getProperties().getProperty(HIVE_GCS_SAVE_MODE);
-    tempTable = getProperties().getProperty(HIVE_TO_GCS_TEMP_TABLE);
-    tempQuery = getProperties().getProperty(HIVE_TO_GCS_TEMP_QUERY);
+    tempTable = getProperties().getProperty(HIVE_GCS_TEMP_TABLE);
+    tempQuery = getProperties().getProperty(HIVE_GCS_TEMP_QUERY);
   }
 
   @Override
