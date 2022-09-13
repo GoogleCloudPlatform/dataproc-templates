@@ -33,8 +33,10 @@ from dataproc_templates.gcs.text_to_bigquery import TextToBigQueryTemplate
 from dataproc_templates.hbase.hbase_to_gcs import HbaseToGCSTemplate
 from dataproc_templates.jdbc.jdbc_to_jdbc import JDBCToJDBCTemplate
 from dataproc_templates.jdbc.jdbc_to_gcs import JDBCToGCSTemplate
+from dataproc_templates.jdbc.jdbc_to_bigquery import JDBCToBigQueryTemplate
 from dataproc_templates.snowflake.snowflake_to_gcs import SnowflakeToGCSTemplate
 from dataproc_templates.redshift.redshift_to_gcs import RedshiftToGCSTemplate
+
 
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
@@ -55,6 +57,7 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.HBASETOGCS: HbaseToGCSTemplate,
     TemplateName.JDBCTOJDBC: JDBCToJDBCTemplate,
     TemplateName.JDBCTOGCS: JDBCToGCSTemplate,
+    TemplateName.JDBCTOBIGQUERY: JDBCToBigQueryTemplate,
     TemplateName.MONGOTOGCS: MongoToGCSTemplate,
     TemplateName.SNOWFLAKETOGCS: SnowflakeToGCSTemplate,
     TemplateName.REDSHIFTTOGCS: RedshiftToGCSTemplate

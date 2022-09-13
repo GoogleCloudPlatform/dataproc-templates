@@ -376,3 +376,163 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.output.format="csv" \
 --jdbctogcs.output.partitioncolumn="department_id"
 ```
+
+# 3. JDBC To BigQuery
+
+Template for reading data from JDBC table and writing into files in Google Cloud BigQuery. It supports reading partition tables.
+
+## Required JAR files
+
+This template requires the JBDC jar files mentioned, and also the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
+
+## Arguments
+
+* `jdbc.bigquery.input.url`: JDBC input URL
+* `jdbc.bigquery.input.driver`: JDBC input driver name
+* `jdbc.bigquery.input.table`: JDBC input table name
+* `jdbc.bigquery.input.partitioncolumn` (Optional): JDBC input table partition column name
+* `jdbc.bigquery.lowerbound` (Optional): JDBC input table partition column lower bound which is used to decide the partition stride
+* `jdbc.bigquery.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
+* `jdbc.bigquery.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
+* `jdbc.bigquery.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+
+## Usage
+
+```
+$ python main.py --template JDBCTOBIGQUERY --help
+
+usage: main.py [-h] --jdbc.bigquery.output.dataset
+               JDBC.BIGQUERY.OUTPUT.DATASET
+               --jdbc.bigquery.output.table
+               JDBC.BIGQUERY.OUTPUT.TABLE
+               --jdbc.bigquery.temp.bucket.name
+               JDBC.BIGQUERY.TEMP.BUCKET.NAME
+               --jdbc.bigquery.input.url JDBC.BIGQUERY.INPUT.URL
+               --jdbc.bigquery.input.driver
+               JDBC.BIGQUERY.INPUT.DRIVER
+               --jdbc.bigquery.input.table JDBC.BIGQUERY.INPUT.TABLE
+               [--jdbc.bigquery.input.partitioncolumn JDBC.BIGQUERY.INPUT.PARTITIONCOLUMN]
+               [--jdbc.bigquery.input.lowerbound JDBC.BIGQUERY.INPUT.LOWERBOUND]
+               [--jdbc.bigquery.input.upperbound JDBC.BIGQUERY.INPUT.UPPERBOUND]
+               [--jdbc.bigquery.numpartitions JDBC.BIGQUERY.NUMPARTITIONS]
+               [--jdbc.bigquery.output.mode {overwrite,append,ignore,errorifexists}]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --jdbc.bigquery.output.dataset JDBC.BIGQUERY.OUTPUT.DATASET
+                        BigQuery dataset for the output table
+  --jdbc.bigquery.output.table JDBC.BIGQUERY.OUTPUT.TABLE
+                        BigQuery output table name
+  --jdbc.bigquery.temp.bucket.name JDBC.BIGQUERY.TEMP.BUCKET.NAME
+                        Spark BigQuery connector temporary bucket
+  --jdbc.bigquery.input.url JDBC.BIGQUERY.INPUT.URL
+                        JDBC input URL
+  --jdbc.bigquery.input.driver JDBC.BIGQUERY.INPUT.DRIVER
+                        JDBC input driver name
+  --jdbc.bigquery.input.table JDBC.BIGQUERY.INPUT.TABLE
+                        JDBC input table name
+  --jdbc.bigquery.input.partitioncolumn JDBC.BIGQUERY.INPUT.PARTITIONCOLUMN
+                        JDBC input table partition column name
+  --jdbc.bigquery.input.lowerbound JDBC.BIGQUERY.INPUT.LOWERBOUND
+                        JDBC input table partition column lower
+                        bound which is used to decide the partition
+                        stride
+  --jdbc.bigquery.input.upperbound JDBC.BIGQUERY.INPUT.UPPERBOUND
+                        JDBC input table partition column upper
+                        bound which is used to decide the partition
+                        stride
+  --jdbc.bigquery.numpartitions JDBC.BIGQUERY.NUMPARTITIONS
+                        The maximum number of partitions that can be
+                        used for parallelism in table reading and
+                        writing. Default set to 10
+  --jdbc.bigquery.output.mode {overwrite,append,ignore,errorifexists}
+                        Output write mode (one of:
+                        append,overwrite,ignore,errorifexists)
+                        (Defaults to append)
+
+```
+
+## General execution: 
+
+```
+export GCP_PROJECT=<gcp-project-id> 
+export REGION=<region>  
+export GCS_STAGING_LOCATION=<gcs staging location> 
+export SUBNET=<subnet>   
+export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_path_to_jdbc_jar_files>/spark-bigquery-latest_2.12.jar"
+
+
+./bin/start.sh \
+-- --template=JDBCTOBIGQUERY \
+--jdbc.bigquery.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
+--jdbc.bigquery.input.driver="<jdbc-driver-class-name>" \
+--jdbc.bigquery.input.table="input table name or subquery with where clause filter" \
+--jdbc.bigquery.output.mode="<append|overwrite|ignore|errorifexists>" \
+--jdbc.bigquery.output.dataset="<bigquery-dataset-name>" \
+--jdbc.bigquery.output.table="<bigquery-dataset-table>" \
+--jdbc.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
+
+```
+## Example execution: 
+
+```
+export GCP_PROJECT=my-gcp-proj 
+export REGION=us-central1  
+export GCS_STAGING_LOCATION=gs://my-gcp-proj/staging 
+export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default  
+export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-proj/jars/spark-bigquery-latest_2.12.jar"
+```
+
+* MySQL to BigQuery
+
+```
+./bin/start.sh \
+-- --template=JDBCTOBIGQUERY \
+--jdbc.bigquery.input.url="jdbc:mysql://1.1.1.1:3306/mydb?user=root&password=password123" \
+--jdbc.bigquery.input.driver="com.mysql.cj.jdbc.Driver" \
+--jdbc.bigquery.input.table="(select * from employees where id < 10) as employees" \
+--jdbc.bigquery.input.partitioncolumn=id \
+--jdbc.bigquery.input.lowerbound="11" \
+--jdbc.bigquery.input.upperbound="20" \
+--jdbc.bigquery.input.numpartitions="4" \
+--jdbc.bigquery.output.mode="overwrite" \
+--jdbc.bigquery.output.dataset="bq-dataset" \
+--jdbc.bigquery.output.table="bq-table" \
+--jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
+```
+
+* PostgreSQL to BigQuery
+
+```
+./bin/start.sh \
+-- --template=JDBCTOBIGQUERY \
+--jdbc.bigquery.input.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
+--jdbc.bigquery.input.driver="org.postgresql.Driver" \
+--jdbc.bigquery.input.table="(select * from employees where id < 10) as employees" \
+--jdbc.bigquery.input.partitioncolumn=id \
+--jdbc.bigquery.input.lowerbound="11" \
+--jdbc.bigquery.input.upperbound="20" \
+--jdbc.bigquery.input.numpartitions="4" \
+--jdbc.bigquery.output.mode="overwrite" \
+--jdbc.bigquery.output.dataset="bq-dataset" \
+--jdbc.bigquery.output.table="bq-table" \
+--jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
+```
+
+* Microsoft SQL Server to BigQuery 
+
+```
+./bin/start.sh \
+-- --template=JDBCTOBIGQUERY \
+--jdbc.bigquery.input.url="jdbc:sqlserver://1.1.1.1:1433;databaseName=mydb;user=sqlserver;password=password123" \
+--jdbc.bigquery.input.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" \
+--jdbc.bigquery.input.table=" employees" \
+--jdbc.bigquery.input.partitioncolumn=id \
+--jdbc.bigquery.input.lowerbound="11" \
+--jdbc.bigquery.input.upperbound="20" \
+--jdbc.bigquery.input.numpartitions="4" \
+--jdbc.bigquery.output.mode="overwrite" \
+--jdbc.bigquery.output.dataset="bq-dataset" \
+--jdbc.bigquery.output.table="bq-table" \
+--jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
+```

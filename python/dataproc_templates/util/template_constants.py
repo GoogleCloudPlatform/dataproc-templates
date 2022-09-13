@@ -182,6 +182,21 @@ JDBCTOGCS_OUTPUT_FORMAT = "jdbctogcs.output.format"
 JDBCTOGCS_OUTPUT_MODE = "jdbctogcs.output.mode"
 JDBCTOGCS_OUTPUT_PARTITIONCOLUMN = "jdbctogcs.output.partitioncolumn"
 
+# JDBC to BigQuery
+JDBC_BQ_INPUT_URL = "jdbc.bigquery.input.url"
+JDBC_BQ_INPUT_DRIVER = "jdbc.bigquery.input.driver"
+JDBC_BQ_INPUT_TABLE = "jdbc.bigquery.input.table"
+JDBC_BQ_INPUT_PARTITIONCOLUMN = "jdbc.bigquery.input.partitioncolumn"
+JDBC_BQ_INPUT_LOWERBOUND = "jdbc.bigquery.input.lowerbound"
+JDBC_BQ_INPUT_UPPERBOUND = "jdbc.bigquery.input.upperbound"
+JDBC_BQ_NUMPARTITIONS = "jdbc.bigquery.numpartitions"
+JDBC_BQ_OUTPUT_MODE = "jdbc.bigquery.output.mode"
+JDBC_BQ_OUTPUT_DATASET = "jdbc.bigquery.output.dataset"
+JDBC_BQ_OUTPUT_TABLE = "jdbc.bigquery.output.table"
+JDBC_BQ_OUTPUT_MODE = "jdbc.bigquery.output.mode"
+JDBC_BQ_TEMP_BUCKET = "temporaryGcsBucket"
+JDBC_BQ_LD_TEMP_BUCKET_NAME = "jdbc.bigquery.temp.bucket.name"
+
 #REDSHIFT to GCS
 REDSHIFTTOGCS_INPUT_URL = "redshifttogcs.input.url"
 REDSHIFTTOGCS_S3_TEMPDIR = "redshifttogcs.s3.tempdir"
@@ -208,3 +223,4 @@ SNOWFLAKE_TO_GCS_OUTPUT_LOCATION = "snowflake.to.gcs.output.location"
 SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
 SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
 SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
+
