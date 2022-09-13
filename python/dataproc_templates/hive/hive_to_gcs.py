@@ -133,7 +133,7 @@ class HiveToGCSTemplate(BaseTemplate):
 
         if sql_query:
             # Create temp view on source data
-            input_data.createOrReplaceTempView(hive_temp_view)
+            input_data.createGlobalTempView(hive_temp_view)
             # Execute SQL
             output_data = spark.sql(sql_query)
         else:

@@ -198,7 +198,7 @@ class JDBCToGCSTemplate(BaseTemplate):
 
         if sql_query:
             # Create temp view on source data
-            input_data.createOrReplaceTempView(temp_view)
+            input_data.createGlobalTempView(temp_view)
             # Execute SQL
             output_data = spark.sql(sql_query)
         else:
