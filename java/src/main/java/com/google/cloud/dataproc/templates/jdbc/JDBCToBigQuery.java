@@ -115,7 +115,12 @@ public class JDBCToBigQuery implements BaseTemplate {
     /** Read Input data from JDBC table */
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
-    inputData.write().mode(bqWriteMode).format("bigquery").option("table", bqLocation).save();
+    inputData
+        .write()
+        .mode(bqWriteMode)
+        .format("com.google.cloud.spark.bigquery")
+        .option("table", bqLocation)
+        .save();
   }
   
   void validateInput() {

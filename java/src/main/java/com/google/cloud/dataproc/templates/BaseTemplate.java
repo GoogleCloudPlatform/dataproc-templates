@@ -33,14 +33,17 @@ public interface BaseTemplate {
     HIVETOBIGQUERY,
     S3TOBIGQUERY,
     GCSTOBIGQUERY,
+    GCSTOGCS,
     JDBCTOBIGQUERY,
     JDBCTOGCS,
     BIGQUERYTOGCS,
     GENERAL,
     DATAPLEXGCSTOBQ,
     PUBSUBTOGCS,
+    HBASETOGCS,
     GCSTOJDBC,
-    KAFKATOBQ
+    KAFKATOBQ,
+    SNOWFLAKETOGCS
   }
 
   default Properties getProperties() {

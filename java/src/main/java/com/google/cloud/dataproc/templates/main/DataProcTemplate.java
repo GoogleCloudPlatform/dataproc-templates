@@ -23,7 +23,9 @@ import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
 import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
 import com.google.cloud.dataproc.templates.gcs.GCSToSpanner;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
+import com.google.cloud.dataproc.templates.gcs.GCStoGCS;
 import com.google.cloud.dataproc.templates.general.GeneralTemplate;
+import com.google.cloud.dataproc.templates.hbase.HbaseToGCS;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToBigQuery;
@@ -32,6 +34,7 @@ import com.google.cloud.dataproc.templates.kafka.KafkaToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
+import com.google.cloud.dataproc.templates.snowflake.SnowflakeToGCS;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.TemplateUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
@@ -64,16 +67,19 @@ public class DataProcTemplate {
           .put(TemplateName.PUBSUBTOBQ, (args) -> new PubSubToBQ())
           .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
+          .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
           .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
-          .put(TemplateName.JDBCTOGCS, (args) -> new JDBCToGCS())
+          .put(TemplateName.JDBCTOGCS, JDBCToGCS::of)
+          .put(TemplateName.HBASETOGCS, (args) -> new HbaseToGCS())
           .put(TemplateName.KAFKATOBQ, (args) -> new KafkaToBQ())
           .put(TemplateName.GCSTOJDBC, GCSToJDBC::of)
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
+          .put(TemplateName.SNOWFLAKETOGCS, SnowflakeToGCS::of)
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
@@ -104,7 +110,7 @@ public class DataProcTemplate {
     CommandLineParser parser = new DefaultParser();
     LOGGER.info("Parsing arguments {}", (Object) args);
     try {
-      return parser.parse(options, args, false);
+      return parser.parse(options, args, true);
     } catch (ParseException e) {
       throw new IllegalArgumentException(e.getMessage(), e);
     }

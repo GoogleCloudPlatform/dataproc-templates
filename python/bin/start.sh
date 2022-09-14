@@ -27,6 +27,9 @@ check_required_envvar GCP_PROJECT
 check_required_envvar REGION
 check_required_envvar GCS_STAGING_LOCATION
 
+# Remove trailing forward slash
+GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION | sed 's/\/*$//'`
+
 # Do not rebuild when SKIP_BUILD is specified
 # Usage: export SKIP_BUILD=true
 if [ -z "$SKIP_BUILD" ]; then
@@ -58,6 +61,34 @@ if [ -n "${FILES}" ]; then
 fi
 if [ -n "${PY_FILES}" ]; then
   OPT_FILES="${OPT_PY_FILES},${PY_FILES}"
+fi
+#if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
+if [ -n "${CATALOG}" ]; then
+  echo "Downloading Hbase jar dependency"
+  wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar
+  wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar
+  wget https://repo1.maven.org/maven2/org/apache/htrace/htrace-core4/4.2.0-incubating/htrace-core4-4.2.0-incubating.jar
+  gsutil copy hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
+  gsutil copy hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
+  gsutil copy htrace-core4-4.2.0-incubating.jar ${GCS_STAGING_LOCATION}/htrace-core4-4.2.0-incubating.jar
+  echo "Passing downloaded dependency jars"
+  OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar,${GCS_STAGING_LOCATION}/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+  rm hbase-client-2.4.12.jar
+  rm hbase-shaded-mapreduce-2.4.12.jar
+  rm htrace-core4-4.2.0-incubating.jar
+fi
+
+if [ -n "${HBASE_SITE_PATH}" ]; then
+  check_required_envvar SKIP_IMAGE_BUILD
+  if [ "${SKIP_IMAGE_BUILD}" = "FALSE" ]; then
+    echo "Building Custom Image"
+    #Copy the hbase-site.xml to docker context
+    cp $HBASE_SITE_PATH .
+    export HBASE_SITE_NAME=`basename $HBASE_SITE_PATH`
+    docker build -t "${IMAGE}" -f dataproc_templates/hbase/Dockerfile --build-arg HBASE_SITE_NAME=${HBASE_SITE_NAME} .
+    rm $HBASE_SITE_NAME
+    docker push "${IMAGE}"
+  fi
 fi
 
 
