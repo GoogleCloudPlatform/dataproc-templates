@@ -33,7 +33,7 @@ GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION | sed 's/\/*$//'`
 # Do not rebuild when SKIP_BUILD is specified
 # Usage: export SKIP_BUILD=true
 if [ -z "$SKIP_BUILD" ]; then
-    python ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
+    python3 ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
 fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
