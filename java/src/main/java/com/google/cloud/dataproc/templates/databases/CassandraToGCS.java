@@ -18,13 +18,14 @@ package com.google.cloud.dataproc.templates.databases;
 import com.datastax.spark.connector.CassandraSparkExtensions;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.TemplateConstants;
-import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeoutException;
 
 public class CassandraToGCS implements BaseTemplate, TemplateConstants {
   private String keyspace;
@@ -51,12 +52,9 @@ public class CassandraToGCS implements BaseTemplate, TemplateConstants {
         SparkSession.builder()
             .appName("Spark CassandraToGCS Job")
             .withExtensions(new CassandraSparkExtensions())
+                .config("spark.sql.catalog.dc","com.datastax.spark.connector.datasource.CassandraCatalog").config("spark.sql.catalog.dc.spark.cassandra.connection.host",cassandraHost)
             .getOrCreate();
-    spark
-        .conf()
-        .set("spark.sql.catalog.dc", "com.datastax.spark.connector.datasource.CassandraCatalog");
-    spark.conf().set("spark.sql.catalog.dc.spark.cassandra.connection.host", cassandraHost);
-    Dataset dataset = spark.read().table("dc." + keyspace + "." + table);
+    Dataset dataset = spark.sql("SELECT * FROM dc"+"."+ keyspace + "." + table);
     dataset.write().format(outputFileFormat).mode(gcsSaveMode).save(gcsWritePath);
   }
 
@@ -68,7 +66,7 @@ public class CassandraToGCS implements BaseTemplate, TemplateConstants {
         || StringUtils.isAllBlank(keyspace)
         || StringUtils.isAllBlank(table)) {
       LOGGER.error(
-          "{}, {}, {}, {} is required parameter. ",
+          "{}, {}, {}, {}, {}, {} is required parameter. ",
           CASSANDRA_TO_GSC_INPUT_KEYSPACE,
           CASSANDRA_TO_GSC_INPUT_HOST,
           CASSANDRA_TO_GSC_INPUT_TABLE,

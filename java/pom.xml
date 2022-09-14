@@ -122,6 +122,11 @@
       <version>3.1.0</version>
     </dependency>
     <dependency>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-posix</artifactId>
+      <version>3.0.61</version>
+    </dependency>
+    <dependency>
         <groupId>net.snowflake</groupId>
         <artifactId>spark-snowflake_2.12</artifactId>
         <version>2.10.0-spark_3.2</version>
