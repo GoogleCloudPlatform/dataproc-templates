@@ -166,5 +166,6 @@ spark_status=$?
 
 check_status $spark_status "\n Spark Command ran successful \n" "\n It seems like there are some issues in running spark command. Requesting you to please go through the error to identify issues in your code \n"
 
-echo "\n Feel free to reach out dataproc-templates-support-external@googlegroups.com if you have a question \n"
-echo "\n Also consider giving a feedback at: https://forms.gle/XXCJeWeCJJ9fNLQS6 \n"
+echo "We will love to hear your feedback at: https://forms.gle/XXCJeWeCJJ9fNLQS6"
+echo "Email us at: dataproc-templates-support-external@googlegroups.com"
+
