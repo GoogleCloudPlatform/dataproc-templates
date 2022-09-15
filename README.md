@@ -48,7 +48,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [SnowflakeToGCS](/python/dataproc_templates/snowflake/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
-* [JDBCToBigQuery](/python/dataproc_templates/jdbc/README.md)
+* [JDBCToBigQuery](/python/dataproc_templates/jdbc/README.md) (blogpost [link](https://medium.com/@sjlva/python-fast-export-large-database-tables-using-gcp-serverless-dataproc-bfe77a132485))
 * [RedshiftToGCS](/python/dataproc_templates/redshift/README.md)
 * [TextToBigQuery](/python/dataproc_templates/gcs/README.md)
 
