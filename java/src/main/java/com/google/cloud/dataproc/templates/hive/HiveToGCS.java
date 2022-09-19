@@ -38,6 +38,8 @@ public class HiveToGCS implements BaseTemplate {
   private String outputFormat;
   private String partitionColumn;
   private String gcsSaveMode;
+  private String tempTable;
+  private String tempQuery;
 
   /**
    * Spark job to move data from Hive table to GCS bucket. For detailed list of properties refer
@@ -56,6 +58,8 @@ public class HiveToGCS implements BaseTemplate {
             .getProperty(HIVE_TO_GCS_OUTPUT_FORMAT_PROP, HIVE_TO_GCS_OUTPUT_FORMAT_DEFAULT);
     partitionColumn = getProperties().getProperty(HIVE_PARTITION_COL);
     gcsSaveMode = getProperties().getProperty(HIVE_GCS_SAVE_MODE);
+    tempTable = getProperties().getProperty(HIVE_GCS_TEMP_TABLE);
+    tempQuery = getProperties().getProperty(HIVE_GCS_TEMP_QUERY);
   }
 
   @Override
@@ -78,6 +82,11 @@ public class HiveToGCS implements BaseTemplate {
     LOGGER.info("Columns in table:{} are: {}", hiveInputTable, StringUtils.join(cols, ","));
     LOGGER.info("Total row count: {}", inputData.count());
     LOGGER.info("Writing data to outputPath: {}", outputPath);
+
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
 
     DataFrameWriter<Row> writer = inputData.write().format(outputFormat);
 

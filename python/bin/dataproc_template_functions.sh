@@ -29,6 +29,18 @@ check_required_envvar() {
   fi
 }
 
+check_status()
+{
+  if [ "$1" -eq 0 ];
+  then
+    printf "$2"
+  else
+    printf "$3"
+    exit 1
+  fi
+}
+
+
 #Mandatory vs optional  specify
 Help() {
   # Display Help
