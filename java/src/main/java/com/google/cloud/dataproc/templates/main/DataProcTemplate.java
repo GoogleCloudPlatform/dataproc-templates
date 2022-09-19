@@ -18,6 +18,7 @@ package com.google.cloud.dataproc.templates.main;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
+import com.google.cloud.dataproc.templates.databases.CassandraToBQ;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
 import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
@@ -72,6 +73,7 @@ public class DataProcTemplate {
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
           .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
+          .put(TemplateName.CASSANDRATOBQ, (args) -> new CassandraToBQ())
           .put(TemplateName.JDBCTOGCS, JDBCToGCS::of)
           .put(TemplateName.HBASETOGCS, (args) -> new HbaseToGCS())
           .put(TemplateName.KAFKATOBQ, (args) -> new KafkaToBQ())
