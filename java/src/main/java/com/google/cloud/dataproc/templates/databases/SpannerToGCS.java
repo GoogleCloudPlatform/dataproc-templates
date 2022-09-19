@@ -43,6 +43,9 @@ public class SpannerToGCS implements BaseTemplate {
   private final String outputFormat;
   private final String partitionColumn;
 
+  private String tempTable;
+  private String tempQuery;
+
   public SpannerToGCS() {
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
     instanceId = getProperties().getProperty(SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID);
@@ -52,6 +55,8 @@ public class SpannerToGCS implements BaseTemplate {
     gcsSaveMode = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_SAVEMODE);
     outputFormat = getProperties().getProperty(SPANNER_GCS_OUTPUT_FORMAT);
     partitionColumn = getProperties().getProperty(SPANNER_GCS_OUTPUT_PARTITION_COLUMN);
+    tempTable = getProperties().getProperty(SPANNER_GCS_TEMP_TABLE);
+    tempQuery = getProperties().getProperty(SPANNER_GCS_TEMP_QUERY);
   }
 
   @Override
@@ -77,6 +82,11 @@ public class SpannerToGCS implements BaseTemplate {
             .load();
 
     LOGGER.info("Data load complete from table/query: " + tableId);
+
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
+      jdbcDF.createOrReplaceGlobalTempView(tempTable);
+      jdbcDF = spark.sql(tempQuery);
+    }
 
     DataFrameWriter<Row> writer = jdbcDF.write().format(outputFormat).mode(gcsSaveMode);
 

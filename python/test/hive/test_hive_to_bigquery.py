@@ -36,7 +36,9 @@ class TestHiveToBigQueryTemplate:
              "--hive.bigquery.output.dataset=dataset",
              "--hive.bigquery.output.table=table",
              "--hive.bigquery.temp.bucket.name=bucket",
-             "--hive.bigquery.output.mode=overwrite"])
+             "--hive.bigquery.output.mode=overwrite",
+             "--hive.bigquery.temp.view.name=temp",
+             "--hive.bigquery.sql.query='select * from temp'"])
 
         assert parsed_args["hive.bigquery.input.database"] == "database"
         assert parsed_args["hive.bigquery.input.table"] == "table"
@@ -44,6 +46,8 @@ class TestHiveToBigQueryTemplate:
         assert parsed_args["hive.bigquery.output.table"] == "table"
         assert parsed_args["hive.bigquery.temp.bucket.name"] == "bucket"
         assert parsed_args["hive.bigquery.output.mode"] == "overwrite"
+        assert parsed_args["hive.bigquery.temp.view.name"] == "temp"
+        assert parsed_args["hive.bigquery.sql.query"] == "'select * from temp'"
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_overwrite(self, mock_spark_session):
