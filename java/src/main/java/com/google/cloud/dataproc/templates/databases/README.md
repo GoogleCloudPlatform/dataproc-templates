@@ -16,6 +16,7 @@ bin/start.sh \
 --templateProperty spanner.gcs.output.gcs.path=<gcs-path> \
 --templateProperty spanner.gcs.output.gcs.saveMode=<Append|Overwrite|ErrorIfExists|Ignore>
 --templateProperty spanner.gcs.output.gcs.format=<avro|csv|parquet|json|orc>
+--templateProperty spanner.gcs.output.gcs.partitionColumn=<optional-partition-column>
 ```
 
 ### Export query results as avro

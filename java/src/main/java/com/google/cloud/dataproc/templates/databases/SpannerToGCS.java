@@ -19,6 +19,8 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -39,6 +41,7 @@ public class SpannerToGCS implements BaseTemplate {
   private final String gcsWritePath;
   private final String gcsSaveMode;
   private final String outputFormat;
+  private final String partitionColumn;
 
   public SpannerToGCS() {
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
@@ -48,6 +51,7 @@ public class SpannerToGCS implements BaseTemplate {
     gcsWritePath = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_PATH);
     gcsSaveMode = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_SAVEMODE);
     outputFormat = getProperties().getProperty(SPANNER_GCS_OUTPUT_FORMAT);
+    partitionColumn = getProperties().getProperty(SPANNER_GCS_OUTPUT_PARTITION_COLUMN);
   }
 
   @Override
@@ -73,7 +77,15 @@ public class SpannerToGCS implements BaseTemplate {
             .load();
 
     LOGGER.info("Data load complete from table/query: " + tableId);
-    jdbcDF.write().format(outputFormat).mode(gcsSaveMode).save(gcsWritePath);
+
+    DataFrameWriter<Row> writer = jdbcDF.write().format(outputFormat).mode(gcsSaveMode);
+
+    if (StringUtils.isNotBlank(partitionColumn)) {
+      LOGGER.info("Partitioning data by :{} cols", partitionColumn);
+      writer = writer.partitionBy(partitionColumn);
+    }
+
+    writer.save(gcsWritePath);
 
     spark.stop();
   }
