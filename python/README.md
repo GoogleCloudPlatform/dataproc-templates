@@ -13,7 +13,10 @@
 * [MongoToGCS](/python/dataproc_templates/mongo/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
+* [RedshiftToGCS](/python/dataproc_templates/redshift/README.md)
 * [TextToBigQuery](/python/dataproc_templates/gcs/README.md)
+* [GCSToGCS](/python/dataproc_templates/gcs/README.md)
+* [SnowflakeoGCS](/python/dataproc_templates/snowflake/README.md)
 
 Dataproc Templates (Python - PySpark) submit jobs to Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
 

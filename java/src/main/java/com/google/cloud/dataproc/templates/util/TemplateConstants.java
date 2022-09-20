@@ -27,6 +27,8 @@ public interface TemplateConstants {
   String SPANNER_GCS_OUTPUT_GCS_PATH = "spanner.gcs.output.gcs.path";
   String SPANNER_GCS_OUTPUT_GCS_SAVEMODE = "spanner.gcs.output.gcs.saveMode";
   String SPANNER_GCS_OUTPUT_FORMAT = "spanner.gcs.output.gcs.format";
+  String SPANNER_GCS_TEMP_TABLE = "spanner.gcs.temp.table";
+  String SPANNER_GCS_TEMP_QUERY = "spanner.gcs.temp.query";
   /**
    * Column to be used as row key for BigTable. Required for GCSToBigTable template.
    *
@@ -43,6 +45,8 @@ public interface TemplateConstants {
   // Hive warehouse location.
   String HIVE_TO_GCS_OUTPUT_FORMAT_PROP = "hive.gcs.output.format";
   String HIVE_TO_GCS_OUTPUT_FORMAT_DEFAULT = "avro";
+  String HIVE_GCS_TEMP_TABLE = "hive.gcs.temp.table";
+  String HIVE_GCS_TEMP_QUERY = "hive.gcs.temp.query";
   // Hive warehouse location.
   String HIVE_WAREHOUSE_LOCATION_PROP = "spark.sql.warehouse.dir";
   // Hive warehouse location.
@@ -59,6 +63,8 @@ public interface TemplateConstants {
   String HIVE_TO_BQ_SQL = "hivetobq.sql";
   String HIVE_TO_BQ_APPEND_MODE = "hivetobq.write.mode";
   String HIVE_TO_BQ_TEMP_GCS_BUCKET = "hivetobq.temp.gcs.bucket";
+  String HIVE_TO_BQ_TEMP_TABLE = "hivetobq.temp.table";
+  String HIVE_TO_BQ_TEMP_QUERY = "hivetobq.temp.query";
 
   /** Property values for HbaseToGCS */
   String HBASE_TO_GCS_OUTPUT_FILE_FORMAT = "hbasetogcs.output.fileformat";
@@ -79,6 +85,8 @@ public interface TemplateConstants {
   String JDBC_TO_BQ_SQL_UPPER_BOUND = "jdbctobq.sql.upperBound";
   String JDBC_TO_BQ_SQL_NUM_PARTITIONS = "jdbctobq.sql.numPartitions";
   String JDBC_TO_BQ_WRITE_MODE = "jdbctobq.write.mode";
+  String JDBC_BQ_TEMP_TABLE = "jdbc.bq.temp.table";
+  String JDBC_BQ_TEMP_QUERY = "jdbc.bq.temp.query";
 
   /** Property values for JDBCToGCS */
   String JDBC_TO_GCS_OUTPUT_LOCATION = "jdbctogcs.output.location";
@@ -94,6 +102,8 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_SQL_UPPER_BOUND = "jdbctogcs.sql.upperBound";
   String JDBC_TO_GCS_SQL_NUM_PARTITIONS = "jdbctogcs.sql.numPartitions";
   String JDBC_TO_GCS_OUTPUT_PARTITION_COLUMN = "jdbctogcs.output.partition.col";
+  String JDBC_TO_GCS_TEMP_TABLE = "jdbctogcs.temp.table";
+  String JDBC_TO_GCS_TEMP_QUERY = "jdbctogcs.temp.query";
 
   /** Property values for WordCount template. */
   String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";
@@ -223,6 +233,7 @@ public interface TemplateConstants {
   String SPARK_READ_FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery";
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
   String INTERMEDIATE_FORMAT_ORC = "orc";
+  String SPARK_SAVE_MODE_OVERWRITE = "overwrite";
 
   /** KafkaToBQ properties */
   String KAFKA_BQ_CHECKPOINT_LOCATION = "kafka.bq.checkpoint.location";
@@ -247,7 +258,6 @@ public interface TemplateConstants {
   String KAFKA_BQ_TEMP_GCS_BUCKET = "kafka.bq.temp.gcs.bucket";
   String KAFKA_BQ_STREAM_OUTPUT_MODE = "kafka.bq.stream.output.mode";
 
-
   /** Common properties for all Kafka Based Templates * */
   String KAFKA_MESSAGE_FORMAT = "kafka.message.format";
 
@@ -261,4 +271,20 @@ public interface TemplateConstants {
   String KAFKA_GCS_OUTPUT_FORMAT = "kafka.gcs.output.format";
   String KAFKA_GCS_OUTPUT_MODE = "kafka.gcs.output.mode";
   String KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT = "kafka.gcs.await.termination.timeout.ms";
+
+  /** SnowflakeToGCS properties */
+  String SNOWFLAKE_GCS_SFURL = "snowflake.gcs.sfurl";
+
+  String SNOWFLAKE_GCS_SFUSER = "snowflake.gcs.sfuser";
+  String SNOWFLAKE_GCS_SFPASSWORD = "snowflake.gcs.sfpassword";
+  String SNOWFLAKE_GCS_SFDATABASE = "snowflake.gcs.sfdatabase";
+  String SNOWFLAKE_GCS_SFSCHEMA = "snowflake.gcs.sfschema";
+  String SNOWFLAKE_GCS_SFWAREHOUSE = "snowflake.gcs.sfwarehouse";
+  String SNOWFLAKE_GCS_AUTOPUSHDOWN = "snowflake.gcs.autopushdown";
+  String SNOWFLAKE_GCS_TABLE = "snowflake.gcs.table";
+  String SNOWFLAKE_GCS_QUERY = "snowflake.gcs.query";
+  String SNOWFLAKE_GCS_OUTPUT_LOCATION = "snowflake.gcs.output.location";
+  String SNOWFLAKE_GCS_OUTPUT_FORMAT = "snowflake.gcs.output.format";
+  String SNOWFLAKE_GCS_OUTPUT_MODE = "snowflake.gcs.output.mode";
+  String SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN = "snowflake.gcs.output.partitionColumn";
 }

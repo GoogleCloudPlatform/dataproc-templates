@@ -219,10 +219,14 @@ public class DataplexUtil {
    */
   public static List<String> getPartitionKeyList(String entity) throws IOException {
     JsonObject responseJson = DataplexUtil.getEntitySchema(entity);
-    JsonArray partitionKeys =
-        responseJson
-            .getAsJsonObject(ENTITY_SCHEMA_PROP_KEY)
-            .getAsJsonArray(ENTITY_SCHEMA_PARTITION_FIELDS_PROP_KEY);
+
+    JsonObject entitySchema = responseJson.getAsJsonObject(ENTITY_SCHEMA_PROP_KEY);
+
+    if (!entitySchema.has(ENTITY_SCHEMA_PARTITION_FIELDS_PROP_KEY)) {
+      throw new DataplexUtilNoPartitionError();
+    }
+
+    JsonArray partitionKeys = entitySchema.getAsJsonArray(ENTITY_SCHEMA_PARTITION_FIELDS_PROP_KEY);
 
     List<String> partitionFieldsNames = new ArrayList<String>();
     Iterator partitionFieldsIter = partitionKeys.iterator();
@@ -411,5 +415,11 @@ public class DataplexUtil {
             .collect(Collectors.toList());
 
     return inputDS.selectExpr(selectExpresions.toArray(new String[0]));
+  }
+
+  public static class DataplexUtilNoPartitionError extends RuntimeException {
+    public DataplexUtilNoPartitionError() {
+      super("The entity has no partitions");
+    }
   }
 }

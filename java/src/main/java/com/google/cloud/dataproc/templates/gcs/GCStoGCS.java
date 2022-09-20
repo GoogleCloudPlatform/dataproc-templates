@@ -67,7 +67,7 @@ public class GCStoGCS implements BaseTemplate {
 
     inputData = spark.read().format(inputFileFormat).load(inputFileLocation);
 
-    if (tempTable != null && tempQuery != null) {
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
       inputData.createOrReplaceGlobalTempView(tempTable);
       inputData = spark.sql(tempQuery);
     }
