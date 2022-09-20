@@ -83,6 +83,12 @@ public class JDBCToGCSConfig {
   @JsonProperty(value = JDBC_TO_GCS_OUTPUT_PARTITION_COLUMN)
   private String gcsPartitionColumn;
 
+  @JsonProperty(value = JDBC_TO_GCS_TEMP_TABLE)
+  private String tempTable;
+
+  @JsonProperty(value = JDBC_TO_GCS_TEMP_QUERY)
+  private String tempQuery;
+
   @AssertTrue(
       message =
           "Required parameters for JDBCToGCS not passed. Template property should be provided for either the SQL Query or the SQL File, but not both. Refer to jdbc/README.md for more instructions.")
@@ -152,6 +158,14 @@ public class JDBCToGCSConfig {
 
   public String getJdbcSQLPartitionColumn() {
     return jdbcSQLPartitionColumn;
+  }
+
+  public String getTempTable() {
+    return tempTable;
+  }
+
+  public String getTempQuery() {
+    return tempQuery;
   }
 
   public String getConcatedPartitionProps() {

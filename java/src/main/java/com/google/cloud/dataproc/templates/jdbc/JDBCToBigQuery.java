@@ -44,6 +44,8 @@ public class JDBCToBigQuery implements BaseTemplate {
   private String jdbcSQLUpperBound;
   private String jdbcSQLNumPartitions;
   private String concatedPartitionProps;
+  private String tempTable;
+  private String tempQuery;
 
   public JDBCToBigQuery() {
 
@@ -60,6 +62,8 @@ public class JDBCToBigQuery implements BaseTemplate {
     jdbcSQLNumPartitions = getProperties().getProperty(JDBC_TO_BQ_SQL_NUM_PARTITIONS);
     concatedPartitionProps =
         jdbcSQLPartitionColumn + jdbcSQLLowerBound + jdbcSQLUpperBound + jdbcSQLNumPartitions;
+    tempTable = getProperties().getProperty(JDBC_BQ_TEMP_TABLE);
+    tempQuery = getProperties().getProperty(JDBC_BQ_TEMP_QUERY);
   }
 
   @Override
@@ -114,6 +118,11 @@ public class JDBCToBigQuery implements BaseTemplate {
 
     /** Read Input data from JDBC table */
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
+
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
 
     inputData
         .write()
