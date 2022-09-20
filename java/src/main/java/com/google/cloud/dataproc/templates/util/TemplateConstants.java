@@ -181,6 +181,7 @@ public interface TemplateConstants {
   String CASSANDRA_TO_BQ_INPUT_HOST = "cassandratobq.input.host";
   String CASSANDRA_TO_BQ_BIGQUERY_LOCATION = "cassandratobq.bigquery.location";
   String CASSANDRA_TO_BQ_WRITE_MODE = "cassandratobq.output.mode";
+  String CASSANDRA_TO_BQ_TEMP_LOCATION= "cassandratobq.temp.gcs.location";
   /** Bigquery to GCS properties */
   String BQ_GCS_INPUT_TABLE_NAME = "bigquery.gcs.input.table";
 

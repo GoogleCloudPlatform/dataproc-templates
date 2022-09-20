@@ -32,6 +32,7 @@ public class CassandraToBQ implements BaseTemplate, TemplateConstants {
   private String cassandraHost;
   private String bqLocation;
   private String bqWriteMode;
+  private String tempLocation;
   private static final Logger LOGGER = LoggerFactory.getLogger(CassandraToBQ.class);
 
   public CassandraToBQ() {
@@ -40,6 +41,7 @@ public class CassandraToBQ implements BaseTemplate, TemplateConstants {
     cassandraHost = getProperties().getProperty(CASSANDRA_TO_BQ_INPUT_HOST);
     bqLocation = getProperties().getProperty(CASSANDRA_TO_BQ_BIGQUERY_LOCATION);
     bqWriteMode = getProperties().getProperty(CASSANDRA_TO_BQ_WRITE_MODE);
+    tempLocation= getProperties().getProperty(CASSANDRA_TO_BQ_TEMP_LOCATION);
   }
 
   @Override
