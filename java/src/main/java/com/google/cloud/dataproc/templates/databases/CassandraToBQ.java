@@ -41,7 +41,7 @@ public class CassandraToBQ implements BaseTemplate, TemplateConstants {
     cassandraHost = getProperties().getProperty(CASSANDRA_TO_BQ_INPUT_HOST);
     bqLocation = getProperties().getProperty(CASSANDRA_TO_BQ_BIGQUERY_LOCATION);
     bqWriteMode = getProperties().getProperty(CASSANDRA_TO_BQ_WRITE_MODE);
-    tempLocation= getProperties().getProperty(CASSANDRA_TO_BQ_TEMP_LOCATION);
+    tempLocation = getProperties().getProperty(CASSANDRA_TO_BQ_TEMP_LOCATION);
   }
 
   @Override
@@ -61,6 +61,7 @@ public class CassandraToBQ implements BaseTemplate, TemplateConstants {
         .mode(bqWriteMode)
         .format("com.google.cloud.spark.bigquery")
         .option("table", bqLocation)
+        .option("temporaryGcsBucket", tempLocation)
         .save();
   }
 
@@ -69,14 +70,16 @@ public class CassandraToBQ implements BaseTemplate, TemplateConstants {
         || StringUtils.isAllBlank(bqWriteMode)
         || StringUtils.isAllBlank(cassandraHost)
         || StringUtils.isAllBlank(keyspace)
-        || StringUtils.isAllBlank(table)) {
+        || StringUtils.isAllBlank(table)
+        || StringUtils.isAllBlank(tempLocation)) {
       LOGGER.error(
-          "{}, {}, {}, {}, {} is required parameter. ",
+          "{}, {}, {}, {}, {}, {} is required parameter. ",
           CASSANDRA_TO_BQ_BIGQUERY_LOCATION,
           CASSANDRA_TO_BQ_WRITE_MODE,
           CASSANDRA_TO_BQ_INPUT_HOST,
           CASSANDRA_TO_BQ_INPUT_KEYSPACE,
-          CASSANDRA_TO_BQ_INPUT_TABLE);
+          CASSANDRA_TO_BQ_INPUT_TABLE,
+          CASSANDRA_TO_BQ_TEMP_LOCATION);
       throw new IllegalArgumentException(
           "Required parameters for CassandraToBQ not passed. "
               + "Set mandatory parameter for CassandraToBQ template "
@@ -88,7 +91,8 @@ public class CassandraToBQ implements BaseTemplate, TemplateConstants {
             + "2. {}:{}"
             + "3. {}:{}"
             + "4. {},{}"
-            + "5. {},{}",
+            + "5. {},{}"
+            + "6. {},{}",
         CASSANDRA_TO_BQ_INPUT_KEYSPACE,
         keyspace,
         CASSANDRA_TO_BQ_INPUT_TABLE,
@@ -98,6 +102,8 @@ public class CassandraToBQ implements BaseTemplate, TemplateConstants {
         CASSANDRA_TO_BQ_BIGQUERY_LOCATION,
         bqLocation,
         CASSANDRA_TO_BQ_WRITE_MODE,
-        bqWriteMode);
+        bqWriteMode,
+        CASSANDRA_TO_BQ_TEMP_LOCATION,
+        tempLocation);
   }
 }
