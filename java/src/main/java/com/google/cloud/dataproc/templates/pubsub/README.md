@@ -12,10 +12,9 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 
 
 bin/start.sh \
---scopes=https://www.googleapis.com/auth/pubsub,https://www.googleapis.com/auth/bigquery \
--- --template PUBSUBTOBIGQUERY
+-- --template PUBSUBTOBQ \
+--templateProperty pubsub.input.project.id=<pubsub project id> \
 --templateProperty pubsub.input.subscription=<pubsub subscription> \
---templateProperty pubsub.bq.output.project.id=<pubsub to bq output project id> \
 --templateProperty pubsub.bq.output.dataset=<bq output dataset> \
 --templateProperty pubsub.bq.output.table=<bq output table>
 ```
