@@ -165,8 +165,29 @@ kafka.schema.url=<gcs url for schema file>
 kafka.starting.offset=<starting offset value>
 
 #Await time in milliseconds before terminating stream read
-kafka.gcs.await.termination.timeout=<stream await termination timeout>
+kafka.gcs.await.termination.timeout.ms=<stream await termination timeout>
 
 #Ouptut mode for writing data. Values can be 'append', 'complete', 'update'
 kafka.gcs.output.mode=<kafka output mode> 
+```
+
+
+### Example submission
+```
+export GCP_PROJECT=my-gcp-project
+export REGION=us-west1
+export SUBNET=test-subnet
+export GCS_STAGING_LOCATION=gs://templates-demo-kafkatobq
+bin/start.sh \
+-- \
+--template KAFKATOGCS \
+--templateProperty project.id=$GCP_PROJECT \
+--templateProperty kafka.bq.checkpoint.location=gs://templates-demo-kafkatobq/checkpoint \
+--templateProperty kafka.bq.bootstrap.servers=102.1.1.20:9092 \
+--templateProperty kafka.bq.topic=events-topic \
+--templateProperty kafka.bq.starting.offset=latest \
+--templateProperty kafka.bq.dataset=kafkatobq \
+--templateProperty kafka.bq.table=kafkaevents \
+--templateProperty kafka.bq.temp.gcs.bucket=templates-demo-kafkatobq \
+--templateProperty kafka.bq.await.termination.timeout=1200000
 ```

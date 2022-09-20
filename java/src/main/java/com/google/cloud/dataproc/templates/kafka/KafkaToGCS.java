@@ -19,10 +19,12 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +67,35 @@ public class KafkaToGCS implements BaseTemplate {
   }
 
   @Override
-  public void runTemplate() {
+  public void runTemplate() throws TimeoutException, StreamingQueryException {
+    validateInputs();
+
+      // Initialize Spark session
+      SparkSession spark = SparkSession.builder().appName("Spark KafkaToGCS Job").getOrCreate();
+
+      KafkaReader reader = new KafkaReader();
+
+      LOGGER.info("Calling Kafka Reader");
+
+      // Reading Kafka stream into dataframe
+      Dataset<Row> processedData = reader.readKafkaTopic(spark, getProperties());
+
+      // Write the output to GCS location
+      processedData
+          .writeStream()
+          .format(gcsOutputFormat)
+          .outputMode(kafkaOutputMode)
+          .option("checkpointLocation", gcsCheckpointLocation)
+          .option("path", gcsOutputLocation)
+          .start()
+          .awaitTermination(kafkaAwaitTerminationTimeout);
+
+      LOGGER.info("KakfaToGCS job completed.");
+      spark.stop();
+  }
+
+
+  void validateInputs(){
     if (StringUtils.isAllBlank(gcsOutputLocation)
         || StringUtils.isAllBlank(kafkaBootstrapServers)
         || StringUtils.isAllBlank(kafkaTopic)) {
@@ -110,36 +140,5 @@ public class KafkaToGCS implements BaseTemplate {
         KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT,
         kafkaAwaitTerminationTimeout);
 
-    try {
-      // Initialize Spark session
-      spark = SparkSession.builder().appName("Spark KafkaToGCS Job").getOrCreate();
-
-      LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
-
-      KafkaReader reader = new KafkaReader();
-
-      LOGGER.info("Calling Kafka Reader");
-
-      // Reading Kafka stream into dataframe
-      Dataset<Row> processedData = reader.readKafkaTopic(spark, getProperties());
-
-      // Write the output to GCS location
-      processedData
-          .writeStream()
-          .format(gcsOutputFormat)
-          .outputMode(kafkaOutputMode)
-          .option("checkpointLocation", gcsCheckpointLocation)
-          .option("path", gcsOutputLocation)
-          .start()
-          .awaitTermination(kafkaAwaitTerminationTimeout);
-
-      LOGGER.info("KakfaToGCS job completed.");
-      spark.stop();
-    } catch (Throwable th) {
-      LOGGER.error("Exception in KakfaToGCS", th);
-      if (Objects.nonNull(spark)) {
-        spark.stop();
-      }
-    }
   }
 }
