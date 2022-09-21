@@ -115,7 +115,17 @@
       <artifactId>spark-sql-kafka-0-10_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
-
+    <!-- https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector -->
+    <dependency>
+      <groupId>com.datastax.spark</groupId>
+      <artifactId>spark-cassandra-connector_2.12</artifactId>
+      <version>3.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-posix</artifactId>
+      <version>3.0.61</version>
+    </dependency>
     <dependency>
         <groupId>net.snowflake</groupId>
         <artifactId>spark-snowflake_2.12</artifactId>
