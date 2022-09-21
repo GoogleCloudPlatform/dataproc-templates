@@ -17,7 +17,9 @@ package com.google.cloud.dataproc.templates.databases;
 
 import com.datastax.spark.connector.CassandraSparkExtensions;
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.TemplateConstants;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
@@ -27,77 +29,49 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CassandraToGCS implements BaseTemplate, TemplateConstants {
-  private String keyspace;
-  private String table;
-  private String cassandraHost;
-  private String outputFileFormat;
-  private String gcsSaveMode;
-  private String gcsWritePath;
   private static final Logger LOGGER = LoggerFactory.getLogger(CassandraToGCS.class);
+  private final CassandraToGCSConfig config;
 
-  public CassandraToGCS() {
-    keyspace = getProperties().getProperty(CASSANDRA_TO_GSC_INPUT_KEYSPACE);
-    table = getProperties().getProperty(CASSANDRA_TO_GSC_INPUT_TABLE);
-    cassandraHost = getProperties().getProperty(CASSANDRA_TO_GSC_INPUT_HOST);
-    outputFileFormat = getProperties().getProperty(CASSANDRA_TO_GSC_OUTPUT_FORMAT);
-    gcsSaveMode = getProperties().getProperty(CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE);
-    gcsWritePath = getProperties().getProperty(CASSANDRA_TO_GSC_OUTPUT_PATH);
+  public CassandraToGCS(CassandraToGCSConfig config) {
+    this.config = config;
+  }
+
+  public static CassandraToGCS of(String... args) {
+    CassandraToGCSConfig config = CassandraToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    ValidationUtil.validateOrThrow(config);
+    LOGGER.info("Config loaded\n{}", config);
+    return new CassandraToGCS(config);
   }
 
   @Override
   public void runTemplate() throws StreamingQueryException, TimeoutException {
-    validateInput();
+
+    Dataset dataset;
     SparkSession spark =
         SparkSession.builder()
             .appName("Spark CassandraToGCS Job")
             .withExtensions(new CassandraSparkExtensions())
             .config(
-                "spark.sql.catalog.dc", "com.datastax.spark.connector.datasource.CassandraCatalog")
-            .config("spark.sql.catalog.dc.spark.cassandra.connection.host", cassandraHost)
+                "spark.sql.catalog." + config.getCatalog(),
+                "com.datastax.spark.connector.datasource.CassandraCatalog")
+            .config(
+                "spark.sql.catalog." + config.getCatalog() + ".spark.cassandra.connection.host",
+                config.getHost())
             .getOrCreate();
-    Dataset dataset = spark.sql("SELECT * FROM dc" + "." + keyspace + "." + table);
-    dataset.write().format(outputFileFormat).mode(gcsSaveMode).save(gcsWritePath);
-  }
 
-  public void validateInput() {
-    if (StringUtils.isAllBlank(outputFileFormat)
-        || StringUtils.isAllBlank(gcsSaveMode)
-        || StringUtils.isAllBlank(gcsWritePath)
-        || StringUtils.isAllBlank(cassandraHost)
-        || StringUtils.isAllBlank(keyspace)
-        || StringUtils.isAllBlank(table)) {
-      LOGGER.error(
-          "{}, {}, {}, {}, {}, {} is required parameter. ",
-          CASSANDRA_TO_GSC_INPUT_KEYSPACE,
-          CASSANDRA_TO_GSC_INPUT_HOST,
-          CASSANDRA_TO_GSC_INPUT_TABLE,
-          CASSANDRA_TO_GSC_OUTPUT_FORMAT,
-          CASSANDRA_TO_GSC_OUTPUT_PATH,
-          CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE);
-      throw new IllegalArgumentException(
-          "Required parameters for CassandraToGCS not passed. "
-              + "Set mandatory parameter for CassandraToGCS template "
-              + "in resources/conf/template.properties file.");
+    if (StringUtils.isAllBlank(config.getQuery())) {
+      dataset =
+          spark.sql(
+              String.format(
+                  "SELECT * FROM %1$s.%2$s.%3$s",
+                  config.getCatalog(), config.getKeyspace(), config.getInputTable()));
+    } else {
+      dataset = spark.sql(config.getQuery());
     }
-    LOGGER.info(
-        "Starting Cassandra to GCS spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}"
-            + "5. {},{}"
-            + "6. {},{}",
-        CASSANDRA_TO_GSC_INPUT_KEYSPACE,
-        keyspace,
-        CASSANDRA_TO_GSC_INPUT_TABLE,
-        table,
-        CASSANDRA_TO_GSC_INPUT_HOST,
-        cassandraHost,
-        CASSANDRA_TO_GSC_OUTPUT_FORMAT,
-        outputFileFormat,
-        CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE,
-        gcsSaveMode,
-        CASSANDRA_TO_GSC_OUTPUT_PATH,
-        gcsWritePath);
+    dataset
+        .write()
+        .format(config.getOutputFormat())
+        .mode(config.getSaveMode())
+        .save(config.getOutputpath());
   }
 }

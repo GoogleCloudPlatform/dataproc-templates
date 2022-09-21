@@ -81,6 +81,8 @@ public interface TemplateConstants {
   String CASSANDRA_TO_GSC_OUTPUT_FORMAT = "cassandratogcs.output.format";
   String CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE = "cassandratogcs.output.savemode";
   String CASSANDRA_TO_GSC_OUTPUT_PATH = "cassandratogcs.output.path";
+  String CASSANDRA_TO_GSC_INPUT_CATALOG = "cassandratogcs.input.catalog.name";
+  String CASSANDRA_TO_GSC_INPUT_QUERY = "cassandratogcs.input.query";
 
   /** Property values for JDBCToBQ */
   String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
