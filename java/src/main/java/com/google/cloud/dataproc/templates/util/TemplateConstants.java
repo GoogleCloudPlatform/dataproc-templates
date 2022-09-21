@@ -28,6 +28,10 @@ public interface TemplateConstants {
   String SPANNER_GCS_OUTPUT_GCS_SAVEMODE = "spanner.gcs.output.gcs.saveMode";
   String SPANNER_GCS_OUTPUT_FORMAT = "spanner.gcs.output.gcs.format";
   String SPANNER_GCS_OUTPUT_PARTITION_COLUMN = "spanner.gcs.output.gcs.partitionColumn";
+  String SPANNER_GCS_INPUT_SQL_PARTITION_COLUMN = "spanner.gcs.input.sql.partitionColumn";
+  String SPANNER_GCS_INPUT_SQL_LOWER_BOUND = "spanner.gcs.input.sql.lowerBound";
+  String SPANNER_GCS_INPUT_SQL_UPPER_BOUND = "spanner.gcs.input.sql.upperBound";
+  String SPANNER_GCS_INPUT_SQL_NUM_PARTITIONS = "spanner.gcs.input.sql.numPartitions";
   String SPANNER_GCS_TEMP_TABLE = "spanner.gcs.temp.table";
   String SPANNER_GCS_TEMP_QUERY = "spanner.gcs.temp.query";
   /**
