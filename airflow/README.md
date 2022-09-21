@@ -32,6 +32,20 @@ cp -r python $DAGS_FOLDER/dependencies/dataproc_templates/
 cp -r java $DAGS_FOLDER/dependencies/dataproc_templates/
 ```
 
+#### Configure Airflow execution
+Update submit_pyspark_dataproc_template.ini or submit_spark_dataproc_template.ini with the desired Airflow configuration.
+Check [Airflow's documentation](https://airflow.apache.org/docs/apache-airflow/1.10.1/scheduler.html#dag-runs) to see the available options of the SCHEDULE_INTERVAL parameter.
+If None, leave it black, as shown below.
+```
+[COMPOSER]
+DAG_NAME=submit_spark_dataproc_template
+SCHEDULE_INTERVAL=
+EXEC_TIMEOUT=600
+RUN_TIMEOUT=600
+RETRY_DELAY=60
+RETRIES=1
+```
+
 #### Running a PySpark (Python) Dataproc Templates
 
 Update submit_pyspark_dataproc_template.ini with the desired template name and its arguments, and the environment variables.
@@ -83,7 +97,7 @@ your.template.third.argument=<value>
 your.template.fourth.argument=<value>
 ```
 
-#### Run the unit tests:
+#### Run the unit tests
 ```
 pytest airflow/pyspark
 ```
