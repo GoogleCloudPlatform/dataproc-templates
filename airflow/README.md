@@ -2,7 +2,7 @@
 
 Content in this folder demonstrates how to run Dataproc Templates from DAGs running in Airflow
 
-#### Structure your Airflow dags folder following this structure:
+#### Deploy - Structure your Airflow dags folder following this structure:
 ```
 dags/
     |_submit_pyspark_dataproc_template.py
@@ -16,7 +16,7 @@ dags/
                     |_java/     # Dataproc Templates java folder
 ```
 
-To do that, you can use the following instructions:
+To do that, after following the configuration instructions below, you can use the following instructions:
 
 ```
 #### If using Composer as your Airflow environment
@@ -32,9 +32,9 @@ cp -r python $DAGS_FOLDER/dependencies/dataproc_templates/
 cp -r java $DAGS_FOLDER/dependencies/dataproc_templates/
 ```
 
-#### Configure Airflow execution
-Update submit_pyspark_dataproc_template.ini or submit_spark_dataproc_template.ini with the desired Airflow configuration.
-Check [Airflow's documentation](https://airflow.apache.org/docs/apache-airflow/1.10.1/scheduler.html#dag-runs) to see the available options of the SCHEDULE_INTERVAL parameter.
+#### Setup - Configure Airflow execution
+Update submit_pyspark_dataproc_template.ini or submit_spark_dataproc_template.ini with the desired Airflow configuration.  
+Check [Airflow's documentation](https://airflow.apache.org/docs/apache-airflow/1.10.1/scheduler.html#dag-runs) to see the available options of the SCHEDULE_INTERVAL parameter.  
 If None, leave it black, as shown below.
 ```
 [COMPOSER]
@@ -46,7 +46,7 @@ RETRY_DELAY=60
 RETRIES=1
 ```
 
-#### Running a PySpark (Python) Dataproc Templates
+#### Setup - Running a PySpark (Python) Dataproc Templates
 
 Update submit_pyspark_dataproc_template.ini with the desired template name and its arguments, and the environment variables.
 
@@ -69,7 +69,7 @@ your.template.third.argument=<value>
 your.template.fourth.argument=<value>
 ```
 
-#### Running a Spark (Java) Dataproc Templates
+#### Setup - Running a Spark (Java) Dataproc Templates
 
 Update submit_pyspark_dataproc_template.ini with the desired template name and its arguments, and the environment variables.  
 For Java Dataproc Templates, you have to set additional environment variables in the .ini configuration specifying your java and mvn locations.
@@ -102,9 +102,9 @@ your.template.fourth.argument=<value>
 pytest airflow/pyspark
 ```
 
-#### Trigger the DAG in Airflow or wait for the schedule
+#### Done!!! Trigger the DAG in Airflow or wait for the schedule
 
-#### Tip: Use Composer as your managed Airflow instance in production
+### Google Cloud's Composer: your managed Airflow instance in production
 
 Follow [this](https://cloud.google.com/composer/docs/composer-2/create-environments) documentation to create a Composer environment in GCP.  
 After it is created, you can push your files to its _dags_ folder as mentioned in the first instruction.
