@@ -13,7 +13,7 @@ bin/start.sh \
 --templateProperty project.id=<gcp-project-id> \
 --templateProperty redshift.gcs.input.url=<jdbc:redshift://host-name:port-number/> \
 --templateProperty redshift.gcs.input.table=<Redshift-table-name> \
---templateProperty redshift.gcs.temp.dir=<AWS-temp-directory> \
+--templateProperty redshift.aws.temp.dir=<AWS-temp-directory> \
 --templateProperty redshift.gcs.iam.role=<Redshift-S3-IAM-role> \
 --templateProperty redshift.gcs.access.key=<Access-key> \
 --templateProperty redshift.gcs.secret.key=<Secret-key> \
