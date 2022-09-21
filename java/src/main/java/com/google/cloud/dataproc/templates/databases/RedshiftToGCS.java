@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates.redshift;
+package com.google.cloud.dataproc.templates.databases;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
 
 public class RedshiftToGCS implements BaseTemplate {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(RedshiftToGCS.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(com.google.cloud.dataproc.templates.databases.RedshiftToGCS.class);
 
   private final String inputUrl;
   private final String inputTable;
@@ -80,7 +81,7 @@ public class RedshiftToGCS implements BaseTemplate {
     spark.stop();
   }
 
-  void validateInput() {
+  public void validateInput() {
     if (StringUtils.isAllBlank(inputUrl)
         || StringUtils.isAllBlank(inputTable)
         || StringUtils.isAllBlank(tempDir)
