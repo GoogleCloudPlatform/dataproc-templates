@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 public class ReadSchemaUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(ReadSchemaUtil.class);
 
-  public static StructType readSchema(String schemaUrl) {
+  public static StructType readSchema(String schemaUrl)  {
 
     StructType schema = null;
 
@@ -37,14 +37,10 @@ public class ReadSchemaUtil {
     Storage storage = StorageOptions.getDefaultInstance().getService();
 
 
-    try {
       Blob blob = storage.get(bucket, objectUrl);
       String schemaSource = new String(blob.getContent());
       schema = (StructType) DataType.fromJson(schemaSource);
-    }
-    catch (Throwable th){
-      LOGGER.error("Exception occured while reading the schema URL",th);
-    }
+
 
     return schema;
   }
