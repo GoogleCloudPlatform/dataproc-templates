@@ -43,7 +43,7 @@ public class RedshiftToGCS implements BaseTemplate {
   public RedshiftToGCS() {
     inputUrl = getProperties().getProperty(REDSHIFT_GCS_INPUT_URL);
     inputTable = getProperties().getProperty(REDSHIFT_GCS_INPUT_TABLE);
-    tempDir = getProperties().getProperty(REDSHIFT_GCS_TEMP_DIR);
+    tempDir = getProperties().getProperty(REDSHIFT_AWS_TEMP_DIR);
     iamRole = getProperties().getProperty(REDSHIFT_GCS_IAM_ROLE);
     accessKey = getProperties().getProperty(REDSHIFT_GCS_ACCESS_KEY);
     secretKey = getProperties().getProperty(REDSHIFT_GCS_SECRET_KEY);
@@ -93,7 +93,7 @@ public class RedshiftToGCS implements BaseTemplate {
           "{},{},{},{},{},{},{},{} is required parameter. ",
           REDSHIFT_GCS_INPUT_URL,
           REDSHIFT_GCS_INPUT_TABLE,
-          REDSHIFT_GCS_TEMP_DIR,
+          REDSHIFT_AWS_TEMP_DIR,
           REDSHIFT_GCS_IAM_ROLE,
           REDSHIFT_GCS_ACCESS_KEY,
           REDSHIFT_GCS_SECRET_KEY,
@@ -119,7 +119,7 @@ public class RedshiftToGCS implements BaseTemplate {
         inputUrl,
         REDSHIFT_GCS_INPUT_TABLE,
         inputTable,
-        REDSHIFT_GCS_TEMP_DIR,
+        REDSHIFT_AWS_TEMP_DIR,
         tempDir,
         REDSHIFT_GCS_IAM_ROLE,
         iamRole,

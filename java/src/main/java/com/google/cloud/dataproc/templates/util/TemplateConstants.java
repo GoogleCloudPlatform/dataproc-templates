@@ -189,7 +189,7 @@ public interface TemplateConstants {
   String REDSHIFT_GCS_INPUT_URL = "redshift.gcs.input.url";
 
   String REDSHIFT_GCS_INPUT_TABLE = "redshift.gcs.input.table";
-  String REDSHIFT_GCS_TEMP_DIR = "redshift.gcs.temp.dir";
+  String REDSHIFT_AWS_TEMP_DIR = "redshift.aws.temp.dir";
   String REDSHIFT_GCS_IAM_ROLE = "redshift.gcs.iam.role";
   String REDSHIFT_GCS_ACCESS_KEY = "redshift.gcs.access.key";
   String REDSHIFT_GCS_SECRET_KEY = "redshift.gcs.secret.key";
