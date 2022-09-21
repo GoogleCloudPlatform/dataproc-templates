@@ -18,6 +18,7 @@ package com.google.cloud.dataproc.templates.redshift;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
