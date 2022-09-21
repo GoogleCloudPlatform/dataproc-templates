@@ -11,13 +11,13 @@ export JARS=gs://<cloud-storage-bucket-name>/spark-redshift_<version>.jar
 bin/start.sh \
 -- --template REDSHIFTTOGCS \
 --templateProperty project.id=<gcp-project-id> \
---templateProperty redshift.gcs.input.url=<jdbc:redshift://host-name:port-number/> \
---templateProperty redshift.gcs.input.table=<Redshift-table-name> \
---templateProperty redshift.aws.temp.dir=<AWS-temp-directory> \
---templateProperty redshift.gcs.iam.role=<Redshift-S3-IAM-role> \
---templateProperty redshift.gcs.access.key=<Access-key> \
---templateProperty redshift.gcs.secret.key=<Secret-key> \
---templateProperty redshift.gcs.file.format=<Output-File-Format> \
---templateProperty redshift.gcs.file.location=<Output-GCS-location> \
+--templateProperty redshift.aws.input.url=<jdbc:redshift://host-name:port-number/> \
+--templateProperty redshift.aws.input.table=<Redshift-table-name> \
+--templateProperty redshift.aws.input.temp.dir=<AWS-temp-directory> \
+--templateProperty redshift.aws.input.iam.role=<Redshift-S3-IAM-role> \
+--templateProperty redshift.aws.input.access.key=<Access-key> \
+--templateProperty redshift.aws.input.secret.key=<Secret-key> \
+--templateProperty redshift.gcs.output.file.format=<Output-File-Format> \
+--templateProperty redshift.gcs.output.file.location=<Output-GCS-location> \
 --templateProperty redshift.gcs.output.mode=<Output-GCS-Save-mode>
 ```

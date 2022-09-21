@@ -41,14 +41,14 @@ public class RedshiftToGCS implements BaseTemplate {
   private final String outputMode;
 
   public RedshiftToGCS() {
-    inputUrl = getProperties().getProperty(REDSHIFT_GCS_INPUT_URL);
-    inputTable = getProperties().getProperty(REDSHIFT_GCS_INPUT_TABLE);
+    inputUrl = getProperties().getProperty(REDSHIFT_AWS_INPUT_URL);
+    inputTable = getProperties().getProperty(REDSHIFT_AWS_INPUT_TABLE);
     tempDir = getProperties().getProperty(REDSHIFT_AWS_TEMP_DIR);
-    iamRole = getProperties().getProperty(REDSHIFT_GCS_IAM_ROLE);
-    accessKey = getProperties().getProperty(REDSHIFT_GCS_ACCESS_KEY);
-    secretKey = getProperties().getProperty(REDSHIFT_GCS_SECRET_KEY);
-    fileFormat = getProperties().getProperty(REDSHIFT_GCS_FILE_FORMAT);
-    fileLocation = getProperties().getProperty(REDSHIFT_GCS_FILE_LOCATION);
+    iamRole = getProperties().getProperty(REDSHIFT_AWS_INPUT_IAM_ROLE);
+    accessKey = getProperties().getProperty(REDSHIFT_AWS_INPUT_ACCESS_KEY);
+    secretKey = getProperties().getProperty(REDSHIFT_AWS_INPUT_SECRET_KEY);
+    fileFormat = getProperties().getProperty(REDSHIFT_GCS_OUTPUT_FILE_FORMAT);
+    fileLocation = getProperties().getProperty(REDSHIFT_GCS_OUTPUT_FILE_LOCATION);
     outputMode = getProperties().getProperty(REDSHIFT_GCS_OUTPUT_MODE);
   }
 
@@ -91,14 +91,14 @@ public class RedshiftToGCS implements BaseTemplate {
         || StringUtils.isAllBlank(fileLocation)) {
       LOGGER.error(
           "{},{},{},{},{},{},{},{} is required parameter. ",
-          REDSHIFT_GCS_INPUT_URL,
-          REDSHIFT_GCS_INPUT_TABLE,
+          REDSHIFT_AWS_INPUT_URL,
+          REDSHIFT_AWS_INPUT_TABLE,
           REDSHIFT_AWS_TEMP_DIR,
-          REDSHIFT_GCS_IAM_ROLE,
-          REDSHIFT_GCS_ACCESS_KEY,
-          REDSHIFT_GCS_SECRET_KEY,
-          REDSHIFT_GCS_FILE_FORMAT,
-          REDSHIFT_GCS_FILE_LOCATION);
+          REDSHIFT_AWS_INPUT_IAM_ROLE,
+          REDSHIFT_AWS_INPUT_ACCESS_KEY,
+          REDSHIFT_AWS_INPUT_SECRET_KEY,
+          REDSHIFT_GCS_OUTPUT_FILE_FORMAT,
+          REDSHIFT_GCS_OUTPUT_FILE_LOCATION);
       throw new IllegalArgumentException(
           "Required parameters for RedshiftToGCS not passed. "
               + "Set mandatory parameter for RedshiftToGCS template "
@@ -115,21 +115,21 @@ public class RedshiftToGCS implements BaseTemplate {
             + "6. {},{}"
             + "7. {},{}"
             + "8. {},{}",
-        REDSHIFT_GCS_INPUT_URL,
+        REDSHIFT_AWS_INPUT_URL,
         inputUrl,
-        REDSHIFT_GCS_INPUT_TABLE,
+        REDSHIFT_AWS_INPUT_TABLE,
         inputTable,
         REDSHIFT_AWS_TEMP_DIR,
         tempDir,
-        REDSHIFT_GCS_IAM_ROLE,
+        REDSHIFT_AWS_INPUT_IAM_ROLE,
         iamRole,
-        REDSHIFT_GCS_ACCESS_KEY,
+        REDSHIFT_AWS_INPUT_ACCESS_KEY,
         accessKey,
-        REDSHIFT_GCS_SECRET_KEY,
+        REDSHIFT_AWS_INPUT_SECRET_KEY,
         secretKey,
-        REDSHIFT_GCS_FILE_FORMAT,
+        REDSHIFT_GCS_OUTPUT_FILE_FORMAT,
         fileFormat,
-        REDSHIFT_GCS_FILE_LOCATION,
+        REDSHIFT_GCS_OUTPUT_FILE_LOCATION,
         fileLocation);
   }
 }

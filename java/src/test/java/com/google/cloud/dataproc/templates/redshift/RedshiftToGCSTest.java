@@ -42,14 +42,14 @@ class RedshiftToGCSTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_INPUT_URL, "someValue");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_INPUT_TABLE, "someValue");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_TEMP_DIR, "someValue");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_IAM_ROLE, "someValue");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_ACCESS_KEY, "someValue");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_SECRET_KEY, "someValue");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_FILE_FORMAT, "someValue");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_FILE_LOCATION, "someValue");
+    PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_URL, "someValue");
+    PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_TABLE, "someValue");
+    PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_TEMP_DIR, "someValue");
+    PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_IAM_ROLE, "someValue");
+    PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_ACCESS_KEY, "someValue");
+    PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_SECRET_KEY, "someValue");
+    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_OUTPUT_FILE_FORMAT, "someValue");
+    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_OUTPUT_FILE_LOCATION, "someValue");
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
     RedshiftToGCSTest = new RedshiftToGCS();
 
@@ -74,13 +74,13 @@ class RedshiftToGCSTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-        REDSHIFT_GCS_INPUT_URL,
-        REDSHIFT_GCS_INPUT_TABLE,
-        REDSHIFT_GCS_TEMP_DIR,
-        REDSHIFT_GCS_IAM_ROLE,
-        REDSHIFT_GCS_ACCESS_KEY,
-        REDSHIFT_GCS_SECRET_KEY,
-        REDSHIFT_GCS_FILE_FORMAT,
-        REDSHIFT_GCS_FILE_LOCATION);
+        REDSHIFT_AWS_INPUT_URL,
+        REDSHIFT_AWS_INPUT_TABLE,
+        REDSHIFT_AWS_TEMP_DIR,
+        REDSHIFT_AWS_INPUT_IAM_ROLE,
+        REDSHIFT_AWS_INPUT_ACCESS_KEY,
+        REDSHIFT_AWS_INPUT_SECRET_KEY,
+        REDSHIFT_GCS_OUTPUT_FILE_FORMAT,
+        REDSHIFT_GCS_OUTPUT_FILE_LOCATION);
   }
 }
