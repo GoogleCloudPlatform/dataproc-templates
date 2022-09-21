@@ -30,7 +30,7 @@ public class ReadSchemaUtil {
 
     StructType schema = null;
 
-    String[] split_url = schemaUrl.split("/", 2);
+    String[] split_url = schemaUrl.replace("gs://","").split("/", 2);
     String bucket = split_url[0];
     String objectUrl = split_url[1];
 
