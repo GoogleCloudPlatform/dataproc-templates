@@ -83,7 +83,7 @@ public class SpannerToGCSConfig {
 
   @AssertTrue(
       message =
-          "Optional parition parameters are not passed correctly for SpannerToGCS. If one is specified then all needs to be specified in resources/conf/template.properties file or at runtime. Refer to databases/README.md for more instructions.")
+          "Optional SQL paritioning parameters are not passed correctly for SpannerToGCS. If one is specified then all needs to be specified in resources/conf/template.properties file or at runtime. Refer to databases/README.md for more instructions.")
   private boolean isPartitionsPropertyValid() {
     return StringUtils.isBlank(getConcatedPartitionProperties())
         || (StringUtils.isNotBlank(sqlPartitionColumn)
