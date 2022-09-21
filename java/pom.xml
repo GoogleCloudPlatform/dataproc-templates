@@ -142,32 +142,6 @@
       <artifactId>google-cloud-spanner-jdbc</artifactId>
       <version>2.4.2</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.databricks/spark-redshift -->
-    <dependency>
-      <groupId>com.databricks</groupId>
-      <artifactId>spark-redshift_2.11</artifactId>
-      <version>3.0.0-preview1</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/com.amazon.redshift/redshift-jdbc42 -->
-    <dependency>
-      <groupId>com.amazon.redshift</groupId>
-      <artifactId>redshift-jdbc42</artifactId>
-      <version>2.1.0.9</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-avro -->
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-avro_2.13</artifactId>
-      <version>3.2.0</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/com.eclipsesource.minimal-json/minimal-json -->
-    <dependency>
-      <groupId>com.eclipsesource.minimal-json</groupId>
-      <artifactId>minimal-json</artifactId>
-      <version>0.9.5</version>
-    </dependency>
-
-
 
     <dependency>
       <groupId>org.apache.hadoop</groupId>
