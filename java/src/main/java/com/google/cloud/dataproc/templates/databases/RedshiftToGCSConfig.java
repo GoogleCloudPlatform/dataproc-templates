@@ -68,6 +68,12 @@ public class RedshiftToGCSConfig {
   @NotEmpty
   private String secretKey;
 
+  @JsonProperty(value = REDSHIFT_GCS_TEMP_TABLE)
+  private String tempTable;
+
+  @JsonProperty(value = REDSHIFT_GCS_TEMP_QUERY)
+  private String tempQuery;
+
   public String getGcsOutputLocation() {
     return fileLocation;
   }
@@ -102,6 +108,14 @@ public class RedshiftToGCSConfig {
 
   public String getAWSSecretKey() {
     return secretKey;
+  }
+
+  public String gettempTable() {
+    return tempTable;
+  }
+
+  public String gettempQuery() {
+    return tempQuery;
   }
 
   public static com.google.cloud.dataproc.templates.databases.RedshiftToGCSConfig fromProperties(

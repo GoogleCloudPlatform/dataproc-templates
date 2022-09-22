@@ -196,6 +196,8 @@ public interface TemplateConstants {
   String REDSHIFT_GCS_OUTPUT_FILE_FORMAT = "redshift.gcs.output.file.format";
   String REDSHIFT_GCS_OUTPUT_FILE_LOCATION = "redshift.gcs.output.file.location";
   String REDSHIFT_GCS_OUTPUT_MODE = "redshift.gcs.output.mode";
+  String REDSHIFT_GCS_TEMP_TABLE = "redshift.gcs.temp.table";
+  String REDSHIFT_GCS_TEMP_QUERY = "redshift.gcs.temp.query";
 
   /** PubSubToGCS Template configs. */
   // Project that contains the input PubSub subscription to be read

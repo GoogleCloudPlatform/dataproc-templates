@@ -51,3 +51,12 @@ bin/start.sh \
 --templateProperty redshift.gcs.output.file.location=<Output-GCS-location> \
 --templateProperty redshift.gcs.output.mode=<Output-GCS-Save-mode>
 ```
+
+There are two optional properties as well with "Redshift to GCS" Template. Please find below the details :-
+
+```
+--templateProperty redshift.gcs.temp.table='temporary_view_name' 
+--templateProperty redshift.gcs.temp.query='select * from global_temp.temporary_view_name'
+```
+These properties are responsible for applying some spark sql transformations while loading data into GCS.
+The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"

@@ -18,6 +18,7 @@ package com.google.cloud.dataproc.templates.databases;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,12 @@ public class RedshiftToGCS implements BaseTemplate {
             .option("tempdir", config.getAWSDir())
             .option("aws_iam_role", config.getAWSRole())
             .load();
+
+    if (StringUtils.isNotBlank(config.gettempTable())
+        && StringUtils.isNotBlank(config.gettempQuery())) {
+      inputData.createOrReplaceGlobalTempView(config.gettempTable());
+      inputData = spark.sql(config.gettempQuery());
+    }
 
     DataFrameWriter<Row> writer =
         inputData.write().mode(config.getGcsWriteMode()).format(config.getGcsOutputFormat());
