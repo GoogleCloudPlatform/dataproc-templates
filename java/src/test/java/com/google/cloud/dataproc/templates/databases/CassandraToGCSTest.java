@@ -18,7 +18,6 @@ package com.google.cloud.dataproc.templates.databases;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.google.cloud.dataproc.templates.snowflake.SnowflakeToGCS;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil.ValidationException;
 import java.util.stream.Stream;
@@ -44,7 +43,7 @@ public class CassandraToGCSTest {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     PropertyUtil.getProperties()
         .setProperty(CASSANDRA_TO_GSC_OUTPUT_PATH, "gs://test-bucket/output");
-    PropertyUtil.getProperties().setProperty(CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE, "append");
+    PropertyUtil.getProperties().setProperty(CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE, "Append");
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_GSC_OUTPUT_FORMAT, "csv");
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_GSC_INPUT_HOST, "host");
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_GSC_INPUT_TABLE, "table");

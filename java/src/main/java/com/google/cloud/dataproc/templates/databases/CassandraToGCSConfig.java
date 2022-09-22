@@ -63,14 +63,13 @@ public class CassandraToGCSConfig {
 
   @JsonProperty(value = CASSANDRA_TO_GSC_OUTPUT_PATH)
   @NotEmpty
-  @Pattern(regexp = "gs://*")
+  @Pattern(regexp = "gs://.*")
   private String outputpath;
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_CATALOG)
   private String catalog = "casscon";
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_QUERY)
-  @NotEmpty
   private String query;
 
   public String getKeyspace() {
