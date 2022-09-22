@@ -15,15 +15,18 @@
  */
 package com.google.cloud.dataproc.templates.redshift;
 
+import static com.google.cloud.dataproc.templates.databases.RedshiftToGCSConfig.*;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil.ValidationException;
 import java.util.stream.Stream;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.storage.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -31,49 +34,38 @@ import org.slf4j.LoggerFactory;
 
 class RedshiftToGCSTest {
 
-  private RedshiftToGCS RedshiftToGCSTest;
-  private static final Logger LOGGER = LoggerFactory.getLogger(RedshiftToGCSTest.class);
+  private static final Logger LOGGER =
+      LoggerFactory.getLogger(com.google.cloud.dataproc.templates.redshift.RedshiftToGCSTest.class);
 
   @BeforeEach
   void setUp() {
-    SparkSession spark = SparkSession.builder().master("local").getOrCreate();
-  }
-
-  @ParameterizedTest
-  @MethodSource("propertyKeys")
-  void runTemplateWithValidParameters(String propKey) {
-    LOGGER.info("Running test: runTemplateWithValidParameters");
     PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_URL, "someValue");
     PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_TABLE, "someValue");
     PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_TEMP_DIR, "someValue");
     PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_IAM_ROLE, "someValue");
     PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_ACCESS_KEY, "someValue");
     PropertyUtil.getProperties().setProperty(REDSHIFT_AWS_INPUT_SECRET_KEY, "someValue");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_OUTPUT_FILE_FORMAT, "someValue");
-    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_OUTPUT_FILE_LOCATION, "someValue");
-    PropertyUtil.getProperties().setProperty(propKey, "someValue");
-    RedshiftToGCSTest = new RedshiftToGCS();
+    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_OUTPUT_FILE_FORMAT, "csv");
+    PropertyUtil.getProperties()
+        .setProperty(REDSHIFT_GCS_OUTPUT_FILE_LOCATION, "gs://bucket_name/folder_name");
+    PropertyUtil.getProperties().setProperty(REDSHIFT_GCS_OUTPUT_MODE, "overwrite");
+  }
 
-    assertDoesNotThrow(RedshiftToGCSTest::validateInput);
+  @Test
+  void runTemplateWithValidParameters() {
+    LOGGER.info("Running test: runTemplateWithValidParameters");
+    assertDoesNotThrow((ThrowingSupplier<RedshiftToGCS>) RedshiftToGCS::of);
   }
 
   @ParameterizedTest
-  @MethodSource("propertyKeys")
-  void runTemplateWithInvalidParameters(String propKey) {
+  @MethodSource("requiredPropertyKeys")
+  void runTemplateWithMissingRequiredParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    RedshiftToGCSTest = new RedshiftToGCS();
-
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> RedshiftToGCSTest.runTemplate());
-    assertEquals(
-        "Required parameters for RedshiftToGCS not passed. "
-            + "Set mandatory parameter for RedshiftToGCS template in "
-            + "resources/conf/template.properties file.",
-        exception.getMessage());
+    ValidationException exception = assertThrows(ValidationException.class, RedshiftToGCS::of);
   }
 
-  static Stream<String> propertyKeys() {
+  static Stream<String> requiredPropertyKeys() {
     return Stream.of(
         REDSHIFT_AWS_INPUT_URL,
         REDSHIFT_AWS_INPUT_TABLE,
@@ -82,6 +74,7 @@ class RedshiftToGCSTest {
         REDSHIFT_AWS_INPUT_ACCESS_KEY,
         REDSHIFT_AWS_INPUT_SECRET_KEY,
         REDSHIFT_GCS_OUTPUT_FILE_FORMAT,
-        REDSHIFT_GCS_OUTPUT_FILE_LOCATION);
+        REDSHIFT_GCS_OUTPUT_FILE_LOCATION,
+        REDSHIFT_GCS_OUTPUT_MODE);
   }
 }

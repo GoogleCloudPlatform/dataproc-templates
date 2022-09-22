@@ -14,7 +14,7 @@
  * the License.
  */
 package com.google.cloud.dataproc.templates.databases;
-
+/*
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
@@ -132,5 +132,64 @@ public class RedshiftToGCS implements BaseTemplate {
         fileFormat,
         REDSHIFT_GCS_OUTPUT_FILE_LOCATION,
         fileLocation);
+  }
+}
+*/
+
+import com.google.cloud.dataproc.templates.BaseTemplate;
+import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
+import org.apache.spark.sql.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class RedshiftToGCS implements BaseTemplate {
+
+  public static final Logger LOGGER =
+      LoggerFactory.getLogger(com.google.cloud.dataproc.templates.databases.RedshiftToGCS.class);
+  private final RedshiftToGCSConfig config;
+
+  public RedshiftToGCS(RedshiftToGCSConfig config) {
+    this.config = config;
+  }
+
+  public static com.google.cloud.dataproc.templates.databases.RedshiftToGCS of(String... args) {
+    RedshiftToGCSConfig config = RedshiftToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    ValidationUtil.validateOrThrow(config);
+    LOGGER.info("Config loaded\n{}", config);
+    return new com.google.cloud.dataproc.templates.databases.RedshiftToGCS(config);
+  }
+
+  @Override
+  public void runTemplate() {
+
+    SparkSession spark =
+        SparkSession.builder()
+            .appName("Spark Template RedshiftToGCS ")
+            .enableHiveSupport()
+            .getOrCreate();
+
+    LOGGER.info("RedshiftToGcs job started.");
+
+    spark.sparkContext().hadoopConfiguration().set("fs.s3a.access.key", config.getAWSAccessKey());
+    spark.sparkContext().hadoopConfiguration().set("fs.s3a.secret.key", config.getAWSSecretKey());
+
+    Dataset<Row> inputData =
+        spark
+            .read()
+            .format("io.github.spark_redshift_community.spark.redshift")
+            .option("url", config.getAWSURL())
+            .option("dbtable", config.getAWSTable())
+            .option("tempdir", config.getAWSDir())
+            .option("aws_iam_role", config.getAWSRole())
+            .load();
+
+    DataFrameWriter<Row> writer =
+        inputData.write().mode(config.getGcsWriteMode()).format(config.getGcsOutputFormat());
+
+    writer.save(config.getGcsOutputLocation());
+
+    LOGGER.info("RedshiftToGcs job completed.");
+    spark.stop();
   }
 }
