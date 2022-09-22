@@ -14,6 +14,8 @@ build/
 .worksheet
 .cache
 
+__pycache__/
+.pytest_cache
 target
 dist
 pipeline.json
