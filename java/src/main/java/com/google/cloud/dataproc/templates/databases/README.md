@@ -16,7 +16,6 @@ bin/start.sh \
 --templateProperty spanner.gcs.output.gcs.path=<gcs-path> \
 --templateProperty spanner.gcs.output.gcs.saveMode=<Append|Overwrite|ErrorIfExists|Ignore> \
 --templateProperty spanner.gcs.output.gcs.format=<avro|csv|parquet|json|orc> \
---templateProperty spanner.gcs.output.gcs.partitionColumn=<optional-partition-column> \
 --templateProperty spanner.gcs.input.sql.partitionColumn=<optional-sql-partition-column> \
 --templateProperty spanner.gcs.input.sql.lowerBound=<optional-partition-lower-bound-value> \
 --templateProperty spanner.gcs.input.sql.upperBound=<optional-partition-lower-bound-value> \

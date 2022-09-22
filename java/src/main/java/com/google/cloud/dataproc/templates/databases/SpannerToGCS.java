@@ -84,11 +84,6 @@ public class SpannerToGCS implements BaseTemplate {
     DataFrameWriter<Row> writer =
         jdbcDF.write().format(config.getGcsOutputFormat()).mode(config.getGcsWriteMode());
 
-    if (StringUtils.isNotBlank(config.getGcsPartitionColumn())) {
-      LOGGER.info("Partitioning data by :{} cols", config.getGcsPartitionColumn());
-      writer = writer.partitionBy(config.getGcsPartitionColumn());
-    }
-
     writer.save(config.getGcsOutputLocation());
 
     spark.stop();

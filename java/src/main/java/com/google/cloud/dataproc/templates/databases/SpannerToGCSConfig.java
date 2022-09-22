@@ -72,9 +72,6 @@ public class SpannerToGCSConfig {
   @JsonProperty(value = SPANNER_GCS_INPUT_SQL_NUM_PARTITIONS)
   private String sqlNumPartitions;
 
-  @JsonProperty(value = SPANNER_GCS_OUTPUT_PARTITION_COLUMN)
-  private String gcsPartitionColumn;
-
   @JsonProperty(value = SPANNER_GCS_TEMP_TABLE)
   private String tempTable;
 
@@ -136,10 +133,6 @@ public class SpannerToGCSConfig {
     return this.sqlNumPartitions;
   }
 
-  public String getGcsPartitionColumn() {
-    return this.gcsPartitionColumn;
-  }
-
   public String getTempTable() {
     return this.tempTable;
   }
@@ -193,9 +186,6 @@ public class SpannerToGCSConfig {
         + "'"
         + ", sqlNumPartitions='"
         + getSqlNumPartitions()
-        + "'"
-        + ", gcsPartitionColumn='"
-        + getGcsPartitionColumn()
         + "'"
         + ", tempTable='"
         + getTempTable()
