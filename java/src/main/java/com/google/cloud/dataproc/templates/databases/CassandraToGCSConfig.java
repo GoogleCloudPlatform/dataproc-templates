@@ -124,7 +124,7 @@ public class CassandraToGCSConfig {
         .toString();
   }
 
-  public static CassandraToGCS fromProperties(Properties properties) {
-    return mapper.convertValue(properties, CassandraToGCS.class);
+  public static CassandraToGCSConfig fromProperties(Properties properties) {
+    return mapper.convertValue(properties, CassandraToGCSConfig.class);
   }
 }
