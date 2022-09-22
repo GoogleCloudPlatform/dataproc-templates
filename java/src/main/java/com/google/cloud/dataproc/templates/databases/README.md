@@ -14,9 +14,16 @@ bin/start.sh \
 --templateProperty spanner.gcs.input.database.id=<database-id> \
 --templateProperty spanner.gcs.input.table.id=<table-id> \
 --templateProperty spanner.gcs.output.gcs.path=<gcs-path> \
---templateProperty spanner.gcs.output.gcs.saveMode=<Append|Overwrite|ErrorIfExists|Ignore>
---templateProperty spanner.gcs.output.gcs.format=<avro|csv|parquet|json|orc>
+--templateProperty spanner.gcs.output.gcs.saveMode=<Append|Overwrite|ErrorIfExists|Ignore> \
+--templateProperty spanner.gcs.output.gcs.format=<avro|csv|parquet|json|orc> \
+--templateProperty spanner.gcs.input.sql.partitionColumn=<optional-sql-partition-column> \
+--templateProperty spanner.gcs.input.sql.lowerBound=<optional-partition-lower-bound-value> \
+--templateProperty spanner.gcs.input.sql.upperBound=<optional-partition-lower-bound-value> \
+--templateProperty spanner.gcs.input.sql.numPartitions=<optional-partition-partition-number>
 ```
+
+**Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together. 
+If one is specified then all needs to be specified.
 
 ### Export query results as avro
 Update`spanner.gcs.input.table.id` property as follows:
