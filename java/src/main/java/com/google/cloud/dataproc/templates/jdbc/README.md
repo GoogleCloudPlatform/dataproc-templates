@@ -53,6 +53,15 @@ Have SQL query within double quotes. Example,
 **Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together.
 If one is specified then all needs to be specified.
 
+There are two optional properties as well with "JDBC to BigQuery" Template. Please find below the details :-
+
+```
+--templateProperty jdbctobq.temp.table='temporary_view_name' 
+--templateProperty jdbctobq.temp.query='select * from global_temp.temporary_view_name'
+```
+These properties are responsible for applying some spark sql transformations before loading data into BigQuery.
+The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
+
 Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
 ***
@@ -128,3 +137,12 @@ Example execution:
     --templateProperty jdbctogcs.output.format=avro \
     --templateProperty jdbctogcs.write.mode=OVERWRITE \
     --templateProperty 'jdbctogcs.sql=SELECT * FROM MyCloudSQLDB.table1'
+
+There are two optional properties as well with "JDBC to GCS" Template. Please find below the details :-
+
+```
+--templateProperty jdbctogcs.temp.table='temporary_view_name' 
+--templateProperty jdbctogcs.temp.query='select * from global_temp.temporary_view_name'
+```
+These properties are responsible for applying some spark sql transformations before loading data into GCS.
+The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"

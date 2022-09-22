@@ -45,11 +45,13 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [HiveToBigQuery](/python/dataproc_templates/hive/README.md) (blogpost [link](https://medium.com/google-cloud/processing-data-from-hive-to-bigquery-using-pyspark-and-dataproc-serverless-217c7cb9e4f8))
 * [HiveToGCS](/python/dataproc_templates/hive/README.md) (blogpost [link](https://medium.com/@surjitsh/processing-large-data-tables-from-hive-to-gcs-using-pyspark-and-dataproc-serverless-35d3d16daaf))
 * [HbaseToGCS](/python/dataproc_templates/hbase/README.md)
-* [MongoToGCS](/python/dataproc_templates/mongo/README.md)
+* [MongoToGCS](/python/dataproc_templates/mongo/README.md) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-mongodb-to-gcs-buckets-using-dataproc-serverless-64830fb15b51))
 * [SnowflakeToGCS](/python/dataproc_templates/snowflake/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
-* [TextToBiqQuery](/python/dataproc_templates/gcs/README.md)
+* [JDBCToBigQuery](/python/dataproc_templates/jdbc/README.md)
+* [RedshiftToGCS](/python/dataproc_templates/redshift/README.md)
+* [TextToBigQuery](/python/dataproc_templates/gcs/README.md)
 
 ## Getting Started
 
