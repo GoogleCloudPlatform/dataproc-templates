@@ -53,7 +53,7 @@ public class CassandraToGCSConfig {
 
   @JsonProperty(value = CASSANDRA_TO_GSC_OUTPUT_FORMAT)
   @NotEmpty
-  @Pattern(regexp = "avro|parquet|orc|csv")
+  @Pattern(regexp = "avro|parquet|orc|csv|json")
   private String outputFormat;
 
   @JsonProperty(value = CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE)
@@ -63,7 +63,7 @@ public class CassandraToGCSConfig {
 
   @JsonProperty(value = CASSANDRA_TO_GSC_OUTPUT_PATH)
   @NotEmpty
-  @Pattern(regexp = "gs://.*")
+  @Pattern(regexp = "gs://(.*?)/(.*)")
   private String outputpath;
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_CATALOG)
