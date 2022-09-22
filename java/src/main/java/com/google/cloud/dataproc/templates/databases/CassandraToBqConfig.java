@@ -18,16 +18,10 @@ package com.google.cloud.dataproc.templates.databases;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Properties;
-import java.util.regex.Matcher;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
@@ -68,121 +62,69 @@ public class CassandraToBqConfig {
     private String catalog="casscon";
 
 
-    public String getGcsOutputLocation() {
-        return gcsOutputLocation;
+    public String getKeyspace() {
+        return keyspace;
     }
 
-    public String getGcsOutputFormat() {
-        return gcsOutputFormat;
+    public String getCatalog() {
+        return catalog;
     }
 
-    public String getProjectId() {
-        return projectId;
+    public String getInputTable() {
+        return inputTable;
     }
 
-    public String getJdbcURL() {
-        return jdbcURL;
+    public String getHost() {
+        return host;
     }
 
-    public String getJdbcDriverClassName() {
-        return jdbcDriverClassName;
+    public String getQuery() {
+        return query;
     }
 
-    public String getJdbcSQL() {
-        return jdbcSQL;
+    public String getBqLocation() {
+        return bqLocation;
     }
 
-    public String getJdbcSQLFile() {
-        return jdbcSQLFile;
+    public String getMode() {
+        return mode;
     }
 
-    public String getGcsWriteMode() {
-        return gcsWriteMode;
-    }
-
-    public String getGcsPartitionColumn() {
-        return gcsPartitionColumn;
-    }
-
-    public String getJdbcSQLLowerBound() {
-        return jdbcSQLLowerBound;
-    }
-
-    public String getJdbcSQLUpperBound() {
-        return jdbcSQLUpperBound;
-    }
-
-    public String getJdbcSQLNumPartitions() {
-        return jdbcSQLNumPartitions;
-    }
-
-    public String getJdbcSQLPartitionColumn() {
-        return jdbcSQLPartitionColumn;
-    }
-
-    public String getConcatedPartitionProps() {
-        return jdbcSQLPartitionColumn + jdbcSQLLowerBound + jdbcSQLUpperBound + jdbcSQLNumPartitions;
-    }
-
-    public String getSQL() {
-        if (StringUtils.isNotBlank(jdbcSQL)) {
-            return "(" + jdbcSQL + ") as a";
-        } else {
-            Matcher matches = java.util.regex.Pattern.compile("gs://(.*?)/(.*)").matcher(jdbcSQLFile);
-            matches.matches();
-            String bucket = matches.group(1);
-            String objectPath = matches.group(2);
-
-            Storage storage = StorageOptions.getDefaultInstance().getService();
-            Blob blob = storage.get(bucket, objectPath);
-            String fileContent = new String(blob.getContent());
-            return "(" + fileContent + ") as a";
-        }
+    public String getTemplocation() {
+        return templocation;
     }
 
     @Override
     public String toString() {
         return "{"
-                + " gcsOutputLocation='"
-                + getGcsOutputLocation()
+                + " bqLocation='"
+                + getBqLocation()
                 + "'"
-                + ", gcsOutputFormat='"
-                + getGcsOutputFormat()
+                + ", outputMode='"
+                + getMode()
                 + "'"
-                + ", projectId='"
-                + getProjectId()
+                + ", sourceKeyspace='"
+                + getKeyspace()
                 + "'"
-                + ", jdbcDriverClassName='"
-                + getJdbcDriverClassName()
+                + ", sourceTable='"
+                + getInputTable()
                 + "'"
-                + ", jdbcSQL='"
-                + getJdbcSQL()
+                + ", sourceHost='"
+                + getHost()
                 + "'"
-                + ", jdbcSQLFile='"
-                + getJdbcSQLFile()
+                + ", tempLocation='"
+                + getTemplocation()
                 + "'"
-                + ", gcsWriteMode='"
-                + getGcsWriteMode()
+                + ", catalogName='"
+                + getCatalog()
                 + "'"
-                + ", gcsPartitionColumn='"
-                + getGcsPartitionColumn()
-                + "'"
-                + ", jdbcSQLLowerBound='"
-                + getJdbcSQLLowerBound()
-                + "'"
-                + ", jdbcSQLUpperBound='"
-                + getJdbcSQLUpperBound()
-                + "'"
-                + ", jdbcSQLNumPartitions='"
-                + getJdbcSQLNumPartitions()
-                + "'"
-                + ", jdbcSQLPartitionColumn='"
-                + getJdbcSQLPartitionColumn()
+                + ", sourceQuery='"
+                + getQuery()
                 + "'"
                 + "}";
     }
 
     public static CassandraToBqConfig fromProperties(Properties properties) {
-        return mapper.convertValue(properties, JDBCToGCSConfig.class);
+        return mapper.convertValue(properties, CassandraToBqConfig.class);
     }
 }
