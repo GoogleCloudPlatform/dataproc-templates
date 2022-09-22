@@ -15,6 +15,8 @@
  */
 package com.google.cloud.dataproc.templates.databases;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -27,15 +29,6 @@ import org.apache.spark.sql.SaveMode;
 
 public class CassandraToGCSConfig {
 
-  public static final String CASSANDRA_TO_GSC_INPUT_KEYSPACE = "cassandratogcs.input.keyspace";
-
-  public static final String CASSANDRA_TO_GSC_INPUT_TABLE = "cassandratogcs.input.table";
-  public static final String CASSANDRA_TO_GSC_INPUT_HOST = "cassandratogcs.input.host";
-  public static final String CASSANDRA_TO_GSC_OUTPUT_FORMAT = "cassandratogcs.output.format";
-  public static final String CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE = "cassandratogcs.output.savemode";
-  public static final String CASSANDRA_TO_GSC_OUTPUT_PATH = "cassandratogcs.output.path";
-  public static final String CASSANDRA_TO_GSC_INPUT_CATALOG = "cassandratogcs.input.catalog.name";
-  public static final String CASSANDRA_TO_GSC_INPUT_QUERY = "cassandratogcs.input.query";
   static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -121,6 +114,32 @@ public class CassandraToGCSConfig {
         .add("host", host)
         .add("query", query)
         .toString();
+    return "{"
+        + " inputTable='"
+        + getInputTable()
+        + "'"
+        + ", keyspace='"
+        + getKeyspace()
+        + "'"
+        + ", outputFormat='"
+        + getOutputFormat()
+        + "'"
+        + ", outputPath='"
+        + getOutputpath()
+        + "'"
+        + ", catalog='"
+        + getCatalog()
+        + "'"
+        + ", saveMode='"
+        + getSaveModeString()
+        + "'"
+        + ", inputHost='"
+        + getHost()
+        + "'"
+        + ", inputQuery='"
+        + getQuery()
+        + "'"
+        + "}";
   }
 
   public static CassandraToGCSConfig fromProperties(Properties properties) {
