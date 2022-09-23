@@ -17,7 +17,8 @@ package com.google.cloud.dataproc.templates.databases;
 
 import com.datastax.spark.connector.CassandraSparkExtensions;
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import com.google.cloud.dataproc.templates.util.TemplateConstants;
+import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
@@ -26,89 +27,48 @@ import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CassandraToBQ implements BaseTemplate, TemplateConstants {
-  private String keyspace;
-  private String table;
-  private String cassandraHost;
-  private String bqLocation;
-  private String bqWriteMode;
-  private String tempLocation;
-  private String query;
-  private String catalog;
+public class CassandraToBQ implements BaseTemplate {
+  private CassandraToBqConfig config;
   private static final Logger LOGGER = LoggerFactory.getLogger(CassandraToBQ.class);
 
-  public CassandraToBQ() {
-    keyspace = getProperties().getProperty(CASSANDRA_TO_BQ_INPUT_KEYSPACE);
-    table = getProperties().getProperty(CASSANDRA_TO_BQ_INPUT_TABLE);
-    cassandraHost = getProperties().getProperty(CASSANDRA_TO_BQ_INPUT_HOST);
-    bqLocation = getProperties().getProperty(CASSANDRA_TO_BQ_BIGQUERY_LOCATION);
-    bqWriteMode = getProperties().getProperty(CASSANDRA_TO_BQ_WRITE_MODE);
-    tempLocation = getProperties().getProperty(CASSANDRA_TO_BQ_TEMP_LOCATION);
-    query= getProperties().getProperty(CASSANDRA_TO_BQ_QUERY);
-    catalog= getProperties().getProperty(CASSANDRA_TO_BQ_CATALOG);
+  public CassandraToBQ(CassandraToBqConfig config) {
+    this.config = config;
+  }
 
+  public static CassandraToBQ of(String... args) {
+    CassandraToBqConfig config = CassandraToBqConfig.fromProperties(PropertyUtil.getProperties());
+    ValidationUtil.validateOrThrow(config);
+    LOGGER.info("Config loaded\n{}", config);
+    return new CassandraToBQ(config);
   }
 
   @Override
   public void runTemplate() throws StreamingQueryException, TimeoutException {
-    validateInput();
+    Dataset dataset;
     SparkSession spark =
         SparkSession.builder()
             .appName("Spark CassandraToGCS Job")
             .withExtensions(new CassandraSparkExtensions())
             .config(
                 "spark.sql.catalog.dc", "com.datastax.spark.connector.datasource.CassandraCatalog")
-            .config("spark.sql.catalog.dc.spark.cassandra.connection.host", cassandraHost)
+            .config("spark.sql.catalog.dc.spark.cassandra.connection.host", config.getHost())
             .getOrCreate();
-    Dataset dataset = spark.sql("SELECT * FROM dc" + "." + keyspace + "." + table);
+    if (StringUtils.isAllBlank(config.getQuery())) {
+      dataset =
+          spark.sql(
+              String.format(
+                  "SELECT * FROM %1$s.%2$s.%3$s",
+                  config.getCatalog(), config.getKeyspace(), config.getInputTable()));
+    } else {
+      dataset = spark.sql(config.getQuery());
+    }
+
     dataset
         .write()
-        .mode(bqWriteMode)
+        .mode(config.getMode())
         .format("com.google.cloud.spark.bigquery")
-        .option("table", bqLocation)
-        .option("temporaryGcsBucket", tempLocation)
+        .option("table", config.getBqLocation())
+        .option("temporaryGcsBucket", config.getTemplocation())
         .save();
-  }
-
-  public void validateInput() {
-    if (StringUtils.isAllBlank(bqLocation)
-        || StringUtils.isAllBlank(bqWriteMode)
-        || StringUtils.isAllBlank(cassandraHost)
-        || StringUtils.isAllBlank(keyspace)
-        || StringUtils.isAllBlank(table)
-        || StringUtils.isAllBlank(tempLocation)) {
-      LOGGER.error(
-          "{}, {}, {}, {}, {}, {} is required parameter. ",
-          CASSANDRA_TO_BQ_BIGQUERY_LOCATION,
-          CASSANDRA_TO_BQ_WRITE_MODE,
-          CASSANDRA_TO_BQ_INPUT_HOST,
-          CASSANDRA_TO_BQ_INPUT_KEYSPACE,
-          CASSANDRA_TO_BQ_INPUT_TABLE,
-          CASSANDRA_TO_BQ_TEMP_LOCATION);
-      throw new IllegalArgumentException(
-          "Required parameters for CassandraToBQ not passed. "
-              + "Set mandatory parameter for CassandraToBQ template "
-              + "in resources/conf/template.properties file.");
-    }
-    LOGGER.info(
-        "Starting Cassandra to BQ spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}"
-            + "5. {},{}"
-            + "6. {},{}",
-        CASSANDRA_TO_BQ_INPUT_KEYSPACE,
-        keyspace,
-        CASSANDRA_TO_BQ_INPUT_TABLE,
-        table,
-        CASSANDRA_TO_BQ_INPUT_HOST,
-        cassandraHost,
-        CASSANDRA_TO_BQ_BIGQUERY_LOCATION,
-        bqLocation,
-        CASSANDRA_TO_BQ_WRITE_MODE,
-        bqWriteMode,
-        CASSANDRA_TO_BQ_TEMP_LOCATION,
-        tempLocation);
   }
 }
