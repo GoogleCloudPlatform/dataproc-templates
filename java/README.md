@@ -5,6 +5,7 @@
 Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  for more information
 * [HiveToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
 * [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+* [CassandraToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
 * [HbaseToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hbase/README.md)
 * [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md)
 * [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md)
