@@ -118,7 +118,7 @@
     <!-- https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector -->
     <dependency>
       <groupId>com.datastax.spark</groupId>
-      <artifactId>spark-cassandra-connector_2.12</artifactId>
+      <artifactId>spark-cassandra-connector_${scala.binary.version}</artifactId>
       <version>3.1.0</version>
     </dependency>
     <dependency>
