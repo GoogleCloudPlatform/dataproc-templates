@@ -104,16 +104,6 @@ public class CassandraToGCSConfig {
 
   @Override
   public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("inputTable", inputTable)
-        .add("keyspace", keyspace)
-        .add("outputFormat", outputFormat)
-        .add("outputPath", outputpath)
-        .add("catalog", catalog)
-        .add("saveMode", saveMode)
-        .add("host", host)
-        .add("query", query)
-        .toString();
     return "{"
         + " inputTable='"
         + getInputTable()
