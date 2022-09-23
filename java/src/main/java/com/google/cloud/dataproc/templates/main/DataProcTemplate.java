@@ -19,6 +19,7 @@ import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
 import com.google.cloud.dataproc.templates.databases.CassandraToGCS;
+import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
 import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
@@ -67,6 +68,7 @@ public class DataProcTemplate {
           .put(TemplateName.HIVETOBIGQUERY, (args) -> new HiveToBigQuery())
           .put(TemplateName.PUBSUBTOBQ, (args) -> new PubSubToBQ())
           .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
+          .put(TemplateName.REDSHIFTTOGCS, RedshiftToGCS::of)
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
           .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())

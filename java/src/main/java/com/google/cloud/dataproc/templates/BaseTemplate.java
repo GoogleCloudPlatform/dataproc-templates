@@ -43,8 +43,9 @@ public interface BaseTemplate {
     HBASETOGCS,
     GCSTOJDBC,
     KAFKATOBQ,
-    SNOWFLAKETOGCS,
-    CASSANDRATOGCS
+    CASSANDRATOGCS,
+    REDSHIFTTOGCS,
+    SNOWFLAKETOGCS
   }
 
   default Properties getProperties() {

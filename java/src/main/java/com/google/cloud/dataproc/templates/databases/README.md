@@ -39,7 +39,6 @@ There are two optional properties as well with "Spanner to GCS" Template. Please
 These properties are responsible for applying some spark sql transformations before loading data into GCS.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
-
 **NOTE** It is required to surround your custom query with parenthesis and parameter name with double quotes.
 
 ## Executing Cassandra to GCS Template
@@ -89,3 +88,39 @@ To query using default catalog name -:
 --templateProperty cassandratogcs.input.query="select * from casscon.<keyspace-name>.<table-name>"
 ```
 You can replace the ```casscon``` with your catalog name if it is passed. This is an important step to query the data from Cassandra. Additional details on usage of query can be found in this [link](https://github.com/datastax/spark-cassandra-connector/blob/master/doc/14_data_frames.md).
+
+
+## Executing Redshift to GCS template
+
+General Execution:
+
+```
+export GCP_PROJECT=<gcp-project-id> 
+export REGION=<region>  
+export SUBNET=<subnet>   
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export JARS=gs://<cloud-storage-bucket-name>/spark-redshift_<version>.jar,gs://<cloud-storage-bucket-name>/redshift_jdbc_<version>.jar,gs://<cloud-storage-bucket-name>/minimal_json<version>.jar
+
+bin/start.sh \
+-- --template REDSHIFTTOGCS \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty redshift.aws.input.url=<jdbc:redshift://host-name:port-number/> \
+--templateProperty redshift.aws.input.table=<Redshift-table-name> \
+--templateProperty redshift.aws.input.temp.dir=<AWS-temp-directory> \
+--templateProperty redshift.aws.input.iam.role=<Redshift-S3-IAM-role> \
+--templateProperty redshift.aws.input.access.key=<Access-key> \
+--templateProperty redshift.aws.input.secret.key=<Secret-key> \
+--templateProperty redshift.gcs.output.file.format=<Output-File-Format> \
+--templateProperty redshift.gcs.output.file.location=<Output-GCS-location> \
+--templateProperty redshift.gcs.output.mode=<Output-GCS-Save-mode>
+```
+
+There are two optional properties as well with "Redshift to GCS" Template. Please find below the details :-
+
+```
+--templateProperty redshift.gcs.temp.table='temporary_view_name' 
+--templateProperty redshift.gcs.temp.query='select * from global_temp.temporary_view_name'
+```
+These properties are responsible for applying some spark sql transformations while loading data into GCS.
+The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
+
