@@ -77,6 +77,17 @@ public interface TemplateConstants {
   String HBASE_TO_GCS_OUTPUT_PATH = "hbasetogcs.output.path";
   String HBASE_TO_GCS_TABLE_CATALOG = "hbasetogcs.table.catalog";
 
+  /** Property values for CassandraToGCS */
+  String CASSANDRA_TO_GSC_INPUT_KEYSPACE = "cassandratogcs.input.keyspace";
+
+  String CASSANDRA_TO_GSC_INPUT_TABLE = "cassandratogcs.input.table";
+  String CASSANDRA_TO_GSC_INPUT_HOST = "cassandratogcs.input.host";
+  String CASSANDRA_TO_GSC_OUTPUT_FORMAT = "cassandratogcs.output.format";
+  String CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE = "cassandratogcs.output.savemode";
+  String CASSANDRA_TO_GSC_OUTPUT_PATH = "cassandratogcs.output.path";
+  String CASSANDRA_TO_GSC_INPUT_CATALOG = "cassandratogcs.input.catalog.name";
+  String CASSANDRA_TO_GSC_INPUT_QUERY = "cassandratogcs.input.query";
+
   /** Property values for JDBCToBQ */
   String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
 
@@ -208,6 +219,20 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_FORMAT_JSON = "json";
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
+
+  /** RedShift to GCS properties */
+  String REDSHIFT_AWS_INPUT_URL = "redshift.aws.input.url";
+
+  String REDSHIFT_AWS_INPUT_TABLE = "redshift.aws.input.table";
+  String REDSHIFT_AWS_TEMP_DIR = "redshift.aws.input.temp.dir";
+  String REDSHIFT_AWS_INPUT_IAM_ROLE = "redshift.aws.input.iam.role";
+  String REDSHIFT_AWS_INPUT_ACCESS_KEY = "redshift.aws.input.access.key";
+  String REDSHIFT_AWS_INPUT_SECRET_KEY = "redshift.aws.input.secret.key";
+  String REDSHIFT_GCS_OUTPUT_FILE_FORMAT = "redshift.gcs.output.file.format";
+  String REDSHIFT_GCS_OUTPUT_FILE_LOCATION = "redshift.gcs.output.file.location";
+  String REDSHIFT_GCS_OUTPUT_MODE = "redshift.gcs.output.mode";
+  String REDSHIFT_GCS_TEMP_TABLE = "redshift.gcs.temp.table";
+  String REDSHIFT_GCS_TEMP_QUERY = "redshift.gcs.temp.query";
 
   /** PubSubToGCS Template configs. */
   // Project that contains the input PubSub subscription to be read
