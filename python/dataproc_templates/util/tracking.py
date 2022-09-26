@@ -45,7 +45,7 @@ def track_template_invocation(spark: SparkSession, template_name: TemplateName) 
             project='bigquery-public-data',
             page_size=1
         )
-        logger.info("Tracked invocation")
+        logger.info("Tracked invocation: " + list(dataset_list)[0].dataset_id)
     except Exception:
         # Do nothing
         pass
