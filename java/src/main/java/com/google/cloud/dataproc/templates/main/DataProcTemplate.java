@@ -18,12 +18,9 @@ package com.google.cloud.dataproc.templates.main;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
-<<<<<<< HEAD
 import com.google.cloud.dataproc.templates.databases.CassandraToBQ;
-=======
 import com.google.cloud.dataproc.templates.databases.CassandraToGCS;
 import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
->>>>>>> 03daefd1a2ca10bfecc244d7b37069a8e812d929
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
 import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
