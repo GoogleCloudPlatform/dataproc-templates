@@ -30,42 +30,41 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CassandraToBQTest {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CassandraToBQTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CassandraToBQTest.class);
 
-    @BeforeEach
-    void setUp() {
-        SparkSession spark = SparkSession.builder().master("local").getOrCreate();
-    }
+  @BeforeEach
+  void setUp() {
+    SparkSession spark = SparkSession.builder().master("local").getOrCreate();
+  }
 
-    @ParameterizedTest
-    @MethodSource("propertyKeys")
-    void runTemplateWithValidParameters(String propKey) {
-        LOGGER.info("Running test: runTemplateWithValidParameters");
-        PropertyUtil.getProperties()
-                .setProperty(CASSANDRA_TO_BQ_TEMP_LOCATION, "test-bucket");
-        PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_BIGQUERY_LOCATION, "dataset.table");
-        PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_WRITE_MODE, "Append");
-        PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_INPUT_HOST, "host");
-        PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_INPUT_TABLE, "table");
-        PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_INPUT_KEYSPACE, "keyspace");
-        assertDoesNotThrow((ThrowingSupplier<CassandraToBQ>) CassandraToBQ::of);
-    }
+  @ParameterizedTest
+  @MethodSource("propertyKeys")
+  void runTemplateWithValidParameters(String propKey) {
+    LOGGER.info("Running test: runTemplateWithValidParameters");
+    PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_TEMP_LOCATION, "test-bucket");
+    PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_BIGQUERY_LOCATION, "dataset.table");
+    PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_WRITE_MODE, "Append");
+    PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_INPUT_HOST, "host");
+    PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_INPUT_TABLE, "table");
+    PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_INPUT_KEYSPACE, "keyspace");
+    assertDoesNotThrow((ThrowingSupplier<CassandraToBQ>) CassandraToBQ::of);
+  }
 
-    @ParameterizedTest
-    @MethodSource("propertyKeys")
-    void runTemplateWithInvalidParameters(String propKey) {
-        LOGGER.info("Running test: runTemplateWithInvalidParameters");
-        PropertyUtil.getProperties().setProperty(propKey, "");
-        ValidationException exception = assertThrows(ValidationException.class, CassandraToBQ::of);
-    }
+  @ParameterizedTest
+  @MethodSource("propertyKeys")
+  void runTemplateWithInvalidParameters(String propKey) {
+    LOGGER.info("Running test: runTemplateWithInvalidParameters");
+    PropertyUtil.getProperties().setProperty(propKey, "");
+    ValidationException exception = assertThrows(ValidationException.class, CassandraToBQ::of);
+  }
 
-    static Stream<String> propertyKeys() {
-        return Stream.of(
-                CASSANDRA_TO_GSC_OUTPUT_PATH,
-                CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE,
-                CASSANDRA_TO_GSC_OUTPUT_FORMAT,
-                CASSANDRA_TO_GSC_INPUT_HOST,
-                CASSANDRA_TO_GSC_INPUT_TABLE,
-                CASSANDRA_TO_GSC_INPUT_KEYSPACE);
-    }
+  static Stream<String> propertyKeys() {
+    return Stream.of(
+        CASSANDRA_TO_GSC_OUTPUT_PATH,
+        CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE,
+        CASSANDRA_TO_GSC_OUTPUT_FORMAT,
+        CASSANDRA_TO_GSC_INPUT_HOST,
+        CASSANDRA_TO_GSC_INPUT_TABLE,
+        CASSANDRA_TO_GSC_INPUT_KEYSPACE);
+  }
 }

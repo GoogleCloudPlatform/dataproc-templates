@@ -50,8 +50,11 @@ public class CassandraToBQ implements BaseTemplate {
             .appName("Spark CassandraToGCS Job")
             .withExtensions(new CassandraSparkExtensions())
             .config(
-                "spark.sql.catalog."+config.getCatalog(), "com.datastax.spark.connector.datasource.CassandraCatalog")
-            .config("spark.sql.catalog."+config.getCatalog()+".spark.cassandra.connection.host", config.getHost())
+                "spark.sql.catalog." + config.getCatalog(),
+                "com.datastax.spark.connector.datasource.CassandraCatalog")
+            .config(
+                "spark.sql.catalog." + config.getCatalog() + ".spark.cassandra.connection.host",
+                config.getHost())
             .getOrCreate();
     if (StringUtils.isAllBlank(config.getQuery())) {
       dataset =
