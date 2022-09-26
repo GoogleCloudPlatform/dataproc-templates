@@ -47,7 +47,7 @@ public class CassandraToBQ implements BaseTemplate {
     Dataset dataset;
     SparkSession spark =
         SparkSession.builder()
-            .appName("Spark CassandraToGCS Job")
+            .appName("Spark CassandraToBQ Job")
             .withExtensions(new CassandraSparkExtensions())
             .config(
                 "spark.sql.catalog." + config.getCatalog(),
