@@ -18,6 +18,8 @@ package com.google.cloud.dataproc.templates.main;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
+import com.google.cloud.dataproc.templates.databases.CassandraToGCS;
+import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
 import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
@@ -67,12 +69,14 @@ public class DataProcTemplate {
           .put(TemplateName.HIVETOBIGQUERY, (args) -> new HiveToBigQuery())
           .put(TemplateName.PUBSUBTOBQ, (args) -> new PubSubToBQ())
           .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
+          .put(TemplateName.REDSHIFTTOGCS, RedshiftToGCS::of)
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
           .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
-          .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
+          .put(TemplateName.SPANNERTOGCS, SpannerToGCS::of)
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
+          .put(TemplateName.CASSANDRATOGCS, CassandraToGCS::of)
           .put(TemplateName.JDBCTOGCS, JDBCToGCS::of)
           .put(TemplateName.HBASETOGCS, (args) -> new HbaseToGCS())
           .put(TemplateName.KAFKATOBQ, (args) -> new KafkaToBQ())
