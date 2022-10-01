@@ -2,7 +2,7 @@
 
 Notebook solution utilizing dataproc templates for migrating databases from MSSQL to POSTGRES. Notebook contains step by step process for migrating a database from MSSQL to POSTGRES.
 
-Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
+Refer [Setup Vertex AI - PySpark](../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
 [dataproc-templates/python/notebooks/jdbc](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/sql-to-postgres-nb/python/notebooks/jdbc/) folder and open [MSSQLToPOSTGRES_vertex_pipeline_pyspark.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/sql-to-postgres-nb/python/notebooks/jdbc/mssql-to-postgres.ipynb) notebook.
 
 ### Overview

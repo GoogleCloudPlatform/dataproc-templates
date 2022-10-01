@@ -1,13 +1,13 @@
 ## Dataproc Template to Migrate Hive tables to Bigquery using Jupyter Notebooks
 
-This Vertex AI notebook leverages the [HiveToBQ template](../../dataproc_templates/hive/hive_to_bigquery.py) and performs an orchestrated submission of several PySpark jobs using Dataproc Serverless to load multiple tables simultaneously from Hive database to Bigquery dataset.
+This Vertex AI notebook leverages the [HiveToBQ template](../../python/dataproc_templates/hive/hive_to_bigquery.py) and performs an orchestrated submission of several PySpark jobs using Dataproc Serverless to load multiple tables simultaneously from Hive database to Bigquery dataset.
 
-Refer [Setup Vertex AI - PySpark](./../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
-[dataproc-templates/python/notebooks/hive](../hive) folder and open [HivetoBigquery_vertex_pipeline_pyspark](./HiveToBigquery_vertex_pipeline_pyspark.ipynb) notebook.
+Refer [Setup Vertex AI - PySpark](../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
+[dataproc-templates/python/notebooks/hive]() folder and open [HivetoBigquery_vertex_pipeline_pyspark](HiveToBigquery_notebook.ipynb) notebook.
 
 ### Overview
 
-[HiveToBQ- PySpark Notebook](./HiveToBigquery_vertex_pipeline_pyspark.ipynb) dataproc template is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
+[HiveToBQ- PySpark Notebook](HiveToBigquery_notebook.ipynb) dataproc template is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
 
 
 ### Requirements
@@ -40,7 +40,7 @@ Step by Step instructions ar given before each cell in the python notebook.
 ### Parallel Jobs
 Once the notebook is triggered, you can visualize parallel jobs by either using the link generated after Step 11 or by finding your job in [VertexAI Pipelines](https://console.cloud.google.com/vertex-ai/pipelines/).
 
-![workbench](./../images/HiveToBQ_Flow.png)
+![workbench](../images/HiveToBQ_Flow.png)
 
 
 ### Audit Table

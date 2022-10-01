@@ -1,6 +1,6 @@
 # Dataproc Templates (Jupyter Notebooks)
 
-* [Vertex AI Pipelines - PySpark](./vertex_pipeline_pyspark.ipynb)
+* [Vertex AI Pipelines - PySpark](vertex_pipeline_pyspark.ipynb)
 
 Notebooks in this folder demonstrate how to run **Dataproc Templates** from Jupyter Notebooks using Vertex AI. 
 
@@ -17,7 +17,7 @@ The best way to get started is to clone the Dataproc Templates repository to you
 1) Enable Vertex AI API and Notebooks API in your GCP project
 2) Create a [User-Managed](https://cloud.google.com/vertex-ai/docs/workbench/user-managed/introduction) or [Managed](https://cloud.google.com/vertex-ai/docs/workbench/managed/introduction) Notebook in Vertex AI Workbench
 
-   ![workbench](./images/create_notebook.png)
+   ![workbench](images/create_notebook.png)
 
    Dataproc Sessions is only available on a Managed Notebook, but Dataproc Kubeflow component can be run using a User-Managed Notebook.  
    
@@ -26,4 +26,4 @@ The best way to get started is to clone the Dataproc Templates repository to you
 3) Open the created notebook, clone the [Dataproc Templates](https://github.com/GoogleCloudPlatform/dataproc-templates) GitHub repository and run the desired notebook located in the *python/notebooks* folder
 
 
-   ![clone](./images/clone_repository.png)
+   ![clone](images/clone_repository.png)
