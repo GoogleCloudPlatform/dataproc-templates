@@ -1,6 +1,8 @@
 ## Dataproc Template to Migrate Hive tables to Bigquery using Jupyter Notebooks
 
-This Vertex AI notebook leverages the [HiveToBQ template](../../python/dataproc_templates/hive/hive_to_bigquery.py) and performs an orchestrated submission of several PySpark jobs using Dataproc Serverless to load multiple tables simultaneously from Hive database to Bigquery dataset.
+This Vertex AI notebook leverages the [HiveToBQ template](/python/dataproc_templates/hive#hive-to-bigquery) 
+and performs an orchestrated submission of several PySpark jobs using Dataproc Serverless to load multiple 
+tables simultaneously from Hive database to Bigquery dataset.
 
 Refer [Setup Vertex AI - PySpark](../generic_sample/README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
 [dataproc-templates/python/notebooks/hive]() folder and open [HivetoBigquery_vertex_pipeline_pyspark](HiveToBigquery_notebook.ipynb) notebook.
