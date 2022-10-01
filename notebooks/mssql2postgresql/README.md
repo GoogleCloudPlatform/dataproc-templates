@@ -1,14 +1,25 @@
-## Jupyter Notebook Solution for migrating MSSQL to POSTGRES Database using Dataproc Templates
+## Jupyter Notebook Solution for migrating MSSQL (SQL Server) to POSTGRES Database using Dataproc Templates
 
-Notebook solution utilizing dataproc templates for migrating databases from MSSQL to POSTGRES. Notebook contains step by step process for migrating a database from MSSQL to POSTGRES.
+Notebook solution utilizing dataproc templates for migrating databases from MSSQL to POSTGRES. 
+Notebook contains step by step process for a downtime based migration.
 
-Refer [Setup Vertex AI - PySpark](../README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
-[dataproc-templates/python/notebooks/jdbc](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/sql-to-postgres-nb/python/notebooks/jdbc/) folder and open [MSSQLToPOSTGRES_vertex_pipeline_pyspark.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/sql-to-postgres-nb/python/notebooks/jdbc/mssql-to-postgres.ipynb) notebook.
+Refer [Setup Vertex AI - PySpark](../generic_notebook/README.md) to setup new Jupyter notebook in vertexAI.
+Once the setup is done navigate to `/notebooks/mssql2postgresql` folder and open
+[mssql-to-postgres-notebook](./mssql-to-postgres-notebook.ipynb).
 
 ### Overview
 
-[MSSQLToPOSTGRES_vertex_pipeline_pyspark.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/sql-to-postgres-nb/python/notebooks/jdbc/mssql-to-postgres.ipynb) notebook solution is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
+This notebook is built on top of:
+* [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks)
+* [Google Cloud's Dataproc Serverless](https://cloud.google.com/dataproc-serverless/)
+* Dataproc Templates which are maintained in this github project.
 
+### Key Benefits
+1) Automatically discovers all the SQL Server tables.
+2) Can automatically generates table schema in Postgresql, corresponding to each table.
+3) Divides the migration into multiple batches and automatically computes metadata.
+4) Parallely migrates mutiple SQL Server tables to Postgresql.
+5) Simple, easy to use and customizable.
 
 ### Requirements
 

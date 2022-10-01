@@ -5,18 +5,23 @@ It contains step by step process for migrating MySQL database to Cloud Spanner.
 The migration is done in 2 steps. Firstly data is exported from MySQL to GCS.  
 Finally, data is read from GCS to Cloud Spanner.     
 
-Refer [Setup Vertex AI - PySpark](../README.md) to setup new Jupyter notebook in vertexAI. 
-Once the setup is done navigate to 
-[dataproc-templates/python/notebooks/spanner](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/mysql2spanner/) 
-folder and open [MySqlToSpanner_vertex_pipeline_pyspark.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/spanner/mysql-to-spanner.ipynb) notebook.
+Refer [Setup Vertex AI - PySpark](../generic_notebook/README.md) to setup new Jupyter notebook in vertexAI.
+Once the setup is done navigate to `/notebooks/mysql2spanner` folder and open
+[MySqlToSpanner_notebook](./MySqlToSpanner_notebook.ipynb).
 
 ### Overview
 
-[MySqlToSpanner_notebook.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/mysql-to-spanner-nb/python/notebooks/spanner/mysql-to-spanner.ipynb) 
-notebook solution is built on top of 
-[Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) 
-and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
+This notebook is built on top of:
+* [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks)
+* [Google Cloud's Dataproc Serverless](https://cloud.google.com/dataproc-serverless/)
+* Dataproc Templates which are maintained in this github project.
 
+### Key Benefits
+1) Automatically discovers all the MySQL tables.
+2) Can automatically generates table schema in Cloud Spanner, corresponding to each table.
+3) Divides the migration into multiple batches and automatically computes metadata.
+4) Parallely migrates mutiple MySQL tables to Cloud Spanner.
+5) Simple, easy to use and customizable.
 
 ### Requirements
 
@@ -51,4 +56,7 @@ Below configurations are required before proceeding further.
 This notebook requires the MYSQL connector jar. Installation information is present in the notebook
 
 
+### Limitations:
+
+* Does not work with Cloud Spanner's Postgresql Interface
 
