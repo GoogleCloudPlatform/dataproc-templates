@@ -27,10 +27,12 @@ import static org.apache.spark.sql.types.DataTypes.ShortType;
 import static org.apache.spark.sql.types.DataTypes.StringType;
 import static org.apache.spark.sql.types.DataTypes.TimestampType;
 
+import java.sql.Types;
 import org.apache.spark.sql.jdbc.JdbcDialect;
 import org.apache.spark.sql.jdbc.JdbcType;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DecimalType;
+import org.apache.spark.sql.types.MetadataBuilder;
 import scala.Option;
 
 public class SpannerJdbcDialect extends JdbcDialect {
@@ -88,5 +90,12 @@ public class SpannerJdbcDialect extends JdbcDialect {
     } else {
       return Option.empty();
     }
+  }
+
+  @Override
+  public Option<DataType> getCatalystType(
+      int sqlType, String typeName, int size, MetadataBuilder md) {
+    if (sqlType == Types.NUMERIC) return Option.apply(DecimalType.apply(38, 9));
+    return Option.empty();
   }
 }
