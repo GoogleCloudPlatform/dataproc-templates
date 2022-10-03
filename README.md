@@ -1,6 +1,6 @@
 ![Java Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=java-build)
 ![Java Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-java&&subject=integration-tests-java)
-![Python Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build) 
+![Python Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build)
 ![Python Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-python&&subject=integration-tests-python)
 
 # Dataproc Templates
@@ -30,6 +30,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java/README.md) 
 * [GCSToJDBC](/java/src/main/java/com/google/cloud/dataproc/templates/gcs/README.md) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-databases-via-jdbc-using-dataproc-serverless-7ed75eab93ba))
 * [SnowflakeToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/snowflake/README.md)
 * [KafkaToBQ](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md) (blogpost [link](https://medium.com/google-cloud/export-data-from-apache-kafka-to-bigquery-using-dataproc-serverless-4a666535117c))
+* [KafkaToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md)
 * [DataplexGCStoBQ](/java/src/main//java/com/google/cloud/dataproc/templates/dataplex/README.md)
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](/java/src/main/java/com/google/cloud/dataproc/templates/general/README.md)
@@ -73,7 +74,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 
 *Note:* Application Default Credentials is able to implicitly find the credentials as long as the application is running on Compute Engine, Kubernetes Engine, App Engine, or Cloud Functions.
 
-3) Executing a Template 
+3) Executing a Template
 
     Follow the specific guide, depending on your use case:
    - [Dataproc Templates (Java - Spark)](java/README.md)
