@@ -114,7 +114,7 @@ def run_template(template_name: TemplateName) -> None:
 
         spark: SparkSession = create_spark_session(template_name=template_name)
 
-        track_template_invocation(template_name=template_name)
+        track_template_invocation(spark=spark, template_name=template_name)
 
         template_instance.run(spark=spark, args=args)
     except Exception:
