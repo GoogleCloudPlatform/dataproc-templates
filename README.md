@@ -48,7 +48,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python/READM
 * [SnowflakeToGCS](/python/dataproc_templates/snowflake/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
-* [RedshiftToGCS](/python/dataproc_templates/redshift/README.md)
+* [RedshiftToGCS](/python/dataproc_templates/redshift/README.md) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
 * [TextToBiqQuery](/python/dataproc_templates/gcs/README.md)
 
 ## Getting Started
