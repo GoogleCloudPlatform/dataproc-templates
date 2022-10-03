@@ -19,6 +19,11 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
+import java.util.HashMap;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -32,48 +37,54 @@ public class SpannerToGCS implements BaseTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(SpannerToGCS.class);
   public static final String SPANNER_JDBC_DRIVER = "com.google.cloud.spanner.jdbc.JdbcDriver";
 
-  private final String projectId;
-  private final String instanceId;
-  private final String databaseId;
-  private final String tableId;
-  private final String gcsWritePath;
-  private final String gcsSaveMode;
-  private final String outputFormat;
+  private final SpannerToGCSConfig config;
 
-  public SpannerToGCS() {
-    projectId = getProperties().getProperty(PROJECT_ID_PROP);
-    instanceId = getProperties().getProperty(SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID);
-    databaseId = getProperties().getProperty(SPANNER_GCS_INPUT_DATABASE_ID);
-    tableId = getProperties().getProperty(SPANNER_GCS_INPUT_TABLE_ID);
-    gcsWritePath = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_PATH);
-    gcsSaveMode = getProperties().getProperty(SPANNER_GCS_OUTPUT_GCS_SAVEMODE);
-    outputFormat = getProperties().getProperty(SPANNER_GCS_OUTPUT_FORMAT);
+  public SpannerToGCS(SpannerToGCSConfig config) {
+    this.config = config;
+  }
+
+  public static SpannerToGCS of(String... args) {
+    SpannerToGCSConfig config = SpannerToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    ValidationUtil.validateOrThrow(config);
+    LOGGER.info("Config loaded\n{}", config);
+    return new SpannerToGCS(config);
   }
 
   @Override
   public void runTemplate() {
-    String spannerUrl =
-        String.format(
-            "jdbc:cloudspanner:/projects/%s/instances/%s/databases/%s?lenient=true",
-            projectId, instanceId, databaseId);
-    JdbcDialects.registerDialect(new SpannerJdbcDialect());
 
-    LOGGER.info("Spanner URL: " + spannerUrl);
+    JdbcDialects.registerDialect(new SpannerJdbcDialect());
 
     SparkSession spark = SparkSession.builder().appName("DatabaseToGCS Dataproc job").getOrCreate();
 
     LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
-    Dataset<Row> jdbcDF =
-        spark
-            .read()
-            .format("jdbc")
-            .option(JDBCOptions.JDBC_URL(), spannerUrl)
-            .option(JDBCOptions.JDBC_TABLE_NAME(), tableId)
-            .option(JDBCOptions.JDBC_DRIVER_CLASS(), SPANNER_JDBC_DRIVER)
-            .load();
 
-    LOGGER.info("Data load complete from table/query: " + tableId);
-    jdbcDF.write().format(outputFormat).mode(gcsSaveMode).save(gcsWritePath);
+    HashMap<String, String> jdbcProperties = new HashMap<>();
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), config.getSpannerJdbcUrl());
+    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), config.getInputTableId());
+    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), SPANNER_JDBC_DRIVER);
+
+    if (StringUtils.isNotBlank(config.getConcatedPartitionProperties())) {
+      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), config.getSqlPartitionColumn());
+      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), config.getSqlUpperBound());
+      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), config.getSqlLowerBound());
+      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), config.getSqlNumPartitions());
+    }
+
+    Dataset<Row> jdbcDF = spark.read().format("jdbc").options(jdbcProperties).load();
+
+    LOGGER.info("Data load complete from table/query: " + config.getInputTableId());
+
+    if (StringUtils.isNotBlank(config.getTempTable())
+        && StringUtils.isNotBlank(config.getTempQuery())) {
+      jdbcDF.createOrReplaceGlobalTempView(config.getTempTable());
+      jdbcDF = spark.sql(config.getTempQuery());
+    }
+
+    DataFrameWriter<Row> writer =
+        jdbcDF.write().format(config.getGcsOutputFormat()).mode(config.getGcsWriteMode());
+
+    writer.save(config.getGcsOutputLocation());
 
     spark.stop();
   }

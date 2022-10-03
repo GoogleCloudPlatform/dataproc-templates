@@ -43,6 +43,8 @@ public interface BaseTemplate {
     HBASETOGCS,
     GCSTOJDBC,
     KAFKATOBQ,
+    CASSANDRATOGCS,
+    REDSHIFTTOGCS,
     SNOWFLAKETOGCS
   }
 

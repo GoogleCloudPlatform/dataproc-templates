@@ -13,6 +13,7 @@
 * [MongoToGCS](/python/dataproc_templates/mongo/README.md)
 * [JDBCToJDBC](/python/dataproc_templates/jdbc/README.md)
 * [JDBCToGCS](/python/dataproc_templates/jdbc/README.md)
+* [JDBCToBigQuery](/python/dataproc_templates/jdbc/README.md) (blogpost [link](https://medium.com/@sjlva/python-fast-export-large-database-tables-using-gcp-serverless-dataproc-bfe77a132485))
 * [RedshiftToGCS](/python/dataproc_templates/redshift/README.md)
 * [TextToBigQuery](/python/dataproc_templates/gcs/README.md)
 * [GCSToGCS](/python/dataproc_templates/gcs/README.md)
@@ -121,4 +122,4 @@ Refer to this [documentation](https://cloud.google.com/dataproc-serverless/docs/
 
 **Vertex AI usage**:
 
-Follow [Dataproc Templates (Jupyter Notebooks) README](./notebooks/README.md) to submit Dataproc Templates from a Vertex AI notebook.  
+Follow [Dataproc Templates (Jupyter Notebooks) README](../notebooks/README.md) to submit Dataproc Templates from a Vertex AI notebook.  

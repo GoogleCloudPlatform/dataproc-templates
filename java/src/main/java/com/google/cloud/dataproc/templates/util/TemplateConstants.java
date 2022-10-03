@@ -27,6 +27,12 @@ public interface TemplateConstants {
   String SPANNER_GCS_OUTPUT_GCS_PATH = "spanner.gcs.output.gcs.path";
   String SPANNER_GCS_OUTPUT_GCS_SAVEMODE = "spanner.gcs.output.gcs.saveMode";
   String SPANNER_GCS_OUTPUT_FORMAT = "spanner.gcs.output.gcs.format";
+  String SPANNER_GCS_INPUT_SQL_PARTITION_COLUMN = "spanner.gcs.input.sql.partitionColumn";
+  String SPANNER_GCS_INPUT_SQL_LOWER_BOUND = "spanner.gcs.input.sql.lowerBound";
+  String SPANNER_GCS_INPUT_SQL_UPPER_BOUND = "spanner.gcs.input.sql.upperBound";
+  String SPANNER_GCS_INPUT_SQL_NUM_PARTITIONS = "spanner.gcs.input.sql.numPartitions";
+  String SPANNER_GCS_TEMP_TABLE = "spanner.gcs.temp.table";
+  String SPANNER_GCS_TEMP_QUERY = "spanner.gcs.temp.query";
   /**
    * Column to be used as row key for BigTable. Required for GCSToBigTable template.
    *
@@ -43,6 +49,8 @@ public interface TemplateConstants {
   // Hive warehouse location.
   String HIVE_TO_GCS_OUTPUT_FORMAT_PROP = "hive.gcs.output.format";
   String HIVE_TO_GCS_OUTPUT_FORMAT_DEFAULT = "avro";
+  String HIVE_GCS_TEMP_TABLE = "hive.gcs.temp.table";
+  String HIVE_GCS_TEMP_QUERY = "hive.gcs.temp.query";
   // Hive warehouse location.
   String HIVE_WAREHOUSE_LOCATION_PROP = "spark.sql.warehouse.dir";
   // Hive warehouse location.
@@ -59,6 +67,8 @@ public interface TemplateConstants {
   String HIVE_TO_BQ_SQL = "hivetobq.sql";
   String HIVE_TO_BQ_APPEND_MODE = "hivetobq.write.mode";
   String HIVE_TO_BQ_TEMP_GCS_BUCKET = "hivetobq.temp.gcs.bucket";
+  String HIVE_TO_BQ_TEMP_TABLE = "hivetobq.temp.table";
+  String HIVE_TO_BQ_TEMP_QUERY = "hivetobq.temp.query";
 
   /** Property values for HbaseToGCS */
   String HBASE_TO_GCS_OUTPUT_FILE_FORMAT = "hbasetogcs.output.fileformat";
@@ -66,6 +76,17 @@ public interface TemplateConstants {
   String HBASE_TO_GCS_OUTPUT_SAVE_MODE = "hbasetogcs.output.savemode";
   String HBASE_TO_GCS_OUTPUT_PATH = "hbasetogcs.output.path";
   String HBASE_TO_GCS_TABLE_CATALOG = "hbasetogcs.table.catalog";
+
+  /** Property values for CassandraToGCS */
+  String CASSANDRA_TO_GSC_INPUT_KEYSPACE = "cassandratogcs.input.keyspace";
+
+  String CASSANDRA_TO_GSC_INPUT_TABLE = "cassandratogcs.input.table";
+  String CASSANDRA_TO_GSC_INPUT_HOST = "cassandratogcs.input.host";
+  String CASSANDRA_TO_GSC_OUTPUT_FORMAT = "cassandratogcs.output.format";
+  String CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE = "cassandratogcs.output.savemode";
+  String CASSANDRA_TO_GSC_OUTPUT_PATH = "cassandratogcs.output.path";
+  String CASSANDRA_TO_GSC_INPUT_CATALOG = "cassandratogcs.input.catalog.name";
+  String CASSANDRA_TO_GSC_INPUT_QUERY = "cassandratogcs.input.query";
 
   /** Property values for JDBCToBQ */
   String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
@@ -79,6 +100,8 @@ public interface TemplateConstants {
   String JDBC_TO_BQ_SQL_UPPER_BOUND = "jdbctobq.sql.upperBound";
   String JDBC_TO_BQ_SQL_NUM_PARTITIONS = "jdbctobq.sql.numPartitions";
   String JDBC_TO_BQ_WRITE_MODE = "jdbctobq.write.mode";
+  String JDBC_BQ_TEMP_TABLE = "jdbc.bq.temp.table";
+  String JDBC_BQ_TEMP_QUERY = "jdbc.bq.temp.query";
 
   /** Property values for JDBCToGCS */
   String JDBC_TO_GCS_OUTPUT_LOCATION = "jdbctogcs.output.location";
@@ -94,6 +117,8 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_SQL_UPPER_BOUND = "jdbctogcs.sql.upperBound";
   String JDBC_TO_GCS_SQL_NUM_PARTITIONS = "jdbctogcs.sql.numPartitions";
   String JDBC_TO_GCS_OUTPUT_PARTITION_COLUMN = "jdbctogcs.output.partition.col";
+  String JDBC_TO_GCS_TEMP_TABLE = "jdbctogcs.temp.table";
+  String JDBC_TO_GCS_TEMP_QUERY = "jdbctogcs.temp.query";
 
   /** Property values for WordCount template. */
   String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";
@@ -184,6 +209,20 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_FORMAT_JSON = "json";
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
+
+  /** RedShift to GCS properties */
+  String REDSHIFT_AWS_INPUT_URL = "redshift.aws.input.url";
+
+  String REDSHIFT_AWS_INPUT_TABLE = "redshift.aws.input.table";
+  String REDSHIFT_AWS_TEMP_DIR = "redshift.aws.input.temp.dir";
+  String REDSHIFT_AWS_INPUT_IAM_ROLE = "redshift.aws.input.iam.role";
+  String REDSHIFT_AWS_INPUT_ACCESS_KEY = "redshift.aws.input.access.key";
+  String REDSHIFT_AWS_INPUT_SECRET_KEY = "redshift.aws.input.secret.key";
+  String REDSHIFT_GCS_OUTPUT_FILE_FORMAT = "redshift.gcs.output.file.format";
+  String REDSHIFT_GCS_OUTPUT_FILE_LOCATION = "redshift.gcs.output.file.location";
+  String REDSHIFT_GCS_OUTPUT_MODE = "redshift.gcs.output.mode";
+  String REDSHIFT_GCS_TEMP_TABLE = "redshift.gcs.temp.table";
+  String REDSHIFT_GCS_TEMP_QUERY = "redshift.gcs.temp.query";
 
   /** PubSubToGCS Template configs. */
   // Project that contains the input PubSub subscription to be read

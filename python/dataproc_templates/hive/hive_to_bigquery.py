@@ -16,7 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
-
+import sys
 from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
@@ -85,9 +85,26 @@ class HiveToBigQueryTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        parser.add_argument(
+            f'--{constants.HIVE_BQ_TEMP_VIEW_NAME}',
+            dest=constants.HIVE_BQ_TEMP_VIEW_NAME,
+            required=False,
+            default="",
+            help='Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query'
+        )
+        parser.add_argument(
+            f'--{constants.HIVE_BQ_SQL_QUERY}',
+            dest=constants.HIVE_BQ_SQL_QUERY,
+            required=False,
+            default="",
+            help='SQL query for data transformation. This must use the temp view name as the table to query from.'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
+
+        if getattr(known_args, constants.HIVE_BQ_SQL_QUERY) and not getattr(known_args, constants.HIVE_BQ_TEMP_VIEW_NAME):
+            sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
 
         return vars(known_args)
 
@@ -102,6 +119,8 @@ class HiveToBigQueryTemplate(BaseTemplate):
         bigquery_table: str = args[constants.HIVE_BQ_OUTPUT_TABLE]
         bq_temp_bucket: str = args[constants.HIVE_BQ_LD_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.HIVE_BQ_OUTPUT_MODE]
+        temp_view: str = args[constants.HIVE_BQ_TEMP_VIEW_NAME]
+        sql_query: str = args[constants.HIVE_BQ_SQL_QUERY]
 
         logger.info(
             "Starting Hive to Bigquery spark job with parameters:\n"
@@ -111,8 +130,16 @@ class HiveToBigQueryTemplate(BaseTemplate):
         # Read
         input_data = spark.table(hive_database + "." + hive_table)
 
+        if sql_query:
+            # Create temp view on source data
+            input_data.createGlobalTempView(temp_view)
+            # Execute SQL
+            output_data = spark.sql(sql_query)
+        else:
+            output_data = input_data
+
         # Write
-        input_data.write \
+        output_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, bigquery_dataset + "." + bigquery_table) \
             .option(constants.TEMP_GCS_BUCKET, bq_temp_bucket) \
