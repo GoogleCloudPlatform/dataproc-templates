@@ -72,7 +72,7 @@ bin/start.sh \
 -- --template CASSANDRATOGCS \
 --templateProperty cassandratogcs.input.keyspace=testkeyspace \
 --templateProperty cassandratogcs.input.table=testtable \
---templateProperty cassandratogcs.input.host=<cassandra-host-ip> \
+--templateProperty cassandratogcs.input.host=10.128.2.62 \
 --templateProperty cassandratogcs.output.format=csv \
 --templateProperty cassandratogcs.output.savemode=append \
 --templateProperty cassandratogcs.output.path=gs://myproject/cassandraOutput 
@@ -120,7 +120,7 @@ bin/start.sh \
 -- --template CASSANDRATOBQ \
 --templateProperty cassandratobq.input.keyspace=keyspace \
 --templateProperty cassandratobq.input.table=table \
---templateProperty cassandratobq.input.host=<cassandra-host-ip> \
+--templateProperty cassandratobq.input.host=10.128.0.62 \
 --templateProperty cassandratobq.bigquery.location=demodataset.demotable \
 --templateProperty cassandratobq.output.mode=Append \
 --templateProperty cassandratobq.temp.gcs.location=tempbucket
@@ -133,7 +133,7 @@ One can add additional property to submit query. Please see format below-:
 Note-: ```cassandratobq.input.catalog.name=<catalog-name>``` is used to provide a name to the connection with Cassandra. This name is used for querying purpose and has a default value of ```casscon``` if nothing is passed.
 To query using default catalog name -:
 ```
---templateProperty cassandratobq.input.query="select * from casscon.<keyspace-name>.<table-name>"
+--templateProperty cassandratobq.input.query="select * from casscon.employee.salaries"
 ```
 You can replace the ```casscon``` with your catalog name if it is passed. This is an important step to query the data from Cassandra. Additional details on usage of query can be found in this [link](https://github.com/datastax/spark-cassandra-connector/blob/master/doc/14_data_frames.md).
 
