@@ -9,6 +9,14 @@ Refer [Setup Vertex AI - PySpark](./../generic_notebook/README.md) to setup new 
 
 [OracleToBigQuery_vertex_pipeline_pyspark.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/oracle2bq-notebook/notebooks/oracle2bq/OracleToBigQuery_notebook.ipynb) notebook solution is built on top of [Vertex AI Jupyter Notebook](https://cloud.google.com/vertex-ai/docs/tutorials/jupyter-notebooks) and [Google Cloud's Dataproc](https://cloud.google.com/dataproc/) tech stack provided by GCP.
 
+### Key Benifits
+
+* Automatically Generate list of tables from metadata. Alternatively, user should be able to supply list of tables.
+* Identify current primary key column name, and partitioned read properties.
+* Use partition reads if exceeds threshold.
+* Divides migration into batches and parallely migrates multiple table.
+* Notebook allow you to choose modes i.e. appending data or overwrite.
+* Bigquery load automatically created table if table does not exists.
 
 ### Requirements
 
