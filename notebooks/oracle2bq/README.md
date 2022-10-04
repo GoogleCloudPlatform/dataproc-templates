@@ -2,7 +2,7 @@
 
 Notebook solution utilizing dataproc templates for migrating databases from Oracle to BigQuery. Notebook contains step by step process for migrating Oracle database tables to BigQuery.
 
-Refer [Setup Vertex AI - PySpark](./../notebooks/README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
+Refer [Setup Vertex AI - PySpark](./../generic_notebook/README.md) to setup new Jupyter notebook in vertexAI. Once the setup is done navigate to 
 [dataproc-templates/python/notebooks/oracle2bq](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/oracle2bq-notebook/notebooks/oracle2bq) folder and open [OracleToBigQuery_vertex_pipeline_pyspark.ipynb](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/oracle2bq-notebook/notebooks/oracle2bq/OracleToBigQuery_notebook.ipynb) notebook.
 
 ### Overview
