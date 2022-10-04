@@ -13,8 +13,8 @@ Refer [Setup Vertex AI - PySpark](./../generic_notebook/README.md) to setup new 
 
 * Automatically Generate list of tables from metadata. Alternatively, user should be able to supply list of tables.
 * Identify current primary key column name, and partitioned read properties.
-* Use partition reads if exceeds threshold.
-* Divides migration into batches and parallely migrates multiple table.
+* Automatically uses partition reads if exceeds threshold.
+* Divides migration into batches and parallely migrates multiple tables.
 * Notebook allow you to choose modes i.e. appending data or overwrite.
 * Bigquery load automatically created table if table does not exists.
 
