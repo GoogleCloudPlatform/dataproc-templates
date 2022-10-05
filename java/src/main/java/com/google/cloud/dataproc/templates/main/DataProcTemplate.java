@@ -32,6 +32,7 @@ import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToBigQuery;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
+import com.google.cloud.dataproc.templates.jdbc.JDBCToSpanner;
 import com.google.cloud.dataproc.templates.kafka.KafkaToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
@@ -77,6 +78,7 @@ public class DataProcTemplate {
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
           .put(TemplateName.CASSANDRATOGCS, CassandraToGCS::of)
           .put(TemplateName.JDBCTOGCS, JDBCToGCS::of)
+          .put(TemplateName.JDBCTOSPANNER, JDBCToSpanner::of)
           .put(TemplateName.HBASETOGCS, (args) -> new HbaseToGCS())
           .put(TemplateName.KAFKATOBQ, (args) -> new KafkaToBQ())
           .put(TemplateName.GCSTOJDBC, GCSToJDBC::of)
