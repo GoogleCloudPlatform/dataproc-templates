@@ -195,7 +195,11 @@ public class JDBCToSpannerConfig {
 
   public String getSQL() {
     if (StringUtils.isNotBlank(jdbcSQL)) {
-      return "(" + jdbcSQL + ") as a";
+      if (jdbcURL.contains("oracle")) {
+        return "(" + jdbcSQL + ")";
+      } else {
+        return "(" + jdbcSQL + ") as a";
+      }
     } else {
       Matcher matches = java.util.regex.Pattern.compile("gs://(.*?)/(.*)").matcher(jdbcSQLFile);
       matches.matches();
