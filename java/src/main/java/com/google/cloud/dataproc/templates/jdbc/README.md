@@ -149,7 +149,7 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 
 ***
 
-## s. JDBC To SPANNER
+## 3. JDBC To SPANNER
 
 Note - Add dependency jar's specific to database in jars variable.
 
