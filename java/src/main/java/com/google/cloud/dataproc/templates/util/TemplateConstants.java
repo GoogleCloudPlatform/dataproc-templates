@@ -218,6 +218,16 @@ public interface TemplateConstants {
   String S3_BQ_AVRO_FORMAT = "avro";
   String S3_BQ_PRQT_FORMAT = "parquet";
   String S3_BQ_JSON_FORMAT = "json";
+  /** Cassandra to BQ properties */
+  String CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace";
+
+  String CASSANDRA_TO_BQ_INPUT_TABLE = "cassandratobq.input.table";
+  String CASSANDRA_TO_BQ_INPUT_HOST = "cassandratobq.input.host";
+  String CASSANDRA_TO_BQ_BIGQUERY_LOCATION = "cassandratobq.bigquery.location";
+  String CASSANDRA_TO_BQ_WRITE_MODE = "cassandratobq.output.mode";
+  String CASSANDRA_TO_BQ_TEMP_LOCATION = "cassandratobq.temp.gcs.location";
+  String CASSANDRA_TO_BQ_QUERY = "cassandratobq.input.query";
+  String CASSANDRA_TO_BQ_CATALOG = "cassandratobq.input.catalog.name";
 
   /** Bigquery to GCS properties */
   String BQ_GCS_INPUT_TABLE_NAME = "bigquery.gcs.input.table";
