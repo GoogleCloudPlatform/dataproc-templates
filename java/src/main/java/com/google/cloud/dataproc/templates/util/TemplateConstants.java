@@ -120,6 +120,25 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_TEMP_TABLE = "jdbctogcs.temp.table";
   String JDBC_TO_GCS_TEMP_QUERY = "jdbctogcs.temp.query";
 
+  /** Property values for JDBCToSpanner */
+  String JDBC_TO_SPANNER_JDBC_URL = "jdbctospanner.jdbc.url";
+
+  String JDBC_TO_SPANNER_JDBC_DRIVER_CLASS_NAME = "jdbctospanner.jdbc.driver.class.name";
+  String JDBC_TO_SPANNER_SQL = "jdbctospanner.sql";
+  String JDBC_TO_SPANNER_SQL_FILE = "jdbctospanner.sql.file";
+  String JDBC_TO_SPANNER_SQL_PARTITION_COLUMN = "jdbctospanner.sql.partitionColumn";
+  String JDBC_TO_SPANNER_SQL_LOWER_BOUND = "jdbctospanner.sql.lowerBound";
+  String JDBC_TO_SPANNER_SQL_UPPER_BOUND = "jdbctospanner.sql.upperBound";
+  String JDBC_TO_SPANNER_SQL_NUM_PARTITIONS = "jdbctospanner.sql.numPartitions";
+  String JDBC_TO_SPANNER_TEMP_TABLE = "jdbctospanner.temp.table";
+  String JDBC_TO_SPANNER_TEMP_QUERY = "jdbctospanner.temp.query";
+  String JDBC_TO_SPANNER_OUTPUT_INSTANCE = "jdbctospanner.output.instance";
+  String JDBC_TO_SPANNER_OUTPUT_DATABASE = "jdbctospanner.output.database";
+  String JDBC_TO_SPANNER_OUTPUT_TABLE = "jdbctospanner.output.table";
+  String JDBC_TO_SPANNER_OUTPUT_SAVE_MODE = "jdbctospanner.output.saveMode";
+  String JDBC_TO_SPANNER_OUTPUT_PRIMARY_KEY = "jdbctospanner.output.primaryKey";
+  String JDBC_TO_SPANNER_OUTPUT_BATCH_INSERT_SIZE = "jdbctospanner.output.batch.size";
+
   /** Property values for WordCount template. */
   String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";
 
