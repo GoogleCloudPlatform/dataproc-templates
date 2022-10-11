@@ -4,7 +4,7 @@
 ## Dataproc Templates (Java - Spark)
 Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  for more information
 * [HiveToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
-* [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md)
+* [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive/README.md) (blogpost [link](https://medium.com/@nehamodgil_21070/processing-and-migrating-large-data-tables-from-hive-to-gcs-using-java-and-dataproc-serverless-b6dbbae61c5d))
 * [CassandraToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
 * [CassandraToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/databases/README.md)
 * [HbaseToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hbase/README.md)
