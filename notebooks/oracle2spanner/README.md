@@ -5,7 +5,7 @@ It contains step by step process for migrating Oracle database to Cloud Spanner.
 
 Refer [Setup Vertex AI - PySpark](../generic_notebook/README.md) to setup new Jupyter notebook in vertexAI.
 Once the setup is done navigate to `/notebooks/oracle2spanner` folder and open
-[MySqlToSpanner_notebook](./OracleToSpanner_notebook.ipynb).
+[OracleToSpanner_notebook](./OracleToSpanner_notebook.ipynb).
 
 ### Overview
 
@@ -30,7 +30,7 @@ Below configurations are required before proceeding further.
 * `REGION` : GCP region
 * `GCS_STAGING_LOCATION` : GCS staging location to be used for this notebook to store artifacts
 * `SUBNET` : VPC subnet
-* `JARS` : list of jars. For this notebook mysql connector and avro jar is required in addition with the dataproc template jars
+* `JARS` : list of jars. For this notebook mysql connector jar is required in addition with the dataproc template jars
 * `MAX_PARALLELISM` : Parameter for number of jobs to run in parallel default value is 5
 
 #### Oracle to Cloud Spanner Parameters
