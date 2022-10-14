@@ -83,7 +83,8 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private SparkSession spark;
   private SQLContext sqlContext;
 
-  private List<String> entityList;
+  private DataplexUtil dataplexUtil;
+
   private Dataset<Row> newDataDS;
   private String entity;
   private String partitionField;
@@ -218,7 +219,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
    */
   private List<String> getPartitionKeyList(String entity) throws IOException {
     try {
-      return DataplexUtil.getPartitionKeyList(entity);
+      return this.dataplexUtil.getPartitionKeyList();
     } catch (DataplexUtilNoPartitionError e) {
       LOGGER.info("Source data has no partitions, performing a full load");
       return null;
@@ -426,13 +427,13 @@ public class DataplexGCStoBQ implements BaseTemplate {
       this.sqlContext = new SQLContext(spark);
       checkInput();
 
-      // TODO: refactor the following DataplexUtil avoid calling the same API method more than once
-      this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);
-      this.inputFileFormat = DataplexUtil.getInputFileFormat(entity);
+      this.dataplexUtil = new DataplexUtil(entity);
+      this.entityBasePath = dataplexUtil.getBasePathEntityData();
+      this.inputFileFormat = dataplexUtil.getInputFileFormat();
 
       // checking for CSV delimiter when applicable
       if (this.inputFileFormat.equals(GCS_BQ_CSV_FORMAT)) {
-        this.inputCSVDelimiter = DataplexUtil.getInputCSVDelimiter(entity);
+        this.inputCSVDelimiter = dataplexUtil.getInputCSVDelimiter();
       }
 
       // checking for user providede target table name
@@ -451,7 +452,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
         this.sparkSaveMode = SPARK_SAVE_MODE_OVERWRITE;
       } else {
         List<String> partitionsListWithLocationAndKeys =
-            DataplexUtil.getPartitionsListWithLocationAndKeys(entity);
+            dataplexUtil.getPartitionsListWithLocationAndKeys();
 
         // Building dataset with all partitions keys in Dataplex Entity
         Dataset<Row> dataplexPartitionsKeysDS =
@@ -471,7 +472,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
       }
 
       if (newDataDS != null) {
-        newDataDS = DataplexUtil.castDatasetToDataplexSchema(newDataDS, entity);
+        newDataDS = this.dataplexUtil.castDatasetToDataplexSchema(newDataDS);
         newDataDS = applyCustomSql(newDataDS);
         writeToBQ(newDataDS);
       } else {
