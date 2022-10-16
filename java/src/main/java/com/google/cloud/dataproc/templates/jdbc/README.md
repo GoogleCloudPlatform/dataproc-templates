@@ -218,7 +218,7 @@ Example execution:
     -- --template JDBCTOSPANNER \
     --templateProperty 'jdbctospanner.jdbc.url=jdbc:mysql://192.168.16.3:3306/MyCloudSQLDB?user=root&password=root' \
     --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.cj.jdbc.Driver \
-    --templateProperty 'jdbctogcs.sql=SELECT * FROM MyCloudSQLDB.table1' \
+    --templateProperty 'jdbctospanner.sql=SELECT * FROM MyCloudSQLDB.table1' \
     --templateProperty jdbctospanner.output.instance='spanner-instance-id' \
     --templateProperty jdbctospanner.output.database='spanner-database-name' \
     --templateProperty jdbctospanner.output.table='spanner-table-name' \
