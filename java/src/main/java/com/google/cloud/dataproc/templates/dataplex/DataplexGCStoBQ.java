@@ -425,22 +425,17 @@ public class DataplexGCStoBQ implements BaseTemplate {
   }
 
   public void checkTarget() throws IOException {
-    System.out.println("========================================================");
     if (!StringUtils.isAllBlank(this.targetEntity)) {
-      System.out.println("target entity def");
       DataplexEntityUtil dataplexTargetEntityUtil = new DataplexEntityUtil(this.targetEntity);
       this.targetTable = dataplexTargetEntityUtil.getTableFullName();
-      System.out.println(this.targetTable);
       this.targetDataset = this.targetTable.split("\\.")[1];
     } else {
       if (!StringUtils.isAllBlank(this.targetAsset)) {
-        System.out.println("target asset def");
         DataplexAssetUtil dataplexAssetUtil = new DataplexAssetUtil(this.targetAsset);
         this.projectId = dataplexAssetUtil.getProjectId();
         this.targetDataset = dataplexAssetUtil.getDatasetName();
       }
       if (this.targetTableName == null) {
-        System.out.println("target table def");
         this.targetTableName =
             this.sourceEntity
                 .split(FORWARD_SLASH)[this.sourceEntity.split(FORWARD_SLASH).length - 1];
@@ -448,30 +443,10 @@ public class DataplexGCStoBQ implements BaseTemplate {
       this.targetTable =
           String.format(BQ_TABLE_NAME_FORMAT, projectId, targetDataset, targetTableName);
     }
-    System.out.println(this.targetTable);
-    System.out.println("========================================================");
   }
 
   public void runTemplate() {
-    System.out.println("run");
     try {
-      //      String entityName =
-      //
-      // "projects/yadavaja-sandbox/locations/us-central1/lakes/whaite-gcs2bq-test/zones/whaite-zone-4/entities/trips_parquet_1";
-      //      DataplexEntityUtil dataplexEntityUtil = new DataplexEntityUtil(entityName);
-      //      String tableName = dataplexEntityUtil.getTableFullName();
-      //      System.out.println("============================================");
-      //      System.out.println(tableName);
-      //      System.out.println("============================================");
-      //
-      //      String assetName =
-      //
-      // "projects/yadavaja-sandbox/locations/us-central1/lakes/whaite-gcs2bq-test/zones/whaite-zone-4/assets/whaite-dataplex-target-asset";
-      //      DataplexAssetUtil dataplexAssetUtil = new DataplexAssetUtil(assetName);
-      //      String datasetName = dataplexAssetUtil.getDatasetName();
-      //      System.out.println("============================================");
-      //      System.out.println(datasetName);
-      //      System.out.println("============================================");
       this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
       this.sqlContext = new SQLContext(spark);
       checkInput();
