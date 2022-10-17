@@ -13,28 +13,20 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates.util;
+package com.google.cloud.dataproc.templates.util.Dataplex;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpResponse;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.JsonObjectParser;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.auth.http.HttpCredentialsAdapter;
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonArray;
 import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonElement;
 import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonObject;
-import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonParser;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -42,9 +34,9 @@ import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
 
-public class DataplexUtil {
+public class DataplexEntityUtil {
 
-  public String entity;
+  public String entityName;
   private JsonObject entitySchema;
 
   private static String GET_ENTITY_METHOD_URL = "https://dataplex.googleapis.com/v1/%s?view=SCHEMA";
@@ -55,7 +47,7 @@ public class DataplexUtil {
 
   private static String ASSET_ENTITIES_PROP_KEY = "entities";
   private static String ASSET_ENTITY_NAME_PROP_KEY = "name";
-  private static String ENTITY_BASE_PATH_PROP_KEY = "dataPath";
+  private static String ENTITY_DATA_PATH_PROP_KEY = "dataPath";
   private static String ENTITY_FORMAT_PROP_KEY = "format";
   private static String ENTITY_SCHEMA_PROP_KEY = "schema";
   private static String ENTITY_SCHEMA_PARTITION_FIELDS_PROP_KEY = "partitionFields";
@@ -82,36 +74,18 @@ public class DataplexUtil {
   private static String DATAPLEX_BINARY_DATA_TYPE_NAME = "BINARY";
   private static String DATAPLEX_TIMESTAMP_DATA_TYPE_NAME = "TIMESTAMP";
   private static String DATAPLEX_DATE_DATA_TYPE_NAME = "DATE";
+  private static String TABLE_NAME_REGEX =
+      "projects\\/([a-zA-Z0-9\\-]+)\\/datasets\\/([a-zA-z0-9_]+)\\/tables\\/([-\\w\\$ ]+)";
 
   /**
-   * Constructs a new DataplexUtils based on a Dataplex entity name
+   * Constructs a new DataplexEntityUtil based on a Dataplex entityName
    *
-   * @param entity - the name of the Dataplex entity. Should have the format:
+   * @param entityName - the name of the Dataplex entity. Should have the format:
    *     projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1}
    */
-  public DataplexUtil(String entity) throws IOException {
-    this.entity = entity;
+  public DataplexEntityUtil(String entityName) throws IOException {
+    this.entityName = entityName;
     this.entitySchema = getEntitySchema();
-  }
-
-  /**
-   * Execute request on Google API
-   *
-   * @param url of the API method
-   * @return request response
-   * @throws IOException when request fails
-   */
-  private JsonObject executeRequest(String url) throws IOException {
-    GoogleCredentials googleCredentials = GoogleCredentials.getApplicationDefault();
-    HttpCredentialsAdapter credentialsAdapter = new HttpCredentialsAdapter(googleCredentials);
-    HttpRequestFactory requestFactory =
-        new NetHttpTransport().createRequestFactory(credentialsAdapter);
-    HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(url));
-    JsonObjectParser parser = new JsonObjectParser(GsonFactory.getDefaultInstance());
-    request.setParser(parser);
-    HttpResponse response = request.execute();
-    String resp = response.parseAsString();
-    return JsonParser.parseString(resp).getAsJsonObject();
   }
 
   /**
@@ -121,8 +95,8 @@ public class DataplexUtil {
    * @throws IOException when request on Dataplex API fails
    */
   private JsonObject getEntitySchema() throws IOException {
-    String url = String.format(GET_ENTITY_METHOD_URL, this.entity);
-    return executeRequest(url);
+    String url = String.format(GET_ENTITY_METHOD_URL, this.entityName);
+    return DataplexAPIUtil.executeRequest(url);
   }
 
   /**
@@ -133,22 +107,22 @@ public class DataplexUtil {
    * @throws IOException when request on Dataplex API fails
    */
   private JsonObject getEntityPartitions(String pageToken) throws IOException {
-    String url = String.format(GET_ENTITY_PARTITIONS_METHOD_URL, this.entity);
+    String url = String.format(GET_ENTITY_PARTITIONS_METHOD_URL, this.entityName);
     if (pageToken != null) {
       url += "pageToken=" + pageToken;
     }
-    return executeRequest(url);
+    return DataplexAPIUtil.executeRequest(url);
   }
 
   /**
    * Execute request on Google API to fetch schema of a Dataplex entity and parses out base path of
    * entity data
    *
-   * @return source data base path
+   * @return source data's base path
    * @throws IOException when request on Dataplex API fails
    */
   public String getBasePathEntityData() {
-    return this.entitySchema.get(ENTITY_BASE_PATH_PROP_KEY).getAsString();
+    return this.entitySchema.get(ENTITY_DATA_PATH_PROP_KEY).getAsString();
   }
 
   /**
@@ -192,7 +166,7 @@ public class DataplexUtil {
     JsonObject entitySchemaBody = this.entitySchema.getAsJsonObject(ENTITY_SCHEMA_PROP_KEY);
 
     if (!entitySchemaBody.has(ENTITY_SCHEMA_PARTITION_FIELDS_PROP_KEY)) {
-      throw new DataplexUtilNoPartitionError();
+      throw new DataplexEntityUtilNoPartitionError();
     }
 
     JsonArray partitionKeys =
@@ -382,8 +356,16 @@ public class DataplexUtil {
     return inputDS.selectExpr(selectExpresions.toArray(new String[0]));
   }
 
-  public class DataplexUtilNoPartitionError extends RuntimeException {
-    public DataplexUtilNoPartitionError() {
+  public String getTableFullName() {
+    String dataPath = this.entitySchema.get(ENTITY_DATA_PATH_PROP_KEY).getAsString();
+    Pattern p = Pattern.compile(TABLE_NAME_REGEX);
+    Matcher m = p.matcher(dataPath);
+    m.find();
+    return String.format(BQ_TABLE_NAME_FORMAT, m.group(1), m.group(2), m.group(3));
+  }
+
+  public class DataplexEntityUtilNoPartitionError extends RuntimeException {
+    public DataplexEntityUtilNoPartitionError() {
       super("The entity has no partitions");
     }
   }
