@@ -65,8 +65,7 @@ public class JDBCToBigQuery implements BaseTemplate {
     tempQuery = getProperties().getProperty(JDBC_BQ_TEMP_QUERY);
   }
 
-  public String getSQL(String sqlQuery)
-  {
+  public String getSQL(String sqlQuery) {
     if (sqlQuery.contains("oracle")) {
       return "(" + sqlQuery + ")";
     } else {
