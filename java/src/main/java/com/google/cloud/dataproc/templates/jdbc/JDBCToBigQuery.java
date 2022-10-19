@@ -54,7 +54,7 @@ public class JDBCToBigQuery implements BaseTemplate {
     temporaryGcsBucket = getProperties().getProperty(JDBC_TO_BQ_TEMP_GCS_BUCKET);
     jdbcURL = getProperties().getProperty(JDBC_TO_BQ_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME);
-    jdbcSQL = getSQL(getProperties().getProperty(JDBC_TO_BQ_SQL));
+    jdbcSQL = getSQL(getProperties().getProperty(JDBC_TO_BQ_JDBC_URL),getProperties().getProperty(JDBC_TO_BQ_SQL));
     jdbcSQLPartitionColumn = getProperties().getProperty(JDBC_TO_BQ_SQL_PARTITION_COLUMN);
     jdbcSQLLowerBound = getProperties().getProperty(JDBC_TO_BQ_SQL_LOWER_BOUND);
     jdbcSQLUpperBound = getProperties().getProperty(JDBC_TO_BQ_SQL_UPPER_BOUND);
@@ -65,8 +65,8 @@ public class JDBCToBigQuery implements BaseTemplate {
     tempQuery = getProperties().getProperty(JDBC_BQ_TEMP_QUERY);
   }
 
-  public String getSQL(String sqlQuery) {
-    if (sqlQuery.contains("oracle")) {
+  public String getSQL(String jdbcURL, String sqlQuery) {
+    if (jdbcURL.contains("oracle")) {
       return "(" + sqlQuery + ")";
     } else {
       return "(" + sqlQuery + ") as a";
