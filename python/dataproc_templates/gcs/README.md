@@ -64,6 +64,22 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --gcs.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
 
+## Hardening Statistics 
+
+| File Format | Data Size (in TB) | Total Time Taken |
+|-------------|-------------------|------------------|
+| CSV         | 1                 | 13 min 36 sec    |
+| Parquet     | 1                 | 9 min 2 sec      |
+| Avro        | 1                 | 9 min 27 sec     |
+| JSON        | 1                 | 16 min 25 sec    |
+| CSV         | 3                 | 26 min 53 sec    |
+| Avro        | 3                 | 18 min 33 sec    |
+| Parquet     | 3                 | 17 min 9 sec     |
+| JSON        | 3                 | 31 min 9 sec     |
+| CSV         | 5                 | 41 min 9 sec     |
+
+*All the above mentioned statistics are subject to resource availibility inside GCP Project, which may vary depending on resource usage.
+
 # GCS To BigTable
 
 Template for reading files from Google Cloud Storage and writing them to a BigTable table. It supports reading JSON, CSV, Parquet and Avro formats.
