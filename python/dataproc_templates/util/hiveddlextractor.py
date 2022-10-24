@@ -54,9 +54,9 @@ if __name__ == "__main__":
     """
     System arguments passed through the commandline when running script
     Structure:
-        python hiveddldumper.py host_ip project dbinput hdfs_path gcs_working_directory
+        python hiveddlextractor.py host_ip project dbinput hdfs_path gcs_working_directory
     Sample:
-        python hiveddldumper.py 10.128.0.39 mbawa-sandbox employee /user/anuyogam/ hivetobqddl
+        python hiveddlextractor.py 10.128.0.39 mbawa-sandbox employee /user/anuyogam/ hivetobqddl
     """
 
     host_ip = sys.argv[1]
