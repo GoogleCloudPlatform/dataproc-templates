@@ -1,5 +1,4 @@
 ## Dataproc Templates (Notebooks)
-Please refer to the [Dataproc Templates (Notebooks) README](/notebooks/README.md) for more information
 
 * [HiveToBigQuery](/notebooks/hive2bq/README.md) (blogpost [link](https://medium.com/google-cloud/hive-to-bigquery-move-data-efficiently-using-gcp-dataproc-serverless-ee30d35aaf03))
 * [SQLServerToPostgres](/notebooks/mssql2postgresql/README.md)
