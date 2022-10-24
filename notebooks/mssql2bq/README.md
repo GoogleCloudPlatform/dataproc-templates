@@ -7,7 +7,7 @@ The notebook contains step by step process for a downtime based migration.
 
 Refer [Setup Vertex AI - PySpark](../generic_notebook/README.md) to setup new Jupyter notebook in vertexAI.
 Once the setup is done navigate to `/notebooks/mssql2bq` folder and open
-[mssql-to-biquery-notebook](./mssql-to-bigquery-notebook.ipynb).
+[mssql-to-bigquery-notebook](./mssql-to-bigquery-notebook.ipynb).
 
 ### Overview
 
