@@ -36,12 +36,11 @@ public class ReadSchemaUtil {
 
     Storage storage = StorageOptions.getDefaultInstance().getService();
 
-
       Blob blob = storage.get(bucket, objectUrl);
       String schemaSource = new String(blob.getContent());
       schema = (StructType) DataType.fromJson(schemaSource);
 
-
     return schema;
   }
+
 }

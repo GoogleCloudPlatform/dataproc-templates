@@ -70,17 +70,15 @@ public class KafkaReader {
         break;
 
       case "json":
-        LOGGER.debug("Processing JSON Message");
-        processedData = processJsonMessage(inputData);
+        StructType schema = ReadSchemaUtil.readSchema(kafkaSchemaUrl);
+        processedData = processJsonMessage(inputData,schema);
         break;
     }
 
     return processedData;
   }
 
-  private Dataset<Row> processJsonMessage(Dataset<Row> df) {
-
-    StructType schema = ReadSchemaUtil.readSchema(kafkaSchemaUrl);
+  public Dataset<Row> processJsonMessage(Dataset<Row> df, StructType schema) {
 
     Dataset<Row> processedDF =
         df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
@@ -92,7 +90,7 @@ public class KafkaReader {
     return processedDF;
   }
 
-  private Dataset<Row> processBytesMessage(Dataset<Row> df) {
+  public Dataset<Row> processBytesMessage(Dataset<Row> df) {
 
     Dataset<Row> processedDF =
         df.withColumn("key", functions.col("key").cast(DataTypes.StringType))
