@@ -122,4 +122,4 @@ Refer to this [documentation](https://cloud.google.com/dataproc-serverless/docs/
 
 **Vertex AI usage**:
 
-Follow [Dataproc Templates (Jupyter Notebooks) README](./notebooks/README.md) to submit Dataproc Templates from a Vertex AI notebook.  
+Follow [Dataproc Templates (Jupyter Notebooks) README](../notebooks/README.md) to submit Dataproc Templates from a Vertex AI notebook.  

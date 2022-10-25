@@ -72,7 +72,7 @@ bin/start.sh \
 -- --template CASSANDRATOGCS \
 --templateProperty cassandratogcs.input.keyspace=testkeyspace \
 --templateProperty cassandratogcs.input.table=testtable \
---templateProperty cassandratogcs.input.host=<cassandra-host-ip> \
+--templateProperty cassandratogcs.input.host=10.128.2.62 \
 --templateProperty cassandratogcs.output.format=csv \
 --templateProperty cassandratogcs.output.savemode=append \
 --templateProperty cassandratogcs.output.path=gs://myproject/cassandraOutput 
@@ -86,6 +86,54 @@ Note-: ```cassandratogcs.input.catalog.name=<catalog-name>``` is used to provide
 To query using default catalog name -:
 ```
 --templateProperty cassandratogcs.input.query="select * from casscon.<keyspace-name>.<table-name>"
+```
+You can replace the ```casscon``` with your catalog name if it is passed. This is an important step to query the data from Cassandra. Additional details on usage of query can be found in this [link](https://github.com/datastax/spark-cassandra-connector/blob/master/doc/14_data_frames.md).
+
+## Executing Cassandra to Bigquery Template
+### General Execution
+
+```
+export REGION=<gcp-region>
+export GCP_PROJECT=<gcp-project-name>
+export GCS_STAGING_LOCATION=<gcs-staging-location>
+export JOB_TYPE=SERVERLESS 
+export SUBNET=<dataproc-serverless-subnet>
+
+bin/start.sh \
+-- --template CASSANDRATOBQ \
+--templateProperty cassandratobq.input.keyspace=<keyspace-name> \
+--templateProperty cassandratobq.input.table=<input-table-name> \
+--templateProperty cassandratobq.input.host=<cassandra-host-ip> \
+--templateProperty cassandratobq.bigquery.location=<dataset>.<table-name> \
+--templateProperty cassandratobq.output.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
+--templateProperty cassandratobq.temp.gcs.location=<gcs-bucket-name> 
+```
+### Example Submission:
+```
+export REGION=us-central1
+export GCP_PROJECT=myproject
+export GCS_STAGING_LOCATION=gs://staging
+export JOB_TYPE=SERVERLESS 
+export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
+
+bin/start.sh \
+-- --template CASSANDRATOBQ \
+--templateProperty cassandratobq.input.keyspace=keyspace \
+--templateProperty cassandratobq.input.table=table \
+--templateProperty cassandratobq.input.host=10.128.0.62 \
+--templateProperty cassandratobq.bigquery.location=demodataset.demotable \
+--templateProperty cassandratobq.output.mode=Append \
+--templateProperty cassandratobq.temp.gcs.location=tempbucket
+```
+One can add additional property to submit query. Please see format below-:
+```
+--templateProperty cassandratobq.input.catalog.name=<catalog-name>
+--templateProperty cassandratobq.input.query="select * from <catalog-name>.<keyspace-name>.<table-name>"
+```
+Note-: ```cassandratobq.input.catalog.name=<catalog-name>``` is used to provide a name to the connection with Cassandra. This name is used for querying purpose and has a default value of ```casscon``` if nothing is passed.
+To query using default catalog name -:
+```
+--templateProperty cassandratobq.input.query="select * from casscon.employee.salaries"
 ```
 You can replace the ```casscon``` with your catalog name if it is passed. This is an important step to query the data from Cassandra. Additional details on usage of query can be found in this [link](https://github.com/datastax/spark-cassandra-connector/blob/master/doc/14_data_frames.md).
 
