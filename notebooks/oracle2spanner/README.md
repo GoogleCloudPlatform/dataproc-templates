@@ -39,11 +39,12 @@ Below configurations are required before proceeding further.
 * `ORACLE_USERNAME` : ORACLE username
 * `ORACLE_PASSWORD` : ORACLE password
 * `ORACLE_DATABASE` : name of database that you want to migrate
-* `ORACLETABLE_LIST` : list of tables you want to migrate eg: ['table1','table2'] else provide an empty list for migration whole database eg : []
+* `ORACLE_TABLE_LIST` : list of tables you want to migrate eg: ['table1','table2'] else provide an empty list for migration whole database eg : []
+* `SPANNER_OUTPUT_MODE`: <Append | Overwrite>
 * `SPANNER_INSTANCE` : cloud spanner instance name
 * `SPANNER_DATABASE` : cloud spanner database name
 * `SPANNER_TABLE_PRIMARY_KEYS` : provide dictionary of format {"table_name":"primary_key"} for tables which do not have primary key in Oracle
-* `SPANNER_OUTPUT_MODE`: <Append | Overwrite>
+
 
 ### Required JAR files
 
