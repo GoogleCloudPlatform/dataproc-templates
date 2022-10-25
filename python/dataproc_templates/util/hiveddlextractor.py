@@ -15,8 +15,12 @@
 # limitations under the License.
 #
 
+"""
+A simple example demonstrating Spark SQL Hive integration.
+Run with:
+  ./bin/spark-submit examples/src/main/python/sql/hive.py
+"""
 
-# $example on:spark_hive$
 from os.path import abspath
 
 from google.cloud import bigquery
@@ -27,8 +31,15 @@ from pyspark.sql import Row
 import subprocess
 import sys
 
-# $example off:spark_hive$
+from google.cloud import storage
 
+def WriteToCloud ( ddls,bucket,path ):
+    print(path)
+    client = storage.Client()
+    bucket = client.get_bucket( bucket )
+    blob = bucket.blob( path )
+    blob.upload_from_string( ddls ) 
+  
 
 if __name__ == "__main__":
     """
@@ -36,24 +47,27 @@ if __name__ == "__main__":
     Dataproc template allowing the extraction of Hive DDLs for import to BigQuery
 
     """
-
-    # $example on:spark_hive$
+    
     # warehouse_location points to the default location for managed databases and tables
     warehouse_location = abspath('spark-warehouse')
-    
+
     """
     System arguments passed through the commandline when running script
     Structure:
-        python hiveddlextractor.py host_ip project dbinput hdfs_path gcs_working_directory
+        python hiveddldumper.py host_ip project dbinput hdfs_path gcs_working_directory
     Sample:
-        python hiveddlextractor.py 10.128.0.39 mbawa-sandbox employee /user/anuyogam/ hivetobqddl
+        python hiveddldumper.py 10.128.0.39 mbawa-sandbox employee /user/anuyogam/ hivetobqddl
     """
+
     host_ip = sys.argv[1]
     project = sys.argv[2]
     dbinput= sys.argv[3]
     hdfs_path = sys.argv[4]
     gcs_working_directory = sys.argv[5]
-    gcs_target_path="gs://"+gcs_working_directory+"/SparkDDL"
+    gcs_target_path="SparkDDL"
+    gcs_hdfs_staging_path="gs://hivetobqddl/RawZone/"
+    bigquery_dataset="hivetobqtesting"
+    bigquery_table="metadata"
     
     print("Connecting to Metastore: "+"thrift://"+host_ip+":9083")
     spark = SparkSession \
@@ -61,50 +75,71 @@ if __name__ == "__main__":
         .appName("hive-ddl-dumps") \
         .config("hive.metastore.uris", "thrift://"+host_ip+":9083") \
         .config("spark.sql.warehouse.dir", warehouse_location) \
+        .config('spark.jars', 'gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar')\
         .enableHiveSupport() \
         .getOrCreate()
 
     print("Connecting to Hive Database: "+dbinput)
-    # dbs="hive2bq"
-
     # databaseExists() checks if there is a database in the hive cluster that matches the system argument
     dbCheck = spark.catalog._jcatalog.databaseExists(dbinput)
     # dbCheck serves as a boolean. if true then the script will continue
+    ddls = ""
     if dbCheck:
-        f = open("hivedumps_{}.ddl".format(db.name), "w")
-        tables = spark.catalog.listTables(db.name)
-        # the for loop iterates through all the tables within the database
+        tables = spark.catalog.listTables(dbinput)
+        metadata=[]
+        columns=['database','table','partition_string','format','hdfs_path','gcs_raw_zone_path']
         for t in tables:
+            """ 
+            The for loop iterates through all the tables within the database 
+            """
             # default.emp_part
-            ACID_Check = spark.sql(
-                "DESCRIBE FORMATTED {}.{}".format(db.name, t.name))
-            print("Processing Table: "+db.name+"."+t.name)
-            if ACID_Check.filter(ACID_Check.data_type.contains('transactional=true')).head(1):
-                print("Acid table "+db.name+"."+t.name +
-                    " not processed - ORC acid file has schema in them")
-            elif ACID_Check.filter(ACID_Check.data_type.contains('SequenceFileInputFormat')).head(1):
-                DDL = spark.sql(
-                    "SHOW CREATE TABLE {}.{} AS SERDE".format(db.name, t.name))
-                query = ("create schema if not exists")
-                f.write(DDL.first()[0].split(")")[0]+");\n")
+            print("Extracting DDL for the Hive Table: "+dbinput+"."+t.name)
+            show_create = spark.sql("SHOW CREATE TABLE {}.{}".format(dbinput, t.name))
+            ddl_table = spark.sql(
+                "DESCRIBE FORMATTED {}.{}".format(dbinput, t.name))
+            show_extended=spark.sql("show table extended from `"+dbinput+"` like '"+t.name+"'")
+            ddl_table.registerTempTable("metadata")
+            show_extended.registerTempTable("show_extended")
+            info=spark.sql("select information from show_extended")
+            partition_check=show_create.filter(show_create["createtab_stmt"].contains("PARTITIONED")).head(1)
+            partition_string=""
+            if partition_check:
+                partition=show_create.first()[0].split("PARTITIONED BY (")[1].split(")")[0]
+                partitions=partition.split(",")
+                for part in partitions:
+                    partition_type=spark.sql("select data_type from metadata where col_name="+"'"+part.strip()+"'").first()[0]
+                    partition_string=partition_string+" "+part+" "+partition_type+","
+                partition_string=partition_string[:-1]
+                partition_by="PARTITIONED BY ("+partition_string+")\n"
+                first_part=show_create.first()[0].split(partitions[0])[0][:-5].split(t.name+"`")[1:]
+                first_part="".join(first_part)+")\n"
             else:
-                    print("Extracting DDL for the Hive Table: "+db.name+"."+t.name)
-                    DDL = spark.sql(
-                        "SHOW CREATE TABLE {}.{}".format(db.name, t.name))
-                    query = ("create schema if not exists")
-                    initial="CREATE TABLE IF NOT EXISTS "+t.name+" ("
-                    f.write(initial+DDL.first()[0].split("(")[1].split(")")[0]+");\n")
-        f.write("\n") 
-        f.close()
+                partition_by=")\n"
+                first_part=show_create.first()[0].split(t.name)[1:]
+                first_part=show_create.first()[0].split(')')[0].split(t.name+"`")[1:]
+                first_part="".join(first_part)+")\n"
+            db_name=spark.sql("select data_type from metadata where col_name='Database'").first()[0]
+            table_name=spark.sql("select data_type from metadata where col_name='Table'").first()[0]
+            #hdfs_file_path=spark.sql("select data_type from metadata where col_name='Location'").first()[0]
+            #hdfs_file_path=show_create.first()[0].split("LOCATION")[1].split("TBLPROPERTIES")[0]
+            hdfs_file_path=info.first()[0].split("Location: ")[1].split("\n")[0]
+            format=show_create.first()[0].split("USING ")[1].split("\n")[0]
+            #partition and format
+            initial="CREATE TABLE IF NOT EXISTS "+t.name
+            storage_format=format
+            print(hdfs_file_path)
+            if dbinput != 'default':
+                location_path=gcs_hdfs_staging_path+db_name+hdfs_file_path.split(db_name)[1]
+            else:
+                location_path=gcs_hdfs_staging_path+db_name+hdfs_file_path.split('warehouse')[1]
+            metadata.append([db_name,table_name,partition_string,storage_format,hdfs_file_path,location_path])
+            ddl = initial+first_part+partition_by+";\n"
+            ddls = ddls + ddl
+        rdd=spark.sparkContext.parallelize(metadata)
+        metadata_df=rdd.toDF(columns)
+        metadata_df.write.format('bigquery') .option('table', bigquery_dataset+'.'+bigquery_table) .option("temporaryGcsBucket",gcs_working_directory) .mode('append') .save()
     
-    # the follwing will print confirmation that the script ran correctly(or not)
-    print("Copying Local Dump File to HDFS")
-    subprocess.call(
-        ['hadoop fs -mkdir -p hdfs://'+hdfs_path], shell=True)
-    subprocess.call(
-        ['hadoop fs -copyFromLocal -f hivedumps_'+dbinput+'.ddl hdfs://'+hdfs_path], shell=True)
-    df = spark.read.text("hdfs://"+hdfs_path+"hivedumps_"+dbinput+".ddl")
-    print("Writing the DDL extracted files to: "+gcs_target_path)
-    df.write.format("text").save(
-        gcs_target_path)
+    # function that writes the ddls string to GCS
+    WriteToCloud(ddls,gcs_working_directory,gcs_target_path)
+
     spark.stop()
