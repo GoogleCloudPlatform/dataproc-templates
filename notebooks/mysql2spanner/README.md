@@ -21,7 +21,8 @@ This notebook is built on top of:
 2) Can automatically generates table schema in Cloud Spanner, corresponding to each table.
 3) Divides the migration into multiple batches and automatically computes metadata.
 4) Parallely migrates mutiple MySQL tables to Cloud Spanner.
-5) Simple, easy to use and customizable.
+5) Automatically partitioned reading of large tables (1 Million+ rows) and parallely import data, speeding up the data movemment.
+6) Simple, easy to use and customizable.
 
 ### Requirements
 
