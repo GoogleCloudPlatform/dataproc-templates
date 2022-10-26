@@ -41,7 +41,7 @@ def WriteToCloud ( ddls,bucket,path ):
     blob.upload_from_string( ddls ) 
   
 
-if __name__ == "__main__":
+def HiveDDLExtractor(self):
     """
     
     Dataproc template allowing the extraction of Hive DDLs for import to BigQuery
@@ -120,10 +120,9 @@ if __name__ == "__main__":
                 first_part="".join(first_part)+")\n"
             db_name=spark.sql("select data_type from metadata where col_name='Database'").first()[0]
             table_name=spark.sql("select data_type from metadata where col_name='Table'").first()[0]
-            #hdfs_file_path=spark.sql("select data_type from metadata where col_name='Location'").first()[0]
-            #hdfs_file_path=show_create.first()[0].split("LOCATION")[1].split("TBLPROPERTIES")[0]
             hdfs_file_path=info.first()[0].split("Location: ")[1].split("\n")[0]
             format=show_create.first()[0].split("USING ")[1].split("\n")[0]
+            
             #partition and format
             initial="CREATE TABLE IF NOT EXISTS "+t.name
             storage_format=format
