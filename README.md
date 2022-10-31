@@ -50,20 +50,20 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for 
 * [HbaseToGCS](/python/dataproc_templates/hbase)
 * [MongoToGCS](/python/dataproc_templates/mongo) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-mongodb-to-gcs-buckets-using-dataproc-serverless-64830fb15b51))
 * [SnowflakeToGCS](/python/dataproc_templates/snowflake)
-* [JDBCToJDBC](/python/dataproc_templates/jdbc)
-* [JDBCToGCS](/python/dataproc_templates/jdbc)
+* [JDBCToJDBC](/python/dataproc_templates/jdbc) (blogpost [link](https://medium.com/google-cloud/migrating-data-from-one-databases-into-another-via-jdbc-using-dataproc-serverless-c5336c409b18))
+* [JDBCToGCS](/python/dataproc_templates/jdbc) (blogpost [link](https://medium.com/google-cloud/importing-data-from-databases-into-gcs-via-jdbc-using-dataproc-serverless-f330cb0160f0))
 * [JDBCToBigQuery](/python/dataproc_templates/jdbc) (blogpost [link](https://medium.com/@sjlva/python-fast-export-large-database-tables-using-gcp-serverless-dataproc-bfe77a132485))
 * [RedshiftToGCS](/python/dataproc_templates/redshift) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
 * [TextToBigQuery](/python/dataproc_templates/gcs) (blogpost [link](https://medium.com/google-cloud/dataproc-serverless-pyspark-template-for-ingesting-compressed-text-files-to-bigquery-c6eab8fb6bc9))
   
 ## Dataproc Templates (Notebooks)
-Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more information
+Please refer to the [Dataproc Templates (Notebooks) README](/notebooks/README.md) for more information
 
-* [HiveToBigQuery](/notebooks/hive2bq) (blogpost [link](https://medium.com/google-cloud/hive-to-bigquery-move-data-efficiently-using-gcp-dataproc-serverless-ee30d35aaf03))
-* [SQLServerToPostgres](/notebooks/mssql2postgresql)
-* [MySQLToSpanner](/notebooks/mysql2spanner) (blogpost [link](https://medium.com/google-cloud/mysql-to-cloud-spanner-migrate-mysql-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-ad7d2ed8a317))
-* [OracleToBigQuery](/notebooks/oracle2bq)
-* [OracleToSpanner](/notebooks/oracle2spanner) (blogpost [Link](https://medium.com/@surjitsh/oracle-to-cloud-spanner-migrate-oracle-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-49152ce7f4e8))
+* [HiveToBigQuery](/notebooks/hive2bq/README.md) (blogpost [link](https://medium.com/google-cloud/hive-to-bigquery-move-data-efficiently-using-gcp-dataproc-serverless-ee30d35aaf03))
+* [SQLServerToPostgres](/notebooks/mssql2postgresql/README.md)
+* [MySQLToSpanner](/notebooks/mysql2spanner/README.md) (blogpost [link](https://medium.com/google-cloud/mysql-to-cloud-spanner-migrate-mysql-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-ad7d2ed8a317))
+* [OracleToBigQuery](/notebooks/oracle2bq/README.md)
+* [OracleToSpanner](/notebooks/oracle2spanner/README.md) (blogpost [Link](https://medium.com/@surjitsh/oracle-to-cloud-spanner-migrate-oracle-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-49152ce7f4e8))
 
 
 
@@ -89,8 +89,8 @@ Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more
 3) Executing a Template 
 
     Follow the specific guide, depending on your use case:
-   - [Dataproc Templates (Java - Spark)](java)
-   - [Dataproc Templates (Python - PySpark)](python)
+   - [Dataproc Templates (Java - Spark)](java/README.md)
+   - [Dataproc Templates (Python - PySpark)](python/README.md)
 
 ## Flow diagram
 
