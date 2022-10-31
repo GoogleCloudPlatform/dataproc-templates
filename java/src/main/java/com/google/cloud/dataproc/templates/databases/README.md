@@ -9,7 +9,7 @@ export SUBNET=<subnet>
 GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 bin/start.sh \
 -- --template SPANNERTOGCS \
---templateProperty project.id=$GCP_PROJECT \
+--templateProperty project.id=<gcp-project-id> \
 --templateProperty spanner.gcs.input.spanner.id=<spanner-id> \
 --templateProperty spanner.gcs.input.database.id=<database-id> \
 --templateProperty spanner.gcs.input.table.id=<table-id> \
@@ -46,13 +46,14 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 
 ```
 export REGION=<gcp-region>
-export GCP_PROJECT=<gcp-project-name>
+export GCP_PROJECT=<gcp-project-id>
 export GCS_STAGING_LOCATION=<gcs-staging-location>
 export JOB_TYPE=SERVERLESS 
 export SUBNET=<dataproc-serverless-subnet>
 
 bin/start.sh \
 -- --template CASSANDRATOGCS \
+--templateProperty project.id=<gcp-project-id> \
 --templateProperty cassandratogcs.input.keyspace=<keyspace-name> \
 --templateProperty cassandratogcs.input.table=<input-table-name> \
 --templateProperty cassandratogcs.input.host=<cassandra-host-ip> \
@@ -70,6 +71,7 @@ export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
 
 bin/start.sh \
 -- --template CASSANDRATOGCS \
+--templateProperty project.id=myproject \
 --templateProperty cassandratogcs.input.keyspace=testkeyspace \
 --templateProperty cassandratogcs.input.table=testtable \
 --templateProperty cassandratogcs.input.host=10.128.2.62 \
@@ -94,13 +96,14 @@ You can replace the ```casscon``` with your catalog name if it is passed. This i
 
 ```
 export REGION=<gcp-region>
-export GCP_PROJECT=<gcp-project-name>
+export GCP_PROJECT=<gcp-project-id>
 export GCS_STAGING_LOCATION=<gcs-staging-location>
 export JOB_TYPE=SERVERLESS 
 export SUBNET=<dataproc-serverless-subnet>
 
 bin/start.sh \
 -- --template CASSANDRATOBQ \
+--templateProperty project.id=<gcp-project-id> \
 --templateProperty cassandratobq.input.keyspace=<keyspace-name> \
 --templateProperty cassandratobq.input.table=<input-table-name> \
 --templateProperty cassandratobq.input.host=<cassandra-host-ip> \
@@ -118,6 +121,7 @@ export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
 
 bin/start.sh \
 -- --template CASSANDRATOBQ \
+--templateProperty project.id=myproject \
 --templateProperty cassandratobq.input.keyspace=keyspace \
 --templateProperty cassandratobq.input.table=table \
 --templateProperty cassandratobq.input.host=10.128.0.62 \
