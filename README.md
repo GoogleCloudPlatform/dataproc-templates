@@ -57,13 +57,13 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for 
 * [TextToBigQuery](/python/dataproc_templates/gcs) (blogpost [link](https://medium.com/google-cloud/dataproc-serverless-pyspark-template-for-ingesting-compressed-text-files-to-bigquery-c6eab8fb6bc9))
   
 ## Dataproc Templates (Notebooks)
-Please refer to the [Dataproc Templates (Notebooks) README](/notebooks/README.md) for more information
+Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more information
 
-* [HiveToBigQuery](/notebooks/hive2bq/README.md) (blogpost [link](https://medium.com/google-cloud/hive-to-bigquery-move-data-efficiently-using-gcp-dataproc-serverless-ee30d35aaf03))
-* [SQLServerToPostgres](/notebooks/mssql2postgresql/README.md)
-* [MySQLToSpanner](/notebooks/mysql2spanner/README.md) (blogpost [link](https://medium.com/google-cloud/mysql-to-cloud-spanner-migrate-mysql-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-ad7d2ed8a317))
-* [OracleToBigQuery](/notebooks/oracle2bq/README.md)
-* [OracleToSpanner](/notebooks/oracle2spanner/README.md) (blogpost [Link](https://medium.com/@surjitsh/oracle-to-cloud-spanner-migrate-oracle-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-49152ce7f4e8))
+* [HiveToBigQuery](/notebooks/hive2bq) (blogpost [link](https://medium.com/google-cloud/hive-to-bigquery-move-data-efficiently-using-gcp-dataproc-serverless-ee30d35aaf03))
+* [SQLServerToPostgres](/notebooks/mssql2postgresql)
+* [MySQLToSpanner](/notebooks/mysql2spanner) (blogpost [link](https://medium.com/google-cloud/mysql-to-cloud-spanner-migrate-mysql-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-ad7d2ed8a317))
+* [OracleToBigQuery](/notebooks/oracle2bq)
+* [OracleToSpanner](/notebooks/oracle2spanner) (blogpost [Link](https://medium.com/@surjitsh/oracle-to-cloud-spanner-migrate-oracle-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-49152ce7f4e8))
 
 
 
@@ -89,8 +89,8 @@ Please refer to the [Dataproc Templates (Notebooks) README](/notebooks/README.md
 3) Executing a Template 
 
     Follow the specific guide, depending on your use case:
-   - [Dataproc Templates (Java - Spark)](java/README.md)
-   - [Dataproc Templates (Python - PySpark)](python/README.md)
+   - [Dataproc Templates (Java - Spark)](java)
+   - [Dataproc Templates (Python - PySpark)](python)
 
 ## Flow diagram
 
