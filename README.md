@@ -13,10 +13,10 @@ Google is providing this collection of pre-implemented Dataproc templates as a r
 
 ## Dataproc Templates (Java - Spark)
 Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more information
-* [HiveToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/hive)
-* [CassandraToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases)
-* [CassandraToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/databases)
-* [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive) (blogpost [link](https://medium.com/@nehamodgil_21070/processing-and-migrating-large-data-tables-from-hive-to-gcs-using-java-and-dataproc-serverless-b6dbbae61c5d))
+* [HiveToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/hive#1-hive-to-bigquery)
+* [CassandraToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-gcs-template)
+* [CassandraToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-bigquery-template)
+* [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive#2-hive-to-gcs) (blogpost [link](https://medium.com/@nehamodgil_21070/processing-and-migrating-large-data-tables-from-hive-to-gcs-using-java-and-dataproc-serverless-b6dbbae61c5d))
 * [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub)
 * [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs)
 * [GCSToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/gcs)
