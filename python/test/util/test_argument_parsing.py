@@ -19,7 +19,7 @@ from typing import List
 import pytest
 
 from dataproc_templates import TemplateName
-from dataproc_templates.util.argument_parsing import get_template_name
+from dataproc_templates.util.argument_parsing import get_template_name, get_log_level
 
 
 def test_get_valid_template_names():
@@ -32,9 +32,24 @@ def test_get_valid_template_names():
         )
         assert template_name == parsed_template_name.value
 
-
 def test_get_invalid_template_name():
     """Tests that an invalid template name raises an error"""
     template_name = "GCSTOSMALLQUERY"
     with pytest.raises(SystemExit):
         get_template_name(["--template=" + template_name])
+
+def test_get_valid_log_level():
+    """Tests valid log levels"""
+    log_levels: List[str] = ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"]
+
+    for log_level in log_levels:
+        parsed_log_level: str = get_log_level(
+            args=["--log_level",  log_level]
+        )
+        assert log_level == parsed_log_level
+
+def test_get_invalid_log_level():
+    """Tests that an invalid log level raises an error"""
+    log_level = "AWESOME_LOG_LEVEL"
+    with pytest.raises(SystemExit):
+        get_template_name(["--log_level=" + log_level])

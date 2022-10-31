@@ -61,7 +61,22 @@ A shell script is provided to:
 - Build the python package
 - Set Dataproc parameters based on environment variables
 - Submit the desired template to Dataproc with the provided template parameters
- 
+
+<hr>
+
+When submitting, there are 3 types of properties/parameters for the user to provide.  
+- **Spark properties**: Refer to this [documentation](https://cloud.google.com/dataproc-serverless/docs/concepts/properties) to see the available spark properties.
+- **Each template's specific parameters**: refer to each template's README.
+- **Common arguments**: --template_name and --log_level
+  - The **--log_level** parameter is optional, it defaults to INFO.
+    - Possible choices are the Spark log levels: ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"].
+
+
+
+
+
+<hr>
+
 **bin/start.sh usage**:
 
 ```
@@ -79,6 +94,7 @@ export METASTORE_SERVICE=projects/{projectId}/locations/{regionId}/services/{ser
 # Submit to Dataproc passing template parameters
 ./bin/start.sh [--properties=<spark.something.key>=<value>] \
                -- --template=TEMPLATENAME \
+                  --log_level=INFO \
                   --my.property="<value>" \
                   --my.other.property="<value>"
                   (etc...)
@@ -110,16 +126,12 @@ gcloud dataproc batches submit pyspark \
       [--properties=<spark.something.key>=<value>] \
       main.py \
       -- --template=TEMPLATENAME \
+         --log_level=INFO \
          --<my.property>="<value>" \
          --<my.other.property>="<value>"
          (etc...)
 ```
 
-To see each template's specific parameters, refer to each template's README.
-
-Refer to this [documentation](https://cloud.google.com/dataproc-serverless/docs/concepts/properties) to see the available spark properties.
-
-
 **Vertex AI usage**:
 
-Follow [Dataproc Templates (Jupyter Notebooks) README](../notebooks/README.md) to submit Dataproc Templates from a Vertex AI notebook.  
+Follow [Dataproc Templates (Jupyter Notebooks) README](../notebooks/README.md) to submit Dataproc Templates from a Vertex AI notebook.
