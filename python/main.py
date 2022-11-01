@@ -80,10 +80,15 @@ def create_spark_session(template_name: TemplateName) -> SparkSession:
         .appName(template_name.value) \
         .enableHiveSupport() \
         .getOrCreate()
+
+    log4j = spark.sparkContext._jvm.org.apache.log4j
+    log4j_level: log4j.Level = log4j.Level.toLevel(get_log_level())
+
+    log4j.LogManager.getRootLogger().setLevel(log4j_level)
+    log4j.LogManager.getLogger("org.apache.spark").setLevel(log4j_level)
     spark.sparkContext.setLogLevel(get_log_level())
 
     return spark
-
 
 def run_template(template_name: TemplateName) -> None:
     """
