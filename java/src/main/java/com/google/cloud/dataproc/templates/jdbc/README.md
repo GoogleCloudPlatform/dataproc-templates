@@ -8,6 +8,13 @@
    export SUBNET=projects/<gcp-project>/regions/<region>/subnetworks/<subnet-name>
   ```
 
+## Supported Databases for JDBC
+Following databases are supported via Spark JDBC by default:
+- DB2
+- MySQL / MariaDB
+- MS Sql
+- Oracle
+- PostgreSQL
 
 ## 1. JDBC To BigQuery
 
@@ -26,6 +33,7 @@ export JARS=<gcs_path_to_jar_files>
 
 bin/start.sh \
 -- --template JDBCTOBIGQUERY \
+--templateProperty project.id=<gcp-project-id> \
 --templateProperty jdbctobq.bigquery.location=<bigquery destination> \
 --templateProperty jdbctobq.jdbc.url=<jdbc url> \
 --templateProperty jdbctobq.jdbc.driver.class.name=<jdbc driver class name> \
@@ -83,6 +91,7 @@ export JARS=<gcs_path_to_jdbc_jar_files>
 
 bin/start.sh \
 -- --template JDBCTOGCS \
+--templateProperty project.id=<gcp-project-id> \
 --templateProperty jdbctogcs.jdbc.url=<jdbc url> \
 --templateProperty jdbctogcs.jdbc.driver.class.name=<jdbc-driver-class-name> \
 --templateProperty jdbctogcs.output.location=<gcs-ouput-location> \
@@ -166,6 +175,7 @@ export JARS=<gcs_path_to_jdbc_jar_files>
 
 bin/start.sh \
 -- --template JDBCTOSPANNER \
+--templateProperty project.id=<gcp-project-id> \
 --templateProperty jdbctospanner.jdbc.url=<jdbc url> \
 --templateProperty jdbctospanner.jdbc.driver.class.name=<jdbc-driver-class-name> \
 --templateProperty jdbctospanner.sql=<input-sql> \
@@ -216,6 +226,7 @@ Example execution:
 
     bin/start.sh \
     -- --template JDBCTOSPANNER \
+    --templateProperty project.id=my-gcp-proj \
     --templateProperty 'jdbctospanner.jdbc.url=jdbc:mysql://192.168.16.3:3306/MyCloudSQLDB?user=root&password=root' \
     --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.cj.jdbc.Driver \
     --templateProperty 'jdbctospanner.sql=SELECT * FROM MyCloudSQLDB.table1' \
