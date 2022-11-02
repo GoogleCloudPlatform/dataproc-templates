@@ -4,7 +4,7 @@
 * [SQLServerToPostgres](/notebooks/mssql2postgresql)
 * [MySQLToSpanner](/notebooks/mysql2spanner) (blogpost [link](https://medium.com/google-cloud/mysql-to-cloud-spanner-migrate-mysql-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-ad7d2ed8a317))
 * [OracleToBigQuery](/notebooks/oracle2bq)
-* [OracleToSpanner](/notebooks/oracle2spanner)
+* [OracleToSpanner](/notebooks/oracle2spanner) (blogpost [Link](https://medium.com/@surjitsh/oracle-to-cloud-spanner-migrate-oracle-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-49152ce7f4e8))
 
 ## Getting Started
 
