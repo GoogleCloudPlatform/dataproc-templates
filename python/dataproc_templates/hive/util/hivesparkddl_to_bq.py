@@ -21,15 +21,19 @@ Run with:
   ./bin/spark-submit examples/src/main/python/sql/hive.py
 """
 
-from os.path import abspath
-
-from google.cloud import bigquery
-from google.cloud.bigquery.table import Table
-from google.cloud.bigquery.dataset import Dataset
-from pyspark.sql import SparkSession
-from pyspark.sql import Row
-import subprocess
+from typing import Dict, Sequence, Optional, Any
+from logging import Logger
+import argparse
+import pprint
 import sys
+from pyspark.sql import SparkSession
+
+from dataproc_templates import BaseTemplate
+import dataproc_templates.util.template_constants as constants
+
+from dataproc_templates import BaseTemplate
+import dataproc_templates.util.template_constants as constants
+
 
 from google.cloud import storage
 
@@ -39,53 +43,80 @@ def WriteToCloud ( ddls,bucket,path ):
     bucket = client.get_bucket( bucket )
     blob = bucket.blob( path )
     blob.upload_from_string( ddls ) 
-  
 
-def HiveDDLExtractor(self):
+class HiveSparkDDLToBigQueryTemplate(BaseTemplate): 
+    """
+    Dataproc template implementing exports from Hive to BigQuery
+    """
+
+    @staticmethod
+    def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
+        parser: argparse.ArgumentParser = argparse.ArgumentParser()
+
+        parser.add_argument(
+            f'--{constants.HIVESPARKDDL_BQ_INPUT_DATABASE}',
+            dest=constants.HIVESPARKDDL_BQ_INPUT_DATABASE,
+            required=True,
+            help='Hive database for importing data to BigQuery'
+        )
+
+        parser.add_argument(
+            f'--{constants.HIVESPARKDDL_BQ_OUTPUT_BUCKET}',
+            dest=constants.HIVESPARKDDL_BQ_OUTPUT_BUCKET,
+            required=True,
+            help='BigQuery dataset for the output table'
+        )
+
+        parser.add_argument(
+            f'--{constants.HIVESPARKDDL_BQ_OUTPUT_DATASET}',
+            dest=constants.HIVESPARKDDL_BQ_OUTPUT_DATASET,
+            required=True,
+            help='BigQuery output table name'
+        )
+        parser.add_argument(
+            f'--{constants.HIVESPARKDDL_BQ_OUTPUT_TABLE}',
+            dest=constants.HIVESPARKDDL_BQ_OUTPUT_TABLE,
+            required=True,
+            help='BigQuery output table name'
+        )
+       
+        known_args: argparse.Namespace
+        known_args, _ = parser.parse_known_args(args)
+
+        if getattr(known_args, constants.HIVE_BQ_SQL_QUERY) and not getattr(known_args, constants.HIVE_BQ_TEMP_VIEW_NAME):
+            sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
+
+        return vars(known_args)
+
+
+def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
     """
     
     Dataproc template allowing the extraction of Hive DDLs for import to BigQuery
 
     """
-    
-    # warehouse_location points to the default location for managed databases and tables
-    warehouse_location = abspath('spark-warehouse')
+    logger: Logger = self.get_logger(spark=spark)
 
-    """
-    System arguments passed through the commandline when running script
-    Structure:
-        python hiveddlextractor.py host_ip project dbinput hdfs_path gcs_working_directory
-    Sample:
-        python hiveddlextractor.py 10.128.0.39 mbawa-sandbox employee /user/anuyogam/ hivetobqddl
-    """
+    hive_database: str = args[constants.HIVESPARKDDL_BQ_INPUT_DATABASE]
+    gcs_working_directory: str = args[constants.HIVESPARKDDL_BQ_OUTPUT_BUCKET]
+    bigquery_dataset: str = args[constants.HIVESPARKDDL_BQ_OUTPUT_DATASET]
+    bigquery_table: str = args[constants.HIVESPARKDDL_BQ_OUTPUT_TABLE]
 
-    host_ip = sys.argv[1]
-    project = sys.argv[2]
-    dbinput= sys.argv[3]
-    hdfs_path = sys.argv[4]
-    gcs_working_directory = sys.argv[5]
-    gcs_target_path="SparkDDL"
+    gcs_target_path="SparkDDL/DDL.txt"
     gcs_hdfs_staging_path="gs://hivetobqddl/RawZone/"
-    bigquery_dataset="hivetobqtesting"
-    bigquery_table="metadata"
-    
-    print("Connecting to Metastore: "+"thrift://"+host_ip+":9083")
-    spark = SparkSession \
-        .builder \
-        .appName("hive-ddl-dumps") \
-        .config("hive.metastore.uris", "thrift://"+host_ip+":9083") \
-        .config("spark.sql.warehouse.dir", warehouse_location) \
-        .config('spark.jars', 'gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar')\
-        .enableHiveSupport() \
-        .getOrCreate()
 
-    print("Connecting to Hive Database: "+dbinput)
+    logger.info(
+            "Starting Hive to Bigquery spark job with parameters:\n"
+            f"{pprint.pformat(args)}"
+        )
+
+    print("Connecting to Hive Database: "+hive_database)
     # databaseExists() checks if there is a database in the hive cluster that matches the system argument
-    dbCheck = spark.catalog._jcatalog.databaseExists(dbinput)
+    dbCheck = spark.catalog._jcatalog.databaseExists(hive_database)
     # dbCheck serves as a boolean. if true then the script will continue
     ddls = ""
     if dbCheck:
-        tables = spark.catalog.listTables(dbinput)
+        tables = spark.catalog.listTables(hive_database)
         metadata=[]
         columns=['database','table','partition_string','format','hdfs_path','gcs_raw_zone_path']
         for t in tables:
@@ -93,11 +124,11 @@ def HiveDDLExtractor(self):
             The for loop iterates through all the tables within the database 
             """
             # default.emp_part
-            print("Extracting DDL for the Hive Table: "+dbinput+"."+t.name)
-            show_create = spark.sql("SHOW CREATE TABLE {}.{}".format(dbinput, t.name))
+            print("Extracting DDL for the Hive Table: "+hive_database+"."+t.name)
+            show_create = spark.sql("SHOW CREATE TABLE {}.{}".format(hive_database, t.name))
             ddl_table = spark.sql(
-                "DESCRIBE FORMATTED {}.{}".format(dbinput, t.name))
-            show_extended=spark.sql("show table extended from `"+dbinput+"` like '"+t.name+"'")
+                "DESCRIBE FORMATTED {}.{}".format(hive_database, t.name))
+            show_extended=spark.sql("show table extended from `"+hive_database+"` like '"+t.name+"'")
             ddl_table.registerTempTable("metadata")
             show_extended.registerTempTable("show_extended")
             info=spark.sql("select information from show_extended")
@@ -127,7 +158,7 @@ def HiveDDLExtractor(self):
             initial="CREATE TABLE IF NOT EXISTS "+t.name
             storage_format=format
             print(hdfs_file_path)
-            if dbinput != 'default':
+            if hive_database != 'default':
                 location_path=gcs_hdfs_staging_path+db_name+hdfs_file_path.split(db_name)[1]
             else:
                 location_path=gcs_hdfs_staging_path+db_name+hdfs_file_path.split('warehouse')[1]
