@@ -103,7 +103,7 @@ def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
     bigquery_table: str = args[constants.HIVESPARKDDL_BQ_OUTPUT_TABLE]
 
     gcs_target_path="SparkDDL/DDL.txt"
-    gcs_hdfs_staging_path="gs://hivetobqddl/RawZone/"
+    gcs_hdfs_staging_path="gs://"+gcs_working_directory+"/RawZone/"
 
     logger.info(
             "Starting Hive to Bigquery spark job with parameters:\n"
