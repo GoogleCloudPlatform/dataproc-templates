@@ -120,6 +120,25 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_TEMP_TABLE = "jdbctogcs.temp.table";
   String JDBC_TO_GCS_TEMP_QUERY = "jdbctogcs.temp.query";
 
+  /** Property values for JDBCToSpanner */
+  String JDBC_TO_SPANNER_JDBC_URL = "jdbctospanner.jdbc.url";
+
+  String JDBC_TO_SPANNER_JDBC_DRIVER_CLASS_NAME = "jdbctospanner.jdbc.driver.class.name";
+  String JDBC_TO_SPANNER_SQL = "jdbctospanner.sql";
+  String JDBC_TO_SPANNER_SQL_FILE = "jdbctospanner.sql.file";
+  String JDBC_TO_SPANNER_SQL_PARTITION_COLUMN = "jdbctospanner.sql.partitionColumn";
+  String JDBC_TO_SPANNER_SQL_LOWER_BOUND = "jdbctospanner.sql.lowerBound";
+  String JDBC_TO_SPANNER_SQL_UPPER_BOUND = "jdbctospanner.sql.upperBound";
+  String JDBC_TO_SPANNER_SQL_NUM_PARTITIONS = "jdbctospanner.sql.numPartitions";
+  String JDBC_TO_SPANNER_TEMP_TABLE = "jdbctospanner.temp.table";
+  String JDBC_TO_SPANNER_TEMP_QUERY = "jdbctospanner.temp.query";
+  String JDBC_TO_SPANNER_OUTPUT_INSTANCE = "jdbctospanner.output.instance";
+  String JDBC_TO_SPANNER_OUTPUT_DATABASE = "jdbctospanner.output.database";
+  String JDBC_TO_SPANNER_OUTPUT_TABLE = "jdbctospanner.output.table";
+  String JDBC_TO_SPANNER_OUTPUT_SAVE_MODE = "jdbctospanner.output.saveMode";
+  String JDBC_TO_SPANNER_OUTPUT_PRIMARY_KEY = "jdbctospanner.output.primaryKey";
+  String JDBC_TO_SPANNER_OUTPUT_BATCH_INSERT_SIZE = "jdbctospanner.output.batch.size";
+
   /** Property values for WordCount template. */
   String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";
 
@@ -199,6 +218,16 @@ public interface TemplateConstants {
   String S3_BQ_AVRO_FORMAT = "avro";
   String S3_BQ_PRQT_FORMAT = "parquet";
   String S3_BQ_JSON_FORMAT = "json";
+  /** Cassandra to BQ properties */
+  String CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace";
+
+  String CASSANDRA_TO_BQ_INPUT_TABLE = "cassandratobq.input.table";
+  String CASSANDRA_TO_BQ_INPUT_HOST = "cassandratobq.input.host";
+  String CASSANDRA_TO_BQ_BIGQUERY_LOCATION = "cassandratobq.bigquery.location";
+  String CASSANDRA_TO_BQ_WRITE_MODE = "cassandratobq.output.mode";
+  String CASSANDRA_TO_BQ_TEMP_LOCATION = "cassandratobq.temp.gcs.location";
+  String CASSANDRA_TO_BQ_QUERY = "cassandratobq.input.query";
+  String CASSANDRA_TO_BQ_CATALOG = "cassandratobq.input.catalog.name";
 
   /** Bigquery to GCS properties */
   String BQ_GCS_INPUT_TABLE_NAME = "bigquery.gcs.input.table";
