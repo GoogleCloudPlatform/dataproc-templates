@@ -38,6 +38,10 @@ public class JDBCToSpannerConfig {
   static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+  @JsonProperty(value = PROJECT_ID_PROP)
+  @NotEmpty
+  private String projectId;
+
   @JsonProperty(value = JDBC_TO_SPANNER_JDBC_URL)
   @NotEmpty
   private String jdbcURL;
@@ -114,6 +118,10 @@ public class JDBCToSpannerConfig {
             && StringUtils.isNotBlank(jdbcSQLLowerBound)
             && StringUtils.isNotBlank(jdbcSQLUpperBound)
             && StringUtils.isNotBlank(jdbcSQLNumPartitions)));
+  }
+
+  public String getProjectId() {
+    return projectId;
   }
 
   public String getJdbcURL() {
