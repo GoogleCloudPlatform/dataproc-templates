@@ -45,10 +45,6 @@ public class JDBCToGCSConfig {
   @Pattern(regexp = "csv|avro|orc|json|parquet")
   private String gcsOutputFormat;
 
-  @JsonProperty(value = PROJECT_ID_PROP)
-  @NotEmpty
-  private String projectId;
-
   @JsonProperty(value = JDBC_TO_GCS_JDBC_URL)
   @NotEmpty
   private String jdbcURL;
@@ -114,10 +110,6 @@ public class JDBCToGCSConfig {
 
   public String getGcsOutputFormat() {
     return gcsOutputFormat;
-  }
-
-  public String getProjectId() {
-    return projectId;
   }
 
   public String getJdbcURL() {
@@ -200,9 +192,6 @@ public class JDBCToGCSConfig {
         + "'"
         + ", gcsOutputFormat='"
         + getGcsOutputFormat()
-        + "'"
-        + ", projectId='"
-        + getProjectId()
         + "'"
         + ", jdbcDriverClassName='"
         + getJdbcDriverClassName()
