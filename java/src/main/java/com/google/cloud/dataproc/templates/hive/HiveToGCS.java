@@ -71,7 +71,6 @@ public class HiveToGCS implements BaseTemplate {
     SparkSession spark =
         SparkSession.builder()
             .appName("Spark HiveToGcs Job")
-            .config(HIVE_WAREHOUSE_LOCATION_PROP, warehouseLocation)
             .enableHiveSupport()
             .getOrCreate();
 
