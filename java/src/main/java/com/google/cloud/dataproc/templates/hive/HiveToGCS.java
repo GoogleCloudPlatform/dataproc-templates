@@ -69,10 +69,7 @@ public class HiveToGCS implements BaseTemplate {
 
     // Confiure spark session to read from hive.
     SparkSession spark =
-        SparkSession.builder()
-            .appName("Spark HiveToGcs Job")
-            .enableHiveSupport()
-            .getOrCreate();
+        SparkSession.builder().appName("Spark HiveToGcs Job").enableHiveSupport().getOrCreate();
 
     // Read source Hive table.
     Dataset<Row> inputData = spark.table(hiveInputDb + "." + hiveInputTable);
