@@ -101,6 +101,16 @@ MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri"
 MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database"
 MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection"
 
+#Cassandra to BQ
+CASSANDRA_TO_BQ_INPUT_TABLE = "cassandratobq.input.table"
+CASSANDRA_TO_BQ_INPUT_HOST = "cassandratobq.input.host"
+CASSANDRA_TO_BQ_BIGQUERY_LOCATION = "cassandratobq.bigquery.location"
+CASSANDRA_TO_BQ_WRITE_MODE = "cassandratobq.output.mode"
+CASSANDRA_TO_BQ_TEMP_LOCATION = "cassandratobq.temp.gcs.location"
+CASSANDRA_TO_BQ_QUERY = "cassandratobq.input.query"
+CASSANDRA_TO_BQ_CATALOG = "cassandratobq.input.catalog.name"
+CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace"
+
 # GCS to BigTable
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
 GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format"

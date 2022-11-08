@@ -18,6 +18,7 @@
 * [TextToBigQuery](/python/dataproc_templates/gcs/README.md)
 * [GCSToGCS](/python/dataproc_templates/gcs/README.md)
 * [SnowflakeoGCS](/python/dataproc_templates/snowflake/README.md)
+* [CassandraToBigquery](/python/dataproc_templates/cassandra/README.md)
 
 Dataproc Templates (Python - PySpark) submit jobs to Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
 
