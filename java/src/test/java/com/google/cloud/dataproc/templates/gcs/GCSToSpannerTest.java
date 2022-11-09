@@ -66,7 +66,7 @@ class GCSToSpannerTest {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
     ValidationException exception = assertThrows(ValidationException.class, GCSToSpanner::of);
-    assertEquals(1, exception.getViolations().size());
+    assertEquals(2, exception.getViolations().size());
     ConstraintViolation<?> violation = exception.getViolations().get(0);
     assertEquals("must not be empty", violation.getMessage());
   }
@@ -82,7 +82,7 @@ class GCSToSpannerTest {
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_SAVE_MODE, saveMode);
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_PRIMARY_KEY, "");
     ValidationException exception = assertThrows(ValidationException.class, GCSToSpanner::of);
-    assertEquals(1, exception.getViolations().size());
+    assertEquals(2, exception.getViolations().size());
     ConstraintViolation<?> violation = exception.getViolations().get(0);
     assertEquals("primaryKey", violation.getPropertyPath().toString());
     assertEquals("must not be empty", violation.getMessage());
