@@ -18,7 +18,6 @@ package com.google.cloud.dataproc.templates.kafka;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
@@ -70,32 +69,31 @@ public class KafkaToGCS implements BaseTemplate {
   public void runTemplate() throws TimeoutException, StreamingQueryException {
     validateInputs();
 
-      // Initialize Spark session
-      SparkSession spark = SparkSession.builder().appName("Spark KafkaToGCS Job").getOrCreate();
+    // Initialize Spark session
+    SparkSession spark = SparkSession.builder().appName("Spark KafkaToGCS Job").getOrCreate();
 
-      KafkaReader reader = new KafkaReader();
+    KafkaReader reader = new KafkaReader();
 
-      LOGGER.info("Calling Kafka Reader");
+    LOGGER.info("Calling Kafka Reader");
 
-      // Reading Kafka stream into dataframe
-      Dataset<Row> processedData = reader.readKafkaTopic(spark, getProperties());
+    // Reading Kafka stream into dataframe
+    Dataset<Row> processedData = reader.readKafkaTopic(spark, getProperties());
 
-      // Write the output to GCS location
-      processedData
-          .writeStream()
-          .format(gcsOutputFormat)
-          .outputMode(kafkaOutputMode)
-          .option("checkpointLocation", gcsCheckpointLocation)
-          .option("path", gcsOutputLocation)
-          .start()
-          .awaitTermination(kafkaAwaitTerminationTimeout);
+    // Write the output to GCS location
+    processedData
+        .writeStream()
+        .format(gcsOutputFormat)
+        .outputMode(kafkaOutputMode)
+        .option("checkpointLocation", gcsCheckpointLocation)
+        .option("path", gcsOutputLocation)
+        .start()
+        .awaitTermination(kafkaAwaitTerminationTimeout);
 
-      LOGGER.info("KakfaToGCS job completed.");
-      spark.stop();
+    LOGGER.info("KakfaToGCS job completed.");
+    spark.stop();
   }
 
-
-  void validateInputs(){
+  void validateInputs() {
     if (StringUtils.isAllBlank(gcsOutputLocation)
         || StringUtils.isAllBlank(kafkaBootstrapServers)
         || StringUtils.isAllBlank(kafkaTopic)) {
@@ -139,6 +137,5 @@ public class KafkaToGCS implements BaseTemplate {
         kafkaOutputMode,
         KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT,
         kafkaAwaitTerminationTimeout);
-
   }
 }

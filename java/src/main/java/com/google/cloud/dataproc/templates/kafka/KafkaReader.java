@@ -71,7 +71,7 @@ public class KafkaReader {
 
       case "json":
         StructType schema = ReadSchemaUtil.readSchema(kafkaSchemaUrl);
-        processedData = processJsonMessage(inputData,schema);
+        processedData = processJsonMessage(inputData, schema);
         break;
     }
 

@@ -26,21 +26,20 @@ import org.slf4j.LoggerFactory;
 public class ReadSchemaUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(ReadSchemaUtil.class);
 
-  public static StructType readSchema(String schemaUrl)  {
+  public static StructType readSchema(String schemaUrl) {
 
     StructType schema = null;
 
-    String[] split_url = schemaUrl.replace("gs://","").split("/", 2);
+    String[] split_url = schemaUrl.replace("gs://", "").split("/", 2);
     String bucket = split_url[0];
     String objectUrl = split_url[1];
 
     Storage storage = StorageOptions.getDefaultInstance().getService();
 
-      Blob blob = storage.get(bucket, objectUrl);
-      String schemaSource = new String(blob.getContent());
-      schema = (StructType) DataType.fromJson(schemaSource);
+    Blob blob = storage.get(bucket, objectUrl);
+    String schemaSource = new String(blob.getContent());
+    schema = (StructType) DataType.fromJson(schemaSource);
 
     return schema;
   }
-
 }
