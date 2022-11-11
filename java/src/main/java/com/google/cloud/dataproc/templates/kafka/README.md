@@ -126,3 +126,44 @@ bin/start.sh \
 --templateProperty kafka.bq.temp.gcs.bucket=templates-demo-kafkatobq \
 --templateProperty kafka.bq.await.termination.timeout=1200000
 ```
+
+
+## 2. Kafka To GCS
+
+General Execution:
+
+```
+GCP_PROJECT=<gcp-project-id> \
+REGION=<region>  \
+SUBNET=<subnet>   \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+HISTORY_SERVER_CLUSTER=<history-server> \
+bin/start.sh \
+-- --template KAFKATOGCS \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty kafka.gcs.output.location=<gcs path> \
+--templateProperty kafka.bootstrap.servers=<kafka broker list> \
+--templateProperty kafka.topic=<kafka topic name> \
+```
+
+
+
+### Example submission
+```
+export GCP_PROJECT=dp-test-project
+export REGION=us-central1
+export SUBNET=test-subnet
+export GCS_STAGING_LOCATION=gs://dp-templates-kakfatogcs/stg
+export GCS_SCHEMA_FILE=gs://dp-templates-kafkatogcs/schema/msg_schema.json
+export GCS_OUTPUT_PATH=gs://dp-templates-kafkatogcs/output/
+bin/start.sh \
+-- --template KAFKATOGCS \
+--templateProperty project.id=$GCP_PROJECT \
+--templateProperty kafka.bootstrap.servers=102.1.1.20:9092 \
+--templateProperty kafka.topic=events-topic \
+--templateProperty kafka.starting.offset=latest \
+--templateProperty kafka.schema.url=$GCS_SCHEMA_FILE \
+--templateProperty kafka.gcs.await.termination.timeout.ms=1200000 \
+--templateProperty kafka.gcs.output.location=$GCS_OUTPUT_PATH \
+--templateProperty kafka.gcs.output.format=parquet
+```
