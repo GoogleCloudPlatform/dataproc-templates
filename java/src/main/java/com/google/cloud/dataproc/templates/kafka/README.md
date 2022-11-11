@@ -157,7 +157,7 @@ export GCS_STAGING_LOCATION=gs://dp-templates-kakfatogcs/stg
 export GCS_SCHEMA_FILE=gs://dp-templates-kafkatogcs/schema/msg_schema.json
 export GCS_OUTPUT_PATH=gs://dp-templates-kafkatogcs/output/
 bin/start.sh \
---template KAFKATOGCS \
+-- --template KAFKATOGCS \
 --templateProperty project.id=$GCP_PROJECT \
 --templateProperty kafka.bootstrap.servers=102.1.1.20:9092 \
 --templateProperty kafka.topic=events-topic \
