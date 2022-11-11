@@ -326,6 +326,7 @@ public interface TemplateConstants {
 
   /** Kafka To GCS properties */
   String KAFKA_GCS_OUTPUT_LOCATION = "kafka.gcs.output.location";
+
   String KAFKA_GCS_OUTPUT_FORMAT = "kafka.gcs.output.format";
   String KAFKA_GCS_OUTPUT_MODE = "kafka.gcs.output.mode";
   String KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT = "kafka.gcs.await.termination.timeout.ms";

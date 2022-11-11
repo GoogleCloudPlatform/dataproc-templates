@@ -42,8 +42,6 @@ public class KafkaToGCSTest {
   @BeforeEach
   void setup() {
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
-
-
   }
 
   @ParameterizedTest
@@ -54,8 +52,8 @@ public class KafkaToGCSTest {
     PropertyUtil.getProperties().setProperty(KAFKA_GCS_OUTPUT_FORMAT, "csv");
     PropertyUtil.getProperties().setProperty(KAFKA_BOOTSTRAP_SERVERS, "value");
     PropertyUtil.getProperties().setProperty(KAFKA_TOPIC, "value");
-    PropertyUtil.getProperties().setProperty(KAFKA_MESSAGE_FORMAT,"csv");
-    PropertyUtil.getProperties().setProperty(KAFKA_SCHEMA_URL,"");
+    PropertyUtil.getProperties().setProperty(KAFKA_MESSAGE_FORMAT, "csv");
+    PropertyUtil.getProperties().setProperty(KAFKA_SCHEMA_URL, "");
 
     kafkaToGCSTest = new KafkaToGCS();
     assertDoesNotThrow(kafkaToGCSTest::validateInputs);
@@ -76,10 +74,13 @@ public class KafkaToGCSTest {
         exception.getMessage());
   }
 
-
-
   static Stream<String> propertyKeys() {
     return Stream.of(
-        KAFKA_GCS_OUTPUT_LOCATION, KAFKA_GCS_OUTPUT_FORMAT, KAFKA_BOOTSTRAP_SERVERS, KAFKA_TOPIC, KAFKA_MESSAGE_FORMAT,KAFKA_SCHEMA_URL);
+        KAFKA_GCS_OUTPUT_LOCATION,
+        KAFKA_GCS_OUTPUT_FORMAT,
+        KAFKA_BOOTSTRAP_SERVERS,
+        KAFKA_TOPIC,
+        KAFKA_MESSAGE_FORMAT,
+        KAFKA_SCHEMA_URL);
   }
 }
