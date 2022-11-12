@@ -1,6 +1,6 @@
 ![Java Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=java-build)
 ![Java Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-java&&subject=integration-tests-java)
-![Python Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build) 
+![Python Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build)
 ![Python Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-python&&subject=integration-tests-python)
 
 # Dataproc Templates
@@ -32,6 +32,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more 
 * [GCSToJDBC](/java/src/main/java/com/google/cloud/dataproc/templates/gcs) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-databases-via-jdbc-using-dataproc-serverless-7ed75eab93ba))
 * [SnowflakeToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/snowflake)
 * [KafkaToBQ](/java/src/main/java/com/google/cloud/dataproc/templates/kafka) (blogpost [link](https://medium.com/google-cloud/export-data-from-apache-kafka-to-bigquery-using-dataproc-serverless-4a666535117c))
+* [KafkaToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md)
 * [DataplexGCStoBQ](/java/src/main//java/com/google/cloud/dataproc/templates/dataplex)
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [GeneralTemplate](/java/src/main/java/com/google/cloud/dataproc/templates/general)
@@ -55,7 +56,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for 
 * [JDBCToBigQuery](/python/dataproc_templates/jdbc) (blogpost [link](https://medium.com/@sjlva/python-fast-export-large-database-tables-using-gcp-serverless-dataproc-bfe77a132485))
 * [RedshiftToGCS](/python/dataproc_templates/redshift) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
 * [TextToBigQuery](/python/dataproc_templates/gcs) (blogpost [link](https://medium.com/google-cloud/dataproc-serverless-pyspark-template-for-ingesting-compressed-text-files-to-bigquery-c6eab8fb6bc9))
-  
+
 ## Dataproc Templates (Notebooks)
 Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more information
 
@@ -86,7 +87,7 @@ Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more
 
 *Note:* Application Default Credentials is able to implicitly find the credentials as long as the application is running on Compute Engine, Kubernetes Engine, App Engine, or Cloud Functions.
 
-3) Executing a Template 
+3) Executing a Template
 
     Follow the specific guide, depending on your use case:
    - [Dataproc Templates (Java - Spark)](java)
