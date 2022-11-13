@@ -30,7 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class S3ToBigQueryTest {
-  private S3ToBigQuery s3ToBigQueryTest;
+
+  private S3ToBigQuery S3ToBigQueryTest;
   private static final Logger LOGGER = LoggerFactory.getLogger(S3ToBigQueryTest.class);
 
   @BeforeEach
@@ -42,18 +43,18 @@ public class S3ToBigQueryTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_LOCATION, "s3a://test-bucket");
-    PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_DATASET_NAME, "bigqueryDataset");
-    PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_TABLE_NAME, "bigqueryTable");
     PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "some_value");
+    PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_LOCATION, "some_value");
     PropertyUtil.getProperties().setProperty(S3_BQ_ACCESS_KEY, "some_value");
     PropertyUtil.getProperties().setProperty(S3_BQ_SECRET_KEY_CONFIG_NAME, "some_value");
+    PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_DATASET_NAME, "some_value");
+    PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_TABLE_NAME, "some_value");
     PropertyUtil.getProperties().setProperty(S3_BQ_LD_TEMP_BUCKET_NAME, "some_value");
-    PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_FORMAT, "avro");
+    PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_FORMAT, "some_value");
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
-    s3ToBigQueryTest = new S3ToBigQuery();
+    S3ToBigQueryTest = new S3ToBigQuery();
 
-    assertDoesNotThrow(s3ToBigQueryTest::validateInput);
+    assertDoesNotThrow(S3ToBigQueryTest::validateInput);
   }
 
   @ParameterizedTest
@@ -61,13 +62,14 @@ public class S3ToBigQueryTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    s3ToBigQueryTest = new S3ToBigQuery();
+    S3ToBigQueryTest = new S3ToBigQuery();
+
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> s3ToBigQueryTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> S3ToBigQueryTest.runTemplate());
     assertEquals(
-        "Required parameters for S3toBQ not passed. "
-            + "Set mandatory parameter for S3toBQ template"
-            + " in resources/conf/template.properties file.",
+        "Required parameters for HiveToGCS not passed. "
+            + "Set mandatory parameter for HiveToGCS template in "
+            + "resources/conf/template.properties file.",
         exception.getMessage());
   }
 
