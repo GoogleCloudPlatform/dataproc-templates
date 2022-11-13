@@ -15,6 +15,8 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import static com.google.cloud.dataproc.templates.gcs.GCSToJDBCConfig.*;
+import static com.google.cloud.dataproc.templates.gcs.GCSToJDBCConfig.GCS_JDBC_OUTPUT_SAVE_MODE;
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_INPUT_FORMAT;
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_INPUT_LOCATION;
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_DATABASE;
@@ -22,6 +24,7 @@ import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPA
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_PRIMARY_KEY;
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_SAVE_MODE;
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_TABLE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -41,17 +44,19 @@ import org.slf4j.LoggerFactory;
 
 class GCSToSpannerTest {
 
+
   private static final Logger LOGGER = LoggerFactory.getLogger(GCSToSpannerTest.class);
 
   @BeforeEach
   void setUp() {
+    PropertyUtil.getProperties().setProperty(GCS_SPANNER_INPUT_LOCATION, "some_value");
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_INPUT_FORMAT, "avro");
-    PropertyUtil.getProperties().setProperty(GCS_SPANNER_INPUT_LOCATION, "avro");
-    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_PRIMARY_KEY, "idcol1,idcol2");
-    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_INSTANCE, "instanceId");
-    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_DATABASE, "databaseId");
-    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_TABLE, "tableId");
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "some_value");
+    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_INSTANCE, "some_value");
+    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_DATABASE, "some_value");
+    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_TABLE, "some_value");
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_SAVE_MODE, "Append");
+    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_PRIMARY_KEY, "some_value");
   }
 
   @Test
@@ -66,37 +71,17 @@ class GCSToSpannerTest {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
     ValidationException exception = assertThrows(ValidationException.class, GCSToSpanner::of);
-    assertEquals(2, exception.getViolations().size());
-    ConstraintViolation<?> violation = exception.getViolations().get(0);
-    assertEquals("must not be empty", violation.getMessage());
-  }
-
-  /**
-   * Primary key property required if save mode is `Overwrite` or `ErrorIfExists` as spark needs try
-   * know how to create the table.
-   */
-  @ParameterizedTest
-  @MethodSource(value = "requiredPrimaryKeySaveModes")
-  void runTemplateWithMissingPrimaryKey(String saveMode) {
-    LOGGER.info("Running test: runTemplateWithInvalidParameters");
-    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_SAVE_MODE, saveMode);
-    PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_PRIMARY_KEY, "");
-    ValidationException exception = assertThrows(ValidationException.class, GCSToSpanner::of);
-    assertEquals(2, exception.getViolations().size());
-    ConstraintViolation<?> violation = exception.getViolations().get(0);
-    assertEquals("primaryKey", violation.getPropertyPath().toString());
-    assertEquals("must not be empty", violation.getMessage());
   }
 
   static Stream<String> requiredPropertyKeys() {
     return Stream.of(
-        GCS_SPANNER_INPUT_LOCATION,
-        GCS_SPANNER_OUTPUT_INSTANCE,
-        GCS_SPANNER_OUTPUT_DATABASE,
-        GCS_SPANNER_OUTPUT_TABLE);
-  }
-
-  static Stream<String> requiredPrimaryKeySaveModes() {
-    return Stream.of(SaveMode.Overwrite.name(), SaveMode.ErrorIfExists.name());
+            GCS_SPANNER_INPUT_LOCATION,
+            GCS_SPANNER_INPUT_FORMAT,
+            PROJECT_ID_PROP,
+            GCS_SPANNER_OUTPUT_INSTANCE,
+            GCS_SPANNER_OUTPUT_DATABASE,
+            GCS_SPANNER_OUTPUT_TABLE,
+            GCS_SPANNER_OUTPUT_SAVE_MODE,
+            GCS_SPANNER_OUTPUT_PRIMARY_KEY);
   }
 }

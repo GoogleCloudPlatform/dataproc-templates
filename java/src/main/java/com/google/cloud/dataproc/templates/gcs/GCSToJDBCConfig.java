@@ -50,10 +50,6 @@ public class GCSToJDBCConfig {
   @Pattern(regexp = "avro|parquet|orc")
   private String inputFormat;
 
-  @JsonProperty(value = PROJECT_ID_PROP)
-  @NotEmpty
-  private String projectId;
-
   @JsonProperty(value = GCS_JDBC_OUTPUT_URL)
   @NotEmpty
   private String jdbcUrl;
@@ -81,10 +77,6 @@ public class GCSToJDBCConfig {
 
   public String getInputFormat() {
     return inputFormat;
-  }
-
-  public String getProjectId() {
-    return projectId;
   }
 
   public String getJDBCUrl() {
@@ -117,7 +109,6 @@ public class GCSToJDBCConfig {
     return MoreObjects.toStringHelper(this)
         .add("inputLocation", inputLocation)
         .add("inputFormat", inputFormat)
-        .add("projectId", projectId)
         .add("batchInsertSize", batchInsertSize)
         .add("table", table)
         .add("saveModeString", saveModeString)
