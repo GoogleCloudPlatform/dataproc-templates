@@ -50,6 +50,7 @@ public class S3ToBigQueryTest {
     PropertyUtil.getProperties().setProperty(S3_BQ_SECRET_KEY_CONFIG_NAME, "some_value");
     PropertyUtil.getProperties().setProperty(S3_BQ_LD_TEMP_BUCKET_NAME, "some_value");
     PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_FORMAT, "avro");
+    PropertyUtil.getProperties().setProperty(propKey, "someValue");
     s3ToBigQueryTest = new S3ToBigQuery();
 
     assertDoesNotThrow(s3ToBigQueryTest::validateInput);
