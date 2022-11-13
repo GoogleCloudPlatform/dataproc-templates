@@ -45,6 +45,11 @@ public class S3ToBigQueryTest {
     PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_LOCATION, "s3a://test-bucket");
     PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_DATASET_NAME, "bigqueryDataset");
     PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_TABLE_NAME, "bigqueryTable");
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "some_value");
+    PropertyUtil.getProperties().setProperty(S3_BQ_ACCESS_KEY, "some_value");
+    PropertyUtil.getProperties().setProperty(S3_BQ_SECRET_KEY_CONFIG_NAME, "some_value");
+    PropertyUtil.getProperties().setProperty(S3_BQ_LD_TEMP_BUCKET_NAME, "some_value");
+    PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_FORMAT, "avro");
     s3ToBigQueryTest = new S3ToBigQuery();
 
     assertDoesNotThrow(s3ToBigQueryTest::runTemplate);
