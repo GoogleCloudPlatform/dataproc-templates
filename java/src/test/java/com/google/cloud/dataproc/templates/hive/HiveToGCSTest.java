@@ -68,7 +68,7 @@ class HiveToGCSTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-        HIVE_INPUT_TABLE_DATABASE_PROP,
+        HIVE_INPUT_TABLE_PROP,
         HIVE_INPUT_TABLE_DATABASE_PROP,
         HIVE_TO_GCS_OUTPUT_PATH_PROP,
         HIVE_GCS_TEMP_TABLE,

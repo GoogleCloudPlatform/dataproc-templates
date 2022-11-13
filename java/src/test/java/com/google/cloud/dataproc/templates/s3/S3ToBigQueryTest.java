@@ -66,6 +66,14 @@ public class S3ToBigQueryTest {
   }
 
   static Stream<String> propertyKeys() {
-    return Stream.of(S3_BQ_INPUT_LOCATION, S3_BQ_OUTPUT_DATASET_NAME, S3_BQ_OUTPUT_TABLE_NAME);
+    return Stream.of(
+        PROJECT_ID_PROP,
+        S3_BQ_INPUT_LOCATION,
+        S3_BQ_ACCESS_KEY,
+        S3_BQ_SECRET_KEY_CONFIG_NAME,
+        S3_BQ_OUTPUT_DATASET_NAME,
+        S3_BQ_OUTPUT_TABLE_NAME,
+        S3_BQ_LD_TEMP_BUCKET_NAME,
+        S3_BQ_INPUT_FORMAT);
   }
 }
