@@ -52,7 +52,7 @@ public class S3ToBigQueryTest {
     PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_FORMAT, "avro");
     s3ToBigQueryTest = new S3ToBigQuery();
 
-    assertDoesNotThrow(s3ToBigQueryTest::runTemplate);
+    assertDoesNotThrow(s3ToBigQueryTest::validateInput);
   }
 
   @ParameterizedTest
