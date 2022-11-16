@@ -15,11 +15,6 @@
 # limitations under the License.
 #
 
-"""
-A simple example demonstrating Spark SQL Hive integration.
-Run with:
-  ./bin/spark-submit examples/src/main/python/sql/hive.py
-"""
 
 from typing import Dict, Sequence, Optional, Any
 from logging import Logger
