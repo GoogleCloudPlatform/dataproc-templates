@@ -1,6 +1,6 @@
 # Hive Spark DDL Extractor To BigQuery
 
-Template for extracting DDL data from Hive and writing to BigQuery table.
+This is a utility to extract DDLs from Hive metastore. Users can use this to accelerate the Hive migration journey.
 
 It uses [Spark SQL & Hive Integration](https://cloud.google.com/architecture/using-apache-hive-on-cloud-dataproc#querying_hive_with_sparksql) for querying Hive with SparkSQL.
 
@@ -15,9 +15,9 @@ It uses [Spark SQL & Hive Integration](https://cloud.google.com/architecture/usi
 ## Usage
 
 ```
-$ python main.py --template HIVESPARKDDLTOBIGQUERY --help
+$ python main.py --template HIVESPARKDDLTOBQ --help
 
-usage: main.py --template HIVESPARKDDLTOBIGQUERY [-h] \
+usage: main.py --template HIVESPARKDDLTOBQ [-h] \
     --hivesparkddl.bigquery.input.database HIVE.BIGQUERY.INPUT.DATABASE \
     --hivesparkddl.bigquery.output.dataset HIVE.BIGQUERY.OUTPUT.DATASET \
     --hivesparkddl.bigquery.output.table HIVE.BIGQUERY.OUTPUT.TABLE \
@@ -46,7 +46,7 @@ export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> w
 export SUBNET=<subnet>
 ./bin/start.sh \
     --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
-    -- --template=HIVESPARKDDLTOBIGQUERY \
+    -- --template=HIVESPARKDDLTOBQ \
     --hivesparkddl.bigquery.input.database="<database>" \
     --hivesparkddl.bigquery.output.dataset="<dataset>" \
     --hivesparkddl.bigquery.output.table="<table>" \
