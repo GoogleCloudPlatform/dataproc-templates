@@ -38,17 +38,21 @@ optional arguments:
 ## Required JAR files
 
 This template requires the [Spark Cassandra connector](https://github.com/datastax/spark-cassandra-connector) to be available in the Dataproc cluster.
-
+This can be downloaded using the following [link](https://repo1.maven.org/maven2/com/datastax/spark/spark-cassandra-connector_2.12/3.2.0/spark-cassandra-connector_2.12-3.2.0.jar)
 ## Example submission
-
+Use the following command to download the jar-:
+```
+wget https://repo1.maven.org/maven2/com/datastax/spark/spark-cassandra-connector_2.12/3.2.0/spark-cassandra-connector_2.12-3.2.0.jar
+```
+A jar file named `spark-cassandra-connector_2.12-3.2.0.jar` would be downloaded, this can be passed to provide spark drivers and workers with cassandra connector classes.
 ```
 export GCP_PROJECT=<project_id>
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+export JARS=spark-cassandra-connector_2.12-3.2.0.jar # Pass the downloaded jar path
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 export REGION=<region>
 
 ./bin/start.sh \
--- --template=BIGQUERYTOGCS \
+-- --template=CASSANDRATOBQ \
 	--bigquery.gcs.input.table=<projectId:datasetName.tableName> \
 	--bigquery.gcs.output.format=<csv|parquet|avro|json> \
 	--bigquery.gcs.output.mode=<overwrite|append|ignore|errorifexists> \
