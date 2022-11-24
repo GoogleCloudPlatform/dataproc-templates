@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .casssandra_to_bigquery import CassandraToBigqueryTemplate
+from .casssandra_to_bigquery import CassandraToBQTemplate

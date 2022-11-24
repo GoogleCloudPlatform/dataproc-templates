@@ -7,9 +7,12 @@ Template for exporting a Cassandra table to Bigquery
 * `cassandratobq.input.keyspace`: Input keyspace name for cassandra
 * `cassandratobq.input.table`: Input table name of cassandra 
 * `cassandratobq.input.host`: Cassandra Host IP 
-* `cassandratobq.bigquery.location`: Dataset and Table name 
-* `cassandratobq.output.mode`: Output mode of Cassandra to Bq
+* `cassandratobq.bigquery.location`: Dataset and Table name
 * `cassandratobq.temp.gcs.location`: Temp GCS location for staging
+#### Optional Arguments
+* `cassandratobq.input.query` : Customised query for selective migration
+* `cassandratobq.input.catalog.name`: Connection name, defaults to casscon
+* `cassandratobq.output.mode`: Output mode of Cassandra to Bq, defaults to Append mode
 
 
 ## Usage
@@ -18,21 +21,19 @@ Template for exporting a Cassandra table to Bigquery
 $ python main.py --template CASSANDRATOBQ --help
 
 usage: main.py --template CASSANDRATOBQ [-h] \
-	--bigquery.gcs.input.table BIGQUERY.GCS.INPUT.TABLE \
-	--bigquery.gcs.output.location BIGQUERY.GCS.OUTPUT.LOCATION \
-	--bigquery.gcs.output.format {avro,parquet,csv,json} \
-    [--bigquery.gcs.output.mode {overwrite,append,ignore,errorifexists}]
+	--cassandratobq.input.keyspace CASSANDRA.INPUT.KEYSPACE.NAME \
+	--cassandratobq.input.table CASSANDRA.INPUT.KEYSPACE.NAME \
+	--cassandratobq.input.host CASSANDRA.DATABASE.HOST.IP \
+	--cassandratobq.bigquery.location BIGQUERY.DATASET.TABLE.LOCATION \
+	--cassandratobq.temp.gcs.location TEMPORARY.GCS.STAGING.LOCATION \
+    [ --cassandratobq.output.mode {overwrite,append,ignore,errorifexists}]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --bigquery.gcs.input.table BIGQUERY.GCS.INPUT.TABLE
-                        BigQuery Input table name
-  --bigquery.gcs.output.format {avro,parquet,csv,json}
-                        Output file format (one of: avro,parquet,csv,json)
-  --bigquery.gcs.output.location BIGQUERY.GCS.OUTPUT.LOCATION
-                        GCS location for output files
-  --bigquery.gcs.output.mode {overwrite,append,ignore,errorifexists}
-                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+  --cassandratobq.input.query   Input query for customised migration
+                       
+  --cassandratobq.input.catalog.name   Cassandra connection name
+                        
 ```
 
 ## Required JAR files
@@ -47,14 +48,16 @@ wget https://repo1.maven.org/maven2/com/datastax/spark/spark-cassandra-connector
 A jar file named `spark-cassandra-connector_2.12-3.2.0.jar` would be downloaded, this can be passed to provide spark drivers and workers with cassandra connector classes.
 ```
 export GCP_PROJECT=<project_id>
-export JARS=spark-cassandra-connector_2.12-3.2.0.jar # Pass the downloaded jar path
+export JARS=/path/to/jar/spark-cassandra-connector_2.12-3.2.0.jar # Pass the downloaded jar path
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 export REGION=<region>
 
 ./bin/start.sh \
 -- --template=CASSANDRATOBQ \
-	--bigquery.gcs.input.table=<projectId:datasetName.tableName> \
-	--bigquery.gcs.output.format=<csv|parquet|avro|json> \
-	--bigquery.gcs.output.mode=<overwrite|append|ignore|errorifexists> \
-	--bigquery.gcs.output.location=<gs://bucket/path>
+	--cassandratobq.input.keyspace=<keyspace name> \
+	--cassandratobq.input.table=<cassandra table name> \
+	--cassandratobq.input.host=<cassandra host IP> \
+	--cassandratobq.bigquery.location=<dataset.tablename> \
+	--cassandratobq.temp.gcs.location=<staging bucket name> \
+	--cassandratobq.output.mode=<overwrite|append|ignore|errorifexists>
 ```
