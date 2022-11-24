@@ -21,7 +21,7 @@ from pyspark.sql import SparkSession
 from dataproc_templates import BaseTemplate, TemplateName
 from dataproc_templates.gcs.gcs_to_jdbc import GCSToJDBCTemplate
 from dataproc_templates.mongo.mongo_to_gcs import MongoToGCSTemplate
-from dataproc_templates.util import get_template_name, track_template_invocation
+from dataproc_templates.util import get_template_name, get_log_level, track_template_invocation
 from dataproc_templates.gcs.gcs_to_bigquery import GCSToBigQueryTemplate
 from dataproc_templates.gcs.gcs_to_gcs import GCSToGCSTemplate
 from dataproc_templates.gcs.gcs_to_mongo import GCSToMONGOTemplate
@@ -40,7 +40,6 @@ from dataproc_templates.cassandra.casssandra_to_bigquery import CassandraToBQTem
 
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
-
 
 # Maps each TemplateName to its corresponding implementation
 # of BaseTemplate
@@ -65,7 +64,6 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
 
 }
 
-
 def create_spark_session(template_name: TemplateName) -> SparkSession:
     """
     Creates the SparkSession object.
@@ -85,10 +83,15 @@ def create_spark_session(template_name: TemplateName) -> SparkSession:
         .appName(template_name.value) \
         .enableHiveSupport() \
         .getOrCreate()
-    spark.sparkContext.setLogLevel("INFO")
+
+    log4j = spark.sparkContext._jvm.org.apache.log4j
+    log4j_level: log4j.Level = log4j.Level.toLevel(get_log_level())
+
+    log4j.LogManager.getRootLogger().setLevel(log4j_level)
+    log4j.LogManager.getLogger("org.apache.spark").setLevel(log4j_level)
+    spark.sparkContext.setLogLevel(get_log_level())
 
     return spark
-
 
 def run_template(template_name: TemplateName) -> None:
     """
@@ -105,8 +108,6 @@ def run_template(template_name: TemplateName) -> None:
     # pylint: disable=broad-except
 
     template_impl: Type[BaseTemplate] = TEMPLATE_IMPLS[template_name]
-
-    LOGGER.info('Running template %s', template_name.value)
 
     template_instance: BaseTemplate = template_impl.build()
 
@@ -127,7 +128,6 @@ def run_template(template_name: TemplateName) -> None:
 
 
 if __name__ == '__main__':
-    LOGGER.setLevel(logging.INFO)
 
     run_template(
         template_name=get_template_name()

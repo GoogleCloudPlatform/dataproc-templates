@@ -1,3 +1,11 @@
+# Supported Databases for JDBC
+Following databases are supported via Spark JDBC by default:
+- DB2
+- MySQL / MariaDB
+- MS Sql
+- Oracle
+- PostgreSQL
+
 # Prerequisites
 
 ## Required JAR files

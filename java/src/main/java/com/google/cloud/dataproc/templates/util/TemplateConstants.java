@@ -316,6 +316,21 @@ public interface TemplateConstants {
   String KAFKA_BQ_TEMP_GCS_BUCKET = "kafka.bq.temp.gcs.bucket";
   String KAFKA_BQ_STREAM_OUTPUT_MODE = "kafka.bq.stream.output.mode";
 
+  /** Common properties for all Kafka Based Templates * */
+  String KAFKA_MESSAGE_FORMAT = "kafka.message.format";
+
+  String KAFKA_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
+  String KAFKA_TOPIC = "kafka.topic";
+  String KAFKA_STARTING_OFFSET = "kafka.starting.offset";
+  String KAFKA_SCHEMA_URL = "kafka.schema.url";
+
+  /** Kafka To GCS properties */
+  String KAFKA_GCS_OUTPUT_LOCATION = "kafka.gcs.output.location";
+
+  String KAFKA_GCS_OUTPUT_FORMAT = "kafka.gcs.output.format";
+  String KAFKA_GCS_OUTPUT_MODE = "kafka.gcs.output.mode";
+  String KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT = "kafka.gcs.await.termination.timeout.ms";
+
   /** SnowflakeToGCS properties */
   String SNOWFLAKE_GCS_SFURL = "snowflake.gcs.sfurl";
 
