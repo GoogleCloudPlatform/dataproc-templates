@@ -119,9 +119,11 @@ class CassandraToBQTemplate(BaseTemplate):
             f"{pprint.pformat(args)}"
         )
         # Set configuration to connect to Cassandra
-        spark.conf.set("spark.sql.extensions", "com.datastax.spark.connector.CassandraSparkExtensions")
-        spark.conf.set(f"spark.sql.catalog.{catalog}", "com.datastax.spark.connector.datasource.CassandraCatalog")
-        spark.conf.set(f"spark.sql.catalog.{catalog}.spark.cassandra.connection.host",input_host)
+        config = spark.SparkConf().setAll([('spark.sql.extensions', 'com.datastax.spark.connector.CassandraSparkExtensions'), (f"spark.sql.catalog.{catalog}", 'com.datastax.spark.connector.datasource.CassandraCatalog'), (f"spark.sql.catalog.{catalog}.spark.cassandra.connection.host", input_host)])
+        spark=SparkSession.builder.config(config).getOrCreate()
+        # spark.conf.set("spark.sql.extensions", "com.datastax.spark.connector.CassandraSparkExtensions")
+        # spark.conf.set(f"spark.sql.catalog.{catalog}", "com.datastax.spark.connector.datasource.CassandraCatalog")
+        # spark.conf.set(f"spark.sql.catalog.{catalog}.spark.cassandra.connection.host",input_host)
         # Read
         if(not query):
             input_data = spark.read.table(f"{catalog}.{input_keyspace}.{input_table}")
