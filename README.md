@@ -56,6 +56,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for 
 * [JDBCToBigQuery](/python/dataproc_templates/jdbc) (blogpost [link](https://medium.com/@sjlva/python-fast-export-large-database-tables-using-gcp-serverless-dataproc-bfe77a132485))
 * [RedshiftToGCS](/python/dataproc_templates/redshift) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
 * [TextToBigQuery](/python/dataproc_templates/gcs) (blogpost [link](https://medium.com/google-cloud/dataproc-serverless-pyspark-template-for-ingesting-compressed-text-files-to-bigquery-c6eab8fb6bc9))
+* [CassandraToBigquery](/python/dataproc_templates/cassandra)
 
 ## Dataproc Templates (Notebooks)
 Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more information
