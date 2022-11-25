@@ -232,3 +232,13 @@ SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
 SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
 SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
 
+# Kafka Metadata To GCS
+KAFKAMETADATA_TO_GCS_BOOTSTRAP_SERVERS = "kafkametadata.gcs.bootstrap.servers"
+KAFKAMETADATA_TO_GCS_API_KEY = "kafkametadata.gcs.api.key"
+KAFKAMETADATA_TO_GCS_API_SECRET = "kafkametadata.gcs.api.secret"
+KAFKAMETADATA_TO_GCS_SCHEMAREGISTRY_ENDPOINT = "kafkametadata.gcs.schemaregistry.endpoint"
+KAFKAMETADATA_TO_GCS_SCHEMAREGISTRY_API_KEY = "kafkametadata.gcs.schemaregistry.api.key"
+KAFKAMETADATA_TO_GCS_SCHEMAREGISTRY_API_SECRET = "kafkametadata.gcs.schemaregistry.api.secret"
+KAFKAMETADATA_TO_GCS_OUTPUT_LOCATION = "kafkametadata.gcs.output.location"
+KAFKAMETADATA_TO_GCS_OUTPUT_FORMAT = "kafkametadata.gcs.output.format"
+KAFKAMETADATA_TO_GCS_OUTPUT_MODE = "kafkametadata.gcs.output.mode"
