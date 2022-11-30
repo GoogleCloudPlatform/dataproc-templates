@@ -32,7 +32,7 @@ public class SnowflakeToGCS implements BaseTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SnowflakeToGCS.class);
   private final SnowflakeToGCSConfig config;
-
+  HashMap<String, String> properties = new HashMap<>();
   public SnowflakeToGCS(SnowflakeToGCSConfig config) {
     this.config = config;
   }
@@ -48,7 +48,23 @@ public class SnowflakeToGCS implements BaseTemplate {
   public void runTemplate() {
     SparkSession spark = SparkSession.builder().appName("Snowflake To GCS").getOrCreate();
 
-    HashMap<String, String> properties = new HashMap<>();
+    validateInput();
+
+    Dataset<Row> inputData =
+        spark.read().format(Utils.SNOWFLAKE_SOURCE_NAME()).options(properties).load();
+
+    DataFrameWriter<Row> writer =
+        inputData.write().mode(config.getGcsWriteMode()).format(config.getGcsWriteFormat());
+
+    if (StringUtils.isNotBlank(config.getGcsPartitionColumn())) {
+      writer = writer.partitionBy(config.getGcsPartitionColumn());
+    }
+
+    writer.save(config.getGcsLocation());
+  }
+
+  public void validateInput()
+  {
     properties.put("sfURL", config.getSfUrl());
     properties.put("sfUser", config.getSfUser());
     properties.put("sfPassword", config.getSfPassword());
@@ -65,17 +81,5 @@ public class SnowflakeToGCS implements BaseTemplate {
     } else {
       properties.put("query", config.getSfQuery());
     }
-
-    Dataset<Row> inputData =
-        spark.read().format(Utils.SNOWFLAKE_SOURCE_NAME()).options(properties).load();
-
-    DataFrameWriter<Row> writer =
-        inputData.write().mode(config.getGcsWriteMode()).format(config.getGcsWriteFormat());
-
-    if (StringUtils.isNotBlank(config.getGcsPartitionColumn())) {
-      writer = writer.partitionBy(config.getGcsPartitionColumn());
-    }
-
-    writer.save(config.getGcsLocation());
   }
 }

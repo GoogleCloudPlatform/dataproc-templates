@@ -33,7 +33,7 @@ public class JDBCToSpanner implements BaseTemplate {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(JDBCToSpanner.class);
   private final JDBCToSpannerConfig config;
-
+  HashMap<String, String> jdbcProperties = new HashMap<>();
   public JDBCToSpanner(JDBCToSpannerConfig config) {
     this.config = config;
   }
@@ -55,20 +55,8 @@ public class JDBCToSpanner implements BaseTemplate {
             .getOrCreate();
 
     /** Read Input data from JDBC table */
-    HashMap<String, String> jdbcProperties = new HashMap<>();
-    jdbcProperties.put(JDBCOptions.JDBC_URL(), config.getJdbcURL());
-    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcDriverClassName());
-    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), config.getSQL());
 
-    if (StringUtils.isNotBlank(config.getJdbcSQLPartitionColumn())
-        && StringUtils.isNotBlank(config.getJdbcSQLLowerBound())
-        && StringUtils.isNotBlank(config.getJdbcSQLUpperBound())
-        && StringUtils.isNotBlank(config.getJdbcSQLNumPartitions())) {
-      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), config.getJdbcSQLPartitionColumn());
-      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), config.getJdbcSQLUpperBound());
-      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), config.getJdbcSQLLowerBound());
-      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), config.getJdbcSQLNumPartitions());
-    }
+    validateInput();
 
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
@@ -103,5 +91,22 @@ public class JDBCToSpanner implements BaseTemplate {
         .option(JDBCOptions.JDBC_DRIVER_CLASS(), SPANNER_JDBC_DRIVER)
         .mode(config.getSaveMode())
         .save();
+  }
+
+  public void validateInput()
+  {
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), config.getJdbcURL());
+    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcDriverClassName());
+    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), config.getSQL());
+
+    if (StringUtils.isNotBlank(config.getJdbcSQLPartitionColumn())
+            && StringUtils.isNotBlank(config.getJdbcSQLLowerBound())
+            && StringUtils.isNotBlank(config.getJdbcSQLUpperBound())
+            && StringUtils.isNotBlank(config.getJdbcSQLNumPartitions())) {
+      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), config.getJdbcSQLPartitionColumn());
+      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), config.getJdbcSQLUpperBound());
+      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), config.getJdbcSQLLowerBound());
+      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), config.getJdbcSQLNumPartitions());
+    }
   }
 }

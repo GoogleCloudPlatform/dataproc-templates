@@ -125,7 +125,7 @@ public class GCStoBigquery implements BaseTemplate {
     }
   }
 
-  void validateInput() {
+  public void validateInput() {
     if (StringUtils.isAllBlank(projectID)
         || StringUtils.isAllBlank(inputFileLocation)
         || StringUtils.isAllBlank(bigQueryDataset)

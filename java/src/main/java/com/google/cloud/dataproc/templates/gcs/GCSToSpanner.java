@@ -38,11 +38,16 @@ public class GCSToSpanner implements BaseTemplate {
     this.config = config;
   }
 
-  public static GCSToSpanner of(String... args) {
+  public GCSToSpanner of(String... args) {
     GCSToSpannerConfig config = GCSToSpannerConfig.fromProperties(PropertyUtil.getProperties());
+    validateInput();
+    return new GCSToSpanner(config);
+  }
+
+  public void validateInput()
+  {
     ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
-    return new GCSToSpanner(config);
   }
 
   @Override

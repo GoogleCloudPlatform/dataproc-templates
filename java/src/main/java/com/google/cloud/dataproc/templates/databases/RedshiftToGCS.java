@@ -33,11 +33,16 @@ public class RedshiftToGCS implements BaseTemplate {
     this.config = config;
   }
 
-  public static com.google.cloud.dataproc.templates.databases.RedshiftToGCS of(String... args) {
+  public com.google.cloud.dataproc.templates.databases.RedshiftToGCS of(String... args) {
     RedshiftToGCSConfig config = RedshiftToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    validateInput();
+    return new com.google.cloud.dataproc.templates.databases.RedshiftToGCS(config);
+  }
+
+  public void validateInput()
+  {
     ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
-    return new com.google.cloud.dataproc.templates.databases.RedshiftToGCS(config);
   }
 
   @Override

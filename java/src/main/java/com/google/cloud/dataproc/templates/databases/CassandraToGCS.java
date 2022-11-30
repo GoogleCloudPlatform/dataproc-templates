@@ -36,11 +36,16 @@ public class CassandraToGCS implements BaseTemplate, TemplateConstants {
     this.config = config;
   }
 
-  public static CassandraToGCS of(String... args) {
+  public CassandraToGCS of(String... args) {
     CassandraToGCSConfig config = CassandraToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    validateInput();
+    return new CassandraToGCS(config);
+  }
+
+  public void validateInput()
+  {
     ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
-    return new CassandraToGCS(config);
   }
 
   @Override

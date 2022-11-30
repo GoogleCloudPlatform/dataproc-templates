@@ -36,11 +36,16 @@ public class GCSToJDBC implements BaseTemplate {
     this.config = config;
   }
 
-  public static GCSToJDBC of(String... args) {
+  public GCSToJDBC of(String... args) {
     GCSToJDBCConfig config = GCSToJDBCConfig.fromProperties(PropertyUtil.getProperties());
+    validateInput();
+    return new GCSToJDBC(config);
+  }
+
+  public void validateInput()
+  {
     ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
-    return new GCSToJDBC(config);
   }
 
   @Override

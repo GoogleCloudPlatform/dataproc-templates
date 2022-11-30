@@ -78,57 +78,8 @@ public class JDBCToBigQuery implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(bqLocation)
-        || StringUtils.isAllBlank(jdbcURL)
-        || StringUtils.isAllBlank(jdbcDriverClassName)
-        || StringUtils.isAllBlank(jdbcSQL)
-        || StringUtils.isAllBlank(temporaryGcsBucket)) {
-      LOGGER.error(
-          "{},{},{},{},{} are required parameters. ",
-          JDBC_TO_BQ_BIGQUERY_LOCATION,
-          JDBC_TO_BQ_JDBC_URL,
-          JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME,
-          JDBC_TO_BQ_SQL,
-          JDBC_TO_BQ_TEMP_GCS_BUCKET);
-      throw new IllegalArgumentException(
-          "Required parameters for JDBCToBQ not passed. "
-              + "Set mandatory parameter for JDBCToBQ template "
-              + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
-    }
 
-    if (StringUtils.isNotBlank(concatedPartitionProps)
-        && ((StringUtils.isBlank(jdbcSQLPartitionColumn)
-                || StringUtils.isBlank(jdbcSQLLowerBound)
-                || StringUtils.isBlank(jdbcSQLUpperBound))
-            || StringUtils.isBlank(jdbcSQLNumPartitions))) {
-      throw new IllegalArgumentException(
-          "Required parameters for JDBCToGCS not passed. "
-              + "Set all the sql partitioning parameters together"
-              + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
-    }
-    LOGGER.info(
-        "Starting JDBC to BigQuery spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {}:{}"
-            + "5. {}:{}"
-            + "6. {}:{}"
-            + "7. {}:{}",
-        JDBC_TO_BQ_BIGQUERY_LOCATION,
-        bqLocation,
-        JDBC_TO_BQ_WRITE_MODE,
-        bqWriteMode,
-        JDBC_TO_BQ_SQL,
-        jdbcSQL,
-        JDBC_TO_BQ_SQL_PARTITION_COLUMN,
-        jdbcSQLPartitionColumn,
-        JDBC_TO_BQ_SQL_UPPER_BOUND,
-        jdbcSQLUpperBound,
-        JDBC_TO_BQ_SQL_LOWER_BOUND,
-        jdbcSQLLowerBound,
-        JDBC_TO_BQ_SQL_NUM_PARTITIONS,
-        jdbcSQLNumPartitions);
+    validateInput();
 
     SparkSession spark = null;
 
@@ -166,5 +117,60 @@ public class JDBCToBigQuery implements BaseTemplate {
         .format("com.google.cloud.spark.bigquery")
         .option("table", bqLocation)
         .save();
+  }
+
+  public void validateInput()
+  {
+    if (StringUtils.isAllBlank(bqLocation)
+            || StringUtils.isAllBlank(jdbcURL)
+            || StringUtils.isAllBlank(jdbcDriverClassName)
+            || StringUtils.isAllBlank(jdbcSQL)
+            || StringUtils.isAllBlank(temporaryGcsBucket)) {
+      LOGGER.error(
+              "{},{},{},{},{} are required parameters. ",
+              JDBC_TO_BQ_BIGQUERY_LOCATION,
+              JDBC_TO_BQ_JDBC_URL,
+              JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME,
+              JDBC_TO_BQ_SQL,
+              JDBC_TO_BQ_TEMP_GCS_BUCKET);
+      throw new IllegalArgumentException(
+              "Required parameters for JDBCToBQ not passed. "
+                      + "Set mandatory parameter for JDBCToBQ template "
+                      + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
+    }
+
+    if (StringUtils.isNotBlank(concatedPartitionProps)
+            && ((StringUtils.isBlank(jdbcSQLPartitionColumn)
+            || StringUtils.isBlank(jdbcSQLLowerBound)
+            || StringUtils.isBlank(jdbcSQLUpperBound))
+            || StringUtils.isBlank(jdbcSQLNumPartitions))) {
+      throw new IllegalArgumentException(
+              "Required parameters for JDBCToGCS not passed. "
+                      + "Set all the sql partitioning parameters together"
+                      + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
+    }
+    LOGGER.info(
+            "Starting JDBC to BigQuery spark job with following parameters:"
+                    + "1. {}:{}"
+                    + "2. {}:{}"
+                    + "3. {}:{}"
+                    + "4. {}:{}"
+                    + "5. {}:{}"
+                    + "6. {}:{}"
+                    + "7. {}:{}",
+            JDBC_TO_BQ_BIGQUERY_LOCATION,
+            bqLocation,
+            JDBC_TO_BQ_WRITE_MODE,
+            bqWriteMode,
+            JDBC_TO_BQ_SQL,
+            jdbcSQL,
+            JDBC_TO_BQ_SQL_PARTITION_COLUMN,
+            jdbcSQLPartitionColumn,
+            JDBC_TO_BQ_SQL_UPPER_BOUND,
+            jdbcSQLUpperBound,
+            JDBC_TO_BQ_SQL_LOWER_BOUND,
+            jdbcSQLLowerBound,
+            JDBC_TO_BQ_SQL_NUM_PARTITIONS,
+            jdbcSQLNumPartitions);
   }
 }

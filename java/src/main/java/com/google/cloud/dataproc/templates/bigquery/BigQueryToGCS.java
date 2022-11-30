@@ -54,19 +54,8 @@ public class BigQueryToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(inputTableName)
-        || StringUtils.isAllBlank(outputFileFormat)
-        || StringUtils.isAllBlank(outputFileLocation)) {
-      LOGGER.error(
-          "{},{},{} are required parameter. ",
-          BQ_GCS_INPUT_TABLE_NAME,
-          BQ_GCS_OUTPUT_FORMAT,
-          BQ_GCS_OUTPUT_LOCATION);
-      throw new IllegalArgumentException(
-          "Required parameters for BigQueryToGCS not passed. "
-              + "Set mandatory parameter for BigQueryToGCS template "
-              + "in resources/conf/template.properties file.");
-    }
+
+    validateInput();
 
     SparkSession spark = null;
     try {
@@ -99,6 +88,23 @@ public class BigQueryToGCS implements BaseTemplate {
       if (Objects.nonNull(spark)) {
         spark.stop();
       }
+    }
+  }
+
+  public void validateInput()
+  {
+    if (StringUtils.isAllBlank(inputTableName)
+            || StringUtils.isAllBlank(outputFileFormat)
+            || StringUtils.isAllBlank(outputFileLocation)) {
+      LOGGER.error(
+              "{},{},{} are required parameter. ",
+              BQ_GCS_INPUT_TABLE_NAME,
+              BQ_GCS_OUTPUT_FORMAT,
+              BQ_GCS_OUTPUT_LOCATION);
+      throw new IllegalArgumentException(
+              "Required parameters for BigQueryToGCS not passed. "
+                      + "Set mandatory parameter for BigQueryToGCS template "
+                      + "in resources/conf/template.properties file.");
     }
   }
 }

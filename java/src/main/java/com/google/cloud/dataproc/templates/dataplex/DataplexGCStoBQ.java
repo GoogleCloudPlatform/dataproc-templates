@@ -140,7 +140,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
    *
    * @throws Exception if values no value is passed for --dataplexEntity
    */
-  private void checkInput() {
+  public void validateInput() {
     if (entity != null) {
       this.entity = entity;
     } else {
@@ -424,7 +424,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
     try {
       this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
       this.sqlContext = new SQLContext(spark);
-      checkInput();
+      validateInput();
 
       // TODO: refactor the following DataplexUtil avoid calling the same API method more than once
       this.entityBasePath = DataplexUtil.getBasePathEntityData(entity);

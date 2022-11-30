@@ -35,11 +35,16 @@ public class CassandraToBQ implements BaseTemplate {
     this.config = config;
   }
 
-  public static CassandraToBQ of(String... args) {
+  public CassandraToBQ of(String... args) {
     CassandraToBqConfig config = CassandraToBqConfig.fromProperties(PropertyUtil.getProperties());
+    validateInput();
+    return new CassandraToBQ(config);
+  }
+
+  public void validateInput()
+  {
     ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
-    return new CassandraToBQ(config);
   }
 
   @Override

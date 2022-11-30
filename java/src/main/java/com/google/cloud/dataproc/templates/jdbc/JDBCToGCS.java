@@ -29,7 +29,7 @@ public class JDBCToGCS implements BaseTemplate {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(JDBCToGCS.class);
   private final JDBCToGCSConfig config;
-
+  HashMap<String, String> jdbcProperties = new HashMap<>();
   public JDBCToGCS(JDBCToGCSConfig config) {
     this.config = config;
   }
@@ -51,25 +51,10 @@ public class JDBCToGCS implements BaseTemplate {
             .getOrCreate();
 
     /** Read Input data from JDBC table */
-    HashMap<String, String> jdbcProperties = new HashMap<>();
-    jdbcProperties.put(JDBCOptions.JDBC_URL(), config.getJdbcURL());
-    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcDriverClassName());
-    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), config.getSQL());
 
-    if (StringUtils.isNotBlank(config.getConcatedPartitionProps())) {
-      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), config.getJdbcSQLPartitionColumn());
-      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), config.getJdbcSQLUpperBound());
-      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), config.getJdbcSQLLowerBound());
-      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), config.getJdbcSQLNumPartitions());
-    }
+    validateInput();
 
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
-
-    if (StringUtils.isNotBlank(config.getTempTable())
-        && StringUtils.isNotBlank(config.getTempQuery())) {
-      inputData.createOrReplaceGlobalTempView(config.getTempTable());
-      inputData = spark.sql(config.getTempQuery());
-    }
 
     if (StringUtils.isNotBlank(config.getTempTable())
         && StringUtils.isNotBlank(config.getTempQuery())) {
@@ -86,5 +71,19 @@ public class JDBCToGCS implements BaseTemplate {
     }
 
     writer.save(config.getGcsOutputLocation());
+  }
+
+  public void validateInput()
+  {
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), config.getJdbcURL());
+    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcDriverClassName());
+    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), config.getSQL());
+
+    if (StringUtils.isNotBlank(config.getConcatedPartitionProps())) {
+      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), config.getJdbcSQLPartitionColumn());
+      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), config.getJdbcSQLUpperBound());
+      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), config.getJdbcSQLLowerBound());
+      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), config.getJdbcSQLNumPartitions());
+    }
   }
 }

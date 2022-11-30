@@ -43,11 +43,16 @@ public class SpannerToGCS implements BaseTemplate {
     this.config = config;
   }
 
-  public static SpannerToGCS of(String... args) {
+  public SpannerToGCS of(String... args) {
     SpannerToGCSConfig config = SpannerToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    validateInput();
+    return new SpannerToGCS(config);
+  }
+
+  public void validateInput()
+  {
     ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
-    return new SpannerToGCS(config);
   }
 
   @Override
