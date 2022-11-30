@@ -36,20 +36,16 @@ public class GCSToJDBC implements BaseTemplate {
     this.config = config;
   }
 
-  public GCSToJDBC of(String... args) {
+  public static GCSToJDBC of(String... args) {
     GCSToJDBCConfig config = GCSToJDBCConfig.fromProperties(PropertyUtil.getProperties());
-    validateInput();
-    return new GCSToJDBC(config);
-  }
-
-  public void validateInput()
-  {
     ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
+    return new GCSToJDBC(config);
   }
 
   @Override
   public void runTemplate() {
+    validateInput();
     try (SparkSession spark = SparkSession.builder().appName("GCS to JDBC").getOrCreate()) {
       Dataset<Row> dataset =
           spark.read().format(config.getInputFormat()).load(config.getInputLocation());
@@ -71,4 +67,6 @@ public class GCSToJDBC implements BaseTemplate {
         .mode(config.getSaveMode())
         .save();
   }
+
+  public void validateInput() {}
 }

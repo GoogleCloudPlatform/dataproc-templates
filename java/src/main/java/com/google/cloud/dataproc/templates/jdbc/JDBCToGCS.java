@@ -30,6 +30,7 @@ public class JDBCToGCS implements BaseTemplate {
   public static final Logger LOGGER = LoggerFactory.getLogger(JDBCToGCS.class);
   private final JDBCToGCSConfig config;
   HashMap<String, String> jdbcProperties = new HashMap<>();
+
   public JDBCToGCS(JDBCToGCSConfig config) {
     this.config = config;
   }
@@ -51,7 +52,6 @@ public class JDBCToGCS implements BaseTemplate {
             .getOrCreate();
 
     /** Read Input data from JDBC table */
-
     validateInput();
 
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
@@ -73,8 +73,7 @@ public class JDBCToGCS implements BaseTemplate {
     writer.save(config.getGcsOutputLocation());
   }
 
-  public void validateInput()
-  {
+  public void validateInput() {
     jdbcProperties.put(JDBCOptions.JDBC_URL(), config.getJdbcURL());
     jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcDriverClassName());
     jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), config.getSQL());

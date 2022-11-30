@@ -81,35 +81,34 @@ public class HiveToBigQuery implements BaseTemplate {
         .save();
   }
 
-  public void validateInput()
-  {
+  public void validateInput() {
     if (StringUtils.isAllBlank(bqLocation)
-            || StringUtils.isAllBlank(hiveSQL)
-            || StringUtils.isAllBlank(temporaryGcsBucket)) {
+        || StringUtils.isAllBlank(hiveSQL)
+        || StringUtils.isAllBlank(temporaryGcsBucket)) {
       LOGGER.error(
-              "{},{},{} is required parameter. ",
-              HIVE_TO_BQ_BIGQUERY_LOCATION,
-              HIVE_TO_BQ_SQL,
-              HIVE_TO_BQ_TEMP_GCS_BUCKET);
+          "{},{},{} is required parameter. ",
+          HIVE_TO_BQ_BIGQUERY_LOCATION,
+          HIVE_TO_BQ_SQL,
+          HIVE_TO_BQ_TEMP_GCS_BUCKET);
       throw new IllegalArgumentException(
-              "Required parameters for HiveToBigQuery not passed. "
-                      + "Set mandatory parameter for HiveToBigQuery template "
-                      + "in resources/conf/template.properties file.");
+          "Required parameters for HiveToBigQuery not passed. "
+              + "Set mandatory parameter for HiveToBigQuery template "
+              + "in resources/conf/template.properties file.");
     }
 
     LOGGER.info(
-            "Starting Hive to BigQuery spark job with following parameters:"
-                    + "1. {}:{}"
-                    + "2. {}:{}"
-                    + "3. {}:{}"
-                    + "4. {},{}",
-            HIVE_TO_BQ_BIGQUERY_LOCATION,
-            bqLocation,
-            HIVE_TO_BQ_TEMP_GCS_BUCKET,
-            temporaryGcsBucket,
-            HIVE_TO_BQ_SQL,
-            hiveSQL,
-            HIVE_TO_BQ_APPEND_MODE,
-            bqAppendMode);
+        "Starting Hive to BigQuery spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {},{}",
+        HIVE_TO_BQ_BIGQUERY_LOCATION,
+        bqLocation,
+        HIVE_TO_BQ_TEMP_GCS_BUCKET,
+        temporaryGcsBucket,
+        HIVE_TO_BQ_SQL,
+        hiveSQL,
+        HIVE_TO_BQ_APPEND_MODE,
+        bqAppendMode);
   }
 }

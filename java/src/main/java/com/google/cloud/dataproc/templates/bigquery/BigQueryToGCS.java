@@ -91,20 +91,19 @@ public class BigQueryToGCS implements BaseTemplate {
     }
   }
 
-  public void validateInput()
-  {
+  public void validateInput() {
     if (StringUtils.isAllBlank(inputTableName)
-            || StringUtils.isAllBlank(outputFileFormat)
-            || StringUtils.isAllBlank(outputFileLocation)) {
+        || StringUtils.isAllBlank(outputFileFormat)
+        || StringUtils.isAllBlank(outputFileLocation)) {
       LOGGER.error(
-              "{},{},{} are required parameter. ",
-              BQ_GCS_INPUT_TABLE_NAME,
-              BQ_GCS_OUTPUT_FORMAT,
-              BQ_GCS_OUTPUT_LOCATION);
+          "{},{},{} are required parameter. ",
+          BQ_GCS_INPUT_TABLE_NAME,
+          BQ_GCS_OUTPUT_FORMAT,
+          BQ_GCS_OUTPUT_LOCATION);
       throw new IllegalArgumentException(
-              "Required parameters for BigQueryToGCS not passed. "
-                      + "Set mandatory parameter for BigQueryToGCS template "
-                      + "in resources/conf/template.properties file.");
+          "Required parameters for BigQueryToGCS not passed. "
+              + "Set mandatory parameter for BigQueryToGCS template "
+              + "in resources/conf/template.properties file.");
     }
   }
 }

@@ -38,20 +38,16 @@ public class GCSToSpanner implements BaseTemplate {
     this.config = config;
   }
 
-  public GCSToSpanner of(String... args) {
+  public static GCSToSpanner of(String... args) {
     GCSToSpannerConfig config = GCSToSpannerConfig.fromProperties(PropertyUtil.getProperties());
-    validateInput();
-    return new GCSToSpanner(config);
-  }
-
-  public void validateInput()
-  {
     ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
+    return new GCSToSpanner(config);
   }
 
   @Override
   public void runTemplate() {
+    validateInput();
     try (SparkSession spark = SparkSession.builder().appName("GCS to Spanner").getOrCreate()) {
       Dataset<Row> dataset =
           spark.read().format(config.getInputFormat()).load(config.getInputLocation());
@@ -82,4 +78,6 @@ public class GCSToSpanner implements BaseTemplate {
         .mode(config.getSaveMode())
         .save();
   }
+
+  public void validateInput() {}
 }

@@ -33,6 +33,7 @@ public class SnowflakeToGCS implements BaseTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(SnowflakeToGCS.class);
   private final SnowflakeToGCSConfig config;
   HashMap<String, String> properties = new HashMap<>();
+
   public SnowflakeToGCS(SnowflakeToGCSConfig config) {
     this.config = config;
   }
@@ -63,8 +64,7 @@ public class SnowflakeToGCS implements BaseTemplate {
     writer.save(config.getGcsLocation());
   }
 
-  public void validateInput()
-  {
+  public void validateInput() {
     properties.put("sfURL", config.getSfUrl());
     properties.put("sfUser", config.getSfUser());
     properties.put("sfPassword", config.getSfPassword());
