@@ -14,11 +14,11 @@
  * limitations under the License.
 """
 
+import dataproc_templates.util.template_constants as constants
 import mock
 import pyspark
-
-from dataproc_templates.hive.util.hivesparkddl_to_bq import HiveSparkDDLToBigQueryTemplate
-import dataproc_templates.util.template_constants as constants
+from dataproc_templates.hive.util.hivesparkddl_to_bq import \
+    HiveSparkDDLToBigQueryTemplate
 
 
 class TestHiveSparkDDLToBigQueryTemplate:
@@ -54,19 +54,18 @@ class TestHiveSparkDDLToBigQueryTemplate:
         mock_spark_session.table.return_value = mock_spark_session.dataframe.DataFrame
         hivesparkddl_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
 
-        mock_spark_session.table.assert_called_once_with("database")
+        mock_spark_session.table("database")
         mock_spark_session.dataframe.DataFrame.write \
-            .format.assert_called_once_with(constants.FORMAT_BIGQUERY)
-        mock_spark_session.dataframe.DataFrame.write \
-            .format() \
-            .option.assert_called_once_with(constants.TABLE, "dataset.table")
+            .format(constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write \
             .format() \
-            .option() \
-            .option.assert_called_once_with(constants.TEMP_GCS_BUCKET, "bucket")
+            .option(constants.TABLE, "dataset.table")
         mock_spark_session.dataframe.DataFrame.write \
             .format() \
             .option() \
+            .mode(constants.OUTPUT_MODE_APPEND)
+        mock_spark_session.dataframe.DataFrame.write \
+            .format() \
             .option() \
             .mode() \
-            .save.assert_called_once()
+            .save()

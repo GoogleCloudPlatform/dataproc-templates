@@ -16,27 +16,25 @@
 #
 
 
-from typing import Dict, Sequence, Optional, Any
-from logging import Logger
 import argparse
 import pprint
 import sys
-from pyspark.sql import SparkSession
+import io
+from logging import Logger
+from typing import Any, Dict, Optional, Sequence
 
-from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
-
+import pandas as pd
 from dataproc_templates import BaseTemplate
-import dataproc_templates.util.template_constants as constants
-
-
 from google.cloud import storage
+import pyspark
+from pyspark.sql import DataFrameWriter, SparkSession
 
-def WriteToCloud ( ddls,bucket,path ):
-    client = storage.Client()
-    bucket = client.get_bucket( bucket )
-    blob = bucket.blob( path )
-    blob.upload_from_string( ddls ) 
+
+def WriteToCloud (ddls, bucket, path):
+    # Write
+    writer: DataFrameWriter = ddls.write.mode(constants.OUTPUT_MODE_APPEND)
+    writer.option("path", path).save(bucket)
 
 class HiveSparkDDLToBigQueryTemplate(BaseTemplate): 
     """
@@ -100,7 +98,6 @@ class HiveSparkDDLToBigQueryTemplate(BaseTemplate):
                 f"{pprint.pformat(args)}"
             )
 
-        print("Connecting to Hive Database: "+hive_database)
         # databaseExists() checks if there is a database in the hive cluster that matches the system argument
         dbCheck = spark.catalog._jcatalog.databaseExists(hive_database)
         # dbCheck serves as a boolean. if true then the script will continue
@@ -157,9 +154,14 @@ class HiveSparkDDLToBigQueryTemplate(BaseTemplate):
                 ddls = ddls + ddl
             rdd=spark.sparkContext.parallelize(metadata)
             metadata_df=rdd.toDF(columns)
-            metadata_df.write.format(constants.FORMAT_BIGQUERY) .option(constants.TABLE, bigquery_dataset+'.'+bigquery_table) .option("temporaryGcsBucket",gcs_working_directory) .mode(constants.OUTPUT_MODE_APPEND) .save()
+            # Write metadata to BQ
+            metadata_df.write \
+                .format(constants.FORMAT_BIGQUERY) \
+                .option(constants.TABLE, bigquery_dataset+'.'+bigquery_table) \
+                .option(constants.TEMP_GCS_BUCKET, gcs_working_directory) \
+                .mode(constants.OUTPUT_MODE_APPEND) \
+                .save()
         
-        # function that writes the ddls string to GCS
+        # Write the DDLs to GCS
+        ddls = spark.createDataFrame(data = ddls)
         WriteToCloud(ddls,gcs_working_directory,gcs_target_path)
-
-        spark.stop()
