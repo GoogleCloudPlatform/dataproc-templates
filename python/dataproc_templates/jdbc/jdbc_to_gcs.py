@@ -81,6 +81,14 @@ class JDBCToGCSTemplate(BaseTemplate):
             help='The maximum number of partitions that can be used for parallelism in table reading and writing. Default set to 10'
         )
         parser.add_argument(
+            f'--{constants.JDBCTOGCS_INPUT_FETCHSIZE}',
+            dest=constants.JDBCTOGCS_INPUT_FETCHSIZE,
+            required=False,
+            default=0,
+            type=int,
+            help='Determines how many rows to fetch per round trip'
+        )
+        parser.add_argument(
             f'--{constants.JDBCTOGCS_OUTPUT_LOCATION}',
             dest=constants.JDBCTOGCS_OUTPUT_LOCATION,
             required=True,
@@ -157,6 +165,7 @@ class JDBCToGCSTemplate(BaseTemplate):
         input_jdbc_lowerbound: str = args[constants.JDBCTOGCS_INPUT_LOWERBOUND]
         input_jdbc_upperbound: str = args[constants.JDBCTOGCS_INPUT_UPPERBOUND]
         jdbc_numpartitions: str = args[constants.JDBCTOGCS_NUMPARTITIONS]
+        input_jdbc_fetchsize: int = args[constants.JDBCTOGCS_INPUT_FETCHSIZE]
         output_location: str = args[constants.JDBCTOGCS_OUTPUT_LOCATION]
         output_format: str = args[constants.JDBCTOGCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.JDBCTOGCS_OUTPUT_MODE]
@@ -183,6 +192,7 @@ class JDBCToGCSTemplate(BaseTemplate):
                 .option(constants.JDBC_DRIVER, input_jdbc_driver) \
                 .option(constants.JDBC_TABLE, input_jdbc_table) \
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
+                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
                 .load()
         else:
             input_data=spark.read \
@@ -194,6 +204,7 @@ class JDBCToGCSTemplate(BaseTemplate):
                 .option(constants.JDBC_LOWERBOUND, input_jdbc_lowerbound) \
                 .option(constants.JDBC_UPPERBOUND, input_jdbc_upperbound) \
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
+                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
                 .load()
 
         if sql_query:

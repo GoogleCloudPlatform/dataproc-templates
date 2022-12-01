@@ -99,6 +99,14 @@ class JDBCToBigQueryTemplate(BaseTemplate):
             help='The maximum number of partitions that can be used for parallelism in table reading and writing. Default set to 10'
         )
         parser.add_argument(
+            f'--{constants.JDBC_BQ_INPUT_FETCHSIZE}',
+            dest=constants.JDBC_BQ_INPUT_FETCHSIZE,
+            required=False,
+            default=0,
+            type=int,
+            help='Determines how many rows to fetch per round trip'
+        )
+        parser.add_argument(
             f'--{constants.JDBC_BQ_OUTPUT_MODE}',
             dest=constants.JDBC_BQ_OUTPUT_MODE,
             required=False,
@@ -136,6 +144,7 @@ class JDBCToBigQueryTemplate(BaseTemplate):
         input_jdbc_lowerbound: str = args[constants.JDBC_BQ_INPUT_LOWERBOUND]
         input_jdbc_upperbound: str = args[constants.JDBC_BQ_INPUT_UPPERBOUND]
         jdbc_numpartitions: str = args[constants.JDBC_BQ_NUMPARTITIONS]
+        input_jdbc_fetchsize: int = args[constants.JDBC_BQ_INPUT_FETCHSIZE]
         output_mode: str = args[constants.JDBC_BQ_OUTPUT_MODE]
 
         logger.info(
@@ -157,6 +166,7 @@ class JDBCToBigQueryTemplate(BaseTemplate):
                 .option(constants.JDBC_DRIVER, input_jdbc_driver) \
                 .option(constants.JDBC_TABLE, input_jdbc_table) \
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
+                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
                 .load()
         else:
             input_data=spark.read \
@@ -168,6 +178,7 @@ class JDBCToBigQueryTemplate(BaseTemplate):
                 .option(constants.JDBC_LOWERBOUND, input_jdbc_lowerbound) \
                 .option(constants.JDBC_UPPERBOUND, input_jdbc_upperbound) \
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
+                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
                 .load()
 
         # Write

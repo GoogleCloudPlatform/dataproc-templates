@@ -81,6 +81,14 @@ class JDBCToJDBCTemplate(BaseTemplate):
             help='The maximum number of partitions that can be used for parallelism in table reading and writing. Default set to 10'
         )
         parser.add_argument(
+            f'--{constants.JDBCTOJDBC_INPUT_FETCHSIZE}',
+            dest=constants.JDBCTOJDBC_INPUT_FETCHSIZE,
+            required=False,
+            default=0,
+            type=int,
+            help='Determines how many rows to fetch per round trip'
+        )
+        parser.add_argument(
             f'--{constants.JDBCTOJDBC_OUTPUT_URL}',
             dest=constants.JDBCTOJDBC_OUTPUT_URL,
             required=True,
@@ -164,6 +172,7 @@ class JDBCToJDBCTemplate(BaseTemplate):
         input_jdbc_lowerbound: str = args[constants.JDBCTOJDBC_INPUT_LOWERBOUND]
         input_jdbc_upperbound: str = args[constants.JDBCTOJDBC_INPUT_UPPERBOUND]
         jdbc_numpartitions: str = args[constants.JDBCTOJDBC_NUMPARTITIONS]
+        input_jdbc_fetchsize: int = args[constants.JDBCTOJDBC_INPUT_FETCHSIZE]
         output_jdbc_url: str = args[constants.JDBCTOJDBC_OUTPUT_URL]
         output_jdbc_driver: str = args[constants.JDBCTOJDBC_OUTPUT_DRIVER]
         output_jdbc_table: str = args[constants.JDBCTOJDBC_OUTPUT_TABLE]
@@ -192,6 +201,7 @@ class JDBCToJDBCTemplate(BaseTemplate):
                 .option(constants.JDBC_DRIVER, input_jdbc_driver) \
                 .option(constants.JDBC_TABLE, input_jdbc_table) \
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
+                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
                 .load()
         else:
             input_data=spark.read \
@@ -203,6 +213,7 @@ class JDBCToJDBCTemplate(BaseTemplate):
                 .option(constants.JDBC_LOWERBOUND, input_jdbc_lowerbound) \
                 .option(constants.JDBC_UPPERBOUND, input_jdbc_upperbound) \
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
+                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
                 .load()
 
         if sql_query:
