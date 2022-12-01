@@ -34,11 +34,11 @@ Below configurations are required before proceeding further.
 * `MAX_PARALLELISM` : Parameter for number of jobs to run in parallel default value is 5
 
 #### Oracle to Cloud Spanner Parameters
-* `ORACLE_HOST` : ORACLE instance ip address
-* `ORACLE_PORT` : ORACLE instance port
-* `ORACLE_USERNAME` : ORACLE username
-* `ORACLE_PASSWORD` : ORACLE password
-* `ORACLE_DATABASE` : Name of database that you want to migrate
+* `ORACLE_HOST` : Oracle instance ip address
+* `ORACLE_PORT` : Oracle instance port
+* `ORACLE_USERNAME` : Oracle username
+* `ORACLE_PASSWORD` : Oracle password
+* `ORACLE_DATABASE` : Name of database/service for Oracle connection
 * `ORACLE_TABLE_LIST` : List of tables you want to migrate eg: ['table1','table2'] else provide an empty list for migration whole database eg : []
 * `SPANNER_OUTPUT_MODE`: <Append | Overwrite>
 * `SPANNER_INSTANCE` : Cloud Spanner instance name
