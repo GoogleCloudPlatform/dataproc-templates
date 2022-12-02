@@ -27,11 +27,15 @@ wget https://jdbc.postgresql.org/download/postgresql-42.2.6.jar
 ```
 wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/6.4.0.jre8/mssql-jdbc-6.4.0.jre8.jar
 ```
+* Oracle
+```
+wget https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/21.7.0.0/ojdbc8-21.7.0.0.jar
+```
 
 Once the jar file gets downloaded, please upload the file into a GCS Bucket and export the below variable
 
 ```
-export JARS=<gcs-bucket-location-containing-jar-file> 
+export JARS=<gcs-bucket-location-containing-jar-file>
 ```
 
 ## JDBC URL syntax
@@ -48,6 +52,10 @@ jdbc:postgresql://<hostname>:<port>/<dbname>?user=<username>&password=<password>
 ```
 jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;password=<password>
 ```
+* Oracle
+```
+jdbc:oracle:thin:@//<hostname>:<port>/<dbservice>?user=<username>&password=<password>
+```
 
 ## Other important properties
 
@@ -55,7 +63,7 @@ jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;passwor
 
     * MySQL
     ```
-    jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" 
+    jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver"
     ```
     * PostgreSQL
     ```
@@ -64,6 +72,10 @@ jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;passwor
     * Microsoft SQL Server
     ```
     jdbctojdbc.input.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    ```
+    * Oracle
+    ```
+    jdbctojdbc.input.driver="oracle.jdbc.driver.OracleDriver"
     ```
 
 * You can either specify the source table name or have SQL query within double quotes. Example,
@@ -93,6 +105,7 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 * `jdbctojdbc.input.lowerbound` (Optional): JDBC input table partition column lower bound which is used to decide the partition stride
 * `jdbctojdbc.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbctojdbc.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
+* `jdbctojdbc.input.fetchsize` (Optional): Determines how many rows to fetch per round trip
 * `jdbctojdbc.output.create_table.option` (Optional): This option allows setting of database-specific table and partition options when creating a output table
 * `jdbctojdbc.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `jdbctojdbc.output.batch.size` (Optional): JDBC output batch size. Default set to 1000
@@ -116,6 +129,7 @@ optional arguments:
     --jdbctojdbc.input.lowerbound JDBCTOJDBC.INPUT.LOWERBOUND \
     --jdbctojdbc.input.upperbound JDBCTOJDBC.INPUT.UPPERBOUND \
     --jdbctojdbc.numpartitions JDBCTOJDBC.NUMPARTITIONS \
+    --jdbctojdbc.input.fetchsize JDBCTOJDBC.INPUT.FETCHSIZE \
     --jdbctojdbc.output.create_table.option JDBCTOJDBC.OUTPUT.CREATE_TABLE.OPTION \
     --jdbctojdbc.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctojdbc.output.batch.size JDBCTOJDBC.OUTPUT.BATCH.SIZE \
@@ -132,13 +146,13 @@ optional arguments:
     jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id);CREATE TABLE po0 PARTITION OF <table_name> FOR VALUES FROM (MINVALUE) TO (5);CREATE TABLE po1 PARTITION OF <table_name> FOR VALUES FROM (5) TO (10);CREATE TABLE po2 PARTITION OF <table_name> FOR VALUES FROM (10) TO (15);CREATE TABLE po3 PARTITION OF <table_name> FOR VALUES FROM (15) TO (MAXVALUE);"
     ```
 
-## General execution: 
+## General execution:
 
 ```
-export GCP_PROJECT=<gcp-project-id> 
-export REGION=<region>  
-export GCS_STAGING_LOCATION=<gcs staging location> 
-export SUBNET=<subnet>   
+export GCP_PROJECT=<gcp-project-id>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gcs staging location>
+export SUBNET=<subnet>
 export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_path_to_jdbc_jar_files>/postgresql-42.2.6.jar,<gcs_path_to_jdbc_jar_files>/mssql-jdbc-6.4.0.jre8.jar"
 
 ./bin/start.sh \
@@ -150,6 +164,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctojdbc.input.lowerbound=<optional-partition-start-value>  \
 --jdbctojdbc.input.upperbound=<optional-partition-end-value>  \
 --jdbctojdbc.numpartitions=<optional-partition-number> \
+--jdbctojdbc.input.fetchsize=<optional-fetch-size> \
 --jdbctojdbc.output.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
 --jdbctojdbc.output.driver=<jdbc-driver-class-name> \
 --jdbctojdbc.output.table=<output-table-name> \
@@ -158,13 +173,13 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctojdbc.output.batch.size=<optional-batch-size>
 ```
 
-## Example execution: 
+## Example execution:
 
 ```
 export GCP_PROJECT=my-gcp-proj
-export REGION=us-central1 
+export REGION=us-central1
 export GCS_STAGING_LOCATION=gs://my-gcp-proj/staging
-export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default   
+export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default
 export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-proj/jars/postgresql-42.2.6.jar,gs://my-gcp-proj/jars/mssql-jdbc-6.4.0.jre8.jar"
 ```
 * MySQL to MySQL
@@ -261,10 +276,30 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.output.batch.size="1000"
 ```
 
+* Oracle to PostgreSQL
+
+```
+./bin/start.sh \
+-- --template=JDBCTOJDBC \
+--jdbctojdbc.input.url="jdbc:oracle:thin:@//1.1.1.1:1521/mydb?user=hr&password=password123" \
+--jdbctojdbc.input.driver="oracle.jdbc.driver.OracleDriver" \
+--jdbctojdbc.input.table="employees" \
+--jdbctojdbc.input.partitioncolumn=id \
+--jdbctojdbc.input.lowerbound="11" \
+--jdbctojdbc.input.upperbound="20" \
+--jdbctojdbc.numpartitions="4" \
+--jdbctojdbc.input.fetchsize="100" \
+--jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
+--jdbctojdbc.output.driver="org.postgresql.Driver" \
+--jdbctojdbc.output.table="employees_out" \
+--jdbctojdbc.output.mode="overwrite" \
+--jdbctojdbc.output.batch.size="1000"
+```
+
 There are two optional properties as well with "Hive to JDBC" Template. Please find below the details :-
 
 ```
---templateProperty jdbctojdbc.temp.view.name='temporary_view_name' 
+--templateProperty jdbctojdbc.temp.view.name='temporary_view_name'
 --templateProperty jdbctojdbc.sql.query='select * from global_temp.temporary_view_name'
 ```
 These properties are responsible for applying some spark sql transformations before loading data into JDBC.
@@ -286,6 +321,7 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 * `jdbctogcs.input.lowerbound` (Optional): JDBC input table partition column lower bound which is used to decide the partition stride
 * `jdbctogcs.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbctogcs.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
+* `jdbctogcs.input.fetchsize` (Optional): Determines how many rows to fetch per round trip
 * `jdbctogcs.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 * `jdbctogcs.output.partitioncolumn` (Optional): Output partition column name
 
@@ -307,17 +343,18 @@ optional arguments:
     --jdbctogcs.input.lowerbound JDBCTOGCS.INPUT.LOWERBOUND \
     --jdbctogcs.input.upperbound JDBCTOGCS.INPUT.UPPERBOUND \
     --jdbctogcs.numpartitions JDBCTOGCS.NUMPARTITIONS \
+    --jdbctogcs.input.fetchsize JDBCTOJDBC.INPUT.FETCHSIZE \
     --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN \
 ```
 
-## General execution: 
+## General execution:
 
 ```
-export GCP_PROJECT=<gcp-project-id> 
-export REGION=<region>  
-export GCS_STAGING_LOCATION=<gcs staging location> 
-export SUBNET=<subnet>   
+export GCP_PROJECT=<gcp-project-id>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gcs staging location>
+export SUBNET=<subnet>
 export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_path_to_jdbc_jar_files>/postgresql-42.2.6.jar,<gcs_path_to_jdbc_jar_files>/mssql-jdbc-6.4.0.jre8.jar"
 
 ./bin/start.sh \
@@ -329,19 +366,20 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctogcs.input.lowerbound=<optional-partition-start-value>  \
 --jdbctogcs.input.upperbound=<optional-partition-end-value>  \
 --jdbctogcs.numpartitions=<optional-partition-number> \
+--jdbctogcs.input.fetchsize=<optional-fetch-size> \
 --jdbctogcs.output.location=<gcs-output-location> \
 --jdbctogcs.output.mode=<optional-write-mode> \
 --jdbctogcs.output.format=<output-write-format> \
 --jdbctogcs.output.partitioncolumn=<optional-output-partition-column-name>
 ```
 
-## Example execution: 
+## Example execution:
 
 ```
 export GCP_PROJECT=my-gcp-proj
-export REGION=us-central1 
+export REGION=us-central1
 export GCS_STAGING_LOCATION=gs://my-gcp-proj/staging
-export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default   
+export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default
 export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-proj/jars/postgresql-42.2.6.jar,gs://my-gcp-proj/jars/mssql-jdbc-6.4.0.jre8.jar"
 ```
 * MySQL to GCS
@@ -395,10 +433,28 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.output.partitioncolumn="department_id"
 ```
 
+* Oracle to GCS
+```
+./bin/start.sh \
+-- --template=JDBCTOGCS \
+--jdbctogcs.input.url="jdbc:oracle:thin:@//1.1.1.1:1521/mydb?user=hr&password=password123" \
+--jdbctogcs.input.driver="oracle.jdbc.driver.OracleDriver" \
+--jdbctogcs.input.table="employees" \
+--jdbctogcs.input.partitioncolumn=id \
+--jdbctogcs.input.lowerbound="11" \
+--jdbctogcs.input.upperbound="20" \
+--jdbctogcs.numpartitions="4" \
+--jdbctogcs.input.fetchsize="100" \
+--jdbctogcs.output.location="gs://output_bucket/output/" \
+--jdbctogcs.output.mode="overwrite" \
+--jdbctogcs.output.format="csv" \
+--jdbctogcs.output.partitioncolumn="department_id"
+```
+
 There are two optional properties as well with "JDBC to GCS" Template. Please find below the details :-
 
 ```
---templateProperty jdbctogcs.temp.view.name='temporary_view_name' 
+--templateProperty jdbctogcs.temp.view.name='temporary_view_name'
 --templateProperty jdbctogcs.sql.query='select * from global_temp.temporary_view_name'
 ```
 These properties are responsible for applying some spark sql transformations before loading data into GCS.
@@ -422,6 +478,7 @@ This template requires the JBDC jar files mentioned, and also the [Spark BigQuer
 * `jdbc.bigquery.lowerbound` (Optional): JDBC input table partition column lower bound which is used to decide the partition stride
 * `jdbc.bigquery.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbc.bigquery.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
+* `jdbc.bigquery.input.fetchsize` (Optional): Determines how many rows to fetch per round trip
 * `jdbc.bigquery.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 
 ## Usage
@@ -443,6 +500,7 @@ usage: main.py [-h] --jdbc.bigquery.output.dataset
                [--jdbc.bigquery.input.lowerbound JDBC.BIGQUERY.INPUT.LOWERBOUND]
                [--jdbc.bigquery.input.upperbound JDBC.BIGQUERY.INPUT.UPPERBOUND]
                [--jdbc.bigquery.numpartitions JDBC.BIGQUERY.NUMPARTITIONS]
+               [--jdbc.bigquery.input.fetchsize JDBC.BIGQUERY.INPUT.FETCHSIZE]
                [--jdbc.bigquery.output.mode {overwrite,append,ignore,errorifexists}]
 
 optional arguments:
@@ -473,6 +531,8 @@ optional arguments:
                         The maximum number of partitions that can be
                         used for parallelism in table reading and
                         writing. Default set to 10
+  --jdbc.bigquery.input.fetchsize JDBC.BIGQUERY.INPUT.FETCHSIZE
+                        Determines how many rows to fetch per round trip
   --jdbc.bigquery.output.mode {overwrite,append,ignore,errorifexists}
                         Output write mode (one of:
                         append,overwrite,ignore,errorifexists)
@@ -480,13 +540,13 @@ optional arguments:
 
 ```
 
-## General execution: 
+## General execution:
 
 ```
-export GCP_PROJECT=<gcp-project-id> 
-export REGION=<region>  
-export GCS_STAGING_LOCATION=<gcs staging location> 
-export SUBNET=<subnet>   
+export GCP_PROJECT=<gcp-project-id>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gcs staging location>
+export SUBNET=<subnet>
 export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_path_to_jdbc_jar_files>/spark-bigquery-latest_2.12.jar"
 
 
@@ -501,13 +561,13 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbc.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 
 ```
-## Example execution: 
+## Example execution:
 
 ```
-export GCP_PROJECT=my-gcp-proj 
-export REGION=us-central1  
-export GCS_STAGING_LOCATION=gs://my-gcp-proj/staging 
-export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default  
+export GCP_PROJECT=my-gcp-proj
+export REGION=us-central1
+export GCS_STAGING_LOCATION=gs://my-gcp-proj/staging
+export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default
 export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-proj/jars/spark-bigquery-latest_2.12.jar"
 ```
 
@@ -547,18 +607,35 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
 ```
 
-* Microsoft SQL Server to BigQuery 
-
+* Microsoft SQL Server to BigQuery
 ```
 ./bin/start.sh \
 -- --template=JDBCTOBIGQUERY \
 --jdbc.bigquery.input.url="jdbc:sqlserver://1.1.1.1:1433;databaseName=mydb;user=sqlserver;password=password123" \
 --jdbc.bigquery.input.driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" \
---jdbc.bigquery.input.table=" employees" \
+--jdbc.bigquery.input.table="employees" \
 --jdbc.bigquery.input.partitioncolumn=id \
 --jdbc.bigquery.input.lowerbound="11" \
 --jdbc.bigquery.input.upperbound="20" \
 --jdbc.bigquery.input.numpartitions="4" \
+--jdbc.bigquery.output.mode="overwrite" \
+--jdbc.bigquery.output.dataset="bq-dataset" \
+--jdbc.bigquery.output.table="bq-table" \
+--jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
+```
+
+* Oracle to BigQuery
+```
+./bin/start.sh \
+-- --template=JDBCTOBIGQUERY \
+--jdbc.bigquery.input.url="jdbc:oracle:thin:@//1.1.1.1:1521/mydb?user=hr&password=password123" \
+--jdbc.bigquery.input.driver="oracle.jdbc.driver.OracleDriver" \
+--jdbc.bigquery.input.table="employees" \
+--jdbc.bigquery.input.partitioncolumn=id \
+--jdbc.bigquery.input.lowerbound="11" \
+--jdbc.bigquery.input.upperbound="20" \
+--jdbc.bigquery.input.numpartitions="4" \
+--jdbc.bigquery.input.fetchsize="100" \
 --jdbc.bigquery.output.mode="overwrite" \
 --jdbc.bigquery.output.dataset="bq-dataset" \
 --jdbc.bigquery.output.table="bq-table" \
