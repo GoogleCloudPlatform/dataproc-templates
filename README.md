@@ -18,6 +18,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more 
 * [CassandraToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-bigquery-template)
 * [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive#2-hive-to-gcs) (blogpost [link](https://medium.com/@nehamodgil_21070/processing-and-migrating-large-data-tables-from-hive-to-gcs-using-java-and-dataproc-serverless-b6dbbae61c5d))
 * [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub)
+* [PubSubToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub)
 * [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs)
 * [GCSToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/gcs) (blogpost [link](https://medium.com/@ankuljain/migrate-gcs-to-gcs-using-dataproc-serverless-3b7b0f6ad6b9))
 * [GCSToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/gcs) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
