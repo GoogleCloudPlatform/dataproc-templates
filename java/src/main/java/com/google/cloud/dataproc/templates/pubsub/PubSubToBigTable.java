@@ -194,8 +194,7 @@ public class PubSubToBigTable implements BaseTemplate {
 
                       } catch (Exception e) {
                         LOGGER.error("Error during PubSubToBigTable Write : \n" + e.toString());
-                        LOGGER.info("Error during PubSubToBigTable Write : \n" + e.toString());
-                      }
+                        }
                     }
 
                     dataClient.close();
