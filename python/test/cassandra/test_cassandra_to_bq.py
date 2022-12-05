@@ -16,7 +16,6 @@
 
 import mock
 import pyspark
-
 from dataproc_templates.cassandra.cassandra_to_bigquery import CassandraToBQTemplate
 import dataproc_templates.util.template_constants as constants
 

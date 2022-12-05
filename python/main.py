@@ -36,7 +36,7 @@ from dataproc_templates.jdbc.jdbc_to_gcs import JDBCToGCSTemplate
 from dataproc_templates.jdbc.jdbc_to_bigquery import JDBCToBigQueryTemplate
 from dataproc_templates.snowflake.snowflake_to_gcs import SnowflakeToGCSTemplate
 from dataproc_templates.redshift.redshift_to_gcs import RedshiftToGCSTemplate
-from dataproc_templates.cassandra.casssandra_to_bigquery import CassandraToBQTemplate
+from dataproc_templates.cassandra.cassandra_to_bigquery import CassandraToBQTemplate
 
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
