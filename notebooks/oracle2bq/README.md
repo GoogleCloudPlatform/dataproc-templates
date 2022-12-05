@@ -16,7 +16,7 @@ Refer [Setup Vertex AI - PySpark](./../generic_notebook/README.md) to setup new 
 * Automatically uses partition reads if exceeds threshold.
 * Divides migration into batches and parallely migrates multiple tables.
 * Notebook allow you to choose modes i.e. appending data or overwrite.
-* Bigquery load automatically created table if table does not exists.
+* BigQuery load automatically created table if table does not exists.
 
 ### Requirements
 
@@ -27,7 +27,7 @@ Below configurations are required before proceeding further.
 * `REGION` : GCP region
 * `GCS_STAGING_LOCATION` : GCS staging location to be used for this notebook to store artifacts
 * `SUBNET` : VPC subnet
-* `JARS` : list of jars. For this notebook oracle driver and bigquery connector with the dataproc template jars
+* `JARS` : list of jars. For this notebook Oracle driver and BigQuery connector with the dataproc template jars
 * `MAX_PARALLELISM` : Parameter for number of jobs to run in parallel default value is 2
 
 #### Oracle Parameters

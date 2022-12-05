@@ -30,7 +30,7 @@ Below configurations are required before proceeding further.
 * `REGION` : GCP region
 * `GCS_STAGING_LOCATION` : GCS staging location to be used for this notebook to store artifacts
 * `SUBNET` : VPC subnet
-* `JARS` : list of jars. For this notebook oracle connector jar is required in addition with the dataproc template jars
+* `JARS` : list of jars. For this notebook Oracle connector jar is required in addition with the dataproc template jars
 * `MAX_PARALLELISM` : Parameter for number of jobs to run in parallel default value is 5
 
 #### Oracle to Cloud Spanner Parameters
@@ -41,8 +41,8 @@ Below configurations are required before proceeding further.
 * `ORACLE_DATABASE` : name of database that you want to migrate
 * `ORACLE_TABLE_LIST` : list of tables you want to migrate eg: ['table1','table2'] else provide an empty list for migration whole database eg : []
 * `SPANNER_OUTPUT_MODE`: <Append | Overwrite>
-* `SPANNER_INSTANCE` : cloud spanner instance name
-* `SPANNER_DATABASE` : cloud spanner database name
+* `SPANNER_INSTANCE` : Cloud Spanner instance name
+* `SPANNER_DATABASE` : Cloud Spanner database name
 * `SPANNER_TABLE_PRIMARY_KEYS` : provide dictionary of format {"table_name":"primary_key"} for tables which do not have primary key in Oracle
 
 
