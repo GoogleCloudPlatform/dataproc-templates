@@ -1,7 +1,7 @@
 **Pre-requisites:**
 
-* Source Database must be accessible from the Subnet configured. 
-  * Documentation reference for Network configuration - https://cloud.google.com/dataproc-serverless/docs/concepts/network 
+* Source Database must be accessible from the Subnet configured.
+  * Documentation reference for Network configuration - https://cloud.google.com/dataproc-serverless/docs/concepts/network
 * Customize the subnet using following command
 
   ```
@@ -18,7 +18,7 @@ Following databases are supported via Spark JDBC by default:
 
 ## 1. JDBC To BigQuery
 
-Note - Add dependency jar's specific to database in jars variable. 
+Note - Add dependency jar's specific to database in jars variable.
 
 Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 
@@ -37,6 +37,7 @@ bin/start.sh \
 --templateProperty jdbctobq.bigquery.location=<bigquery destination> \
 --templateProperty jdbctobq.jdbc.url=<jdbc url> \
 --templateProperty jdbctobq.jdbc.driver.class.name=<jdbc driver class name> \
+--templateProperty jdbctobq.jdbc.fetchsize=<optional-fetch-size> \
 --templateProperty jdbctobq.sql=<input-sql> \
 --templateProperty jdbctobq.sql.partitionColumn=<optional-partition-column-name> \
 --templateProperty jdbctobq.sql.lowerBound=<optional-partition-start-value> \
@@ -64,7 +65,7 @@ If one is specified then all needs to be specified.
 There are two optional properties as well with "JDBC to BigQuery" Template. Please find below the details :-
 
 ```
---templateProperty jdbctobq.temp.table='temporary_view_name' 
+--templateProperty jdbctobq.temp.table='temporary_view_name'
 --templateProperty jdbctobq.temp.query='select * from global_temp.temporary_view_name'
 ```
 These properties are responsible for applying some spark sql transformations before loading data into BigQuery.
@@ -80,7 +81,7 @@ Note - Add dependency jar's specific to database in jars variable.
 
 Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 
-General Execution  
+General Execution
 
 ```
 export GCP_PROJECT=<gcp-project-id> \
@@ -94,6 +95,7 @@ bin/start.sh \
 --templateProperty project.id=<gcp-project-id> \
 --templateProperty jdbctogcs.jdbc.url=<jdbc url> \
 --templateProperty jdbctogcs.jdbc.driver.class.name=<jdbc-driver-class-name> \
+--templateProperty jdbctogcs.jdbc.fetchsize=<optional-fetch-size> \
 --templateProperty jdbctogcs.output.location=<gcs-ouput-location> \
 --templateProperty jdbctogcs.output.format=<csv|avro|orc|json|parquet> \
 --templateProperty jdbctogcs.write.mode=<optional_write-mode> \
@@ -124,7 +126,7 @@ Instead of SQL query, cloud storage path to the SQL file can also be provided. E
 ```
 **Note**: Template property sql and sql.file must not be used together. Either one of them must be provided at a time.
 
-**Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together. 
+**Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together.
 If one is specified then all needs to be specified.
 
 Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
@@ -150,7 +152,7 @@ Example execution:
 There are two optional properties as well with "JDBC to GCS" Template. Please find below the details :-
 
 ```
---templateProperty jdbctogcs.temp.table='temporary_view_name' 
+--templateProperty jdbctogcs.temp.table='temporary_view_name'
 --templateProperty jdbctogcs.temp.query='select * from global_temp.temporary_view_name'
 ```
 These properties are responsible for applying some spark sql transformations before loading data into GCS.
@@ -178,6 +180,7 @@ bin/start.sh \
 --templateProperty project.id=<gcp-project-id> \
 --templateProperty jdbctospanner.jdbc.url=<jdbc url> \
 --templateProperty jdbctospanner.jdbc.driver.class.name=<jdbc-driver-class-name> \
+--templateProperty jdbctospanner.jdbc.fetchsize=<optional-fetch-size> \
 --templateProperty jdbctospanner.sql=<input-sql> \
 --templateProperty jdbctospanner.sql.partitionColumn=<optional-partition-column-name> \
 --templateProperty jdbctospanner.sql.lowerBound=<optional-partition-start-value> \
@@ -240,7 +243,7 @@ Example execution:
 There are two optional properties as well with "JDBC to SPANNER" Template. Please find below the details :-
 
 ```
---templateProperty jdbctospanner.temp.table='temporary_view_name' 
+--templateProperty jdbctospanner.temp.table='temporary_view_name'
 --templateProperty jdbctospanner.temp.query='select * from global_temp.temporary_view_name'
 ```
 These properties are responsible for applying some spark sql transformations before loading data into GCS.
