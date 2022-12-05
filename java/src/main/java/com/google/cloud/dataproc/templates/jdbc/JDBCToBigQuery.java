@@ -35,6 +35,7 @@ public class JDBCToBigQuery implements BaseTemplate {
   private String bqLocation;
   private String jdbcURL;
   private String jdbcDriverClassName;
+  private String jdbcFetchSize;
   private String temporaryGcsBucket;
   // Default as ErrorIfExists
   private String bqWriteMode = "ErrorIfExists";
@@ -54,6 +55,7 @@ public class JDBCToBigQuery implements BaseTemplate {
     temporaryGcsBucket = getProperties().getProperty(JDBC_TO_BQ_TEMP_GCS_BUCKET);
     jdbcURL = getProperties().getProperty(JDBC_TO_BQ_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME);
+    jdbcFetchSize = getProperties().getProperty(JDBC_TO_BQ_JDBC_FETCH_SIZE);
     jdbcSQL =
         getSQL(
             getProperties().getProperty(JDBC_TO_BQ_JDBC_URL),
@@ -114,13 +116,16 @@ public class JDBCToBigQuery implements BaseTemplate {
             + "4. {}:{}"
             + "5. {}:{}"
             + "6. {}:{}"
-            + "7. {}:{}",
+            + "7. {}:{}"
+            + "8. {}:{}",
         JDBC_TO_BQ_BIGQUERY_LOCATION,
         bqLocation,
         JDBC_TO_BQ_WRITE_MODE,
         bqWriteMode,
         JDBC_TO_BQ_SQL,
         jdbcSQL,
+        JDBC_TO_BQ_JDBC_FETCH_SIZE,
+        jdbcFetchSize,
         JDBC_TO_BQ_SQL_PARTITION_COLUMN,
         jdbcSQLPartitionColumn,
         JDBC_TO_BQ_SQL_UPPER_BOUND,
@@ -150,6 +155,10 @@ public class JDBCToBigQuery implements BaseTemplate {
       jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), jdbcSQLUpperBound);
       jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), jdbcSQLLowerBound);
       jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), jdbcSQLNumPartitions);
+    }
+
+    if (StringUtils.isNotBlank(jdbcFetchSize)) {
+      jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), jdbcFetchSize);
     }
 
     /** Read Input data from JDBC table */

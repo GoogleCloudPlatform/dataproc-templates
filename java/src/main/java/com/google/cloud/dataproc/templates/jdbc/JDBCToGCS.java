@@ -63,6 +63,10 @@ public class JDBCToGCS implements BaseTemplate {
       jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), config.getJdbcSQLNumPartitions());
     }
 
+    if (StringUtils.isNotBlank(config.getJdbcFetchSize())) {
+      jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), config.getJdbcFetchSize());
+    }
+
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
     if (StringUtils.isNotBlank(config.getTempTable())
