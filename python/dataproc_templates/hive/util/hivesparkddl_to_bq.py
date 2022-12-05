@@ -29,12 +29,14 @@ from dataproc_templates import BaseTemplate
 from google.cloud import storage
 import pyspark
 from pyspark.sql import DataFrameWriter, SparkSession
+from google.cloud import bigquery
+from google.cloud.bigquery.table import Table
+from google.cloud.bigquery.dataset import Dataset
 
 
-def WriteToCloud (ddls, bucket, path):
+def WriteToCloud (ddls_to_rdd, bucket, path):
     # Write
-    writer: DataFrameWriter = ddls.write.mode(constants.OUTPUT_MODE_APPEND)
-    writer.option("path", path).save(bucket)
+    ddls_to_rdd.coalesce(1).saveAsTextFile("gs://"+bucket+"/"+path)
 
 class HiveSparkDDLToBigQueryTemplate(BaseTemplate): 
     """
@@ -110,7 +112,6 @@ class HiveSparkDDLToBigQueryTemplate(BaseTemplate):
                 """ 
                 The for loop iterates through all the tables within the database 
                 """
-                # default.emp_part
                 print("Extracting DDL for the Hive Table: "+hive_database+"."+t.name)
                 show_create = spark.sql("SHOW CREATE TABLE {}.{}".format(hive_database, t.name))
                 ddl_table = spark.sql(
@@ -144,11 +145,7 @@ class HiveSparkDDLToBigQueryTemplate(BaseTemplate):
                 #partition and format
                 initial="CREATE TABLE IF NOT EXISTS "+t.name
                 storage_format=format
-                print(hdfs_file_path)
-                if hive_database != 'default':
-                    location_path=gcs_staging_path+db_name+hdfs_file_path.split(db_name)[1]
-                else:
-                    location_path=gcs_staging_path+db_name+hdfs_file_path.split('warehouse')[1]
+                location_path=gcs_staging_path+hdfs_file_path.split('hdfs://')[1]
                 metadata.append([db_name,table_name,partition_string,storage_format,hdfs_file_path,location_path])
                 ddl = initial+first_part+partition_by+";\n"
                 ddls = ddls + ddl
@@ -161,7 +158,8 @@ class HiveSparkDDLToBigQueryTemplate(BaseTemplate):
                 .option(constants.TEMP_GCS_BUCKET, gcs_working_directory) \
                 .mode(constants.OUTPUT_MODE_APPEND) \
                 .save()
-        
+
         # Write the DDLs to GCS
-        ddls = spark.createDataFrame(data = ddls)
-        WriteToCloud(ddls,gcs_working_directory,gcs_target_path)
+        print(ddls)
+        ddls_to_rdd = spark.sparkContext.parallelize([ddls])
+        WriteToCloud(ddls_to_rdd, gcs_working_directory, gcs_target_path)
