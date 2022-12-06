@@ -174,13 +174,13 @@ class JDBCToGCSTemplate(BaseTemplate):
         sql_query:str = args[constants.JDBCTOGCS_SQL_QUERY]
 
         logger.info(
-            "Starting JDBC to GCS spark job with parameters:\n"
+            "Starting JDBC to GCS Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
-        
+
         # Read
         input_data: DataFrame
-        
+
         partition_parameters=str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
         if ((partition_parameters != "") & ((input_jdbc_partitioncolumn == "") | (input_jdbc_lowerbound == "") | (input_jdbc_upperbound == ""))):
             logger.error("Set all the sql partitioning parameters together-jdbctogcs.input.partitioncolumn,jdbctogcs.input.lowerbound,jdbctogcs.input.upperbound. Refer to README.md for more instructions.")
@@ -220,7 +220,7 @@ class JDBCToGCSTemplate(BaseTemplate):
             writer: DataFrameWriter = output_data.write.mode(output_mode).partitionBy(output_partitioncolumn)
         else:
             writer: DataFrameWriter = output_data.write.mode(output_mode)
-            
+
         if output_format == constants.FORMAT_PRQT:
             writer \
                 .parquet(output_location)

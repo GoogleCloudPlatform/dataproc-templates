@@ -27,7 +27,7 @@ __all__ = ['JDBCToBigQueryTemplate']
 
 class JDBCToBigQueryTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from JDBC into GCS
+    Dataproc template implementing loads from JDBC into BigQuery
     """
 
     @staticmethod
@@ -148,13 +148,13 @@ class JDBCToBigQueryTemplate(BaseTemplate):
         output_mode: str = args[constants.JDBC_BQ_OUTPUT_MODE]
 
         logger.info(
-            "Starting JDBC to GCS spark job with parameters:\n"
+            "Starting JDBC to BigQuery Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
-        
+
         # Read
         input_data: DataFrame
-        
+
         partition_parameters=str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
         if ((partition_parameters != "") & ((input_jdbc_partitioncolumn == "") | (input_jdbc_lowerbound == "") | (input_jdbc_upperbound == ""))):
             logger.error("Set all the sql partitioning parameters together-jdbctogcs.input.partitioncolumn,jdbctogcs.input.lowerbound,jdbctogcs.input.upperbound. Refer to README.md for more instructions.")
@@ -188,4 +188,4 @@ class JDBCToBigQueryTemplate(BaseTemplate):
                 .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
                 .mode(output_mode) \
                 .save()
-            
+
