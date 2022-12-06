@@ -32,12 +32,13 @@ from pyspark.sql import DataFrameWriter, SparkSession
 from google.cloud import bigquery
 from google.cloud.bigquery.table import Table
 from google.cloud.bigquery.dataset import Dataset
-import datetime
+from datetime import datetime
 
 
 def WriteToCloud (ddls_to_rdd, bucket, path):
     # Write
-    timedate = datetime.datetime.now()
+    now = datetime.now()
+    timedate = now.strftime("%m-%d-%Y% %H.%M.%S")
     ddls_to_rdd.coalesce(1).saveAsTextFile("gs://"+bucket+"/"+path+timedate)
 
 class HiveSparkDDLToBigQueryTemplate(BaseTemplate): 
