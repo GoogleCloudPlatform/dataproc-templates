@@ -161,6 +161,9 @@ class HiveDDLExtractorTemplate(BaseTemplate):
                 .option(constants.TEMP_GCS_BUCKET, gcs_working_directory) \
                 .mode(constants.OUTPUT_MODE_APPEND) \
                 .save()
+        else:
+            logger.error("This database does not exist")
+            exit (1)
 
         # Write the DDLs to GCS
         ddls_to_rdd = spark.sparkContext.parallelize([ddls])
