@@ -292,6 +292,8 @@ public interface TemplateConstants {
   /** Dataplex GCS to BQ */
   String DATAPLEX_GCS_BQ_TARGET_DATASET = "dataplex.gcs.bq.target.dataset";
 
+  String DATAPLEX_GCS_BQ_TARGET_ASSET = "dataplex.gcs.bq.target.asset";
+  String DATAPLEX_GCS_BQ_TARGET_ENTITY = "dataplex.gcs.bq.target.entity";
   String DATAPLEX_GCS_BQ_SAVE_MODE = "dataplex.gcs.bq.save.mode";
   String DATAPLEX_GCS_BQ_INCREMENTAL_PARTITION_COPY = "dataplex.gcs.bq.incremental.partition.copy";
   String DATAPLEX_GCS_BQ_BASE_PATH_PROP_NAME = "basePath";
@@ -306,6 +308,7 @@ public interface TemplateConstants {
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
   String INTERMEDIATE_FORMAT_ORC = "orc";
   String SPARK_SAVE_MODE_OVERWRITE = "overwrite";
+  String BQ_TABLE_NAME_FORMAT = "%s.%s.%s";
 
   /** KafkaToBQ properties */
   String KAFKA_BQ_CHECKPOINT_LOCATION = "kafka.bq.checkpoint.location";
