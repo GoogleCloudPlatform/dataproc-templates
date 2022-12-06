@@ -1,8 +1,6 @@
 # Hive DDL Extractor
 
-This is a utility to extract DDLs from Hive metastore. Users can use this to accelerate the Hive migration journey.
-
-It uses [Spark SQL & Hive Integration](https://cloud.google.com/architecture/using-apache-hive-on-cloud-dataproc#querying_hive_with_sparksql) for querying Hive with SparkSQL.
+This is a PySpark utility to extract DDLs from Hive metastore. Users can use this utility to accelerate the Hive migration journey.
 
 ## Arguments
 
