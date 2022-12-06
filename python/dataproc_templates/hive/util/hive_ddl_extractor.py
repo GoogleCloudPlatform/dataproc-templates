@@ -41,7 +41,7 @@ def WriteToCloud (ddls_to_rdd, bucket, path):
     timedate = now.strftime("%m-%d-%Y %H.%M.%S")
     ddls_to_rdd.coalesce(1).saveAsTextFile("gs://"+bucket+"/"+path+timedate)
 
-class HiveSparkDDLToBigQueryTemplate(BaseTemplate): 
+class HiveDDLExtractorTemplate(BaseTemplate): 
     """
     Dataproc template implementing exports from Hive to BigQuery
     """
@@ -51,28 +51,28 @@ class HiveSparkDDLToBigQueryTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.HIVESPARKDDL_BQ_INPUT_DATABASE}',
-            dest=constants.HIVESPARKDDL_BQ_INPUT_DATABASE,
+            f'--{constants.HIVE_DDL_EXTRACTOR_INPUT_DATABASE}',
+            dest=constants.HIVE_DDL_EXTRACTOR_INPUT_DATABASE,
             required=True,
             help='Hive database for importing data to BigQuery'
         )
 
         parser.add_argument(
-            f'--{constants.HIVESPARKDDL_BQ_OUTPUT_BUCKET}',
-            dest=constants.HIVESPARKDDL_BQ_OUTPUT_BUCKET,
+            f'--{constants.HIVE_DDL_EXTRACTOR_OUTPUT_BUCKET}',
+            dest=constants.HIVE_DDL_EXTRACTOR_OUTPUT_BUCKET,
             required=True,
-            help='Bucket for the output table'
+            help='Bucket for the output'
         )
 
         parser.add_argument(
-            f'--{constants.HIVESPARKDDL_BQ_OUTPUT_DATASET}',
-            dest=constants.HIVESPARKDDL_BQ_OUTPUT_DATASET,
+            f'--{constants.HIVE_DDL_EXTRACTOR_OUTPUT_DATASET}',
+            dest=constants.HIVE_DDL_EXTRACTOR_OUTPUT_DATASET,
             required=True,
             help='BigQuery output dataset name'
         )
         parser.add_argument(
-            f'--{constants.HIVESPARKDDL_BQ_OUTPUT_TABLE}',
-            dest=constants.HIVESPARKDDL_BQ_OUTPUT_TABLE,
+            f'--{constants.HIVE_DDL_EXTRACTOR_OUTPUT_TABLE}',
+            dest=constants.HIVE_DDL_EXTRACTOR_OUTPUT_TABLE,
             required=True,
             help='BigQuery output table name'
         )
@@ -86,16 +86,16 @@ class HiveSparkDDLToBigQueryTemplate(BaseTemplate):
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
         """
         
-        Dataproc template allowing the extraction of Hive DDLs for import to BigQuery
+        Dataproc template allowing the extraction of DDLs from Hive Metastore
 
         """
         logger: Logger = self.get_logger(spark=spark)
 
-        hive_database: str = args[constants.HIVESPARKDDL_BQ_INPUT_DATABASE]
-        gcs_working_directory: str = args[constants.HIVESPARKDDL_BQ_OUTPUT_BUCKET]
-        bigquery_dataset: str = args[constants.HIVESPARKDDL_BQ_OUTPUT_DATASET]
-        bigquery_table: str = args[constants.HIVESPARKDDL_BQ_OUTPUT_TABLE]
-        gcs_target_path = constants.HIVESPARKDDL_BQ_OUTPUT_PATH
+        hive_database: str = args[constants.HIVE_DDL_EXTRACTOR_INPUT_DATABASE]
+        gcs_working_directory: str = args[constants.HIVE_DDL_EXTRACTOR_OUTPUT_BUCKET]
+        bigquery_dataset: str = args[constants.HIVE_DDL_EXTRACTOR_OUTPUT_DATASET]
+        bigquery_table: str = args[constants.HIVE_DDL_EXTRACTOR_OUTPUT_TABLE]
+        gcs_target_path = constants.HIVE_DDL_EXTRACTOR_OUTPUT_PATH
         gcs_staging_path="gs://"+gcs_working_directory+"/RawZone/"
 
         logger.info(

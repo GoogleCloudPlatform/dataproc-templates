@@ -233,8 +233,8 @@ SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
 SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
 
 # Hive Spark DDL to BQ
-HIVESPARKDDL_BQ_OUTPUT_DATASET = "hivesparkddl.bigquery.output.dataset"
-HIVESPARKDDL_BQ_OUTPUT_TABLE = "hivesparkddl.bigquery.output.table"
-HIVESPARKDDL_BQ_INPUT_DATABASE = "hivesparkddl.bigquery.input.database"
-HIVESPARKDDL_BQ_OUTPUT_BUCKET = "hivesparkddl.bigquery.output.bucket"
-HIVESPARKDDL_BQ_OUTPUT_PATH = "SparkDDL/DDLs"
+HIVE_DDL_EXTRACTOR_OUTPUT_DATASET = "hive.ddl.extractor.output.dataset"
+HIVE_DDL_EXTRACTOR_OUTPUT_TABLE = "hive.ddl.extractor.output.table"
+HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"
+HIVE_DDL_EXTRACTOR_OUTPUT_BUCKET = "hive.ddl.extractor.output.bucket"
+HIVE_DDL_EXTRACTOR_OUTPUT_PATH = "SparkDDL/DDLs"

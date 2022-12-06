@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .hivesparkddl_to_bq import HiveSparkDDLToBigQueryTemplate
+from .hive_ddl_extractor import HiveDDLExtractorTemplate
