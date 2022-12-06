@@ -38,7 +38,7 @@ from datetime import datetime
 def WriteToCloud (ddls_to_rdd, bucket, path):
     # Write
     now = datetime.now()
-    timedate = now.strftime("%m-%d-%Y% %H.%M.%S")
+    timedate = now.strftime("%m-%d-%Y %H.%M.%S")
     ddls_to_rdd.coalesce(1).saveAsTextFile("gs://"+bucket+"/"+path+timedate)
 
 class HiveSparkDDLToBigQueryTemplate(BaseTemplate): 
