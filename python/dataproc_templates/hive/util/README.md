@@ -15,23 +15,23 @@ It uses [Spark SQL & Hive Integration](https://cloud.google.com/architecture/usi
 ## Usage
 
 ```
-$ python main.py --template HIVESPARKDDLTOBQ --help
+$ python main.py --template HIVEDDLEXTRACTOR --help
 
-usage: main.py --template HIVESPARKDDLTOBQ [-h] \
-    --hive.ddl.extractor.input.database HIVE.BIGQUERY.INPUT.DATABASE \
-    --hive.ddl.extractor.output.dataset HIVE.BIGQUERY.OUTPUT.DATASET \
-    --hive.ddl.extractor.output.table HIVE.BIGQUERY.OUTPUT.TABLE \
-    --hive.ddl.extractor.temp.bucket.name HIVE.BIGQUERY.OUTPUT.BUCKET 
+usage: main.py --template HIVEDDLEXTRACTOR [-h] \
+    --hive.ddl.extractor.input.database HIVE.DDL.EXTRACTOR.INPUT.DATABASE \
+    --hive.ddl.extractor.output.dataset HIVE.DDL.EXTRACTOR.OUTPUT.DATASET \
+    --hive.ddl.extractor.output.table HIVE.DDL.EXTRACTOR.OUTPUT.TABLE \
+    --hive.ddl.extractor.temp.bucket.name HIVE.DDL.EXTRACTOR.OUTPUT.BUCKET 
 
 optional arguments:
   -h, --help            show this help message and exit
-  --hive.ddl.extractor.input.database HIVE.BIGQUERY.INPUT.DATABASE
+  --hive.ddl.extractor.input.database HIVE.DDL.EXTRACTOR.INPUT.DATABASE
                         Hive database for importing DDL to BigQuery
-  --hive.ddl.extractor.output.dataset HIVE.BIGQUERY.OUTPUT.DATASET
+  --hive.ddl.extractor.output.dataset HIVE.DDL.EXTRACTOR.OUTPUT.DATASET
                         BigQuery dataset for the output table
-  --hive.ddl.extractor.output.table HIVE.BIGQUERY.OUTPUT.TABLE
+  --hive.ddl.extractor.output.table HIVE.DDL.EXTRACTOR.OUTPUT.TABLE
                         BigQuery output table name
-  --hive.ddl.extractor.temp.bucket.name HIVE.BIGQUERY.OUTPUT.BUCKET.
+  --hive.ddl.extractor.temp.bucket.name HIVE.DDL.EXTRACTOR.OUTPUT.BUCKET.
                         Output bucket
 ```
 
