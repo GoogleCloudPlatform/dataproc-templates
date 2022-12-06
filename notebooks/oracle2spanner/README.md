@@ -43,11 +43,7 @@ Below configurations are required before proceeding further.
 * `SPANNER_OUTPUT_MODE`: <Append | Overwrite>
 * `SPANNER_INSTANCE` : Cloud Spanner instance name
 * `SPANNER_DATABASE` : Cloud Spanner database name
-<<<<<<< HEAD
-* `SPANNER_TABLE_PRIMARY_KEYS` : provide dictionary of format {"table_name":"primary_key"} for tables which do not have primary key in Oracle
-=======
 * `SPANNER_TABLE_PRIMARY_KEYS` : Provide dictionary of format {"table_name":"primary_key"} for tables which do not have primary key in Oracle
->>>>>>> main
 
 
 ### Required JAR files
