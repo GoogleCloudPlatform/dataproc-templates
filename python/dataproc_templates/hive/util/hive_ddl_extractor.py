@@ -154,6 +154,7 @@ class HiveDDLExtractorTemplate(BaseTemplate):
                 ddls = ddls + ddl
             rdd=spark.sparkContext.parallelize(metadata)
             metadata_df=rdd.toDF(columns)
+            
             # Write metadata to BQ
             metadata_df.write \
                 .format(constants.FORMAT_BIGQUERY) \
@@ -161,10 +162,11 @@ class HiveDDLExtractorTemplate(BaseTemplate):
                 .option(constants.TEMP_GCS_BUCKET, gcs_working_directory) \
                 .mode(constants.OUTPUT_MODE_APPEND) \
                 .save()
+
+            # Write the DDLs to GCS
+            ddls_to_rdd = spark.sparkContext.parallelize([ddls])
+            WriteToCloud(ddls_to_rdd, gcs_working_directory, gcs_target_path)
         else:
             logger.error("This database does not exist")
             exit (1)
-
-        # Write the DDLs to GCS
-        ddls_to_rdd = spark.sparkContext.parallelize([ddls])
-        WriteToCloud(ddls_to_rdd, gcs_working_directory, gcs_target_path)
+        
