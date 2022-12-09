@@ -38,12 +38,13 @@ class TestJDBCToBigQueryTemplate:
              "--jdbc.bigquery.input.lowerbound=1",
              "--jdbc.bigquery.input.upperbound=2",
              "--jdbc.bigquery.numpartitions=5",
+             "--jdbc.bigquery.input.fetchsize=100",
              "--jdbc.bigquery.output.mode=append",
              "--jdbc.bigquery.output.dataset=bq-dataset",
              "--jdbc.bigquery.output.table=bq-table",
              "--jdbc.bigquery.temp.bucket.name=bucket-name",
-             ])       
-        
+             ])
+
         assert parsed_args["jdbc.bigquery.input.url"] == "url"
         assert parsed_args["jdbc.bigquery.input.driver"] == "driver"
         assert parsed_args["jdbc.bigquery.input.table"] == "table1"
@@ -51,10 +52,11 @@ class TestJDBCToBigQueryTemplate:
         assert parsed_args["jdbc.bigquery.input.lowerbound"] == "1"
         assert parsed_args["jdbc.bigquery.input.upperbound"] == "2"
         assert parsed_args["jdbc.bigquery.numpartitions"] == "5"
-        assert parsed_args["jdbc.bigquery.output.mode"] == "append"  
-        assert parsed_args["jdbc.bigquery.output.dataset"] == "bq-dataset"  
-        assert parsed_args["jdbc.bigquery.output.table"] == "bq-table"  
-        assert parsed_args["jdbc.bigquery.temp.bucket.name"] == "bucket-name"  
+        assert parsed_args["jdbc.bigquery.input.fetchsize"] == 100
+        assert parsed_args["jdbc.bigquery.output.mode"] == "append"
+        assert parsed_args["jdbc.bigquery.output.dataset"] == "bq-dataset"
+        assert parsed_args["jdbc.bigquery.output.table"] == "bq-table"
+        assert parsed_args["jdbc.bigquery.temp.bucket.name"] == "bucket-name"
 
     def test_run_pass_args2(self):
         """Tests JDBCToBigQueryTemplate pass args"""
@@ -65,6 +67,7 @@ class TestJDBCToBigQueryTemplate:
             ["--jdbc.bigquery.input.url=url",
              "--jdbc.bigquery.input.driver=driver",
              "--jdbc.bigquery.input.table=table1",
+             "--jdbc.bigquery.input.fetchsize=200",
              "--jdbc.bigquery.output.mode=append",
              "--jdbc.bigquery.output.dataset=bq-dataset",
              "--jdbc.bigquery.output.table=bq-table",
@@ -74,11 +77,12 @@ class TestJDBCToBigQueryTemplate:
         assert parsed_args["jdbc.bigquery.input.url"] == "url"
         assert parsed_args["jdbc.bigquery.input.driver"] == "driver"
         assert parsed_args["jdbc.bigquery.input.table"] == "table1"
-        assert parsed_args["jdbc.bigquery.output.mode"] == "append"  
-        assert parsed_args["jdbc.bigquery.output.dataset"] == "bq-dataset"  
-        assert parsed_args["jdbc.bigquery.output.table"] == "bq-table"  
-        assert parsed_args["jdbc.bigquery.temp.bucket.name"] == "bucket-name"  
-        
+        assert parsed_args["jdbc.bigquery.input.fetchsize"] == 200
+        assert parsed_args["jdbc.bigquery.output.mode"] == "append"
+        assert parsed_args["jdbc.bigquery.output.dataset"] == "bq-dataset"
+        assert parsed_args["jdbc.bigquery.output.table"] == "bq-table"
+        assert parsed_args["jdbc.bigquery.temp.bucket.name"] == "bucket-name"
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args3(self, mock_spark_session):
         """Tests JDBCToBigQueryTemplate pass args"""
@@ -97,8 +101,8 @@ class TestJDBCToBigQueryTemplate:
              "--jdbc.bigquery.output.dataset=bq-dataset",
              "--jdbc.bigquery.output.table=bq-table",
              "--jdbc.bigquery.temp.bucket.name=bucket-name",
-             ])       
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+             ])
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
@@ -108,7 +112,8 @@ class TestJDBCToBigQueryTemplate:
         mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_LOWERBOUND, "1")
         mock_spark_session.read.format().option().option().option().option().option().option.assert_called_with(constants.JDBC_UPPERBOUND, "2")
         mock_spark_session.read.format().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "5")
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load()
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_FETCHSIZE, 0)
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(
@@ -130,19 +135,21 @@ class TestJDBCToBigQueryTemplate:
             ["--jdbc.bigquery.input.url=url",
              "--jdbc.bigquery.input.driver=driver",
              "--jdbc.bigquery.input.table=table1",
+             "--jdbc.bigquery.input.fetchsize=100",
              "--jdbc.bigquery.output.mode=append",
              "--jdbc.bigquery.output.dataset=bq-dataset",
              "--jdbc.bigquery.output.table=bq-table",
              "--jdbc.bigquery.temp.bucket.name=bucket-name",
              ])
-        mock_spark_session.read.format().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
         mock_spark_session.read.format().option().option.assert_called_with(constants.JDBC_DRIVER, "driver")
         mock_spark_session.read.format().option().option().option.assert_called_with(constants.JDBC_TABLE, "table1")
         mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "10")
-        mock_spark_session.read.format().option().option().option().option().load()
+        mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_FETCHSIZE, 100)
+        mock_spark_session.read.format().option().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(
