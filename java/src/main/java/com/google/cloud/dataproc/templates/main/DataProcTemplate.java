@@ -25,6 +25,7 @@ import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
 import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
 import com.google.cloud.dataproc.templates.gcs.GCSToSpanner;
+import com.google.cloud.dataproc.templates.gcs.GCStoBigTable;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.gcs.GCStoGCS;
 import com.google.cloud.dataproc.templates.general.GeneralTemplate;
@@ -73,6 +74,7 @@ public class DataProcTemplate {
           .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
           .put(TemplateName.REDSHIFTTOGCS, RedshiftToGCS::of)
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
+          .put(TemplateName.GCSTOBIGTABLE, (args) -> new GCStoBigTable())
           .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())

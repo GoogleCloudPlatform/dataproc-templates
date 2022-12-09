@@ -48,7 +48,8 @@ public interface BaseTemplate {
     CASSANDRATOGCS,
     REDSHIFTTOGCS,
     SNOWFLAKETOGCS,
-    JDBCTOSPANNER
+    JDBCTOSPANNER,
+    GCSTOBIGTABLE
   }
 
   default Properties getProperties() {
