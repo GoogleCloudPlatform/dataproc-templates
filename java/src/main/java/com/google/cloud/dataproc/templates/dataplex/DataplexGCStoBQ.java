@@ -145,7 +145,6 @@ public class DataplexGCStoBQ implements BaseTemplate {
    *
    * @throws Exception if values no value is passed for --dataplexEntity
    */
-
   public void validateInput() {
     if (sourceEntity != null) {
       this.sourceEntity = sourceEntity;
