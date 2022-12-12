@@ -45,6 +45,7 @@ public class GCSToJDBC implements BaseTemplate {
 
   @Override
   public void runTemplate() {
+    validateInput();
     try (SparkSession spark = SparkSession.builder().appName("GCS to JDBC").getOrCreate()) {
       Dataset<Row> dataset =
           spark.read().format(config.getInputFormat()).load(config.getInputLocation());
@@ -66,4 +67,6 @@ public class GCSToJDBC implements BaseTemplate {
         .mode(config.getSaveMode())
         .save();
   }
+
+  public void validateInput() {}
 }

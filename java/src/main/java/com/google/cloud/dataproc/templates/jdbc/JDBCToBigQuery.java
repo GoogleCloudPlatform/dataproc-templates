@@ -80,6 +80,48 @@ public class JDBCToBigQuery implements BaseTemplate {
 
   @Override
   public void runTemplate() {
+
+    validateInput();
+
+    SparkSession spark = null;
+
+    spark =
+        SparkSession.builder()
+            .appName("Spark JDBCToBigQuery Job")
+            .config("temporaryGcsBucket", temporaryGcsBucket)
+            .enableHiveSupport()
+            .getOrCreate();
+
+    HashMap<String, String> jdbcProperties = new HashMap<>();
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), jdbcDriverClassName);
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), jdbcSQL);
+
+    if (StringUtils.isNotBlank(concatedPartitionProps)) {
+      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), jdbcSQLPartitionColumn);
+      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), jdbcSQLUpperBound);
+      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), jdbcSQLLowerBound);
+      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), jdbcSQLNumPartitions);
+    }
+
+    /** Read Input data from JDBC table */
+    Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
+
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
+
+    inputData
+        .write()
+        .mode(bqWriteMode)
+        .format("com.google.cloud.spark.bigquery")
+        .option("table", bqLocation)
+        .save();
+  }
+
+  public void validateInput() {
     if (StringUtils.isAllBlank(bqLocation)
         || StringUtils.isAllBlank(jdbcURL)
         || StringUtils.isAllBlank(jdbcDriverClassName)

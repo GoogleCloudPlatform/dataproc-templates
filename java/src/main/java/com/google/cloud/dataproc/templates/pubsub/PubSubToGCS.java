@@ -68,7 +68,7 @@ public class PubSubToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    this.addTemplateLogging();
+    validateInput();
     JavaStreamingContext jsc = null;
     try {
       SparkConf sparkConf = new SparkConf().setAppName("PubSubToGCS Dataproc Job");
@@ -108,7 +108,7 @@ public class PubSubToGCS implements BaseTemplate {
     }
   }
 
-  private void addTemplateLogging() {
+  public void validateInput() {
     if (StringUtils.isAllBlank(inputProjectID)
         || StringUtils.isAllBlank(pubsubInputSubscription)
         || StringUtils.isAllBlank(outputProjectID)

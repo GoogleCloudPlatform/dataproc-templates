@@ -52,6 +52,36 @@ public class HiveToBigQuery implements BaseTemplate {
 
   @Override
   public void runTemplate() {
+
+    validateInput();
+
+    // Initialize Spark session
+    SparkSession spark =
+        SparkSession.builder()
+            .appName("Spark HiveToBigQuery Job")
+            .config("temporaryGcsBucket", temporaryGcsBucket)
+            .enableHiveSupport()
+            .getOrCreate();
+
+    LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
+
+    /** Read Input data from Hive table */
+    Dataset<Row> inputData = spark.sql(hiveSQL);
+
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
+
+    inputData
+        .write()
+        .mode(bqAppendMode.toLowerCase())
+        .format("com.google.cloud.spark.bigquery")
+        .option("table", bqLocation)
+        .save();
+  }
+
+  public void validateInput() {
     if (StringUtils.isAllBlank(bqLocation)
         || StringUtils.isAllBlank(hiveSQL)
         || StringUtils.isAllBlank(temporaryGcsBucket)) {
@@ -80,30 +110,5 @@ public class HiveToBigQuery implements BaseTemplate {
         hiveSQL,
         HIVE_TO_BQ_APPEND_MODE,
         bqAppendMode);
-
-    // Initialize Spark session
-    SparkSession spark =
-        SparkSession.builder()
-            .appName("Spark HiveToBigQuery Job")
-            .config("temporaryGcsBucket", temporaryGcsBucket)
-            .enableHiveSupport()
-            .getOrCreate();
-
-    LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
-
-    /** Read Input data from Hive table */
-    Dataset<Row> inputData = spark.sql(hiveSQL);
-
-    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
-      inputData.createOrReplaceGlobalTempView(tempTable);
-      inputData = spark.sql(tempQuery);
-    }
-
-    inputData
-        .write()
-        .mode(bqAppendMode.toLowerCase())
-        .format("com.google.cloud.spark.bigquery")
-        .option("table", bqLocation)
-        .save();
   }
 }

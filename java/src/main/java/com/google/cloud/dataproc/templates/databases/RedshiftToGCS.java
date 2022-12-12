@@ -42,7 +42,7 @@ public class RedshiftToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-
+    validateInput();
     SparkSession spark =
         SparkSession.builder()
             .appName("Spark Template RedshiftToGCS ")
@@ -78,4 +78,6 @@ public class RedshiftToGCS implements BaseTemplate {
     LOGGER.info("RedshiftToGcs job completed.");
     spark.stop();
   }
+
+  public void validateInput() {}
 }

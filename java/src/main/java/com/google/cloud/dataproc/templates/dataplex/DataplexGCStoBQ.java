@@ -145,7 +145,8 @@ public class DataplexGCStoBQ implements BaseTemplate {
    *
    * @throws Exception if values no value is passed for --dataplexEntity
    */
-  private void checkInput() {
+
+  public void validateInput() {
     if (sourceEntity != null) {
       this.sourceEntity = sourceEntity;
     } else {
@@ -449,7 +450,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
     try {
       this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
       this.sqlContext = new SQLContext(spark);
-      checkInput();
+      validateInput();
 
       this.sourceEntityUtil = new DataplexEntityUtil(this.sourceEntity);
       this.sourceEntityBasePath = sourceEntityUtil.getBasePathEntityData();

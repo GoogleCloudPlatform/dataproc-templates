@@ -69,54 +69,10 @@ public class PubSubToBQ implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(inputProjectID)
-        || StringUtils.isAllBlank(pubsubInputSubscription)
-        || StringUtils.isAllBlank(outputProjectID)
-        || StringUtils.isAllBlank(pubSubBQOutputDataset)
-        || StringUtils.isAllBlank(pubSubBQOutputTable)) {
-      LOGGER.error(
-          "{},{},{},{},{} are required parameter. ",
-          PUBSUB_INPUT_PROJECT_ID_PROP,
-          PUBSUB_INPUT_SUBSCRIPTION_PROP,
-          PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP,
-          PUBSUB_BQ_OUTPOUT_DATASET_PROP,
-          PUBSUB_BQ_OUTPOUT_TABLE_PROP);
-      throw new IllegalArgumentException(
-          "Required parameters for PubSubToBQ not passed. "
-              + "Set mandatory parameter for PubSubToBQ template "
-              + "in resources/conf/template.properties file.");
-    }
+
+    validateInput();
 
     JavaStreamingContext jsc = null;
-    LOGGER.info(
-        "Starting Hive to GCS spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}"
-            + "5. {},{}"
-            + "6. {},{}"
-            + "7. {},{}"
-            + "8. {},{}"
-            + "9, {},{}",
-        PUBSUB_INPUT_PROJECT_ID_PROP,
-        inputProjectID,
-        PUBSUB_INPUT_SUBSCRIPTION_PROP,
-        pubsubInputSubscription,
-        PUBSUB_TIMEOUT_MS_PROP,
-        timeoutMs,
-        PUBSUB_STREAMING_DURATION_SECONDS_PROP,
-        streamingDuration,
-        PUBSUB_TOTAL_RECEIVERS_PROP,
-        totalReceivers,
-        PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP,
-        outputProjectID,
-        PUBSUB_BQ_OUTPOUT_DATASET_PROP,
-        pubSubBQOutputDataset,
-        PUBSUB_BQ_OUTPOUT_TABLE_PROP,
-        pubSubBQOutputTable,
-        PUBSUB_STREAMING_DURATION_SECONDS_PROP,
-        batchSize);
 
     try {
       SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigQuery Dataproc Job");
@@ -198,5 +154,55 @@ public class PubSubToBQ implements BaseTemplate {
                 });
           }
         });
+  }
+
+  public void validateInput() {
+    if (StringUtils.isAllBlank(inputProjectID)
+        || StringUtils.isAllBlank(pubsubInputSubscription)
+        || StringUtils.isAllBlank(outputProjectID)
+        || StringUtils.isAllBlank(pubSubBQOutputDataset)
+        || StringUtils.isAllBlank(pubSubBQOutputTable)) {
+      LOGGER.error(
+          "{},{},{},{},{} are required parameter. ",
+          PUBSUB_INPUT_PROJECT_ID_PROP,
+          PUBSUB_INPUT_SUBSCRIPTION_PROP,
+          PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP,
+          PUBSUB_BQ_OUTPOUT_DATASET_PROP,
+          PUBSUB_BQ_OUTPOUT_TABLE_PROP);
+      throw new IllegalArgumentException(
+          "Required parameters for PubSubToBQ not passed. "
+              + "Set mandatory parameter for PubSubToBQ template "
+              + "in resources/conf/template.properties file.");
+    }
+
+    LOGGER.info(
+        "Starting Hive to GCS spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {},{}"
+            + "5. {},{}"
+            + "6. {},{}"
+            + "7. {},{}"
+            + "8. {},{}"
+            + "9, {},{}",
+        PUBSUB_INPUT_PROJECT_ID_PROP,
+        inputProjectID,
+        PUBSUB_INPUT_SUBSCRIPTION_PROP,
+        pubsubInputSubscription,
+        PUBSUB_TIMEOUT_MS_PROP,
+        timeoutMs,
+        PUBSUB_STREAMING_DURATION_SECONDS_PROP,
+        streamingDuration,
+        PUBSUB_TOTAL_RECEIVERS_PROP,
+        totalReceivers,
+        PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP,
+        outputProjectID,
+        PUBSUB_BQ_OUTPOUT_DATASET_PROP,
+        pubSubBQOutputDataset,
+        PUBSUB_BQ_OUTPOUT_TABLE_PROP,
+        pubSubBQOutputTable,
+        PUBSUB_STREAMING_DURATION_SECONDS_PROP,
+        batchSize);
   }
 }

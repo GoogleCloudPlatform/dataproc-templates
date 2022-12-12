@@ -54,51 +54,10 @@ public class S3ToBigQuery implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(projectID)
-        || StringUtils.isAllBlank(inputFileLocation)
-        || StringUtils.isAllBlank(accessKey)
-        || StringUtils.isAllBlank(accessSecret)
-        || StringUtils.isAllBlank(bigQueryDataset)
-        || StringUtils.isAllBlank(bigQueryTable)
-        || StringUtils.isAllBlank(bqTempBucket)
-        || StringUtils.isAllBlank(inputFileFormat)) {
-      LOGGER.error(
-          "{},{},{},{},{},{},{},{} are required parameter. ",
-          PROJECT_ID_PROP,
-          S3_BQ_INPUT_LOCATION,
-          S3_BQ_ACCESS_KEY,
-          S3_BQ_SECRET_KEY_CONFIG_NAME,
-          S3_BQ_OUTPUT_DATASET_NAME,
-          S3_BQ_OUTPUT_TABLE_NAME,
-          S3_BQ_LD_TEMP_BUCKET_NAME,
-          S3_BQ_INPUT_FORMAT);
-      throw new IllegalArgumentException(
-          "Required parameters for S3toBQ not passed. "
-              + "Set mandatory parameter for S3toBQ template "
-              + "in resources/conf/template.properties file.");
-    }
+
+    validateInput();
 
     SparkSession spark = null;
-    LOGGER.info(
-        "Starting S3 to Bigquery spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {}:{}"
-            + "5. {}:{}"
-            + "6. {}:{}",
-        PROJECT_ID_PROP,
-        projectID,
-        S3_BQ_INPUT_LOCATION,
-        inputFileLocation,
-        S3_BQ_OUTPUT_DATASET_NAME,
-        bigQueryDataset,
-        S3_BQ_OUTPUT_TABLE_NAME,
-        bigQueryTable,
-        S3_BQ_LD_TEMP_BUCKET_NAME,
-        bqTempBucket,
-        S3_BQ_INPUT_FORMAT,
-        inputFileFormat);
 
     try {
       spark = SparkSession.builder().appName("S3 to Bigquery load").getOrCreate();
@@ -156,5 +115,52 @@ public class S3ToBigQuery implements BaseTemplate {
         spark.stop();
       }
     }
+  }
+
+  public void validateInput() {
+    if (StringUtils.isAllBlank(projectID)
+        || StringUtils.isAllBlank(inputFileLocation)
+        || StringUtils.isAllBlank(accessKey)
+        || StringUtils.isAllBlank(accessSecret)
+        || StringUtils.isAllBlank(bigQueryDataset)
+        || StringUtils.isAllBlank(bigQueryTable)
+        || StringUtils.isAllBlank(bqTempBucket)
+        || StringUtils.isAllBlank(inputFileFormat)) {
+      LOGGER.error(
+          "{},{},{},{},{},{},{},{} are required parameter. ",
+          PROJECT_ID_PROP,
+          S3_BQ_INPUT_LOCATION,
+          S3_BQ_ACCESS_KEY,
+          S3_BQ_SECRET_KEY_CONFIG_NAME,
+          S3_BQ_OUTPUT_DATASET_NAME,
+          S3_BQ_OUTPUT_TABLE_NAME,
+          S3_BQ_LD_TEMP_BUCKET_NAME,
+          S3_BQ_INPUT_FORMAT);
+      throw new IllegalArgumentException(
+          "Required parameters for S3toBQ not passed. "
+              + "Set mandatory parameter for S3toBQ template "
+              + "in resources/conf/template.properties file.");
+    }
+
+    LOGGER.info(
+        "Starting S3 to Bigquery spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {}:{}"
+            + "5. {}:{}"
+            + "6. {}:{}",
+        PROJECT_ID_PROP,
+        projectID,
+        S3_BQ_INPUT_LOCATION,
+        inputFileLocation,
+        S3_BQ_OUTPUT_DATASET_NAME,
+        bigQueryDataset,
+        S3_BQ_OUTPUT_TABLE_NAME,
+        bigQueryTable,
+        S3_BQ_LD_TEMP_BUCKET_NAME,
+        bqTempBucket,
+        S3_BQ_INPUT_FORMAT,
+        inputFileFormat);
   }
 }
