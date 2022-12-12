@@ -56,6 +56,7 @@ public interface BaseTemplate {
     return PropertyUtil.getProperties();
   }
 
+  void validateInput() throws Exception;
   /** Executes the template. */
   void runTemplate() throws StreamingQueryException, TimeoutException;
 }

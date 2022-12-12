@@ -38,6 +38,8 @@ public class WordCount implements BaseTemplate {
     String outputPath = getProperties().getProperty(WORD_COUNT_OUTPUT_PATH_PROP);
     String format = getProperties().getProperty(WORD_COUNT_INPUT_FORMAT_PROP, "text");
 
+    validateInput();
+
     LOGGER.info("Starting word count spark job, inputPath:{},outputPath:{}", inputPath, outputPath);
 
     JavaSparkContext sparkContext = new JavaSparkContext(new SparkConf().setAppName("Word Count"));
@@ -50,5 +52,10 @@ public class WordCount implements BaseTemplate {
             .reduceByKey((Integer count1, Integer count2) -> count1 + count2);
     wordCounts.saveAsTextFile(outputPath);
     wordCounts.saveAsTextFile(outputPath);
+  }
+
+  public void validateInput() {
+    LOGGER.info(
+        "No validation has been specified for this class, hence the method contains only a logger statement");
   }
 }

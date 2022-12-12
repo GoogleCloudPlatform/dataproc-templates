@@ -56,7 +56,7 @@ public class KafkaToGCSTest {
     PropertyUtil.getProperties().setProperty(KAFKA_SCHEMA_URL, "");
 
     kafkaToGCSTest = new KafkaToGCS();
-    assertDoesNotThrow(kafkaToGCSTest::validateInputs);
+    assertDoesNotThrow(kafkaToGCSTest::validateInput);
   }
 
   @ParameterizedTest
