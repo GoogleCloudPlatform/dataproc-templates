@@ -81,6 +81,14 @@ class JDBCToGCSTemplate(BaseTemplate):
             help='The maximum number of partitions that can be used for parallelism in table reading and writing. Default set to 10'
         )
         parser.add_argument(
+            f'--{constants.JDBCTOGCS_INPUT_FETCHSIZE}',
+            dest=constants.JDBCTOGCS_INPUT_FETCHSIZE,
+            required=False,
+            default=0,
+            type=int,
+            help='Determines how many rows to fetch per round trip'
+        )
+        parser.add_argument(
             f'--{constants.JDBCTOGCS_OUTPUT_LOCATION}',
             dest=constants.JDBCTOGCS_OUTPUT_LOCATION,
             required=True,
@@ -157,6 +165,7 @@ class JDBCToGCSTemplate(BaseTemplate):
         input_jdbc_lowerbound: str = args[constants.JDBCTOGCS_INPUT_LOWERBOUND]
         input_jdbc_upperbound: str = args[constants.JDBCTOGCS_INPUT_UPPERBOUND]
         jdbc_numpartitions: str = args[constants.JDBCTOGCS_NUMPARTITIONS]
+        input_jdbc_fetchsize: int = args[constants.JDBCTOGCS_INPUT_FETCHSIZE]
         output_location: str = args[constants.JDBCTOGCS_OUTPUT_LOCATION]
         output_format: str = args[constants.JDBCTOGCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.JDBCTOGCS_OUTPUT_MODE]
@@ -165,13 +174,13 @@ class JDBCToGCSTemplate(BaseTemplate):
         sql_query:str = args[constants.JDBCTOGCS_SQL_QUERY]
 
         logger.info(
-            "Starting JDBC to GCS spark job with parameters:\n"
+            "Starting JDBC to GCS Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
-        
+
         # Read
         input_data: DataFrame
-        
+
         partition_parameters=str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
         if ((partition_parameters != "") & ((input_jdbc_partitioncolumn == "") | (input_jdbc_lowerbound == "") | (input_jdbc_upperbound == ""))):
             logger.error("Set all the sql partitioning parameters together-jdbctogcs.input.partitioncolumn,jdbctogcs.input.lowerbound,jdbctogcs.input.upperbound. Refer to README.md for more instructions.")
@@ -183,6 +192,7 @@ class JDBCToGCSTemplate(BaseTemplate):
                 .option(constants.JDBC_DRIVER, input_jdbc_driver) \
                 .option(constants.JDBC_TABLE, input_jdbc_table) \
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
+                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
                 .load()
         else:
             input_data=spark.read \
@@ -194,6 +204,7 @@ class JDBCToGCSTemplate(BaseTemplate):
                 .option(constants.JDBC_LOWERBOUND, input_jdbc_lowerbound) \
                 .option(constants.JDBC_UPPERBOUND, input_jdbc_upperbound) \
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
+                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
                 .load()
 
         if sql_query:
@@ -209,7 +220,7 @@ class JDBCToGCSTemplate(BaseTemplate):
             writer: DataFrameWriter = output_data.write.mode(output_mode).partitionBy(output_partitioncolumn)
         else:
             writer: DataFrameWriter = output_data.write.mode(output_mode)
-            
+
         if output_format == constants.FORMAT_PRQT:
             writer \
                 .parquet(output_location)

@@ -58,6 +58,10 @@ public class JDBCToSpanner implements BaseTemplate {
     /** Read Input data from JDBC table */
     validateInput();
 
+    if (StringUtils.isNotBlank(config.getJdbcFetchSize())) {
+      jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), config.getJdbcFetchSize());
+    }
+
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
     if (StringUtils.isNotBlank(config.getTempTable())

@@ -21,6 +21,52 @@
 
 Dataproc Templates (Python - PySpark) submit jobs to Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
 
+## Run using PyPi package
+
+In this README, you see instructions on how to submit Dataproc Serverless template jobs.  
+Currently, 3 options are described:
+- Using bin/start.sh
+- Using gcloud CLI
+- Using Vertex AI
+
+Those 3 options require you to clone this repo and start running the templates.  
+The [Dataproc Templates PyPi package](https://pypi.org/project/google-dataproc-templates) is a **4th option** to run templates from a PySpark environment directly (Dataproc or local/another).  
+Example:  
+
+```
+!pip3 install --user google-dataproc-templates==0.0.3
+
+from dataproc_templates.bigquery.bigquery_to_gcs import BigQueryToGCSTemplate
+from pyspark.sql import SparkSession
+
+args = dict()
+args["bigquery.gcs.input.table"] = "<bq_dataset>.<bq_table>"
+args["bigquery.gcs.input.location"] = "<location>"
+args["bigquery.gcs.output.format"] = "<format>"
+args["bigquery.gcs.output.mode"] = "<mode>"
+args["bigquery.gcs.output.location"] = "gs://<bucket_name/path>"
+
+spark = SparkSession.builder \
+        .appName("BIGQUERYTOGCS") \
+        .enableHiveSupport() \
+        .getOrCreate()
+        
+template = BigQueryToGCSTemplate()
+template.run(spark, args)
+```
+
+**Pro Tip**: [Start a Dataproc Serverless Spark sessions](https://cloud.google.com/vertex-ai/docs/workbench/managed/serverless-spark#start_a_spark_session) in a Vertex AI managed notebook, and leverage a serverless Spark session, in which your job will run using Dataproc Serverless, instead of your local PySpark environment.
+
+While this provides an easy way to get started, remember that the bin/start.sh already provides an easy way for you to, for example, specify required .jar dependencies. Using the PyPi package, you need to configure your PySpark sessions in accordance with the requirements of your specific template. You would need to, for example, specify the spark.driver.extraClassPath configuration:
+
+```
+spark = SparkSession.builder \
+        ... \
+        .config('spark.driver.extraClassPath', '<template_required_dependency>.jar')
+        ... \
+        .getOrCreate()
+```
+
 ## Setting up the local environment
 
 It is recommended to use a [virtual environment](https://docs.python.org/3/library/venv.html) when setting up the local environment. This setup is not required for submitting templates, only for running and developing locally.
