@@ -127,7 +127,7 @@ public class GCStoBigTable implements BaseTemplate, java.io.Serializable {
     }
   }
 
-  void validateInput() {
+  public void validateInput() {
     if (StringUtils.isAllBlank(projectID)
         || StringUtils.isAllBlank(inputFileLocation)
         || StringUtils.isAllBlank(bigTableInstanceId)
