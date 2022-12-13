@@ -65,52 +65,10 @@ public class PubSubToBigTable implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(inputProjectID)
-        || StringUtils.isAllBlank(pubsubInputSubscription)
-        || StringUtils.isAllBlank(pubSubBigTableOutputInstanceId)
-        || StringUtils.isAllBlank(pubSubBigTableOutputProjectId)
-        || StringUtils.isAllBlank(pubSubBigTableOutputTable)) {
-      LOGGER.error(
-          "{},{},{},{},{} are required parameter. ",
-          PUBSUB_INPUT_PROJECT_ID_PROP,
-          PUBSUB_INPUT_SUBSCRIPTION_PROP,
-          PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
-          PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
-          PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
-      throw new IllegalArgumentException(
-          "Required parameters for PubSubToBigTable not passed. "
-              + "Set mandatory parameter for PubSubToBigTable template "
-              + "in resources/conf/template.properties file.");
-    }
+
+    validateInput();
 
     JavaStreamingContext jsc = null;
-    LOGGER.info(
-        "Starting PubSub to BigTable spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}"
-            + "5. {},{}"
-            + "6. {},{}"
-            + "7. {},{}"
-            + "8. {},{}"
-            + "9, {},{}",
-        PUBSUB_INPUT_PROJECT_ID_PROP,
-        inputProjectID,
-        PUBSUB_INPUT_SUBSCRIPTION_PROP,
-        pubsubInputSubscription,
-        PUBSUB_TIMEOUT_MS_PROP,
-        timeoutMs,
-        PUBSUB_STREAMING_DURATION_SECONDS_PROP,
-        streamingDuration,
-        PUBSUB_TOTAL_RECEIVERS_PROP,
-        totalReceivers,
-        PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
-        pubSubBigTableOutputInstanceId,
-        PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
-        pubSubBigTableOutputProjectId,
-        PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP,
-        pubSubBigTableOutputTable);
 
     try {
       SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigTable Dataproc Job");
@@ -194,7 +152,7 @@ public class PubSubToBigTable implements BaseTemplate {
 
                       } catch (Exception e) {
                         LOGGER.error("Error during PubSubToBigTable Write : \n" + e.toString());
-                        }
+                      }
                     }
 
                     dataClient.close();
@@ -202,5 +160,53 @@ public class PubSubToBigTable implements BaseTemplate {
                 });
           }
         });
+  }
+
+  public void validateInput() {
+    if (StringUtils.isAllBlank(inputProjectID)
+        || StringUtils.isAllBlank(pubsubInputSubscription)
+        || StringUtils.isAllBlank(pubSubBigTableOutputInstanceId)
+        || StringUtils.isAllBlank(pubSubBigTableOutputProjectId)
+        || StringUtils.isAllBlank(pubSubBigTableOutputTable)) {
+      LOGGER.error(
+          "{},{},{},{},{} are required parameter. ",
+          PUBSUB_INPUT_PROJECT_ID_PROP,
+          PUBSUB_INPUT_SUBSCRIPTION_PROP,
+          PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
+          PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
+          PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
+      throw new IllegalArgumentException(
+          "Required parameters for PubSubToBigTable not passed. "
+              + "Set mandatory parameter for PubSubToBigTable template "
+              + "in resources/conf/template.properties file.");
+    }
+
+    LOGGER.info(
+        "Starting PubSub to BigTable spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {},{}"
+            + "5. {},{}"
+            + "6. {},{}"
+            + "7. {},{}"
+            + "8. {},{}"
+            + "9, {},{}",
+        PUBSUB_INPUT_PROJECT_ID_PROP,
+        inputProjectID,
+        PUBSUB_INPUT_SUBSCRIPTION_PROP,
+        pubsubInputSubscription,
+        PUBSUB_TIMEOUT_MS_PROP,
+        timeoutMs,
+        PUBSUB_STREAMING_DURATION_SECONDS_PROP,
+        streamingDuration,
+        PUBSUB_TOTAL_RECEIVERS_PROP,
+        totalReceivers,
+        PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
+        pubSubBigTableOutputInstanceId,
+        PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
+        pubSubBigTableOutputProjectId,
+        PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP,
+        pubSubBigTableOutputTable);
   }
 }
