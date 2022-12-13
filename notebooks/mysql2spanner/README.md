@@ -48,8 +48,8 @@ Below configurations are required before proceeding further.
 * `MYSQL_OUTPUT_GCS_FORMAT` : output file formate for MYSQL data one of (avro|parquet|orc)
 
 #### GCS to Cloud Spanner Parameters
-* `SPANNER_INSTANCE` : cloud spanner instance name
-* `SPANNER_DATABASE` : cloud spanner database name
+* `SPANNER_INSTANCE` : Cloud Spanner instance name
+* `SPANNER_DATABASE` : Cloud Spanner database name
 * `SPANNER_TABLE_PRIMARY_KEYS` : provide dictionary of format {"table_name":"primary_key"} for tables which do not have primary key in MYSQL
 
 ### Required JAR files

@@ -31,7 +31,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more 
 * [JDBCToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc)
 * [PubSubToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#2-pubsub-to-gcs) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-cloud-storage-using-dataproc-serverless-7a1e4823926e))
 * [GCSToJDBC](/java/src/main/java/com/google/cloud/dataproc/templates/gcs) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-databases-via-jdbc-using-dataproc-serverless-7ed75eab93ba))
-* [SnowflakeToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/snowflake)
+* [SnowflakeToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/snowflake) (blogpost [link](https://medium.com/google-cloud/export-snowflake-query-results-to-gcs-using-dataproc-serverless-3d68f5a01ca9))
 * [KafkaToBQ](/java/src/main/java/com/google/cloud/dataproc/templates/kafka) (blogpost [link](https://medium.com/google-cloud/export-data-from-apache-kafka-to-bigquery-using-dataproc-serverless-4a666535117c))
 * [KafkaToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md)
 * [DataplexGCStoBQ](/java/src/main//java/com/google/cloud/dataproc/templates/dataplex)

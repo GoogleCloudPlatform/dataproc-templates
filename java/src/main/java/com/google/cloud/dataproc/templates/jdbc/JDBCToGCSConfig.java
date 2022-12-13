@@ -83,6 +83,9 @@ public class JDBCToGCSConfig {
   @JsonProperty(value = JDBC_TO_GCS_OUTPUT_PARTITION_COLUMN)
   private String gcsPartitionColumn;
 
+  @JsonProperty(value = JDBC_TO_GCS_JDBC_FETCH_SIZE)
+  private String jdbcFetchSize;
+
   @JsonProperty(value = JDBC_TO_GCS_TEMP_TABLE)
   private String tempTable;
 
@@ -134,6 +137,10 @@ public class JDBCToGCSConfig {
 
   public String getJdbcSQLFile() {
     return jdbcSQLFile;
+  }
+
+  public String getJdbcFetchSize() {
+    return jdbcFetchSize;
   }
 
   public String getGcsWriteMode() {
@@ -230,6 +237,9 @@ public class JDBCToGCSConfig {
         + "'"
         + ", jdbcSQLPartitionColumn='"
         + getJdbcSQLPartitionColumn()
+        + "'"
+        + ", jdbcFetchSize='"
+        + getJdbcFetchSize()
         + "'"
         + "}";
   }
