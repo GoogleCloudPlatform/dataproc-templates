@@ -154,7 +154,7 @@ The input message has to be in the following format for one rowkey.
 The below command can be used as an example to populate the message in topic T1:
 gcloud pubsub topics publish T1 --message='{"rowkey":"rk1","columns":[{"columnfamily":"cf","columnname":"field1","columnvalue":"value1"},{"columnfamily":"cf","columnname":"field2","columnvalue":"value2"}]}'
 
-Instead if messages are published in other modes, here is the example string to use
+Instead if messages are published in other modes, here is the example string to use:
 "{ \"rowkey\":\"rk1\",\"columns\": [{\"columnfamily\":\"cf\",\"columnname\":\"field1\",\"columnvalue\":\"value1\"},{\"columnfamily\":\"cf\",\"columnname\":\"field2\",\"columnvalue\":\"value2\"}] }"
 
 ```
