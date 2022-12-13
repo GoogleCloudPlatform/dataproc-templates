@@ -21,7 +21,6 @@ import com.google.cloud.bigtable.data.v2.BigtableDataClient;
 import com.google.cloud.bigtable.data.v2.models.RowMutation;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.Iterator;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.api.java.function.ForeachPartitionFunction;
 import org.apache.spark.sql.Dataset;
@@ -60,71 +59,63 @@ public class GCStoBigTable implements BaseTemplate, java.io.Serializable {
     SparkSession spark = null;
     LOGGER.info("input format: {}", inputFileFormat);
 
-    try {
-      spark = SparkSession.builder().appName("GCS to Bigtable load").getOrCreate();
+    spark = SparkSession.builder().appName("GCS to Bigtable load").getOrCreate();
 
-      Dataset<Row> inputData = null;
+    Dataset<Row> inputData = null;
 
-      switch (inputFileFormat) {
-        case GCS_BQ_CSV_FORMAT:
-          inputData =
-              spark
-                  .read()
-                  .format(GCS_BQ_CSV_FORMAT)
-                  .option(GCS_BQ_CSV_HEADER, true)
-                  .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
-                  .load(inputFileLocation);
-          break;
-        case GCS_BQ_AVRO_FORMAT:
-          inputData = spark.read().format(GCS_BQ_AVRO_EXTD_FORMAT).load(inputFileLocation);
-          break;
-        case GCS_BQ_PRQT_FORMAT:
-          inputData = spark.read().parquet(inputFileLocation);
-          break;
-        default:
-          throw new IllegalArgumentException(
-              "Currently avro, parquet and csv are the only supported formats");
-      }
-
-      inputData.foreachPartition(
-          new ForeachPartitionFunction<Row>() {
-            public void call(Iterator<Row> t) throws Exception {
-
-              BigtableDataClient dataClient =
-                  BigtableDataClient.create(bigTableProjectId, bigTableInstanceId);
-
-              while (t.hasNext()) {
-
-                long timestamp = System.currentTimeMillis() * 1000;
-                Row row = t.next();
-                try {
-                  RowMutation rowMutation =
-                      RowMutation.create(bigTableTableName, row.get(0).toString());
-
-                  for (int i = 0; i < row.size(); i++) {
-                    rowMutation.setCell(
-                        bigTableColumnFamily,
-                        row.schema().fieldNames()[i],
-                        timestamp,
-                        row.get(i).toString());
-                  }
-                  dataClient.mutateRow(rowMutation);
-
-                } catch (Exception e) {
-                  LOGGER.info("Error during WriteSimple: \n" + e.toString());
-                }
-              }
-
-              dataClient.close();
-            }
-          });
-
-    } catch (Throwable th) {
-      LOGGER.error("Exception in GCStoBigTable", th);
-      if (Objects.nonNull(spark)) {
-        spark.stop();
-      }
+    switch (inputFileFormat) {
+      case GCS_BQ_CSV_FORMAT:
+        inputData =
+            spark
+                .read()
+                .format(GCS_BQ_CSV_FORMAT)
+                .option(GCS_BQ_CSV_HEADER, true)
+                .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
+                .load(inputFileLocation);
+        break;
+      case GCS_BQ_AVRO_FORMAT:
+        inputData = spark.read().format(GCS_BQ_AVRO_EXTD_FORMAT).load(inputFileLocation);
+        break;
+      case GCS_BQ_PRQT_FORMAT:
+        inputData = spark.read().parquet(inputFileLocation);
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "Currently avro, parquet and csv are the only supported formats");
     }
+
+    inputData.foreachPartition(
+        new ForeachPartitionFunction<Row>() {
+          public void call(Iterator<Row> t) throws Exception {
+
+            BigtableDataClient dataClient =
+                BigtableDataClient.create(bigTableProjectId, bigTableInstanceId);
+
+            while (t.hasNext()) {
+
+              long timestamp = System.currentTimeMillis() * 1000;
+              Row row = t.next();
+              try {
+                RowMutation rowMutation =
+                    RowMutation.create(bigTableTableName, row.get(0).toString());
+
+                for (int i = 0; i < row.size(); i++) {
+                  rowMutation.setCell(
+                      bigTableColumnFamily,
+                      row.schema().fieldNames()[i],
+                      timestamp,
+                      row.get(i).toString());
+                }
+                dataClient.mutateRow(rowMutation);
+
+              } catch (Exception e) {
+                LOGGER.info("Error during WriteSimple: \n" + e.toString());
+              }
+            }
+
+            dataClient.close();
+          }
+        });
   }
 
   public void validateInput() {
