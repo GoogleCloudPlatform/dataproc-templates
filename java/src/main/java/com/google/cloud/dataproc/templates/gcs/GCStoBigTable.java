@@ -95,22 +95,18 @@ public class GCStoBigTable implements BaseTemplate, java.io.Serializable {
 
               long timestamp = System.currentTimeMillis() * 1000;
               Row row = t.next();
-              try {
-                RowMutation rowMutation =
-                    RowMutation.create(bigTableTableName, row.get(0).toString());
 
-                for (int i = 0; i < row.size(); i++) {
-                  rowMutation.setCell(
-                      bigTableColumnFamily,
-                      row.schema().fieldNames()[i],
-                      timestamp,
-                      row.get(i).toString());
-                }
-                dataClient.mutateRow(rowMutation);
+              RowMutation rowMutation =
+                  RowMutation.create(bigTableTableName, row.get(0).toString());
 
-              } catch (Exception e) {
-                LOGGER.info("Error during WriteSimple: \n" + e.toString());
+              for (int i = 0; i < row.size(); i++) {
+                rowMutation.setCell(
+                    bigTableColumnFamily,
+                    row.schema().fieldNames()[i],
+                    timestamp,
+                    row.get(i).toString());
               }
+              dataClient.mutateRow(rowMutation);
             }
 
             dataClient.close();
