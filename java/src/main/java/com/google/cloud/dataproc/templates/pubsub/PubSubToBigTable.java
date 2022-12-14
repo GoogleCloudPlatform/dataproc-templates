@@ -102,9 +102,8 @@ public class PubSubToBigTable implements BaseTemplate {
 
       LOGGER.info("PubSubToBigTable job completed.");
       jsc.stop();
-
     } catch (Throwable th) {
-      LOGGER.error("Exception in PubSubToBigTable", th);
+      LOGGER.error("Exception in PubSubToBTable", th);
       if (Objects.nonNull(jsc)) {
         jsc.stop();
       }
@@ -133,26 +132,21 @@ public class PubSubToBigTable implements BaseTemplate {
                     while (sparkPubsubMessageIterator.hasNext()) {
                       SparkPubsubMessage message = sparkPubsubMessageIterator.next();
 
-                      // try {
                       JSONObject record = new JSONObject(new String(message.getData()));
                       long timestamp = System.currentTimeMillis() * 1000;
-                      try {
-                        RowMutation rowMutation =
-                            RowMutation.create(pubSubBigTableOutputTable, record.getString(ROWKEY));
-                        JSONArray columnarray = record.getJSONArray(COLUMNS);
 
-                        for (int i = 0; i < columnarray.length(); i++) {
-                          rowMutation.setCell(
-                              columnarray.getJSONObject(i).getString(COLUMN_FAMILY),
-                              columnarray.getJSONObject(i).getString(COLUMN_NAME),
-                              timestamp,
-                              columnarray.getJSONObject(i).getString(COLUMN_VALUE));
-                        }
-                        dataClient.mutateRow(rowMutation);
+                      RowMutation rowMutation =
+                          RowMutation.create(pubSubBigTableOutputTable, record.getString(ROWKEY));
+                      JSONArray columnarray = record.getJSONArray(COLUMNS);
 
-                      } catch (Exception e) {
-                        LOGGER.error("Error during PubSubToBigTable Write : \n" + e.toString());
+                      for (int i = 0; i < columnarray.length(); i++) {
+                        rowMutation.setCell(
+                            columnarray.getJSONObject(i).getString(COLUMN_FAMILY),
+                            columnarray.getJSONObject(i).getString(COLUMN_NAME),
+                            timestamp,
+                            columnarray.getJSONObject(i).getString(COLUMN_VALUE));
                       }
+                      dataClient.mutateRow(rowMutation);
                     }
 
                     dataClient.close();
