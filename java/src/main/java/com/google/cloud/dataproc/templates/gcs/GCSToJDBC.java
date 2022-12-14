@@ -56,6 +56,27 @@ public class GCSToJDBC implements BaseTemplate {
 
   public void write(Dataset<Row> dataset) {
     JdbcDialects.registerDialect(new SpannerJdbcDialect());
+
+    int current_partitions = dataset.toJavaRDD().getNumPartitions();
+    if (config.getCustomSparkPartitions() == null || config.getCustomSparkPartitions().isEmpty()) {
+      int custom_partitions = current_partitions;
+    } else {
+      int custom_partitions = Integer.parseInt(config.getCustomSparkPartitions());
+      LOGGER.info("Current Spark partitions: ", Integer.toString(current_partitions));
+
+      if (current_partitions > custom_partitions) {
+        LOGGER.info(
+            "Current partitions are greater than provided custom partitions. Will use coalesce()... ");
+        dataset = dataset.coalesce(custom_partitions);
+      } else if (current_partitions < custom_partitions) {
+        LOGGER.info(
+            "Current partitions are smaller than provided custom partitions. Will use repartition()... ");
+        dataset = dataset.repartition(custom_partitions);
+      } else {
+        LOGGER.info("Current partitions are equal to provided custom partitions. ");
+      }
+    }
+
     dataset
         .write()
         .format("jdbc")
