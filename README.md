@@ -24,7 +24,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more 
 * [HBaseToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hbase)
 * [RedshiftToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases)
 * [SpannerToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases) (blogpost [link](https://medium.com/google-cloud/cloud-spanner-export-query-results-using-dataproc-serverless-6f2f65b583a4))
-* [S3ToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/s3)
+* [S3ToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/s3)(blogpost [link](https://medium.com/google-cloud/export-data-from-aws-s3-to-bigquery-using-dataproc-serverless-6dc7a9952fc4))
 * [JDBCToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc) (blogpost [link](https://medium.com/@sjlva/java-fast-export-large-database-tables-using-gcp-serverless-dataproc-fe6ffffe28b5))
 * [JDBCToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
 * [JDBCToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc)
