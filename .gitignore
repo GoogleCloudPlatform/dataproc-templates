@@ -14,9 +14,13 @@ build/
 .worksheet
 .cache
 
+# VSCode
+.vscode/
+
 __pycache__/
 .pytest_cache
 target
 dist
 pipeline.json
 .ipynb_checkpoints/
+.venv/

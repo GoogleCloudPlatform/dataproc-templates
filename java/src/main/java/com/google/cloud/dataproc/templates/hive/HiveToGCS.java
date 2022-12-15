@@ -104,7 +104,7 @@ public class HiveToGCS implements BaseTemplate {
     spark.stop();
   }
 
-  void validateInput() {
+  public void validateInput() {
     if (StringUtils.isAllBlank(outputPath)
         || StringUtils.isAllBlank(hiveInputTable)
         || StringUtils.isAllBlank(hiveInputDb)) {

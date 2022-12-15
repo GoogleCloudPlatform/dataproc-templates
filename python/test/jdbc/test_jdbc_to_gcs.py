@@ -38,12 +38,13 @@ class TestJDBCToGCSTemplate:
              "--jdbctogcs.input.lowerbound=1",
              "--jdbctogcs.input.upperbound=2",
              "--jdbctogcs.numpartitions=5",
+             "--jdbctogcs.input.fetchsize=100",
              "--jdbctogcs.output.location=gs://test",
              "--jdbctogcs.output.format=csv",
              "--jdbctogcs.output.mode=append",
              "--jdbctogcs.output.partitioncolumn=column"
-             ])       
-        
+             ])
+
         assert parsed_args["jdbctogcs.input.url"] == "url"
         assert parsed_args["jdbctogcs.input.driver"] == "driver"
         assert parsed_args["jdbctogcs.input.table"] == "table1"
@@ -51,10 +52,11 @@ class TestJDBCToGCSTemplate:
         assert parsed_args["jdbctogcs.input.lowerbound"] == "1"
         assert parsed_args["jdbctogcs.input.upperbound"] == "2"
         assert parsed_args["jdbctogcs.numpartitions"] == "5"
+        assert parsed_args["jdbctogcs.input.fetchsize"] == 100
         assert parsed_args["jdbctogcs.output.location"] == "gs://test"
         assert parsed_args["jdbctogcs.output.format"] == "csv"
-        assert parsed_args["jdbctogcs.output.mode"] == "append"  
-        assert parsed_args["jdbctogcs.output.partitioncolumn"] == "column"      
+        assert parsed_args["jdbctogcs.output.mode"] == "append"
+        assert parsed_args["jdbctogcs.output.partitioncolumn"] == "column"
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args2(self, mock_spark_session):
@@ -74,7 +76,7 @@ class TestJDBCToGCSTemplate:
              "--jdbctogcs.output.format=parquet",
              "--jdbctogcs.output.mode=overwrite"
              ])
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_gcs_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
@@ -84,10 +86,11 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_LOWERBOUND, "1")
         mock_spark_session.read.format().option().option().option().option().option().option.assert_called_with(constants.JDBC_UPPERBOUND, "2")
         mock_spark_session.read.format().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "5")
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load()
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_FETCHSIZE, 0)
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write.mode().parquet.assert_called_once_with("gs://test")
-        
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args3(self, mock_spark_session):
         """Tests JDBCToGCSTemplate write avro"""
@@ -102,11 +105,12 @@ class TestJDBCToGCSTemplate:
              "--jdbctogcs.input.lowerbound=1",
              "--jdbctogcs.input.upperbound=2",
              "--jdbctogcs.numpartitions=5",
+             "--jdbctogcs.input.fetchsize=50",
              "--jdbctogcs.output.location=gs://test",
              "--jdbctogcs.output.format=avro",
              "--jdbctogcs.output.mode=append"
              ])
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_gcs_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
@@ -116,11 +120,12 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_LOWERBOUND, "1")
         mock_spark_session.read.format().option().option().option().option().option().option.assert_called_with(constants.JDBC_UPPERBOUND, "2")
         mock_spark_session.read.format().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "5")
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load()
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_FETCHSIZE, 50)
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.mode().format.assert_called_once_with(constants.FORMAT_AVRO)
         mock_spark_session.dataframe.DataFrame.write.mode().format().save.assert_called_once_with("gs://test")
-        
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args4(self, mock_spark_session):
         """Tests JDBCToGCSTemplate write csv"""
@@ -139,7 +144,7 @@ class TestJDBCToGCSTemplate:
              "--jdbctogcs.output.format=csv",
              "--jdbctogcs.output.mode=ignore"
              ])
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_gcs_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
@@ -149,11 +154,12 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_LOWERBOUND, "1")
         mock_spark_session.read.format().option().option().option().option().option().option.assert_called_with(constants.JDBC_UPPERBOUND, "2")
         mock_spark_session.read.format().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "5")
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load()
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_FETCHSIZE, 0)
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
         mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.HEADER, True)
         mock_spark_session.dataframe.DataFrame.write.mode().option().csv.assert_called_once_with("gs://test")
-        
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args5(self, mock_spark_session):
         """Tests JDBCToGCSTemplate write json"""
@@ -172,7 +178,7 @@ class TestJDBCToGCSTemplate:
              "--jdbctogcs.output.format=json",
              "--jdbctogcs.output.mode=ignore"
              ])
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_gcs_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
@@ -182,10 +188,11 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_LOWERBOUND, "1")
         mock_spark_session.read.format().option().option().option().option().option().option.assert_called_with(constants.JDBC_UPPERBOUND, "2")
         mock_spark_session.read.format().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "5")
-        mock_spark_session.read.format().option().option().option().option().option().option().option().load()
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_FETCHSIZE, 0)
+        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
         #mock_spark_session.dataframe.DataFrame.write.mode().json.assert_called_once_with("gs://test")
-        
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args6(self, mock_spark_session):
         """Tests JDBCToGCSTemplate pass args"""
@@ -200,18 +207,19 @@ class TestJDBCToGCSTemplate:
              "--jdbctogcs.output.format=csv",
              "--jdbctogcs.output.mode=append"
              ])
-        mock_spark_session.read.format().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_gcs_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
         mock_spark_session.read.format().option().option.assert_called_with(constants.JDBC_DRIVER, "driver")
         mock_spark_session.read.format().option().option().option.assert_called_with(constants.JDBC_TABLE, "table1")
         mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "10")
-        mock_spark_session.read.format().option().option().option().option().load()
+        mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_FETCHSIZE, 0)
+        mock_spark_session.read.format().option().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.HEADER, True)
         mock_spark_session.dataframe.DataFrame.write.mode().option().csv.assert_called_once_with("gs://test")
-        
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args7(self, mock_spark_session):
         """Tests JDBCToGCSTemplate pass args"""
@@ -227,7 +235,7 @@ class TestJDBCToGCSTemplate:
              "--jdbctogcs.output.mode=append",
              "--jdbctogcs.output.partitioncolumn=column"
              ])
-        mock_spark_session.read.format().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_gcs_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
