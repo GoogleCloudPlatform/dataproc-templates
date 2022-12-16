@@ -59,7 +59,9 @@ REDSHIFT_TEMPDIR = "tempdir"
 REDSHIFT_IAMROLE = "aws_iam_role"
 AWS_S3ACCESSKEY = "fs.s3a.access.key"
 AWS_S3SECRETKEY = "fs.s3a.secret.key"
-
+SQL_EXTENSION= "spark.sql.extensions"
+CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
+CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
