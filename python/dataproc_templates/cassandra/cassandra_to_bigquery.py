@@ -123,8 +123,8 @@ class CassandraToBQTemplate(BaseTemplate):
             SparkSession
                 .builder
                 .appName("CassandraToBQ")
-                .config("spark.sql.extensions", "com.datastax.spark.connector.CassandraSparkExtensions")
-                .config(f"spark.sql.catalog.{catalog}", "com.datastax.spark.connector.datasource.CassandraCatalog")
+                .config(constants.SQL_EXTENSION, constants.CASSANDRA_EXTENSION)
+                .config(f"spark.sql.catalog.{catalog}", constants.CASSANDRA_CATALOG)
                 .config(f"spark.sql.catalog.{catalog}.spark.cassandra.connection.host",input_host)
                 .getOrCreate())
         # Read
@@ -133,6 +133,6 @@ class CassandraToBQTemplate(BaseTemplate):
         else:
             input_data= spark.sql(query)
         # Write
-        input_data.write.format("com.google.cloud.spark.bigquery")\
+        input_data.write.format(constants.FORMAT_BIGQUERY)\
             .mode(output_mode).option("table", output_location)\
             .option("temporaryGcsBucket", tempLocation).save()
