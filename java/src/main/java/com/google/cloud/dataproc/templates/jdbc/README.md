@@ -44,7 +44,7 @@ bin/start.sh \
 --templateProperty jdbctobq.sql.upperBound=<optional-partition-end-value> \
 --templateProperty jdbctobq.sql.numPartitions=<optional-partition--number> \
 --templateProperty jdbctobq.write.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
---templateProperty jdbctobq.temp.gcs.bucket=<gcs path>
+--templateProperty jdbctobq.temp.gcs.bucket=<temp gcs bucket name>
 ```
 
 Note: Following is example JDBC URL for mysql database

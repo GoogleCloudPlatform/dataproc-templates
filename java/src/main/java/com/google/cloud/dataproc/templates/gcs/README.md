@@ -99,6 +99,15 @@ bin/start.sh \
 --templateProperty gcs.jdbc.output.table=<jdbc connection table id> \
 --templateProperty gcs.jdbc.output.saveMode=<Append|Overwrite|ErrorIfExists|Ignore>
 
+optional parameters:
+--templateProperty gcs.jdbc.spark.partitions=<>
+--templateProperty gcs.jdbc.output.batchInsertSize=<>
+
+Specifying spark partitions is recommeneded when we have small number of current partitions. By default it will keep the initial partitions set by spark read() which will depend on the block size and number of source files. CAUTION: If you specify a higher number than the current number of partitions, spark will use repartition() for a complete reshuffle, which would add up extra time to your job run.
+
+For the batchInsertSize, a high number is recommended for faster upload to RDBMS in case of bulk loads. By default it is 1000.
+
+
 Example execution:-
 
 bin/start.sh \
@@ -109,7 +118,9 @@ bin/start.sh \
 --templateProperty gcs.jdbc.output.table=avrodemo \
 --templateProperty gcs.jdbc.output.saveMode=Overwrite \
 --templateProperty gcs.jdbc.output.url='jdbc:mysql://192.168.16.3:3306/test?user=root&password=root' \
---templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver'
+--templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver' \
+--templateProperty gcs.jdbc.spark.partitions=200 \
+--templateProperty gcs.jdbc.output.batchInsertSize=100000 \
 
 ```
 
