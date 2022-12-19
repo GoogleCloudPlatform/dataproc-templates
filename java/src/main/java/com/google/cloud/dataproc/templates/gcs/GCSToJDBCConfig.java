@@ -37,6 +37,7 @@ public class GCSToJDBCConfig {
   public static final String GCS_JDBC_OUTPUT_SAVE_MODE = "gcs.jdbc.output.saveMode";
   public static final String GCS_JDBC_OUTPUT_BATCH_INSERT_SIZE = "gcs.jdbc.output.batchInsertSize";
   public static final String GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver";
+  public static final String CUSTOM_SPARK_PARTITIONS = "gcs.jdbc.spark.partitions";
 
   static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -75,6 +76,10 @@ public class GCSToJDBCConfig {
   @Min(value = 1)
   private long batchInsertSize = 1000;
 
+  @JsonProperty(value = CUSTOM_SPARK_PARTITIONS)
+  @Min(value = 0)
+  private String customSparkPartitions;
+
   public String getInputLocation() {
     return inputLocation;
   }
@@ -112,6 +117,10 @@ public class GCSToJDBCConfig {
     return batchInsertSize;
   }
 
+  public String getCustomSparkPartitions() {
+    return customSparkPartitions;
+  }
+
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
@@ -123,6 +132,7 @@ public class GCSToJDBCConfig {
         .add("saveModeString", saveModeString)
         .add("jdbcUrl", jdbcUrl)
         .add("jdbcDriver", jdbcDriver)
+        .add("customSparkPartitions", customSparkPartitions)
         .toString();
   }
 

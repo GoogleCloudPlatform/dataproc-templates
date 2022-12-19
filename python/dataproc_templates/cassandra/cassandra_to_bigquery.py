@@ -134,5 +134,5 @@ class CassandraToBQTemplate(BaseTemplate):
             input_data= spark.sql(query)
         # Write
         input_data.write.format(constants.FORMAT_BIGQUERY)\
-            .mode(output_mode).option("table", output_location)\
-            .option("temporaryGcsBucket", tempLocation).save()
+            .mode(output_mode).option(constants.TABLE, output_location)\
+            .option(constants.TEMP_GCS_BUCKET, tempLocation).save()

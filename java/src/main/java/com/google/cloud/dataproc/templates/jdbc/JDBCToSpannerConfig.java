@@ -68,6 +68,9 @@ public class JDBCToSpannerConfig {
   @JsonProperty(value = JDBC_TO_SPANNER_SQL_NUM_PARTITIONS)
   private String jdbcSQLNumPartitions;
 
+  @JsonProperty(value = JDBC_TO_SPANNER_JDBC_FETCH_SIZE)
+  private String jdbcFetchSize;
+
   @JsonProperty(value = JDBC_TO_SPANNER_TEMP_TABLE)
   private String tempTable;
 
@@ -154,6 +157,10 @@ public class JDBCToSpannerConfig {
 
   public String getJdbcSQLPartitionColumn() {
     return jdbcSQLPartitionColumn;
+  }
+
+  public String getJdbcFetchSize() {
+    return jdbcFetchSize;
   }
 
   public String getTempTable() {

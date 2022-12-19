@@ -44,6 +44,7 @@ public class CassandraToBQ implements BaseTemplate {
 
   @Override
   public void runTemplate() throws StreamingQueryException, TimeoutException {
+    validateInput();
     Dataset dataset;
     SparkSession spark =
         SparkSession.builder()
@@ -74,4 +75,6 @@ public class CassandraToBQ implements BaseTemplate {
         .option("temporaryGcsBucket", config.getTemplocation())
         .save();
   }
+
+  public void validateInput() {}
 }

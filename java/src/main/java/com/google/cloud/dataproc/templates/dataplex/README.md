@@ -61,6 +61,15 @@ copy new partitions only or all the partitions. If set to `no` existing
 partitions, if found will be overwritten. Can be any of the following `yes`,
 `no`. Defaults to `yes`
 
+`dataplex.gcs.bq.target.asset` specifies the Dataplex BQ Asset where the data will be written to. In other words this 
+is an alternative mechanism to specify target dataset. If `dataplex.gcs.bq.target.dataset` and 
+`dataplex.gcs.bq.target.asset` are both set, then `dataplex.gcs.bq.target.asset` will take precedence.
+
+`dataplex.gcs.bq.target.entity` specifies tha Dataplex BQ Entity where the data will be written to. In other words this 
+is an alternative mechanism to specify the target BQ table. The `dataplex.gcs.bq.target.entity` will take precedence 
+over any other property or argument specifying target output of the data.
+
+
 ### Arguments
 `--dataplexEntity` Dataplex GCS table to load in BigQuery \
 Example: `--dataplexEntityList "projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1}"`
