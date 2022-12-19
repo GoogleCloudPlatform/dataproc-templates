@@ -57,7 +57,7 @@ bin/start.sh \
 --templateProperty gcs.bigtable.output.instance.id=my-instance-id \
 --templateProperty gcs.bigtable.output.project.id=my-project-id \
 --templateProperty gcs.bigtable.table.name=my-bt-table \
---templateProperty gcs.bigtable.table.name=cf
+--templateProperty gcs.bigtable.table.column.family=cf
 ```
 
 ## 3. GCS to Spanner
