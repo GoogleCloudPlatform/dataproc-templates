@@ -157,4 +157,5 @@ gcloud pubsub topics publish T1 --message='{"rowkey":"rk1","columns":[{"columnfa
 Instead if messages are published in other modes, here is the example string to use:
 "{ \"rowkey\":\"rk1\",\"columns\": [{\"columnfamily\":\"cf\",\"columnname\":\"field1\",\"columnvalue\":\"value1\"},{\"columnfamily\":\"cf\",\"columnname\":\"field2\",\"columnvalue\":\"value2\"}] }"
 
+(Pleaes note that the table in Bigtable should exist with required column family, before executing the template)
 ```
