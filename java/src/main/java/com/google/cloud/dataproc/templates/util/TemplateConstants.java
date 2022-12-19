@@ -168,6 +168,20 @@ public interface TemplateConstants {
   // Number of records to be written per message to BigQuery
   String PUBSUB_BQ_BATCH_SIZE_PROP = "pubsub.bq.batch.size";
 
+  /** Property values for PubSub To BigTable */
+  String PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP = "pubsub.bigtable.output.instance.id";
+  // BigTable Instance Id
+  String PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP = "pubsub.bigtable.output.project.id";
+  // Project that contains the output table
+  String PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP = "pubsub.bigtable.output.table";
+  // BigTable table name
+  String ROWKEY = "rowkey";
+  String COLUMN_FAMILY = "columnfamily";
+  String COLUMN_NAME = "columnname";
+  String COLUMN_VALUE = "columnvalue";
+  String COLUMNS = "columns";
+  // Constants to be used for parsing the JSON from pubsub
+
   /** GCS to Bigquery properties */
   String GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location";
 
