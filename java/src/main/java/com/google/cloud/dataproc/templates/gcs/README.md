@@ -58,6 +58,8 @@ bin/start.sh \
 --templateProperty gcs.bigtable.output.project.id=my-project-id \
 --templateProperty gcs.bigtable.table.name=my-bt-table \
 --templateProperty gcs.bigtable.table.column.family=cf
+
+(Please note that the table in Bigtable should exist with the above given column family before executing the template)
 ```
 
 ## 3. GCS to Spanner
