@@ -59,7 +59,9 @@ REDSHIFT_TEMPDIR = "tempdir"
 REDSHIFT_IAMROLE = "aws_iam_role"
 AWS_S3ACCESSKEY = "fs.s3a.access.key"
 AWS_S3SECRETKEY = "fs.s3a.secret.key"
-
+SQL_EXTENSION= "spark.sql.extensions"
+CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
+CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -101,6 +103,16 @@ MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode"
 MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri"
 MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database"
 MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection"
+
+#Cassandra to BQ
+CASSANDRA_TO_BQ_INPUT_TABLE = "cassandratobq.input.table"
+CASSANDRA_TO_BQ_INPUT_HOST = "cassandratobq.input.host"
+CASSANDRA_TO_BQ_BIGQUERY_LOCATION = "cassandratobq.bigquery.location"
+CASSANDRA_TO_BQ_WRITE_MODE = "cassandratobq.output.mode"
+CASSANDRA_TO_BQ_TEMP_LOCATION = "cassandratobq.temp.gcs.location"
+CASSANDRA_TO_BQ_QUERY = "cassandratobq.input.query"
+CASSANDRA_TO_BQ_CATALOG = "cassandratobq.input.catalog.name"
+CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace"
 
 # GCS to BigTable
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
