@@ -40,7 +40,8 @@ public class JDBCToGCSTest {
 
   @BeforeEach
   void setUp() {
-    PropertyUtil.getProperties().setProperty(JDBC_TO_GCS_OUTPUT_LOCATION, "gs://test-bucket/output-location");
+    PropertyUtil.getProperties()
+        .setProperty(JDBC_TO_GCS_OUTPUT_LOCATION, "gs://test-bucket/output-location");
     PropertyUtil.getProperties().setProperty(JDBC_TO_GCS_OUTPUT_FORMAT, "csv");
     PropertyUtil.getProperties().setProperty(JDBC_TO_GCS_JDBC_URL, "url");
     PropertyUtil.getProperties().setProperty(JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME, "driverName");
