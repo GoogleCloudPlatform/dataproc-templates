@@ -44,7 +44,7 @@ bin/start.sh \
 --templateProperty gcs.bigtable.input.format=<csv|parquet|avro> \
 --templateProperty gcs.bigtable.output.instance.id=<bigtable instance Id> \
 --templateProperty gcs.bigtable.output.project.id=<bigtable project Id> \
---templateProperty gcs.bigtable.table.name=<bigtable tableName>
+--templateProperty gcs.bigtable.table.name=<bigtable tableName> \
 --templateProperty gcs.bigtable.column.family=<bigtable column family>
 
 Example execution:-
