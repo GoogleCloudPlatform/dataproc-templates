@@ -15,7 +15,13 @@
  */
 package com.google.cloud.dataproc.templates.s3;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_ACCESS_KEY;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_INPUT_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_INPUT_LOCATION;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_LD_TEMP_BUCKET_NAME;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_OUTPUT_DATASET_NAME;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_OUTPUT_TABLE_NAME;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_SECRET_KEY;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,8 +51,12 @@ public class S3ToBigQueryTest {
     PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_LOCATION, "s3a://test-bucket");
     PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_DATASET_NAME, "bigqueryDataset");
     PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_TABLE_NAME, "bigqueryTable");
-    s3ToBigQueryTest = new S3ToBigQuery();
+    PropertyUtil.getProperties().setProperty(S3_BQ_ACCESS_KEY, "bigqueryAccessKey");
+    PropertyUtil.getProperties().setProperty(S3_BQ_SECRET_KEY, "bigquerySecretKey");
+    PropertyUtil.getProperties().setProperty(S3_BQ_LD_TEMP_BUCKET_NAME, "tempBucket");
+    PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_FORMAT, "inputFormat");
 
+    s3ToBigQueryTest = new S3ToBigQuery();
     assertDoesNotThrow(s3ToBigQueryTest::runTemplate);
   }
 
@@ -66,6 +76,13 @@ public class S3ToBigQueryTest {
   }
 
   static Stream<String> propertyKeys() {
-    return Stream.of(S3_BQ_INPUT_LOCATION, S3_BQ_OUTPUT_DATASET_NAME, S3_BQ_OUTPUT_TABLE_NAME);
+    return Stream.of(
+        S3_BQ_INPUT_LOCATION,
+        S3_BQ_OUTPUT_DATASET_NAME,
+        S3_BQ_OUTPUT_TABLE_NAME,
+        S3_BQ_ACCESS_KEY,
+        S3_BQ_SECRET_KEY,
+        S3_BQ_LD_TEMP_BUCKET_NAME,
+        S3_BQ_INPUT_FORMAT);
   }
 }
