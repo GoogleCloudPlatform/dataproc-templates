@@ -77,7 +77,7 @@ public class DataProcTemplate {
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
           .put(TemplateName.SPANNERTOGCS, SpannerToGCS::of)
-          .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
+          .put(TemplateName.JDBCTOBIGQUERY, JDBCToBigQuery::of)
           .put(TemplateName.CASSANDRATOBQ, CassandraToBQ::of)
           .put(TemplateName.CASSANDRATOGCS, CassandraToGCS::of)
           .put(TemplateName.JDBCTOGCS, JDBCToGCS::of)
