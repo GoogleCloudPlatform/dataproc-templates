@@ -15,6 +15,13 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_AVRO_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_CSV_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_CSV_HEADER;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_CSV_INFER_SCHEMA;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_ORC_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_PRQT_FORMAT;
+
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -47,11 +54,37 @@ public class GCSToJDBC implements BaseTemplate {
   public void runTemplate() {
     validateInput();
     try (SparkSession spark = SparkSession.builder().appName("GCS to JDBC").getOrCreate()) {
-      Dataset<Row> dataset =
-          spark.read().format(config.getInputFormat()).load(config.getInputLocation());
-
+      Dataset<Row> dataset = load(spark);
       write(dataset);
     }
+  }
+
+  public Dataset<Row> load(SparkSession spark) {
+    Dataset<Row> inputData = null;
+
+    switch (config.getInputFormat()) {
+      case GCS_JDBC_CSV_FORMAT:
+        inputData =
+            spark
+                .read()
+                .format(config.getInputFormat())
+                .option(GCS_JDBC_CSV_HEADER, true)
+                .option(GCS_JDBC_CSV_INFER_SCHEMA, true)
+                .load(config.getInputLocation());
+        break;
+      case GCS_JDBC_AVRO_FORMAT:
+      case GCS_JDBC_ORC_FORMAT:
+        inputData = spark.read().format(config.getInputFormat()).load(config.getInputLocation());
+        break;
+      case GCS_JDBC_PRQT_FORMAT:
+        inputData = spark.read().parquet(config.getInputLocation());
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "Currently avro, orc, parquet and csv are the only supported formats");
+    }
+
+    return inputData;
   }
 
   public void write(Dataset<Row> dataset) {
