@@ -50,7 +50,7 @@ public class RedshiftToGCS implements BaseTemplate {
             .getOrCreate();
 
     // Set log level
-spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+    spark.sparkContext().setLogLevel(config.getSparkLogLevel());
 
     LOGGER.info("RedshiftToGcs job started.");
 

@@ -79,8 +79,8 @@ public class SpannerToGCSConfig {
   private String tempQuery;
 
   @JsonProperty(value = SPARK_LOG_LEVEL)
-@Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
-private String sparkLogLevel;
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
 
   @AssertTrue(
       message =
