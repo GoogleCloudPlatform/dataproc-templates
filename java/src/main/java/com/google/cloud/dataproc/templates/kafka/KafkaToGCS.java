@@ -49,6 +49,7 @@ public class KafkaToGCS implements BaseTemplate {
   private String kafkaStartingOffsets;
   private String kafkaOutputMode;
   private Long kafkaAwaitTerminationTimeout;
+  private final String sparkLogLevel;
 
   public KafkaToGCS() {
 
@@ -63,6 +64,7 @@ public class KafkaToGCS implements BaseTemplate {
     kafkaOutputMode = getProperties().getProperty(KAFKA_GCS_OUTPUT_MODE);
     kafkaAwaitTerminationTimeout =
         Long.valueOf(getProperties().getProperty(KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT));
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -71,6 +73,9 @@ public class KafkaToGCS implements BaseTemplate {
 
     // Initialize Spark session
     SparkSession spark = SparkSession.builder().appName("Spark KafkaToGCS Job").getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     KafkaReader reader = new KafkaReader();
 

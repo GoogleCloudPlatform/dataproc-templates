@@ -92,6 +92,10 @@ public class JDBCToGCSConfig {
   @JsonProperty(value = JDBC_TO_GCS_TEMP_QUERY)
   private String tempQuery;
 
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
+
   @AssertTrue(
       message =
           "Required parameters for JDBCToGCS not passed. Template property should be provided for either the SQL Query or the SQL File, but not both. Refer to jdbc/README.md for more instructions.")
@@ -173,6 +177,10 @@ public class JDBCToGCSConfig {
 
   public String getTempQuery() {
     return tempQuery;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   public String getConcatedPartitionProps() {

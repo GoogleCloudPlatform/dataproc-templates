@@ -49,6 +49,9 @@ public class SnowflakeToGCS implements BaseTemplate {
   public void runTemplate() {
     SparkSession spark = SparkSession.builder().appName("Snowflake To GCS").getOrCreate();
 
+// Set log level
+spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+
     validateInput();
 
     Dataset<Row> inputData =

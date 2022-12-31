@@ -34,18 +34,24 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
   private String outputFileFormat;
   private String gcsSaveMode;
   private String gcsWritePath;
+  private final String sparkLogLevel;
 
   public HbaseToGCS() {
     catalogue = getProperties().getProperty(HBASE_TO_GCS_TABLE_CATALOG);
     outputFileFormat = getProperties().getProperty(HBASE_TO_GCS_OUTPUT_FILE_FORMAT);
     gcsSaveMode = getProperties().getProperty(HBASE_TO_GCS_OUTPUT_SAVE_MODE);
     gcsWritePath = getProperties().getProperty(HBASE_TO_GCS_OUTPUT_PATH);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
   public void runTemplate() {
     validateInput();
     SparkSession spark = SparkSession.builder().appName("Spark HbaseToGCS Job").getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
+
     Map<String, String> optionsMap = new HashMap<>();
     optionsMap.put(HBaseTableCatalog.tableCatalog(), catalogue.replaceAll("\\s", ""));
     // Read from HBase

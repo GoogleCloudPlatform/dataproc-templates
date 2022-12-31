@@ -53,6 +53,7 @@ public class PubSubToBQ implements BaseTemplate {
   private String pubSubBQOutputDataset;
   private String pubSubBQOutputTable;
   private int batchSize;
+  private final String sparkLogLevel;
 
   public PubSubToBQ() {
     inputProjectID = getProperties().getProperty(PUBSUB_INPUT_PROJECT_ID_PROP);
@@ -65,6 +66,8 @@ public class PubSubToBQ implements BaseTemplate {
     pubSubBQOutputDataset = getProperties().getProperty(PUBSUB_BQ_OUTPOUT_DATASET_PROP);
     pubSubBQOutputTable = getProperties().getProperty(PUBSUB_BQ_OUTPOUT_TABLE_PROP);
     batchSize = Integer.parseInt(getProperties().getProperty(PUBSUB_BQ_BATCH_SIZE_PROP));
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
+
   }
 
   @Override
@@ -77,6 +80,9 @@ public class PubSubToBQ implements BaseTemplate {
     try {
       SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigQuery Dataproc Job");
       jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
+      
+      // Set log level
+      jsc.sparkContext().setLogLevel(sparkLogLevel);
 
       JavaDStream<SparkPubsubMessage> stream = null;
       for (int i = 0; i < totalReceivers; i += 1) {
