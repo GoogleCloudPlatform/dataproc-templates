@@ -19,6 +19,7 @@ public interface TemplateConstants {
 
   String DEFAULT_PROPERTY_FILE = "template.properties";
   String PROJECT_ID_PROP = "project.id";
+  String SPARK_LOG_LEVEL = "log.level";
   String BIGTABLE_INSTANCE_ID_PROP = "project.id";
   String BIGTABLE_OUTPUT_TABLE_NAME_PROP = "bigtable.output.table.name";
   String SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID = "spanner.gcs.input.spanner.id";
