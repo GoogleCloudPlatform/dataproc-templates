@@ -57,6 +57,9 @@ public class SpannerToGCS implements BaseTemplate {
 
     SparkSession spark = SparkSession.builder().appName("DatabaseToGCS Dataproc job").getOrCreate();
 
+    // Set log level
+spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+
     LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
 
     HashMap<String, String> jdbcProperties = new HashMap<>();

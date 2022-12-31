@@ -78,6 +78,10 @@ public class SpannerToGCSConfig {
   @JsonProperty(value = SPANNER_GCS_TEMP_QUERY)
   private String tempQuery;
 
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+@Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+private String sparkLogLevel;
+
   @AssertTrue(
       message =
           "Optional SQL paritioning parameters are not passed correctly for SpannerToGCS. If one is specified then all needs to be specified in resources/conf/template.properties file or at runtime. Refer to databases/README.md for more instructions.")
@@ -139,6 +143,10 @@ public class SpannerToGCSConfig {
 
   public String getTempQuery() {
     return this.tempQuery;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   public String getConcatedPartitionProperties() {

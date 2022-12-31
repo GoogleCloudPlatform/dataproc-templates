@@ -74,6 +74,10 @@ public class RedshiftToGCSConfig {
   @JsonProperty(value = REDSHIFT_GCS_TEMP_QUERY)
   private String tempQuery;
 
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+@Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+private String sparkLogLevel;
+
   public String getGcsOutputLocation() {
     return fileLocation;
   }
@@ -116,6 +120,10 @@ public class RedshiftToGCSConfig {
 
   public String gettempQuery() {
     return tempQuery;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   public static com.google.cloud.dataproc.templates.databases.RedshiftToGCSConfig fromProperties(

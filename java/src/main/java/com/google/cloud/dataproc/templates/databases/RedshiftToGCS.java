@@ -49,6 +49,9 @@ public class RedshiftToGCS implements BaseTemplate {
             .enableHiveSupport()
             .getOrCreate();
 
+    // Set log level
+spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+
     LOGGER.info("RedshiftToGcs job started.");
 
     spark.sparkContext().hadoopConfiguration().set("fs.s3a.access.key", config.getAWSAccessKey());
