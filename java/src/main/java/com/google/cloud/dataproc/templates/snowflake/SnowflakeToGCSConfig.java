@@ -83,8 +83,8 @@ public class SnowflakeToGCSConfig {
   private String gcsPartitionColumn;
 
   @JsonProperty(value = SPARK_LOG_LEVEL)
-@Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
-private String sparkLogLevel;
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
 
   public String getSfUrl() {
     return this.sfUrl;
@@ -140,7 +140,7 @@ private String sparkLogLevel;
 
   public String getSparkLogLevel() {
     return sparkLogLevel;
-  }  
+  }
 
   @AssertTrue(
       message =

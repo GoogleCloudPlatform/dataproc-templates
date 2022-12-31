@@ -67,7 +67,6 @@ public class PubSubToBQ implements BaseTemplate {
     pubSubBQOutputTable = getProperties().getProperty(PUBSUB_BQ_OUTPOUT_TABLE_PROP);
     batchSize = Integer.parseInt(getProperties().getProperty(PUBSUB_BQ_BATCH_SIZE_PROP));
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
-
   }
 
   @Override
@@ -80,7 +79,7 @@ public class PubSubToBQ implements BaseTemplate {
     try {
       SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigQuery Dataproc Job");
       jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
-      
+
       // Set log level
       jsc.sparkContext().setLogLevel(sparkLogLevel);
 
