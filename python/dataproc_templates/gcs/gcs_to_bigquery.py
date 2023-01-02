@@ -131,7 +131,9 @@ class GCSToBigQueryTemplate(BaseTemplate):
             input_data = spark.read \
                 .json(input_file_location)
         elif input_file_format == constants.FORMAT_DELTA:
-            return spark.read.format(constants.FORMAT_DELTA).load(input_file_location)
+            input_data = spark.read \
+                .format(constants.FORMAT_DELTA) \
+                .load(input_file_location)
 
         # Write
         input_data.write \
