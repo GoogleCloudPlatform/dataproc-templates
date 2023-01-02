@@ -148,6 +148,9 @@ class JDBCToGCSTemplate(BaseTemplate):
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
+        if getattr(known_args, constants.JDBCTOGCS_INPUT_TABLE) and getattr(known_args, constants.JDBCTOGCS_SQL_QUERY):
+            sys.exit('ArgumentParser Error: Arguments cannot have both input table and sql query, use either one.')
+
         if getattr(known_args, constants.JDBCTOGCS_SQL_QUERY) and not getattr(known_args, constants.JDBCTOGCS_TEMP_VIEW_NAME):
             sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
 
