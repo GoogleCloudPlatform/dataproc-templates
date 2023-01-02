@@ -78,7 +78,7 @@ Dataproc Templates (Java - Spark) submit jobs to Dataproc Serverless using [batc
     * Template options, such as the critical `--template` option which says which template to run and
       `--templateProperty` options for passing in properties at runtime (as an alternative to setting
       them in `src/main/resources/template.properties`).
-    * Other common template property: `log.level`, which is an optional parameter to define the log level of Spark Context and it defaults to INFO. Possible choices are the Spark log levels: ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"]      
+    * Other common template property: `log.level`, which is an optional parameter to define the log level of Spark Context and it defaults to INFO. Possible choices are the Spark log levels: ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"]
       ```
       --templateProperty log.level=ERROR
       ```
