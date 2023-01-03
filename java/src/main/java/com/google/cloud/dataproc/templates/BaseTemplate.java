@@ -17,6 +17,8 @@ package com.google.cloud.dataproc.templates;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 
 /** Base class for Dataproc templates. */
 public interface BaseTemplate {
@@ -31,20 +33,32 @@ public interface BaseTemplate {
     HIVETOBIGQUERY,
     S3TOBIGQUERY,
     GCSTOBIGQUERY,
+    GCSTOGCS,
     JDBCTOBIGQUERY,
     JDBCTOGCS,
     BIGQUERYTOGCS,
     GENERAL,
     DATAPLEXGCSTOBQ,
     PUBSUBTOGCS,
+    KAFKATOPUBSUB,
+    HBASETOGCS,
     GCSTOJDBC,
-    KAFKATOPUBSUB
+    KAFKATOBQ,
+    KAFKATOGCS,
+    CASSANDRATOBQ,
+    CASSANDRATOGCS,
+    REDSHIFTTOGCS,
+    SNOWFLAKETOGCS,
+    JDBCTOSPANNER,
+    PUBSUBTOBIGTABLE,
+    GCSTOBIGTABLE
   }
 
   default Properties getProperties() {
     return PropertyUtil.getProperties();
   }
 
+  void validateInput() throws Exception;
   /** Executes the template. */
-  void runTemplate();
+  void runTemplate() throws StreamingQueryException, TimeoutException;
 }

@@ -16,7 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
-
+import sys
 from pyspark.sql import SparkSession, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
@@ -87,9 +87,26 @@ class HiveToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        parser.add_argument(
+            f'--{constants.HIVE_GCS_TEMP_VIEW_NAME}',
+            dest=constants.HIVE_GCS_TEMP_VIEW_NAME,
+            required=False,
+            default="",
+            help='Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query'
+        )
+        parser.add_argument(
+            f'--{constants.HIVE_GCS_SQL_QUERY}',
+            dest=constants.HIVE_GCS_SQL_QUERY,
+            required=False,
+            default="",
+            help='SQL query for data transformation. This must use the temp view name as the table to query from.'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
+
+        if getattr(known_args, constants.HIVE_GCS_SQL_QUERY) and not getattr(known_args, constants.HIVE_GCS_TEMP_VIEW_NAME):
+            sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
 
         return vars(known_args)
 
@@ -103,6 +120,8 @@ class HiveToGCSTemplate(BaseTemplate):
         output_location: str = args[constants.HIVE_GCS_OUTPUT_LOCATION]
         output_format: str = args[constants.HIVE_GCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.HIVE_GCS_OUTPUT_MODE]
+        hive_temp_view: str = args[constants.HIVE_GCS_TEMP_VIEW_NAME]
+        sql_query: str = args[constants.HIVE_GCS_SQL_QUERY]
 
         logger.info(
             "Starting Hive to GCS spark job with parameters:\n"
@@ -112,8 +131,16 @@ class HiveToGCSTemplate(BaseTemplate):
         # Read
         input_data = spark.table(hive_database + "." + hive_table)
 
+        if sql_query:
+            # Create temp view on source data
+            input_data.createGlobalTempView(hive_temp_view)
+            # Execute SQL
+            output_data = spark.sql(sql_query)
+        else:
+            output_data = input_data
+
         # Write
-        writer: DataFrameWriter = input_data.write.mode(output_mode)
+        writer: DataFrameWriter = output_data.write.mode(output_mode)
 
         if output_format == constants.FORMAT_PRQT:
             writer.parquet(output_location)
@@ -123,7 +150,7 @@ class HiveToGCSTemplate(BaseTemplate):
                 .save(output_location)
         elif output_format == constants.FORMAT_CSV:
             writer \
-                .option(constants.CSV_HEADER, True) \
+                .option(constants.HEADER, True) \
                 .csv(output_location)
         elif output_format == constants.FORMAT_JSON:
             writer.json(output_location)

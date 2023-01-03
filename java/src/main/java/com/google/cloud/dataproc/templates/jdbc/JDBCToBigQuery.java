@@ -35,6 +35,7 @@ public class JDBCToBigQuery implements BaseTemplate {
   private String bqLocation;
   private String jdbcURL;
   private String jdbcDriverClassName;
+  private String jdbcFetchSize;
   private String temporaryGcsBucket;
   // Default as ErrorIfExists
   private String bqWriteMode = "ErrorIfExists";
@@ -44,6 +45,8 @@ public class JDBCToBigQuery implements BaseTemplate {
   private String jdbcSQLUpperBound;
   private String jdbcSQLNumPartitions;
   private String concatedPartitionProps;
+  private String tempTable;
+  private String tempQuery;
 
   public JDBCToBigQuery() {
 
@@ -52,18 +55,73 @@ public class JDBCToBigQuery implements BaseTemplate {
     temporaryGcsBucket = getProperties().getProperty(JDBC_TO_BQ_TEMP_GCS_BUCKET);
     jdbcURL = getProperties().getProperty(JDBC_TO_BQ_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME);
-    jdbcSQL = "(" + getProperties().getProperty(JDBC_TO_BQ_SQL) + ") as a";
-
+    jdbcFetchSize = getProperties().getProperty(JDBC_TO_BQ_JDBC_FETCH_SIZE);
+    jdbcSQL =
+        getSQL(
+            getProperties().getProperty(JDBC_TO_BQ_JDBC_URL),
+            getProperties().getProperty(JDBC_TO_BQ_SQL));
     jdbcSQLPartitionColumn = getProperties().getProperty(JDBC_TO_BQ_SQL_PARTITION_COLUMN);
     jdbcSQLLowerBound = getProperties().getProperty(JDBC_TO_BQ_SQL_LOWER_BOUND);
     jdbcSQLUpperBound = getProperties().getProperty(JDBC_TO_BQ_SQL_UPPER_BOUND);
     jdbcSQLNumPartitions = getProperties().getProperty(JDBC_TO_BQ_SQL_NUM_PARTITIONS);
     concatedPartitionProps =
         jdbcSQLPartitionColumn + jdbcSQLLowerBound + jdbcSQLUpperBound + jdbcSQLNumPartitions;
+    tempTable = getProperties().getProperty(JDBC_BQ_TEMP_TABLE);
+    tempQuery = getProperties().getProperty(JDBC_BQ_TEMP_QUERY);
+  }
+
+  public String getSQL(String jdbcURL, String sqlQuery) {
+    if (jdbcURL.contains("oracle")) {
+      return "(" + sqlQuery + ")";
+    } else {
+      return "(" + sqlQuery + ") as a";
+    }
   }
 
   @Override
   public void runTemplate() {
+
+    validateInput();
+
+    SparkSession spark = null;
+
+    spark =
+        SparkSession.builder()
+            .appName("Spark JDBCToBigQuery Job")
+            .config("temporaryGcsBucket", temporaryGcsBucket)
+            .enableHiveSupport()
+            .getOrCreate();
+
+    HashMap<String, String> jdbcProperties = new HashMap<>();
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), jdbcDriverClassName);
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), jdbcSQL);
+
+    if (StringUtils.isNotBlank(concatedPartitionProps)) {
+      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), jdbcSQLPartitionColumn);
+      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), jdbcSQLUpperBound);
+      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), jdbcSQLLowerBound);
+      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), jdbcSQLNumPartitions);
+    }
+
+    /** Read Input data from JDBC table */
+    Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
+
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
+
+    inputData
+        .write()
+        .mode(bqWriteMode)
+        .format("com.google.cloud.spark.bigquery")
+        .option("table", bqLocation)
+        .save();
+  }
+
+  public void validateInput() {
     if (StringUtils.isAllBlank(bqLocation)
         || StringUtils.isAllBlank(jdbcURL)
         || StringUtils.isAllBlank(jdbcDriverClassName)
@@ -100,13 +158,16 @@ public class JDBCToBigQuery implements BaseTemplate {
             + "4. {}:{}"
             + "5. {}:{}"
             + "6. {}:{}"
-            + "7. {}:{}",
+            + "7. {}:{}"
+            + "8. {}:{}",
         JDBC_TO_BQ_BIGQUERY_LOCATION,
         bqLocation,
         JDBC_TO_BQ_WRITE_MODE,
         bqWriteMode,
         JDBC_TO_BQ_SQL,
         jdbcSQL,
+        JDBC_TO_BQ_JDBC_FETCH_SIZE,
+        jdbcFetchSize,
         JDBC_TO_BQ_SQL_PARTITION_COLUMN,
         jdbcSQLPartitionColumn,
         JDBC_TO_BQ_SQL_UPPER_BOUND,
@@ -138,9 +199,23 @@ public class JDBCToBigQuery implements BaseTemplate {
       jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), jdbcSQLNumPartitions);
     }
 
+    if (StringUtils.isNotBlank(jdbcFetchSize)) {
+      jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), jdbcFetchSize);
+    }
+
     /** Read Input data from JDBC table */
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
-    inputData.write().mode(bqWriteMode).format("bigquery").option("table", bqLocation).save();
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
+
+    inputData
+        .write()
+        .mode(bqWriteMode)
+        .format("com.google.cloud.spark.bigquery")
+        .option("table", bqLocation)
+        .save();
   }
 }

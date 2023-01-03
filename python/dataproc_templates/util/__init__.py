@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .argument_parsing import get_template_name
+from .argument_parsing import get_template_name, get_log_level
 from .tracking import track_template_invocation

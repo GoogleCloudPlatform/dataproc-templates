@@ -16,7 +16,20 @@ set -e
 # limitations under the License.
 
 #Initialize functions and Constants
+echo "Script Started Execution"
+
+java --version
+java_status=$?
+
 BIN_DIR="$(dirname "$BASH_SOURCE")"
+source ${BIN_DIR}/dataproc_template_functions.sh
+check_status $java_status "\n Java is installed, thus we are good to go \n" "\n Java is not installed on this machine, thus we need to install that first \n"
+
+mvn --version
+mvn_status=$?
+
+check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
+
 PROJECT_ROOT_DIR=${BIN_DIR}/..
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
 if [ -z "${JOB_TYPE}" ]; then
@@ -29,6 +42,9 @@ check_required_envvar GCP_PROJECT
 check_required_envvar REGION
 check_required_envvar GCS_STAGING_LOCATION
 
+# Remove trailing forward slash
+GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION | sed 's/\/*$//'`
+
 # Do not rebuild when SKIP_BUILD is specified
 # Usage: export SKIP_BUILD=true
 if [ -z "$SKIP_BUILD" ]; then
@@ -36,13 +52,22 @@ if [ -z "$SKIP_BUILD" ]; then
   #Change PWD to root folder for Maven Build
   cd ${PROJECT_ROOT_DIR}
   mvn clean spotless:apply install -DskipTests
+  build_status=$?
+
+  check_status $build_status "\n Code build went successful, thus we are good to go \n" "\n We ran into some issues while building the jar file, seems like mvn clean install is not running fine \n"
   mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./grpc_lb
 
   #Copy jar file to GCS bucket Staging folder
   echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_LOCATION}/${JAR_FILE}"
   gsutil cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_LOCATION}/${JAR_FILE}
+  check_status $? "\n Commands to copy the project jar file to GCS Staging location went fine, thus we are good to go \n" "\n It seems like there is some issue in copying the project jar file to GCS Staging location \n"
+
   gsutil cp ${PROJECT_ROOT_DIR}/grpc_lb/io/grpc/grpc-grpclb/1.40.1/grpc-grpclb-1.40.1.jar ${GCS_STAGING_LOCATION}/grpc-grpclb-1.40.1.jar
+  check_status $? "\n Commands to copy the library jar file to GCS Staging location went fine, thus we are good to go \n" "\n It seems like there is some issue in copying the library jar file to GCS Staging location \n"
+
   gsutil cp ${PROJECT_ROOT_DIR}/src/test/resources/log4j-spark-driver-template.properties ${GCS_STAGING_LOCATION}/log4j-spark-driver-template.properties
+  check_status $? "\n Commands to copy the properties file to GCS Staging location went fine, thus we are good to go \n" "\n It seems like there is some issue in copying the properties file to GCS Staging location \n"
+
 fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
@@ -72,6 +97,28 @@ if [ -n "${JARS}" ]; then
 fi
 if [ -n "${SPARK_PROPERTIES}" ]; then
   OPT_PROPERTIES="${OPT_PROPERTIES},${SPARK_PROPERTIES}"
+fi
+
+#if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
+if [ -n "${CATALOG}" ]; then
+  echo "Downloading Hbase jar dependency"
+  wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar
+  wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar
+  gsutil copy hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
+  gsutil copy hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
+  echo "Passing downloaded dependency jars"
+  OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+  rm hbase-client-2.4.12.jar
+  rm hbase-shaded-mapreduce-2.4.12.jar
+fi
+
+if [ -n "${HBASE_SITE_PATH}" ]; then
+  #Copy the hbase-site.xml to docker context
+  cp $HBASE_SITE_PATH .
+  export HBASE_SITE_NAME=`basename $HBASE_SITE_PATH`
+  docker build -t "${IMAGE}" -f src/main/java/com/google/cloud/dataproc/templates/hbase/Dockerfile --build-arg HBASE_SITE_NAME=${HBASE_SITE_NAME} .
+  rm $HBASE_SITE_NAME
+  docker push "${IMAGE}"
 fi
 
 # Running on an existing dataproc cluster or run on serverless spark
@@ -115,3 +162,10 @@ fi
 echo "Triggering Spark Submit job"
 echo ${command} "$@"
 ${command} "$@"
+spark_status=$?
+
+check_status $spark_status "\n Spark Command ran successful \n" "\n It seems like there are some issues in running spark command. Requesting you to please go through the error to identify issues in your code \n"
+
+echo "We will love to hear your feedback at: https://forms.gle/XXCJeWeCJJ9fNLQS6"
+echo "Email us at: dataproc-templates-support-external@googlegroups.com"
+

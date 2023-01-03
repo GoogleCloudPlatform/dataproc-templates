@@ -27,6 +27,8 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_OUTPUT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_PRQT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_TEMP_BUCKET;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_TEMP_QUERY;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_TEMP_TABLE;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_DATASET_NAME;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_TABLE_NAME;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
@@ -52,6 +54,10 @@ public class GCStoBigquery implements BaseTemplate {
   private String inputFileFormat;
   private String bqTempBucket;
 
+  private String bqTempTable;
+
+  private String bqTempQuery;
+
   public GCStoBigquery() {
 
     projectID = getProperties().getProperty(PROJECT_ID_PROP);
@@ -60,50 +66,16 @@ public class GCStoBigquery implements BaseTemplate {
     bigQueryTable = getProperties().getProperty(GCS_OUTPUT_TABLE_NAME);
     inputFileFormat = getProperties().getProperty(GCS_BQ_INPUT_FORMAT);
     bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
+    bqTempTable = getProperties().getProperty(GCS_BQ_TEMP_TABLE);
+    bqTempQuery = getProperties().getProperty(GCS_BQ_TEMP_QUERY);
   }
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(projectID)
-        || StringUtils.isAllBlank(inputFileLocation)
-        || StringUtils.isAllBlank(bigQueryDataset)
-        || StringUtils.isAllBlank(bigQueryTable)
-        || StringUtils.isAllBlank(inputFileFormat)
-        || StringUtils.isAllBlank(bqTempBucket)) {
-      LOGGER.error(
-          "{},{},{},{},{},{} are required parameter. ",
-          PROJECT_ID_PROP,
-          GCS_BQ_INPUT_LOCATION,
-          GCS_OUTPUT_DATASET_NAME,
-          GCS_OUTPUT_TABLE_NAME,
-          GCS_BQ_INPUT_FORMAT,
-          GCS_BQ_LD_TEMP_BUCKET_NAME);
-      throw new IllegalArgumentException(
-          "Required parameters for GCStoBQ not passed. "
-              + "Set mandatory parameter for GCStoBQ template "
-              + "in resources/conf/template.properties file.");
-    }
+    validateInput();
 
     SparkSession spark = null;
-    LOGGER.info(
-        "Starting GCS to Bigquery spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {}:{}"
-            + "5. {}:{}",
-        GCS_BQ_INPUT_LOCATION,
-        inputFileLocation,
-        GCS_OUTPUT_DATASET_NAME,
-        bigQueryDataset,
-        GCS_OUTPUT_TABLE_NAME,
-        bigQueryTable,
-        GCS_BQ_INPUT_FORMAT,
-        inputFileFormat,
-        GCS_BQ_LD_TEMP_BUCKET_NAME,
-        bqTempBucket);
-
-    LOGGER.info("input format: " + inputFileFormat);
+    LOGGER.info("input format: {}", inputFileFormat);
 
     try {
       spark = SparkSession.builder().appName("GCS to Bigquery load").getOrCreate();
@@ -128,7 +100,12 @@ public class GCStoBigquery implements BaseTemplate {
           break;
         default:
           throw new IllegalArgumentException(
-              "Currenlty avro, parquet and csv are the only supported formats");
+              "Currently avro, parquet and csv are the only supported formats");
+      }
+
+      if (bqTempTable != null && bqTempQuery != null) {
+        inputData.createOrReplaceGlobalTempView(bqTempTable);
+        inputData = spark.sql(bqTempQuery);
       }
 
       inputData
@@ -146,5 +123,45 @@ public class GCStoBigquery implements BaseTemplate {
         spark.stop();
       }
     }
+  }
+
+  public void validateInput() {
+    if (StringUtils.isAllBlank(projectID)
+        || StringUtils.isAllBlank(inputFileLocation)
+        || StringUtils.isAllBlank(bigQueryDataset)
+        || StringUtils.isAllBlank(bigQueryTable)
+        || StringUtils.isAllBlank(inputFileFormat)
+        || StringUtils.isAllBlank(bqTempBucket)) {
+      LOGGER.error(
+          "{},{},{},{},{},{} are required parameter. ",
+          PROJECT_ID_PROP,
+          GCS_BQ_INPUT_LOCATION,
+          GCS_OUTPUT_DATASET_NAME,
+          GCS_OUTPUT_TABLE_NAME,
+          GCS_BQ_INPUT_FORMAT,
+          GCS_BQ_LD_TEMP_BUCKET_NAME);
+      throw new IllegalArgumentException(
+          "Required parameters for GCStoBQ not passed. "
+              + "Set mandatory parameter for GCStoBQ template "
+              + "in resources/conf/template.properties file.");
+    }
+
+    LOGGER.info(
+        "Starting GCS to Bigquery spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {}:{}"
+            + "5. {}:{}",
+        GCS_BQ_INPUT_LOCATION,
+        inputFileLocation,
+        GCS_OUTPUT_DATASET_NAME,
+        bigQueryDataset,
+        GCS_OUTPUT_TABLE_NAME,
+        bigQueryTable,
+        GCS_BQ_INPUT_FORMAT,
+        inputFileFormat,
+        GCS_BQ_LD_TEMP_BUCKET_NAME,
+        bqTempBucket);
   }
 }

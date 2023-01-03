@@ -18,26 +18,34 @@ package com.google.cloud.dataproc.templates.main;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
+import com.google.cloud.dataproc.templates.databases.CassandraToBQ;
+import com.google.cloud.dataproc.templates.databases.CassandraToGCS;
+import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
-import com.google.cloud.dataproc.templates.gcs.GCSToJDBC;
-import com.google.cloud.dataproc.templates.gcs.GCSToSpanner;
-import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
+import com.google.cloud.dataproc.templates.gcs.*;
 import com.google.cloud.dataproc.templates.general.GeneralTemplate;
+import com.google.cloud.dataproc.templates.hbase.HbaseToGCS;
 import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToBigQuery;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
 import com.google.cloud.dataproc.templates.kafka.KafkaToPubSub;
+import com.google.cloud.dataproc.templates.jdbc.JDBCToSpanner;
+import com.google.cloud.dataproc.templates.kafka.KafkaToBQ;
+import com.google.cloud.dataproc.templates.kafka.KafkaToGCS;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
+import com.google.cloud.dataproc.templates.pubsub.PubSubToBigTable;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
+import com.google.cloud.dataproc.templates.snowflake.SnowflakeToGCS;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.TemplateUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -47,6 +55,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,18 +69,29 @@ public class DataProcTemplate {
           .put(TemplateName.HIVETOGCS, (args) -> new HiveToGCS())
           .put(TemplateName.HIVETOBIGQUERY, (args) -> new HiveToBigQuery())
           .put(TemplateName.PUBSUBTOBQ, (args) -> new PubSubToBQ())
+          .put(TemplateName.PUBSUBTOBIGTABLE, (args) -> new PubSubToBigTable())
           .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
+          .put(TemplateName.REDSHIFTTOGCS, RedshiftToGCS::of)
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
+          .put(TemplateName.GCSTOBIGTABLE, (args) -> new GCStoBigTable())
+          .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
-          .put(TemplateName.SPANNERTOGCS, (args) -> new SpannerToGCS())
+          .put(TemplateName.SPANNERTOGCS, SpannerToGCS::of)
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
-          .put(TemplateName.JDBCTOGCS, (args) -> new JDBCToGCS())
           .put(TemplateName.KAFKATOPUBSUB, (args) -> new KafkaToPubSub())
+          .put(TemplateName.CASSANDRATOBQ, CassandraToBQ::of)
+          .put(TemplateName.CASSANDRATOGCS, CassandraToGCS::of)
+          .put(TemplateName.JDBCTOGCS, JDBCToGCS::of)
+          .put(TemplateName.JDBCTOSPANNER, JDBCToSpanner::of)
+          .put(TemplateName.HBASETOGCS, (args) -> new HbaseToGCS())
+          .put(TemplateName.KAFKATOBQ, (args) -> new KafkaToBQ())
+          .put(TemplateName.KAFKATOGCS, (args) -> new KafkaToGCS())
           .put(TemplateName.GCSTOJDBC, GCSToJDBC::of)
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
+          .put(TemplateName.SNOWFLAKETOGCS, SnowflakeToGCS::of)
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
@@ -90,10 +110,7 @@ public class DataProcTemplate {
           .withDescription("Value for given property")
           .create();
   private static final Options options =
-      // new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
-      new Options()
-          .addOption(null, TEMPLATE_NAME_LONG_OPT, true, "test")
-          .addOption(PROPERTY_OPTION);
+      new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
 
   /**
    * Parse command line arguments
@@ -118,6 +135,8 @@ public class DataProcTemplate {
    */
   public static TemplateName parseTemplateName(String templateNameString) {
     try {
+      // if (templateNameString == null) throw new IllegalArgumentException("Missing required
+      // option: template");
       return TemplateName.valueOf(templateNameString.trim().toUpperCase());
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException(
@@ -125,7 +144,7 @@ public class DataProcTemplate {
     }
   }
 
-  public static void main(String... args) {
+  public static void main(String... args) throws StreamingQueryException, TimeoutException {
     BaseTemplate template = createTemplateAndRegisterProperties(args);
     runSparkJob(template);
   }
@@ -177,7 +196,7 @@ public class DataProcTemplate {
    *
    * @param template the template to run.
    */
-  static void runSparkJob(BaseTemplate template) {
+  static void runSparkJob(BaseTemplate template) throws StreamingQueryException, TimeoutException {
     LOGGER.debug("Start runSparkJob");
     template.runTemplate();
     LOGGER.debug("End runSparkJob");

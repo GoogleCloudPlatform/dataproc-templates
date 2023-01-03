@@ -26,6 +26,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_HEADER;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_INFOR_SCHEMA;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_READ_FORMAT_BIGQUERY;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.Objects;
@@ -53,24 +54,13 @@ public class BigQueryToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    if (StringUtils.isAllBlank(inputTableName)
-        || StringUtils.isAllBlank(outputFileFormat)
-        || StringUtils.isAllBlank(outputFileLocation)) {
-      LOGGER.error(
-          "{},{},{} are required parameter. ",
-          BQ_GCS_INPUT_TABLE_NAME,
-          BQ_GCS_OUTPUT_FORMAT,
-          BQ_GCS_OUTPUT_LOCATION);
-      throw new IllegalArgumentException(
-          "Required parameters for BigQueryToGCS not passed. "
-              + "Set mandatory parameter for BigQueryToGCS template "
-              + "in resources/conf/template.properties file.");
-    }
+
+    validateInput();
 
     SparkSession spark = null;
     try {
       spark = SparkSession.builder().appName("BigQuery to GCS").getOrCreate();
-      Dataset<Row> inputData = spark.read().format("bigquery").load(inputTableName);
+      Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
       DataFrameWriter<Row> writer = inputData.write();
       switch (outputFileFormat) {
         case BQ_GCS_OUTPUT_FORMAT_CSV:
@@ -98,6 +88,22 @@ public class BigQueryToGCS implements BaseTemplate {
       if (Objects.nonNull(spark)) {
         spark.stop();
       }
+    }
+  }
+
+  public void validateInput() {
+    if (StringUtils.isAllBlank(inputTableName)
+        || StringUtils.isAllBlank(outputFileFormat)
+        || StringUtils.isAllBlank(outputFileLocation)) {
+      LOGGER.error(
+          "{},{},{} are required parameter. ",
+          BQ_GCS_INPUT_TABLE_NAME,
+          BQ_GCS_OUTPUT_FORMAT,
+          BQ_GCS_OUTPUT_LOCATION);
+      throw new IllegalArgumentException(
+          "Required parameters for BigQueryToGCS not passed. "
+              + "Set mandatory parameter for BigQueryToGCS template "
+              + "in resources/conf/template.properties file.");
     }
   }
 }

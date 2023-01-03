@@ -47,6 +47,7 @@ public class GCSToSpanner implements BaseTemplate {
 
   @Override
   public void runTemplate() {
+    validateInput();
     try (SparkSession spark = SparkSession.builder().appName("GCS to Spanner").getOrCreate()) {
       Dataset<Row> dataset =
           spark.read().format(config.getInputFormat()).load(config.getInputLocation());
@@ -77,4 +78,6 @@ public class GCSToSpanner implements BaseTemplate {
         .mode(config.getSaveMode())
         .save();
   }
+
+  public void validateInput() {}
 }
