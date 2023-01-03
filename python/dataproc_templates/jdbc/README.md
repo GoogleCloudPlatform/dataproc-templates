@@ -460,6 +460,7 @@ There are two optional properties as well with "JDBC to GCS" Template. Please fi
 These properties are responsible for applying some spark sql transformations before loading data into GCS.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
+While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.sql.query```. Passing both the properties would result in an error.
 
 # 3. JDBC To BigQuery
 
