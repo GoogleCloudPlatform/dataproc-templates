@@ -22,18 +22,24 @@ import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
-import java.io.Serializable;
+import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.ForeachWriter;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.DataTypes;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.*;
+import org.apache.spark.api.java.function.*;
+import org.apache.spark.streaming.Milliseconds;
+import org.apache.spark.streaming.api.java.*;
+import org.apache.spark.streaming.kafka010.*;
+import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KafkaToPubSub implements BaseTemplate, Serializable {
+public class KafkaToPubSub implements BaseTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(KafkaToPubSub.class);
   private String kafkaBootstrapServers;
   private String kafkaTopic;
@@ -52,6 +58,90 @@ public class KafkaToPubSub implements BaseTemplate, Serializable {
 
   @Override
   public void runTemplate() {
+
+    validateInput();
+
+    JavaStreamingContext jsc = null;
+
+    try {
+      // Initialize the Spark session
+      SparkConf sparkConf = new SparkConf().setAppName("Spark KafkaToPubSub Job");
+      jsc = new JavaStreamingContext(sparkConf, Milliseconds.apply(kafkaAwaitTerminationTimeout));
+
+      Collection<String> topics = Arrays.asList(kafkaTopic.split(","));
+      Map<String, Object> kafkaParams = new HashMap<>();
+      kafkaParams.put("bootstrap.servers", kafkaBootstrapServers);
+      kafkaParams.put("key.deserializer", StringDeserializer.class);
+      kafkaParams.put("value.deserializer", StringDeserializer.class);
+      kafkaParams.put("group.id", "kafka_to_pubsub_dataproc_template");
+      kafkaParams.put("auto.offset.reset", kafkaStartingOffsets);
+
+      // Create direct kafka stream with brokers and topics
+      JavaInputDStream<ConsumerRecord<String, String>> stream =
+          KafkaUtils.createDirectStream(
+              jsc,
+              LocationStrategies.PreferConsistent(),
+              ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
+
+      writeToPubSub(stream, pubsubCheckpointLocation, kafkaAwaitTerminationTimeout);
+
+      jsc.start();
+      jsc.awaitTerminationOrTimeout(kafkaAwaitTerminationTimeout);
+
+      LOGGER.info("KakfaToPubSub job completed.");
+
+      jsc.stop();
+    } catch (Throwable th) {
+      LOGGER.error("Exception in KakfaToPubSub", th);
+      if (Objects.nonNull(jsc)) {
+        jsc.stop();
+      }
+    }
+  }
+
+  // foreachRDD
+  // static void writeToPubSub(processedData,pubsubCheckpointLocation){
+  // }
+
+  // foreach
+  static void writeToPubSub(
+      JavaInputDStream<ConsumerRecord<String, String>> stream,
+      String pubsubCheckpointLocation,
+      Long kafkaAwaitTerminationTimeout)
+      throws Exception {
+    stream.foreachRDD(
+        new VoidFunction<JavaRDD<ConsumerRecord<String, String>>>() {
+          @Override
+          public void call(JavaRDD<ConsumerRecord<String, String>> kafkaMessageJavaRDD)
+              throws Exception {
+            kafkaMessageJavaRDD.foreachPartition(
+                new VoidFunction<Iterator<ConsumerRecord<String, String>>>() {
+                  @Override
+                  public void call(Iterator<ConsumerRecord<String, String>> kafkaMessageIterator)
+                      throws Exception {
+
+                    Publisher publisher = null;
+                    TopicName topicName = null;
+                    topicName = TopicName.of("yadavaja-sandbox", "kafkatopubsub");
+                    publisher = Publisher.newBuilder(topicName).build();
+
+                    while (kafkaMessageIterator.hasNext()) {
+                      ConsumerRecord<String, String> message = kafkaMessageIterator.next();
+                      ByteString data = ByteString.copyFromUtf8(message.value());
+                      PubsubMessage pubsubMessage =
+                          PubsubMessage.newBuilder().setData(data).build();
+                      publisher.publish(pubsubMessage);
+                    }
+
+                    publisher.shutdown();
+                  }
+                });
+          }
+        });
+  }
+
+  @Override
+  public void validateInput() {
     if (StringUtils.isAllBlank(pubsubCheckpointLocation)
         || StringUtils.isAllBlank(kafkaBootstrapServers)
         || StringUtils.isAllBlank(kafkaTopic)) {
@@ -66,7 +156,6 @@ public class KafkaToPubSub implements BaseTemplate, Serializable {
               + "in resources/conf/template.properties file.");
     }
 
-    SparkSession spark = null;
     LOGGER.info(
         "Starting Kafka to PubSub spark job with following parameters:"
             + "1. {}:{}"
@@ -84,86 +173,5 @@ public class KafkaToPubSub implements BaseTemplate, Serializable {
         kafkaStartingOffsets,
         KAFKA_PUBSUB_AWAIT_TERMINATION_TIMEOUT,
         kafkaAwaitTerminationTimeout);
-
-    try {
-      // Initialize the Spark session
-      spark = SparkSession.builder().appName("Spark KafkaToPubSub Job").getOrCreate();
-
-      LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
-
-      // Stream data from Kafka topic
-      Dataset<Row> inputData =
-          spark
-              .readStream()
-              .format("kafka")
-              .option("kafka.bootstrap.servers", kafkaBootstrapServers)
-              .option("subscribe", kafkaTopic)
-              .option("startingOffsets", kafkaStartingOffsets)
-              .option("failOnDataLoss", "false")
-              .load();
-
-      Dataset<Row> processedData =
-          inputData.withColumn("value", inputData.col("value").cast(DataTypes.StringType));
-
-      writeToPubSub(processedData, pubsubCheckpointLocation, kafkaAwaitTerminationTimeout);
-
-      LOGGER.info("KakfaToPubSub job completed.");
-      spark.stop();
-    } catch (Throwable th) {
-      LOGGER.error("Exception in KakfaToPubSub", th);
-      if (Objects.nonNull(spark)) {
-        spark.stop();
-      }
-    }
-  }
-
-  // foreachRDD
-  // static void writeToPubSub(processedData,pubsubCheckpointLocation){
-  // }
-
-  // foreach
-  static void writeToPubSub(
-      Dataset<Row> processedData,
-      String pubsubCheckpointLocation,
-      Long kafkaAwaitTerminationTimeout)
-      throws Exception {
-    processedData
-        .select("value")
-        .writeStream()
-        .option("checkpointLocation", pubsubCheckpointLocation)
-        .foreach(
-            new ForeachWriter<Row>() {
-              Publisher publisher = null;
-              TopicName topicName = null;
-
-              @Override
-              public boolean open(long partitionId, long version) {
-                // Open connection
-                try {
-                  topicName = TopicName.of("yadavaja-sandbox", "kafkatopubsub");
-                  publisher = Publisher.newBuilder(topicName).build();
-                  return true;
-                } catch (Exception e) {
-                  // TODO: handle exception
-                  return true;
-                }
-              }
-
-              @Override
-              public void process(Row row) {
-                // Write string to connection
-                ByteString data = ByteString.copyFromUtf8(row.getString(0));
-                PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
-                publisher.publish(pubsubMessage);
-              }
-
-              @Override
-              public void close(Throwable errorOrNull) {
-                // Close the connection
-                // publisher.shutdown();
-              }
-            })
-        .start()
-        .awaitTermination(kafkaAwaitTerminationTimeout);
   }
 }
