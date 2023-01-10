@@ -324,7 +324,9 @@ public interface TemplateConstants {
   String KAFKA_PUBSUB_CHECKPOINT_LOCATION = "kafka.pubsub.checkpoint.location";
 
   String KAFKA_PUBSUB_BOOTSTRAP_SERVERS = "kafka.pubsub.bootstrap.servers";
-  String KAFKA_PUBSUB_TOPIC = "kafka.pubsub.topic";
+  String KAFKA_PUBSUB_INPUT_TOPIC = "kafka.pubsub.input.topic";
+  String KAFKA_PUBSUB_OUTPUT_PROJECT_ID = "kafka.pubsub.output.projectId";
+  String KAFKA_PUBSUB_OUTPUT_TOPIC = "kafka.pubsub.output.topic";
   String KAFKA_PUBSUB_STARTING_OFFSET = "kafka.pubsub.starting.offset";
   String KAFKA_PUBSUB_AWAIT_TERMINATION_TIMEOUT = "kafka.pubsub.await.termination.timeout";
 

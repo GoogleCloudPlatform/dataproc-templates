@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Google LLC
+ * Copyright (C) 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,22 +20,16 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.pubsub.v1.Publisher;
 import com.google.protobuf.ByteString;
+import com.google.pubsub.v1.ProjectTopicName;
 import com.google.pubsub.v1.PubsubMessage;
-import com.google.pubsub.v1.TopicName;
-import java.util.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.*;
-import org.apache.spark.api.java.function.*;
-import org.apache.spark.streaming.Milliseconds;
-import org.apache.spark.streaming.api.java.*;
-import org.apache.spark.streaming.kafka010.*;
-import org.apache.spark.streaming.kafka010.KafkaUtils;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.ForeachWriter;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,110 +40,68 @@ public class KafkaToPubSub implements BaseTemplate {
   private String pubsubCheckpointLocation;
   private String kafkaStartingOffsets;
   private Long kafkaAwaitTerminationTimeout;
+  private String pubsubProject;
+  private String pubsubTopic;
 
   public KafkaToPubSub() {
     kafkaBootstrapServers = getProperties().getProperty(KAFKA_PUBSUB_BOOTSTRAP_SERVERS);
-    kafkaTopic = getProperties().getProperty(KAFKA_PUBSUB_TOPIC);
-    pubsubCheckpointLocation = getProperties().getProperty(KAFKA_PUBSUB_CHECKPOINT_LOCATION);
+    kafkaTopic = getProperties().getProperty(KAFKA_PUBSUB_INPUT_TOPIC);
     kafkaStartingOffsets = getProperties().getProperty(KAFKA_PUBSUB_STARTING_OFFSET);
     kafkaAwaitTerminationTimeout =
         Long.valueOf(getProperties().getProperty(KAFKA_PUBSUB_AWAIT_TERMINATION_TIMEOUT));
+    pubsubProject = getProperties().getProperty(KAFKA_PUBSUB_OUTPUT_PROJECT_ID);
+    pubsubTopic = getProperties().getProperty(KAFKA_PUBSUB_INPUT_TOPIC);
+    pubsubCheckpointLocation = getProperties().getProperty(KAFKA_PUBSUB_CHECKPOINT_LOCATION);
   }
 
   @Override
-  public void runTemplate() {
+  public void runTemplate() throws StreamingQueryException, TimeoutException {
 
     validateInput();
 
-    JavaStreamingContext jsc = null;
+    // Create a Spark session
+    SparkSession spark = SparkSession.builder().appName("Spark KafkaToPubSub Job").getOrCreate();
 
-    try {
-      // Initialize the Spark session
-      SparkConf sparkConf = new SparkConf().setAppName("Spark KafkaToPubSub Job");
-      jsc = new JavaStreamingContext(sparkConf, Milliseconds.apply(kafkaAwaitTerminationTimeout));
+    // Set log level
+    spark.sparkContext().setLogLevel("ERROR");
 
-      Collection<String> topics = Arrays.asList(kafkaTopic.split(","));
-      Map<String, Object> kafkaParams = new HashMap<>();
-      kafkaParams.put("bootstrap.servers", kafkaBootstrapServers);
-      kafkaParams.put("key.deserializer", StringDeserializer.class);
-      kafkaParams.put("value.deserializer", StringDeserializer.class);
-      kafkaParams.put("group.id", "kafka_to_pubsub_dataproc_template");
-      kafkaParams.put("auto.offset.reset", kafkaStartingOffsets);
+    // Read data from Kafka
+    Dataset<Row> df =
+        spark
+            .readStream()
+            .format("kafka")
+            .option("kafka.bootstrap.servers", kafkaBootstrapServers)
+            .option("subscribe", kafkaTopic)
+            .option("startingOffsets", kafkaStartingOffsets)
+            .load();
 
-      // Create direct kafka stream with brokers and topics
-      JavaInputDStream<ConsumerRecord<String, String>> stream =
-          KafkaUtils.createDirectStream(
-              jsc,
-              LocationStrategies.PreferConsistent(),
-              ConsumerStrategies.<String, String>Subscribe(topics, kafkaParams));
+    // Extract the value field and cast it to a double
+    df = df.selectExpr("cast(value as String) value");
 
-      writeToPubSub(stream, pubsubCheckpointLocation, kafkaAwaitTerminationTimeout);
+    // Send the data to Pub/Sub
+    PubSubSink writer = new PubSubSink(pubsubTopic, pubsubProject);
 
-      jsc.start();
-      jsc.awaitTerminationOrTimeout(kafkaAwaitTerminationTimeout);
-
-      LOGGER.info("KakfaToPubSub job completed.");
-
-      jsc.stop();
-    } catch (Throwable th) {
-      LOGGER.error("Exception in KakfaToPubSub", th);
-      if (Objects.nonNull(jsc)) {
-        jsc.stop();
-      }
-    }
-  }
-
-  // foreachRDD
-  // static void writeToPubSub(processedData,pubsubCheckpointLocation){
-  // }
-
-  // foreach
-  static void writeToPubSub(
-      JavaInputDStream<ConsumerRecord<String, String>> stream,
-      String pubsubCheckpointLocation,
-      Long kafkaAwaitTerminationTimeout)
-      throws Exception {
-    stream.foreachRDD(
-        new VoidFunction<JavaRDD<ConsumerRecord<String, String>>>() {
-          @Override
-          public void call(JavaRDD<ConsumerRecord<String, String>> kafkaMessageJavaRDD)
-              throws Exception {
-            kafkaMessageJavaRDD.foreachPartition(
-                new VoidFunction<Iterator<ConsumerRecord<String, String>>>() {
-                  @Override
-                  public void call(Iterator<ConsumerRecord<String, String>> kafkaMessageIterator)
-                      throws Exception {
-
-                    Publisher publisher = null;
-                    TopicName topicName = null;
-                    topicName = TopicName.of("yadavaja-sandbox", "kafkatopubsub");
-                    publisher = Publisher.newBuilder(topicName).build();
-
-                    while (kafkaMessageIterator.hasNext()) {
-                      ConsumerRecord<String, String> message = kafkaMessageIterator.next();
-                      ByteString data = ByteString.copyFromUtf8(message.value());
-                      PubsubMessage pubsubMessage =
-                          PubsubMessage.newBuilder().setData(data).build();
-                      publisher.publish(pubsubMessage);
-                    }
-
-                    publisher.shutdown();
-                  }
-                });
-          }
-        });
+    df.writeStream()
+        .option("checkpointLocation", pubsubCheckpointLocation)
+        .foreach(writer)
+        .start()
+        .awaitTermination(kafkaAwaitTerminationTimeout);
   }
 
   @Override
   public void validateInput() {
     if (StringUtils.isAllBlank(pubsubCheckpointLocation)
         || StringUtils.isAllBlank(kafkaBootstrapServers)
-        || StringUtils.isAllBlank(kafkaTopic)) {
+        || StringUtils.isAllBlank(kafkaTopic)
+        || StringUtils.isAllBlank(pubsubProject)
+        || StringUtils.isAllBlank(pubsubTopic)) {
       LOGGER.error(
-          "{},{},{} is required parameter. ",
-          KAFKA_PUBSUB_CHECKPOINT_LOCATION,
+          "{},{},{},{},{} are required parameters. ",
           KAFKA_PUBSUB_BOOTSTRAP_SERVERS,
-          KAFKA_PUBSUB_TOPIC);
+          KAFKA_PUBSUB_INPUT_TOPIC,
+          KAFKA_PUBSUB_OUTPUT_TOPIC,
+          KAFKA_PUBSUB_OUTPUT_PROJECT_ID,
+          KAFKA_PUBSUB_CHECKPOINT_LOCATION);
       throw new IllegalArgumentException(
           "Required parameters for KafkaToPubSub not passed. "
               + "Set mandatory parameter for KafkaToPubSub template "
@@ -157,21 +109,66 @@ public class KafkaToPubSub implements BaseTemplate {
     }
 
     LOGGER.info(
-        "Starting Kafka to PubSub spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}"
-            + "5, {},{}",
-        KAFKA_PUBSUB_CHECKPOINT_LOCATION,
-        pubsubCheckpointLocation,
+        "Starting Kafka to PubSub spark job with following parameters:\n"
+            + "1. {}:{}\n"
+            + "2. {}:{}\n"
+            + "3. {}:{}\n"
+            + "4. {}:{}\n"
+            + "5. {}:{}\n"
+            + "6. {}:{}\n"
+            + "7. {}:{}\n",
         KAFKA_PUBSUB_BOOTSTRAP_SERVERS,
         kafkaBootstrapServers,
-        KAFKA_PUBSUB_TOPIC,
+        KAFKA_PUBSUB_INPUT_TOPIC,
         kafkaTopic,
+        KAFKA_PUBSUB_OUTPUT_TOPIC,
+        pubsubTopic,
+        KAFKA_PUBSUB_OUTPUT_PROJECT_ID,
+        pubsubProject,
+        KAFKA_PUBSUB_CHECKPOINT_LOCATION,
+        pubsubCheckpointLocation,
         KAFKA_PUBSUB_STARTING_OFFSET,
         kafkaStartingOffsets,
         KAFKA_PUBSUB_AWAIT_TERMINATION_TIMEOUT,
         kafkaAwaitTerminationTimeout);
+  }
+}
+
+class PubSubSink extends ForeachWriter<Row> {
+  private static final long serialVersionUID = 1L;
+  private Publisher publisher;
+  private String project;
+  private String topic;
+
+  PubSubSink(String topic, String project) {
+    this.topic = topic;
+    this.project = project;
+  }
+
+  @Override
+  public boolean open(long partitionId, long epochId) {
+    // Creating a publisher for the topic
+    ProjectTopicName topic = ProjectTopicName.of(this.project, this.topic);
+    try {
+      publisher = Publisher.newBuilder(topic).build();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public void process(Row row) {
+    // Converting the row to a Pub/Sub message and publishing to Pub/Sub topic
+    ByteString message = ByteString.copyFromUtf8(row.getAs("value"));
+    PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(message).build();
+    publisher.publish(pubsubMessage);
+  }
+
+  @Override
+  public void close(Throwable errorOrNull) {
+    // Closing the connection
+    publisher.shutdown();
   }
 }
