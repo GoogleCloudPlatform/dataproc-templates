@@ -50,7 +50,7 @@ public class KafkaToPubSub implements BaseTemplate {
     kafkaAwaitTerminationTimeout =
         Long.valueOf(getProperties().getProperty(KAFKA_PUBSUB_AWAIT_TERMINATION_TIMEOUT));
     pubsubProject = getProperties().getProperty(KAFKA_PUBSUB_OUTPUT_PROJECT_ID);
-    pubsubTopic = getProperties().getProperty(KAFKA_PUBSUB_INPUT_TOPIC);
+    pubsubTopic = getProperties().getProperty(KAFKA_PUBSUB_OUTPUT_TOPIC);
     pubsubCheckpointLocation = getProperties().getProperty(KAFKA_PUBSUB_CHECKPOINT_LOCATION);
   }
 
@@ -61,9 +61,6 @@ public class KafkaToPubSub implements BaseTemplate {
 
     // Create a Spark session
     SparkSession spark = SparkSession.builder().appName("Spark KafkaToPubSub Job").getOrCreate();
-
-    // Set log level
-    spark.sparkContext().setLogLevel("ERROR");
 
     // Read data from Kafka
     Dataset<Row> df =
