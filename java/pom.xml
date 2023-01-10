@@ -166,13 +166,6 @@
       <artifactId>spark-streaming-kafka-0-10_2.12</artifactId>
       <version>3.3.0</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-sql-kafka-0-10_${scala.binary.version}</artifactId>
-      <version>${spark.version}</version>
-    </dependency>
-
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-pubsub</artifactId>
