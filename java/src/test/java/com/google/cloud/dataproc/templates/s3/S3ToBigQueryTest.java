@@ -15,6 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.s3;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_ACCESS_KEY;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_INPUT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.S3_BQ_INPUT_LOCATION;
@@ -48,6 +49,7 @@ public class S3ToBigQueryTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     PropertyUtil.getProperties().setProperty(S3_BQ_INPUT_LOCATION, "s3a://test-bucket");
     PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_DATASET_NAME, "bigqueryDataset");
     PropertyUtil.getProperties().setProperty(S3_BQ_OUTPUT_TABLE_NAME, "bigqueryTable");
@@ -77,6 +79,7 @@ public class S3ToBigQueryTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
+        PROJECT_ID_PROP,
         S3_BQ_INPUT_LOCATION,
         S3_BQ_OUTPUT_DATASET_NAME,
         S3_BQ_OUTPUT_TABLE_NAME,
