@@ -31,6 +31,7 @@ class KafkaToBQTest {
 
   @BeforeEach
   void setUp() {
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     PropertyUtil.getProperties().setProperty(KAFKA_BQ_BOOTSTRAP_SERVERS, "some_value");
     PropertyUtil.getProperties().setProperty(KAFKA_BQ_TOPIC, "some_value");
     PropertyUtil.getProperties().setProperty(KAFKA_BQ_CHECKPOINT_LOCATION, "some_value");
@@ -67,6 +68,7 @@ class KafkaToBQTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
+        PROJECT_ID_PROP,
         KAFKA_BQ_BOOTSTRAP_SERVERS,
         KAFKA_BQ_TOPIC,
         KAFKA_BQ_CHECKPOINT_LOCATION,

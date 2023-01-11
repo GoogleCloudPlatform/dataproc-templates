@@ -21,6 +21,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBC_TO
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBC_TO_GCS_OUTPUT_LOCATION;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBC_TO_GCS_SQL;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBC_TO_GCS_WRITE_MODE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -40,6 +41,7 @@ public class JDBCToGCSTest {
 
   @BeforeEach
   void setUp() {
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     PropertyUtil.getProperties()
         .setProperty(JDBC_TO_GCS_OUTPUT_LOCATION, "gs://test-bucket/output-location");
     PropertyUtil.getProperties().setProperty(JDBC_TO_GCS_OUTPUT_FORMAT, "csv");
@@ -70,6 +72,7 @@ public class JDBCToGCSTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
+        PROJECT_ID_PROP,
         JDBC_TO_GCS_OUTPUT_LOCATION,
         JDBC_TO_GCS_OUTPUT_FORMAT,
         JDBC_TO_GCS_JDBC_URL,
