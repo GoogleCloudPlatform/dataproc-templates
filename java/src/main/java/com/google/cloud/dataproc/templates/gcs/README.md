@@ -21,7 +21,7 @@ bin/start.sh \
 There are two optional properties as well with "GCS to BigQuery" Template. Please find below the details :-
 
 ```
---templateProperty gcs.bigquery.temp.table='temporary_view_name' 
+--templateProperty gcs.bigquery.temp.table='temporary_view_name'
 --templateProperty gcs.bigquery.temp.query='select * from global_temp.temporary_view_name'
 ```
 These properties are responsible for applying some spark sql transformations while loading data into BigQuery.
@@ -109,6 +109,8 @@ Specifying spark partitions is recommeneded when we have small number of current
 
 For the batchInsertSize, a high number is recommended for faster upload to RDBMS in case of bulk loads. By default it is 1000.
 
+When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the JDBC URL to provide a significant performance improvement over the default setting.
+
 
 Example execution:-
 
@@ -153,7 +155,7 @@ bin/start.sh \
 --templateProperty gcs.gcs.input.format=avro \
 --templateProperty gcs.gcs.output.location=gs://my-gcp-project-output-bucket \
 --templateProperty gcs.gcs.output.format=csv \
---templateProperty gcs.jdbc.output.saveMode=Overwrite 
+--templateProperty gcs.jdbc.output.saveMode=Overwrite
 --templateProperty gcs.gcs.temp.table=tempTable \
 --templateProperty gcs.gcs.temp.query='select * from global_temp.tempTable where sal>1500'
 

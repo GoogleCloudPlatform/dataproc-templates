@@ -98,7 +98,7 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 * `jdbctojdbc.input.url`: JDBC input URL
 * `jdbctojdbc.input.driver`: JDBC input driver name
 * `jdbctojdbc.input.table`: JDBC input table name
-* `jdbctojdbc.output.url`: JDBC output url
+* `jdbctojdbc.output.url`: JDBC output url. When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the URL to provide a significant performance improvement over the default setting.
 * `jdbctojdbc.output.driver`: JDBC output driver name
 * `jdbctojdbc.output.table`: JDBC output table name
 * `jdbctojdbc.input.partitioncolumn` (Optional): JDBC input table partition column name
@@ -212,7 +212,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.input.lowerbound="11" \
 --jdbctojdbc.input.upperbound="20" \
 --jdbctojdbc.numpartitions="4" \
---jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
+--jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123&reWriteBatchedInserts=True" \
 --jdbctojdbc.output.driver="org.postgresql.Driver" \
 --jdbctojdbc.output.table="employees_out" \
 --jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id);CREATE TABLE po0 PARTITION OF employees_out FOR VALUES FROM (MINVALUE) TO (5);CREATE TABLE po1 PARTITION OF employees_out FOR VALUES FROM (5) TO (10);CREATE TABLE po2 PARTITION OF employees_out FOR VALUES FROM (10) TO (15);CREATE TABLE po3 PARTITION OF employees_out FOR VALUES FROM (15) TO (MAXVALUE);" \
@@ -250,7 +250,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.input.lowerbound="11" \
 --jdbctojdbc.input.upperbound="20" \
 --jdbctojdbc.numpartitions="4" \
---jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
+--jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123&reWriteBatchedInserts=True" \
 --jdbctojdbc.output.driver="org.postgresql.Driver" \
 --jdbctojdbc.output.table="employees_out" \
 --jdbctojdbc.output.mode="overwrite" \
@@ -289,7 +289,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.input.upperbound="20" \
 --jdbctojdbc.numpartitions="4" \
 --jdbctojdbc.input.fetchsize="200" \
---jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
+--jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123&reWriteBatchedInserts=True" \
 --jdbctojdbc.output.driver="org.postgresql.Driver" \
 --jdbctojdbc.output.table="employees_out" \
 --jdbctojdbc.output.mode="overwrite" \
