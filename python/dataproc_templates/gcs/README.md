@@ -51,7 +51,7 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 ```
 export GCP_PROJECT=<project_id>
 export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 
 ./bin/start.sh \
@@ -70,8 +70,8 @@ Template for reading files from Google Cloud Storage and writing them to a BigTa
 
 It uses the Apache HBase Spark Connector to write to BigTable.
 
-This [tutorial](https://cloud.google.com/dataproc/docs/tutorials/spark-hbase#dataproc_hbase_tutorial_view_code-python) shows how to run a Spark/PySpark job connecting to BigTable.  
-However, it focuses in running the job using a Dataproc cluster, and not Dataproc Serverless.  
+This [tutorial](https://cloud.google.com/dataproc/docs/tutorials/spark-hbase#dataproc_hbase_tutorial_view_code-python) shows how to run a Spark/PySpark job connecting to BigTable.
+However, it focuses in running the job using a Dataproc cluster, and not Dataproc Serverless.
 Here in this template, you will notice that there are different configuration steps for the PySpark job to successfully run using Dataproc Serverless, connecting to BigTable using the HBase interface.
 
 You can also check out the [differences between HBase and Cloud Bigtable](https://cloud.google.com/bigtable/docs/hbase-differences).
@@ -79,8 +79,8 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
 ## Requirements
 
 1) Configure the [hbase-site.xml](./hbase-site.xml) ([reference](https://cloud.google.com/bigtable/docs/hbase-connecting#creating_the_hbase-sitexml_file)) with your BigTable instance reference
-    - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.  
-    - For that, you need to build and host a [customer container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) in GCP Container Registry.  
+    - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.
+    - For that, you need to build and host a [customer container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) in GCP Container Registry.
       - Add the following layer to the [Dockerfile](./Dockerfile), for it to copy your local hbase-site.xml to the container image (already done):
         ```
         COPY hbase-site.xml /etc/hbase/conf/
@@ -116,14 +116,14 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
 
 ## Required JAR files
 
-Some HBase and BigTable dependencies are required to be passed when submitting the job.  
-These dependencies need to be passed by using the --jars flag, or, in the case of Dataproc Templates, using the JARS environment variable.  
-Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrepository.com/) and stored your GCS bucket (create one to store the dependencies).  
+Some HBase and BigTable dependencies are required to be passed when submitting the job.
+These dependencies need to be passed by using the --jars flag, or, in the case of Dataproc Templates, using the JARS environment variable.
+Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrepository.com/) and stored your GCS bucket (create one to store the dependencies).
 
 - **[Apache HBase Spark Connector](https://mvnrepository.com/artifact/org.apache.hbase.connectors.spark/hbase-spark) dependencies (already mounted in Dataproc Serverless, so you refer to them using file://):**
    - file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar
    - file:///usr/lib/spark/external/hbase-spark.jar
-   
+
 - **Bigtable dependency:**
   - gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar
     - Download it using ``` wget https://repo1.maven.org/maven2/com/google/cloud/bigtable/bigtable-hbase-2.x-shaded/2.3.0/bigtable-hbase-2.x-shaded-2.3.0.jar```
@@ -143,8 +143,8 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
 ## Usage
 
 ```
-$ python main.py --template GCSTOBIGTABLE --help                
-                        
+$ python main.py --template GCSTOBIGTABLE --help
+
 usage: main.py [-h] --gcs.bigtable.input.location GCS.BIGTABLE.INPUT.LOCATION
                     --gcs.bigtable.input.format {avro,parquet,csv,json}
                     --gcs.bigtable.hbase.catalog.json GCS.BIGTABLE.HBASE.CATALOG.JSON
@@ -164,7 +164,7 @@ optional arguments:
 ```
 export GCP_PROJECT=<project_id>
 export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar, \
              gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
              gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
@@ -200,7 +200,7 @@ Template for reading files from Google Cloud Storage and writing them to a JDBC 
 * `gcs.jdbc.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `gcs.jdbc.output.driver`: JDBC output driver name
 * `gcs.jdbc.batch.size`: JDBC output batch size
-* `gcs.jdbc.output.url`: JDBC output URL
+* `gcs.jdbc.output.url`: JDBC output URL. When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the URL to provide a significant performance improvement over the default setting.
 
 
 ## Usage
@@ -223,15 +223,15 @@ optional arguments:
   --gcs.jdbc.input.location GCS.JDBC.INPUT.LOCATION
                         GCS location of the input files
   --gcs.jdbc.input.format {avro,parquet,csv,json}
-                        Input file format (one of: avro,parquet,csv,json)                        
+                        Input file format (one of: avro,parquet,csv,json)
   --gcs.jdbc.output.table GCS.JDBC.OUTPUT.TABLE
                         JDBC output table name
   --gcs.jdbc.output.mode {overwrite,append,ignore,errorifexists}
-                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)                        
+                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
   --gcs.jdbc.output.driver GCS.JDBC.OUTPUT.DRIVER
                         JDBC Output Driver Name
   --gcs.jdbc.batch.size GCS.JDBC.BATCH.SIZE
-                        Batch size of the data means number of records wanted to insert in one round trip into JDBC Table                                               
+                        Batch size of the data means number of records wanted to insert in one round trip into JDBC Table
   --gcs.jdbc.output.url GCS.JDBC.OUTPUT.URL
                         JDBC Driver URL to connect with consisting of username and passwprd as well
 ```
@@ -244,7 +244,7 @@ User has to download the required jar file and host it inside a GCS Bucket, so t
 wget Command to download JDBC MySQL jar file is as follows :-
 
 ```
-wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz. -O /tmp/mysql-connector.tar.gz 
+wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.tar.gz. -O /tmp/mysql-connector.tar.gz
 
 ```
 
@@ -253,7 +253,7 @@ Once the jar file gets downloaded, please upload the file into a GCS Bucket.
 ## Example submission
 
 ```
-export JARS=<gcs-bucket-location-containing-jar-file> 
+export JARS=<gcs-bucket-location-containing-jar-file>
 
 ./bin/start.sh \
 -- --template=GCSTOBIGQUERY \
@@ -289,7 +289,7 @@ usage: main.py --template GCSTOMONGO [-h] \
     --gcs.mongo.input.location GCS.MONGO.INPUT.LOCATION \
     --gcs.mongo.input.format {avro,parquet,csv,json} \
     --gcs.mongo.output.uri GCS.MONGO.OUTPUT.URI \
-    --gcs.mongo.output.database GCS.MONGO.OUTPUT.DATABASE \        
+    --gcs.mongo.output.database GCS.MONGO.OUTPUT.DATABASE \
     --gcs.mongo.output.collection GCS.MONGO.OUTPUT.COLLECTION \
     --gcs.mongo.batch.size GCS.MONGO.BATCH.SIZE \
     --gcs.mongo.output.mode {overwrite,append,ignore,errorifexists}
@@ -300,7 +300,7 @@ optional arguments:
   --gcs.mongo.input.location GCS.MONGO.INPUT.LOCATION
                         GCS location of the input files
   --gcs.mongo.input.format {avro,parquet,csv,json}
-                        Input file format (one of: avro,parquet,csv,json)                        
+                        Input file format (one of: avro,parquet,csv,json)
   --gcs.mongo.output.uri GCS.MONGO.OUTPUT.URI
                         Driver URI to connect with MongoDB Instance consisting of username and passwprd as well
   --gcs.mongo.output.database GCS.MONGO.OUTPUT.DATABASE
@@ -310,7 +310,7 @@ optional arguments:
   --gcs.mongo.batch.size GCS.MONGO.BATCH.SIZE
                         MongoDB output Batch size
   --gcs.mongo.output.mode {overwrite,append,ignore,errorifexists}
-                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)                        
+                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 ```
 
 ## Required JAR files
@@ -331,8 +331,8 @@ sudo wget https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.9.1/mon
 ```
 export GCP_PROJECT=<project_id>
 export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
-export JARS=<gcs-bucket-location-containing-jar-file> 
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export JARS=<gcs-bucket-location-containing-jar-file>
 
 ./bin/start.sh \
 -- --template=GCSTOMONGO \
@@ -373,7 +373,7 @@ usage: main.py --template TEXTTOBIGQUERY [-h] \
     --text.bigquery.output.table TEXT.BIGQUERY.OUTPUT.TABLE \
     --text.bigquery.temp.bucket.name TEXT.BIGQUERY.TEMP.BUCKET.NAME \
     --text.bigquery.input.compression {gzip,bzip4,lz4,deflate,none} \
-    --text.bigquery.input.delimiter 
+    --text.bigquery.input.delimiter
     [--text.bigquery.output.mode {overwrite,append,ignore,errorifexists}]
 
 optional arguments:
@@ -401,7 +401,7 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 ```
 export GCP_PROJECT=<project_id>
 export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 
 ./bin/start.sh \
@@ -422,8 +422,8 @@ Template for reading files from Google Cloud Storage, applying data transformati
 
 * `gcs.to.gcs.input.location`: GCS location of the input files (format: `gs://BUCKET/...`)
 * `gcs.to.gcs.input.format`: Input file format (one of: avro,parquet,csv,json)
-* `gcs.to.gcs.temp.view.name`: Temp view name for creating a spark sql view on 
-  source data. 
+* `gcs.to.gcs.temp.view.name`: Temp view name for creating a spark sql view on
+  source data.
   This name has to match with the table name that will be used in the SQLquery
 * `gcs.to.gcs.sql.query`: SQL query for data transformation. This must use the
                           temp view name as the table to query from.
@@ -452,14 +452,14 @@ optional arguments:
   --gcs.to.gcs.input.format {avro,parquet,csv,json}
                         GCS input file format (one of: avro,parquet,csv,json)
   --gcs.to.gcs.temp.view.name GCS.TO.GCS.TEMP.VIEW.NAME
-                        Temp view name for creating a spark sql view on 
-                        source data. This name has to match with the 
+                        Temp view name for creating a spark sql view on
+                        source data. This name has to match with the
                         table name that will be used in the SQL query
   --gcs.to.gcs.sql.query GCS.TO.GCS.SQL.QUERY
                         SQL query for data transformation. This must use the
                         temp view name as the table to query from.
   --gcs.to.gcs.output.partition.column GCS.TO.GCS.OUTPUT.PARTITION.COLUMN
-                        Partition column name to partition the 
+                        Partition column name to partition the
                         final output in destination bucket
   --gcs.to.gcs.output.format {avro,parquet,csv,json}
                         Output write format (one of:
@@ -469,7 +469,7 @@ optional arguments:
                         append,overwrite,ignore,errorifexists) (Defaults to
                         append)
   --gcs.to.gcs.output.location GCS.TO.GCS.OUTPUT.LOCATION
-                        destination GCS location                     
+                        destination GCS location
 ```
 
 ## Required JAR files
@@ -486,11 +486,11 @@ No specific jar files are needed for this template. For using AVRO file format, 
 ```
 export GCP_PROJECT=<project_id>
 export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
-export JARS=<gcs-bucket-location-containing-jar-file> 
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export JARS=<gcs-bucket-location-containing-jar-file>
 
 ./bin/start.sh \
--- --template=GCSTOGCS \ 
+-- --template=GCSTOGCS \
     --gcs.to.gcs.input.location="<gs://bucket/path>" \
     --gcs.to.gcs.input.format="<json|csv|parquet|avro>" \
     --gcs.to.gcs.temp.view.name="temp" \
