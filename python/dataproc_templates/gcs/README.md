@@ -235,7 +235,7 @@ optional arguments:
   --gcs.jdbc.batch.size GCS.JDBC.BATCH.SIZE
                         Batch size of the data means number of records wanted to insert in one round trip into JDBC Table                                               
   --gcs.jdbc.output.url GCS.JDBC.OUTPUT.URL
-                        JDBC Driver URL to connect with consisting of username and passwprd as well
+                        JDBC Driver URL to connect with consisting of username and password as well
   --gcs.jdbc.numpartitions  GCS.JDBC.NUMPARTITIONS
                         The maximum number of partitions that can be used for parallelism in table writing. Default set to 10
 ```
@@ -260,12 +260,12 @@ Once the jar file gets downloaded, please upload the file into a GCS Bucket.
 export JARS=<gcs-bucket-location-containing-jar-file> 
 
 ./bin/start.sh \
--- --template=GCSTOBIGQUERY \
+-- --template=GCSTOJDBC \
     --gcs.jdbc.input.format="<json|csv|parquet|avro>" \
     --gcs.jdbc.input.location="<gs://bucket/path>" \
-    --gcs.bigquery.output.table="<table>" \
-    --gcs.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
-    --gcs.jdbc.output.driver="com.mysql.cj.jdbc.driver" \
+    --gcs.jdbc.output.table="<table>" \
+    --gcs.jdbc.output.mode=<append|overwrite|ignore|errorifexists> \
+    --gcs.jdbc.output.driver="com.mysql.cj.jdbc.Driver" \
     --gcs.jdbc.batch.size=1000 \
     --gcs.jdbc.output.url="jdbc:mysql://12.345.678.9:3306/test?user=root&password=root" \
     --gcs.jdbc.numpartitions=10
