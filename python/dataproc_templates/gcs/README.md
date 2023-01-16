@@ -235,7 +235,7 @@ optional arguments:
   --gcs.jdbc.batch.size GCS.JDBC.BATCH.SIZE
                         Batch size of the data means number of records wanted to insert in one round trip into JDBC Table
   --gcs.jdbc.output.url GCS.JDBC.OUTPUT.URL
-                        JDBC Driver URL to connect with consisting of username and passwprd as well
+                        JDBC Driver URL to connect with consisting of username and password as well
   --gcs.jdbc.numpartitions  GCS.JDBC.NUMPARTITIONS
                         The maximum number of partitions that can be used for parallelism in table writing. Default set to 10
 ```
@@ -264,10 +264,10 @@ export JARS="gs://my-input-bucket/mysql-connector-java-8.0.29.jar"
 
 ./bin/start.sh \
 -- --template=GCSTOJDBC \
-    --gcs.jdbc.input.format="csv" \
-    --gcs.jdbc.input.location="gs://my-input-bucket/gcstojdbc-input/sample.csv" \
-    --gcs.jdbc.output.table="demo" \
-    --gcs.jdbc.output.mode="overwrite" \
+    --gcs.jdbc.input.format="<json|csv|parquet|avro>" \
+    --gcs.jdbc.input.location="<gs://bucket/path>" \
+    --gcs.jdbc.output.table="<table>" \
+    --gcs.jdbc.output.mode=<append|overwrite|ignore|errorifexists> \
     --gcs.jdbc.output.driver="com.mysql.cj.jdbc.Driver" \
     --gcs.jdbc.batch.size=1000 \
     --gcs.jdbc.output.url="jdbc:mysql://12.345.678.9:3306/test?user=root&password=root" \
