@@ -86,6 +86,7 @@ GCS_JDBC_OUTPUT_MODE = "gcs.jdbc.output.mode"
 GCS_JDBC_OUTPUT_URL = "gcs.jdbc.output.url"
 GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver"
 GCS_JDBC_BATCH_SIZE = "gcs.jdbc.batch.size"
+GCS_JDBC_NUMPARTITIONS = "gcs.jdbc.numpartitions"
 
 #GCS to Mongo
 GCS_MONGO_INPUT_LOCATION = "gcs.mongo.input.location"
