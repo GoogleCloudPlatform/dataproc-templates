@@ -15,7 +15,12 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_INPUT_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_INPUT_LOCATION;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_OUTPUT_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_OUTPUT_LOCATION;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_WRITE_MODE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -47,6 +52,7 @@ public class GCStoGCSTest {
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     Properties props = PropertyUtil.getProperties();
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     props.setProperty(GCS_GCS_INPUT_LOCATION, "gs://input-bucket");
     props.setProperty(GCS_GCS_INPUT_FORMAT, "parquet");
     props.setProperty(GCS_GCS_OUTPUT_LOCATION, "gs://output-bucket");
@@ -74,6 +80,7 @@ public class GCStoGCSTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
+        PROJECT_ID_PROP,
         GCS_GCS_INPUT_LOCATION,
         GCS_GCS_INPUT_FORMAT,
         GCS_GCS_OUTPUT_LOCATION,
