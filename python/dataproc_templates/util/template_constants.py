@@ -236,3 +236,18 @@ SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
 SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
 SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
 
+# Cassandra To GCS
+CASSANDRA_TO_GCS_INPUT_KEYSPACE = "cassandratogcs.input.keyspace"
+CASSANDRA_TO_GCS_INPUT_TABLE = "cassandratogcs.input.table"
+CASSANDRA_TO_GCS_INPUT_HOST = "cassandratogcs.input.host"
+CASSANDRA_TO_GCS_OUTPUT_FORMAT = "cassandratogcs.output.format"
+CASSANDRA_TO_GCS_OUTPUT_PATH = "cassandratogcs.output.path"
+CASSANDRA_TO_GCS_OUTPUT_SAVEMODE = "cassandratogcs.output.savemode"
+
+# templateProperty project.id=yadavaja-sandbox \
+# --templateProperty cassandratogcs.input.keyspace=testkeyspace \
+# --templateProperty cassandratogcs.input.table=emp \
+# --templateProperty cassandratogcs.input.host=10.0.0.63 \
+# --templateProperty cassandratogcs.output.format=csv \
+# --templateProperty cassandratogcs.output.savemode=Overwrite \
+# --templateProperty cassandratogcs.output.path=gs://tanyawarrier-int-tests/CassandraToGCS
