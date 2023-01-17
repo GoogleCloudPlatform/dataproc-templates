@@ -52,8 +52,6 @@ public interface TemplateConstants {
   String HIVE_GCS_TEMP_TABLE = "hive.gcs.temp.table";
   String HIVE_GCS_TEMP_QUERY = "hive.gcs.temp.query";
   // Hive warehouse location.
-  String HIVE_WAREHOUSE_LOCATION_PROP = "spark.sql.warehouse.dir";
-  // Hive warehouse location.
   String HIVE_INPUT_TABLE_PROP = "hive.input.table";
   // Hive warehouse location.
   String HIVE_INPUT_TABLE_DATABASE_PROP = "hive.input.db";
