@@ -98,7 +98,6 @@ class GCSToJDBCTemplate(BaseTemplate):
             f'--{constants.GCS_JDBC_NUMPARTITIONS}',
             dest=constants.GCS_JDBC_NUMPARTITIONS,
             required=False,
-            default="10",
             help='The maximum number of partitions that can be used for parallelism in table writing. Default set to 10'
         )
 
@@ -147,6 +146,9 @@ class GCSToJDBCTemplate(BaseTemplate):
                 .json(input_file_location)
 
         # Write
+        if not jdbc_numpartitions:
+            jdbc_numpartitions = input_data.rdd.getNumPartitions()
+
         input_data.write \
             .format(constants.FORMAT_JDBC) \
             .option(constants.JDBC_URL, jdbc_url) \
