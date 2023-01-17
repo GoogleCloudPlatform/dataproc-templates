@@ -47,6 +47,7 @@ public class GCStoBigTableTest {
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     Properties props = PropertyUtil.getProperties();
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     props.setProperty(GCS_BT_INPUT_LOCATION, "gs://test-bucket/test/filename.csv");
     props.setProperty(GCS_BT_OUTPUT_INSTANCE_ID, "test-instance-id");
     props.setProperty(GCS_BT_OUTPUT_TABLE_NAME, "table-name");
@@ -75,6 +76,7 @@ public class GCStoBigTableTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
+        PROJECT_ID_PROP,
         GCS_BT_INPUT_LOCATION,
         GCS_BT_OUTPUT_INSTANCE_ID,
         GCS_BT_OUTPUT_TABLE_NAME,

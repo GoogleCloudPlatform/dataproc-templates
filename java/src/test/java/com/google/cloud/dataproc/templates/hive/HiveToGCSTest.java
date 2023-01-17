@@ -15,8 +15,14 @@
  */
 package com.google.cloud.dataproc.templates.hive;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.HIVE_GCS_TEMP_QUERY;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.HIVE_GCS_TEMP_TABLE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.HIVE_INPUT_TABLE_DATABASE_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.HIVE_INPUT_TABLE_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.HIVE_TO_GCS_OUTPUT_PATH_PROP;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.stream.Stream;
@@ -41,10 +47,11 @@ class HiveToGCSTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
+    PropertyUtil.getProperties().setProperty(HIVE_INPUT_TABLE_DATABASE_PROP, "dbName");
     PropertyUtil.getProperties().setProperty(HIVE_TO_GCS_OUTPUT_PATH_PROP, "gs://test-bucket");
+    PropertyUtil.getProperties().setProperty(HIVE_INPUT_TABLE_PROP, "tableName");
     PropertyUtil.getProperties().setProperty(HIVE_GCS_TEMP_TABLE, "demo");
     PropertyUtil.getProperties().setProperty(HIVE_GCS_TEMP_QUERY, "select * from global_temp.demo");
-    PropertyUtil.getProperties().setProperty(propKey, "someValue");
     hiveToGCSTest = new HiveToGCS();
 
     assertDoesNotThrow(hiveToGCSTest::validateInput);
@@ -69,8 +76,8 @@ class HiveToGCSTest {
   static Stream<String> propertyKeys() {
     return Stream.of(
         HIVE_INPUT_TABLE_DATABASE_PROP,
-        HIVE_INPUT_TABLE_DATABASE_PROP,
         HIVE_TO_GCS_OUTPUT_PATH_PROP,
+        HIVE_INPUT_TABLE_PROP,
         HIVE_GCS_TEMP_TABLE,
         HIVE_GCS_TEMP_QUERY);
   }
