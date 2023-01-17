@@ -98,7 +98,7 @@ class GCSToJDBCTemplate(BaseTemplate):
             f'--{constants.GCS_JDBC_NUMPARTITIONS}',
             dest=constants.GCS_JDBC_NUMPARTITIONS,
             required=False,
-            help='The maximum number of partitions that can be used for parallelism in table writing. Default set to 10'
+            help='The maximum number of partitions to be used for parallelism in table writing'
         )
 
         known_args: argparse.Namespace
