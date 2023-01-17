@@ -43,7 +43,7 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 ```
 export GCP_PROJECT=<project_id>
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export GCS_STAGING_LOCATION=<gs://bucket-name>
 export REGION=<region>
 
 ./bin/start.sh \
