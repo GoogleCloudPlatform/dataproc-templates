@@ -201,7 +201,7 @@ Template for reading files from Google Cloud Storage and writing them to a JDBC 
 * `gcs.jdbc.output.driver`: JDBC output driver name
 * `gcs.jdbc.batch.size`: JDBC output batch size
 * `gcs.jdbc.output.url`: JDBC output URL
-* `gcs.jdbc.numpartitions`: The maximum number of partitions that can be used for parallelism in table writing. Default set to 10
+* `gcs.jdbc.numpartitions`: The maximum number of partitions to be used for parallelism in table writing
 
 
 ## Usage
@@ -237,7 +237,7 @@ optional arguments:
   --gcs.jdbc.output.url GCS.JDBC.OUTPUT.URL
                         JDBC Driver URL to connect with consisting of username and password as well
   --gcs.jdbc.numpartitions  GCS.JDBC.NUMPARTITIONS
-                        The maximum number of partitions that can be used for parallelism in table writing. Default set to 10
+                        The maximum number of partitions to be used for parallelism in table writing
 ```
 
 ## Required JAR files
