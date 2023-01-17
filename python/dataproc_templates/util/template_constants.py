@@ -248,3 +248,7 @@ SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
 SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
 SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
 
+# Hive DDL Extractor Util
+HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"
+HIVE_DDL_EXTRACTOR_OUTPUT_BUCKET = "hive.ddl.extractor.output.bucket"
+HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH = "hive.ddl.extractor.output.path"
