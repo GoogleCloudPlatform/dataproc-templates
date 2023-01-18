@@ -487,18 +487,17 @@ No specific jar files are needed for this template. For using AVRO file format, 
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS=<gcs-bucket-location-containing-jar-file>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 
 ./bin/start.sh \
--- --template=GCSTOGCS \
-    --gcs.to.gcs.input.location="<gs://bucket/path>" \
-    --gcs.to.gcs.input.format="<json|csv|parquet|avro>" \
+-- --template=GCSTOGCS \ 
+    --gcs.to.gcs.input.location="gs://my-input-bucket/avro-folder" \
+    --gcs.to.gcs.input.format="avro" \
     --gcs.to.gcs.temp.view.name="temp" \
-    --gcs.to.gcs.sql.query="select *, 1 as col from temp" \
-    --gcs.to.gcs.output.format="<json|csv|parquet|avro>" \
-    --gcs.to.gcs.output.mode="<append|overwrite|ignore|errorifexists>" \
-    --gcs.to.gcs.output.location="<gs://bucket/path>"
+    --gcs.to.gcs.sql.query="select * from temp where sal>1500" \
+    --gcs.to.gcs.output.format="csv" \
+    --gcs.to.gcs.output.mode="overwrite" \
+    --gcs.to.gcs.output.location="gs://my-output-bucket/output"
 ```
