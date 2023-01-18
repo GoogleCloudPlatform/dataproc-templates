@@ -253,15 +253,18 @@ Once the jar file gets downloaded, please upload the file into a GCS Bucket.
 ## Example submission
 
 ```
-export JARS=<gcs-bucket-location-containing-jar-file> 
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
+export JARS="gs://my-input-bucket/mysql-connector-java-8.0.29.jar"
 
 ./bin/start.sh \
--- --template=GCSTOBIGQUERY \
-    --gcs.jdbc.input.format="<json|csv|parquet|avro>" \
-    --gcs.jdbc.input.location="<gs://bucket/path>" \
-    --gcs.bigquery.output.table="<table>" \
-    --gcs.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
-    --gcs.jdbc.output.driver="com.mysql.cj.jdbc.driver" \
+-- --template=GCSTOJDBC \
+    --gcs.jdbc.input.format="csv" \
+    --gcs.jdbc.input.location="gs://my-input-bucket/gcstojdbc-input/sample.csv" \
+    --gcs.jdbc.output.table="demo" \
+    --gcs.jdbc.output.mode="overwrite" \
+    --gcs.jdbc.output.driver="com.mysql.cj.jdbc.Driver" \
     --gcs.jdbc.batch.size=1000 \
     --gcs.jdbc.output.url="jdbc:mysql://12.345.678.9:3306/test?user=root&password=root"
 ```
