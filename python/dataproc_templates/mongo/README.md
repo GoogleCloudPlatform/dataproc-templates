@@ -49,17 +49,17 @@ This template requires the [MongoDB Spark Connector](https://www.mongodb.com/pro
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
+export GCP_PROJECT=my-project
 export JARS="gs://spark-lib/mongodb/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/mongodb/mongo-java-driver-3.9.1.jar"
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export REGION=<region>
+export GCS_STAGING_LOCATION=gs://my-bucket"
+export REGION=us-central1
 	
 ./bin/start.sh \
 -- --template=MONGOTOGCS \
-    --mongo.gcs.output.format=<csv|parquet|avro|json> \
-    --mongo.gcs.output.location=<gs://bucket/path> \
-    --mongo.gcs.output.mode=<overwrite|append|ignore|errorifexists> \
-    --mongo.gcs.input.uri=<mongodb://host_name:port_name> \
-    --mongo.gcs.input.database=<Database_name> \
-    --mongo.gcs.input.collection=<Collection_name>
+    --mongo.gcs.input.uri="mongodb://10.0.0.57:27017" \
+    --mongo.gcs.input.database="demo" \
+    --mongo.gcs.input.collection="analysis" \
+    --mongo.gcs.output.format="avro" \
+    --mongo.gcs.output.location="gs://my-output/mongogcsoutput" \
+    --mongo.gcs.output.mode="overwrite" 
 ```
