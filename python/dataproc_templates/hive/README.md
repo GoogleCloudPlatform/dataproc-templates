@@ -50,21 +50,21 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
-export SUBNET=<subnet>
+export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 
 ./bin/start.sh \
-    --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
+    --properties=spark.hadoop.hive.metastore.uris=thrift://10.0.0.x:9083 \
     -- --template=HIVETOBIGQUERY \
-    --hive.bigquery.input.database="<database>" \
-    --hive.bigquery.input.table="<table>" \
-    --hive.bigquery.output.dataset="<dataset>" \
-    --hive.bigquery.output.table="<table>" \
-    --hive.bigquery.output.mode="<append|overwrite|ignore|errorifexists>" \
-    --hive.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
+    --hive.bigquery.input.database="default" \
+    --hive.bigquery.input.table="employee" \
+    --hive.bigquery.output.dataset="hive_to_bq_dataset" \
+    --hive.bigquery.output.table="employee_out" \
+    --hive.bigquery.output.mode="overwrite" \
+    --hive.bigquery.temp.bucket.name="temp-bucket"
 ```
 
 There are two optional properties as well with "Hive to BigQuery" Template. Please find below the details :-
