@@ -41,7 +41,8 @@ class BdistEggCustomEggName(bdist_egg):
 
     description: str = 'create an "egg" distrubution, optionally renaming the output .egg file'
 
-    user_options = [('output=', 'o', 'output file name')] + bdist_egg.user_options
+    user_options = [('output=', 'o', 'output file name')] + \
+        bdist_egg.user_options
 
     def __init__(self, *args, **kwargs):
         self.output: Optional[str] = None
@@ -73,13 +74,20 @@ class BdistEggCustomEggName(bdist_egg):
             shutil.move(src=built_egg_path, dst=self.output)
 
 
-dependencies=[
-	"pyspark>=3.2.0",
-	"google-cloud-bigquery>=3.4.0"
+dependencies = [
+    "pyspark>=3.2.0",
+    "google-cloud-bigquery>=3.4.0"
 ]
 
 
 package_root = os.path.abspath(os.path.dirname(__file__))
+
+version = {}
+with open(
+    os.path.join(package_root, "version.py")
+) as fp:
+    exec(fp.read(), version)
+version = version["__version__"]
 
 readme_filename = os.path.join(package_root, "README.md")
 with io.open(readme_filename, encoding="utf-8") as readme_file:
@@ -87,7 +95,7 @@ with io.open(readme_filename, encoding="utf-8") as readme_file:
 
 setup(
     name="google-dataproc-templates",
-    version="0.0.3",
+    version=version,
     description="Google Dataproc templates written in Python",
     long_description_content_type="text/markdown",
     long_description=readme,
