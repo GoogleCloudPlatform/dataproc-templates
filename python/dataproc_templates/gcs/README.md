@@ -60,7 +60,7 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --gcs.bigquery.input.location="gs://my-input-bucket/gcs-bq-input/" \
     --gcs.bigquery.output.dataset="python_templates_dataset" \
     --gcs.bigquery.output.table="gcs_bq_table" \
-    --gcs.bigquery.output.mode=overwrite \
+    --gcs.bigquery.output.mode="overwrite" \
     --gcs.bigquery.temp.bucket.name="temp-bucket"
 ```
 
@@ -414,7 +414,7 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --text.bigquery.input.location="gs://my-input-bucket/text-bq-input/" \
     --text.bigquery.output.dataset="python_templates_dataset" \
     --text.bigquery.output.table="text_bq_table" \
-    --text.bigquery.output.mode=overwrite \
+    --text.bigquery.output.mode="overwrite" \
     --text.bigquery.temp.bucket.name="temp-bucket"
 ```
 # GCS To GCS - SQL Transformation
