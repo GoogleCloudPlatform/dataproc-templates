@@ -51,7 +51,7 @@ This template requires the [MongoDB Spark Connector](https://www.mongodb.com/pro
 ```
 export GCP_PROJECT=my-project
 export JARS="gs://spark-lib/mongodb/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/mongodb/mongo-java-driver-3.9.1.jar"
-export GCS_STAGING_LOCATION=gs://my-bucket"
+export GCS_STAGING_LOCATION="gs://my-bucket"
 export REGION=us-central1
 	
 ./bin/start.sh \
