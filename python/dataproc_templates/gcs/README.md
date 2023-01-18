@@ -332,20 +332,20 @@ sudo wget https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.9.1/mon
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS=<gcs-bucket-location-containing-jar-file>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
+export JARS="gs://my-input-bucket/mongo-java-driver-3.9.1.jar,gs://my-input-bucket/mongo-spark-connector_2.12-2.4.0.jar"
 
 ./bin/start.sh \
 -- --template=GCSTOMONGO \
-    --gcs.mongo.input.format="<json|csv|parquet|avro>" \
-    --gcs.mongo.input.location="<gs://bucket/path>" \
-    --gcs.mongo.output.uri="mongodb://<username>:<password>@<Host_Name>:<Port_Number>" \
-    --gcs.mongo.output.database="<Database_Name>" \
-    --gcs.mongo.output.collection="<Collection_Name>" \
-    --gcs.mongo.batch.size=512 \
-    --gcs.mongo.output.mode="<append|overwrite|ignore|errorifexists>"
+    --gcs.mongo.input.format="avro" \
+    --gcs.mongo.input.location="gs:///my-input-bucket/empavro" \
+    --gcs.mongo.output.uri="mongodb://1.2.3.45:27017" \
+    --gcs.mongo.output.database="demo" \
+    --gcs.mongo.output.collection="analysis" \
+    --gcs.mongo.output.mode="overwrite" \
+    --gcs.mongo.batch.size=512
 ```
 
 
@@ -402,20 +402,20 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 
 ./bin/start.sh \
 -- --template=TEXTTOBIGQUERY \
-    --text.bigquery.input.compression="<gzip|bzip4|lz4|deflate|none>" \
-    --text.bigquery.input.delimiter="<delimiter>" \
-    --text.bigquery.input.location="<gs://bucket/path>" \
-    --text.bigquery.output.dataset="<dataset>" \
-    --text.bigquery.output.table="<table>" \
-    --text.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
-    --text.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
+    --text.bigquery.input.compression="gzip" \
+    --text.bigquery.input.delimiter="," \
+    --text.bigquery.input.location="gs://my-input-bucket/text-bq-input/" \
+    --text.bigquery.output.dataset="python_templates_dataset" \
+    --text.bigquery.output.table="text_bq_table" \
+    --text.bigquery.output.mode=overwrite \
+    --text.bigquery.temp.bucket.name="temp-bucket"
 ```
 # GCS To GCS - SQL Transformation
 
