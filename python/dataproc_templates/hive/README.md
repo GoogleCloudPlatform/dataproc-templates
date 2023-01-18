@@ -119,19 +119,19 @@ optional arguments:
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
-export SUBNET=<subnet>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
+export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 
 ./bin/start.sh \
     --properties=spark.hadoop.hive.metastore.uris=thrift://<hostname-or-ip>:9083 \
     -- --template=HIVETOGCS \
-    --hive.gcs.input.database="<database>" \
-    --hive.gcs.input.table="<table>" \
-    --hive.gcs.output.location="<gs://bucket/path>" \
-    --hive.gcs.output.format="<csv|parquet|avro|json>" \
-    --hive.gcs.output.mode="<append|overwrite|ignore|errorifexists>"
+    --hive.gcs.input.database="default" \
+    --hive.gcs.input.table="employee" \
+    --hive.gcs.output.location="gs://my-output-bucket/hive-gcs-output" \
+    --hive.gcs.output.format="csv" \
+    --hive.gcs.output.mode="overwrite"
 ```
 
 There are two optional properties as well with "Hive to GCS" Template. Please find below the details :-
