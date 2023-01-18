@@ -162,9 +162,9 @@ optional arguments:
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar, \
              gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
              gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
@@ -172,11 +172,11 @@ export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-
              file:///usr/lib/spark/external/hbase-spark.jar"
 
 ./bin/start.sh \
---container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>" \
+--container-image="gcr.io/my-project/gcstobt-image:1.0.1" \
 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \ # image with hbase-site.xml in /etc/hbase/conf/
 -- --template=GCSTOBIGTABLE \
-   --gcs.bigtable.input.format="<json|csv|parquet|avro>" \
-   --gcs.bigtable.input.location="<gs://bucket/path>" \
+   --gcs.bigtable.input.format="csv" \
+   --gcs.bigtable.input.location="gs://my-input-bucket/gcstobt-input/emp.csv" \
    --gcs.bigtable.hbase.catalog.json='''{
                         "table":{"namespace":"default","name":"my_table"},
                         "rowkey":"key",
