@@ -41,15 +41,15 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
+export GCP_PROJECT=my-project
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
-export GCS_STAGING_LOCATION=<gs://bucket-name>
-export REGION=<region>
+export GCS_STAGING_LOCATION="gs://my-bucket"
+export REGION=us-central1
 
 ./bin/start.sh \
 -- --template=BIGQUERYTOGCS \
-	--bigquery.gcs.input.table=<projectId:datasetName.tableName> \
-	--bigquery.gcs.output.format=<csv|parquet|avro|json> \
-	--bigquery.gcs.output.mode=<overwrite|append|ignore|errorifexists> \
-	--bigquery.gcs.output.location=<gs://bucket/path>
+    --bigquery.gcs.input.table=python_templates_dataset.gcs_bq_table \
+    --bigquery.gcs.output.format=csv \
+    --bigquery.gcs.output.mode=overwrite \
+    --bigquery.gcs.output.location="gs://my-output-bucket/csv/"
 ```
