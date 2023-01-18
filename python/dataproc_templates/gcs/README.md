@@ -49,19 +49,19 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 
 ./bin/start.sh \
 -- --template=GCSTOBIGQUERY \
-    --gcs.bigquery.input.format="<json|csv|parquet|avro>" \
-    --gcs.bigquery.input.location="<gs://bucket/path>" \
-    --gcs.bigquery.output.dataset="<dataset>" \
-    --gcs.bigquery.output.table="<table>" \
-    --gcs.bigquery.output.mode=<append|overwrite|ignore|errorifexists>\
-    --gcs.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
+    --gcs.bigquery.input.format="parquet" \
+    --gcs.bigquery.input.location="gs://my-input-bucket/gcs-bq-input/" \
+    --gcs.bigquery.output.dataset="python_templates_dataset" \
+    --gcs.bigquery.output.table="gcs_bq_table" \
+    --gcs.bigquery.output.mode=overwrite \
+    --gcs.bigquery.temp.bucket.name="temp-bucket"
 ```
 
 # GCS To BigTable
