@@ -106,7 +106,7 @@ The most important prefixes types you should have in mind are:
 
 Everytime a PR is created, the Commit-checker bot validates whether the commit message syntax contains the allowed prefix or not. Below image shows the example for a Commit check failed and two Commit checks passed. 
 
-![alt_text](https://github.com/ankuljain09/test_repo/blob/main/docs/5jMuKbkThpK5Vrr.png)
+![alt_text](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/main/docs/commit-checker-bot.png)
 
 
 Ideally, a PR should not be merged until all the checks are passed
@@ -117,7 +117,7 @@ Ideally, a PR should not be merged until all the checks are passed
 A Commit-checker bot check fails when the above stated conventional commit standards are not followed while pushing a PR. A detailed error would read something like below: 
 
 
-![alt_text](https://github.com/ankuljain09/test_repo/blob/main/docs/67GCc4ppnuHWyTp.png)
+![alt_text](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/main/docs/commit-checker-error.png)
 
 
 To fix the error, one can push a commit again with a valid prefix added to the commit message. Once, The same PR gets updated with a valid commit message, the Commit-checker bot gets triggered automatically and will successfully pass the consequent checks.
@@ -141,7 +141,7 @@ It does so by parsing your git history, looking for [Conventional Commit message
 
 Rather than continuously releasing what's landed to your default branch, release-please maintains Release PRs:
 
-![alt_text](https://github.com/ankuljain09/test_repo/blob/main/docs/4ZcDE4arcyEXmvY.png)
+![alt_text](https://github.com/GoogleCloudPlatform/dataproc-templates/blob/main/docs/release-please-pr.png)
 
 
 These Release PRs are kept up-to-date as additional work is merged. When you're ready to tag a release, simply merge the release PR. Both squash-merge and merge commits work with Release PRs.
