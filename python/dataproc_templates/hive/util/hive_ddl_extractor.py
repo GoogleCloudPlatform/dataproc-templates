@@ -23,7 +23,6 @@ import io
 from logging import Logger
 from typing import Any, Dict, Optional, Sequence
 import dataproc_templates.util.template_constants as constants
-import pandas as pd
 from dataproc_templates import BaseTemplate
 from google.cloud import storage
 import pyspark
