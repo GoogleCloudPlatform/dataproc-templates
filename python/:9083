@@ -13,6 +13,7 @@ installing library code to build/bdist.macosx-10.9-universal2/egg
 running install_lib
 running build_py
 copying dataproc_templates/util/template_constants.py -> build/lib/dataproc_templates/util
+copying dataproc_templates/hive/util/hive_ddl_extractor.py -> build/lib/dataproc_templates/hive/util
 creating build/bdist.macosx-10.9-universal2/egg
 creating build/bdist.macosx-10.9-universal2/egg/test
 creating build/bdist.macosx-10.9-universal2/egg/test/util

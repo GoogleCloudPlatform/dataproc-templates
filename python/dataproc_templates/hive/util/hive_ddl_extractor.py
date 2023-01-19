@@ -22,7 +22,6 @@ import sys
 import io
 from logging import Logger
 from typing import Any, Dict, Optional, Sequence
-
 import dataproc_templates.util.template_constants as constants
 import pandas as pd
 from dataproc_templates import BaseTemplate
@@ -96,11 +95,12 @@ class HiveDDLExtractorTemplate(BaseTemplate):
         
                
         def get_ddl(hive_database, table_name):
-            return spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name}").rdd.map(lambda x: x[0] + ";").collect()[0]
+            return spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name} as serde").rdd.map(lambda x: x[0] + ";").collect()[0]
         
-        tables_df = spark.sql(f"SHOW TABLES IN {hive_database}")
-        tables_name_list = tables_df.select("tableName").rdd.map(lambda x: x[0]).collect()
+        tables_names = spark.sql(f"SHOW TABLES IN {hive_database}").select("tableName")
+        tables_name_list=tables_names.rdd.map(lambda x: x[0]).collect()
         tables_ddls = [ get_ddl(hive_database, table_name) for table_name in tables_name_list ]
         ddls_rdd = spark.sparkContext.parallelize(tables_ddls)
-        output_path="gs://"+gcs_output_bucket+"/"+gcs_output_path+"/"+hive_database
+        ct = datetime.now().strftime("%m-%d-%Y %H.%M.%S")
+        output_path="gs://"+gcs_output_bucket+"/"+gcs_output_path+"/"+hive_database+"/"+str(ct)
         ddls_rdd.coalesce(1).saveAsTextFile(output_path)
