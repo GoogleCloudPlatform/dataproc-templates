@@ -59,6 +59,9 @@ REDSHIFT_TEMPDIR = "tempdir"
 REDSHIFT_IAMROLE = "aws_iam_role"
 AWS_S3ACCESSKEY = "fs.s3a.access.key"
 AWS_S3SECRETKEY = "fs.s3a.secret.key"
+SQL_EXTENSION= "spark.sql.extensions"
+CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
+CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
 
 
 # Output mode
@@ -243,11 +246,4 @@ CASSANDRA_TO_GCS_INPUT_HOST = "cassandratogcs.input.host"
 CASSANDRA_TO_GCS_OUTPUT_FORMAT = "cassandratogcs.output.format"
 CASSANDRA_TO_GCS_OUTPUT_PATH = "cassandratogcs.output.path"
 CASSANDRA_TO_GCS_OUTPUT_SAVEMODE = "cassandratogcs.output.savemode"
-
-# templateProperty project.id=yadavaja-sandbox \
-# --templateProperty cassandratogcs.input.keyspace=testkeyspace \
-# --templateProperty cassandratogcs.input.table=emp \
-# --templateProperty cassandratogcs.input.host=10.0.0.63 \
-# --templateProperty cassandratogcs.output.format=csv \
-# --templateProperty cassandratogcs.output.savemode=Overwrite \
-# --templateProperty cassandratogcs.output.path=gs://tanyawarrier-int-tests/CassandraToGCS
+CASSANDRA_TO_GCS_CATALOG = "cassandratogcs.input.catalog.name"

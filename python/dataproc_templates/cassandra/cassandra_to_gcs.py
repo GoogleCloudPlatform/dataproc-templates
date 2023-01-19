@@ -92,6 +92,13 @@ class CassandraToGCSTemplate(BaseTemplate):
                constants.OUTPUT_MODE_ERRORIFEXISTS
            ]
        )
+       parser.add_argument(
+            f'--{constants.CASSANDRA_TO_GCS_CATALOG}',
+            dest=constants.CASSANDRA_TO_GCS_CATALOG,
+            required=False,
+            default="casscon",
+            help='To provide a name for connection between Cassandra and GCS'
+        )
  
        known_args: argparse.Namespace
        known_args, _ = parser.parse_known_args(args)
@@ -109,20 +116,25 @@ class CassandraToGCSTemplate(BaseTemplate):
        output_format: str = args[constants.CASSANDRA_TO_GCS_OUTPUT_FORMAT]
        output_mode: str = args[constants.CASSANDRA_TO_GCS_OUTPUT_SAVEMODE]
        output_location: str = args[constants.CASSANDRA_TO_GCS_OUTPUT_PATH]
+       catalog: str = args[constants.CASSANDRA_TO_GCS_CATALOG]
  
        logger.info(
            "Starting CASSANDRA to GCS spark job with parameters:\n"
            f"{pprint.pformat(args)}"
        )
+
+       spark = (
+        SparkSession
+        .builder
+        .appName("CassandraToGCS")
+        .config(constants.SQL_EXTENSION, constants.CASSANDRA_EXTENSION)
+        .config(f"spark.sql.catalog.{catalog}", constants.CASSANDRA_CATALOG)
+        .config(f"spark.sql.catalog.{catalog}.spark.cassandra.connection.host",input_host)
+        .getOrCreate())
  
        # Read
-       options = {"keyspace": input_keyspace,
-           "table": input_table,
-           "spark.cassandra.connection.host": input_host}
-       input_data = spark.read \
-           .format("org.apache.spark.sql.cassandra") \
-           .options(**options) \
-           .load()
+       input_data = spark.read.table(f"{catalog}.{input_keyspace}.{input_table}")
+       
 
  
        # Write
