@@ -18,18 +18,11 @@
 
 import argparse
 import pprint
-import sys
-import io
 from logging import Logger
 from typing import Any, Dict, Optional, Sequence
 import dataproc_templates.util.template_constants as constants
 from dataproc_templates import BaseTemplate
-from google.cloud import storage
-import pyspark
-from pyspark.sql import DataFrameWriter, SparkSession
-from google.cloud import bigquery
-from google.cloud.bigquery.table import Table
-from google.cloud.bigquery.dataset import Dataset
+from pyspark.sql import SparkSession
 from datetime import datetime
 
 
