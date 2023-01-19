@@ -122,7 +122,8 @@ class CassandraToGCSTemplate(BaseTemplate):
            "Starting CASSANDRA to GCS spark job with parameters:\n"
            f"{pprint.pformat(args)}"
        )
-
+       
+       # Set configuration to connect to Cassandra by overwriting the spark session
        spark = (
         SparkSession
         .builder
