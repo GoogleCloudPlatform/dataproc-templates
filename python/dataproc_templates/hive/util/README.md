@@ -1,6 +1,6 @@
 # Hive DDL Extractor
 
-This is a PySpark utility to extract DDLs from Hive metastore. Users can use this utility to accelerate the Hive migration journey.
+This is a PySpark utility to extract DDLs from Hive metastore. Users can use this utility to accelerate their Hive migration journey.
 
 ## Arguments
 
