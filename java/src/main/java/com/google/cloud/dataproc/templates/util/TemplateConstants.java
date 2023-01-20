@@ -222,6 +222,15 @@ public interface TemplateConstants {
   String GCS_GCS_TEMP_TABLE = "gcs.gcs.temp.table";
   String GCS_GCS_TEMP_QUERY = "gcs.gcs.temp.query";
 
+  /** GCS to JDBC properties */
+  String GCS_JDBC_AVRO_FORMAT = "avro";
+
+  String GCS_JDBC_CSV_FORMAT = "csv";
+  String GCS_JDBC_CSV_HEADER = "header";
+  String GCS_JDBC_CSV_INFER_SCHEMA = "inferSchema";
+  String GCS_JDBC_ORC_FORMAT = "orc";
+  String GCS_JDBC_PRQT_FORMAT = "parquet";
+
   /** S3 to Bigquery properties */
   String S3_BQ_INPUT_LOCATION = "s3.bq.input.location";
 

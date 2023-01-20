@@ -15,6 +15,10 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_AVRO_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_CSV_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_ORC_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_PRQT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -48,7 +52,15 @@ public class GCSToJDBCConfig {
 
   @JsonProperty(value = GCS_JDBC_INPUT_FORMAT)
   @NotEmpty
-  @Pattern(regexp = "avro|parquet|orc")
+  @Pattern(
+      regexp =
+          GCS_JDBC_AVRO_FORMAT
+              + "|"
+              + GCS_JDBC_CSV_FORMAT
+              + "|"
+              + GCS_JDBC_ORC_FORMAT
+              + "|"
+              + GCS_JDBC_PRQT_FORMAT)
   private String inputFormat;
 
   @JsonProperty(value = PROJECT_ID_PROP)

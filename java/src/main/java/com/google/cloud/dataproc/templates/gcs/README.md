@@ -21,7 +21,7 @@ bin/start.sh \
 There are two optional properties as well with "GCS to BigQuery" Template. Please find below the details :-
 
 ```
---templateProperty gcs.bigquery.temp.table='temporary_view_name' 
+--templateProperty gcs.bigquery.temp.table='temporary_view_name'
 --templateProperty gcs.bigquery.temp.query='select * from global_temp.temporary_view_name'
 ```
 These properties are responsible for applying some spark sql transformations while loading data into BigQuery.
@@ -84,9 +84,9 @@ bin/start.sh \
 ## 4. GCS to JDBC
 
 ```
-Please download the JDBC Driver of respective database and copy it to gcs bucket location.
+Please download the JDBC Driver of respective database and copy it to GCS bucket location.
 
-export JARS=<gcs location for jdbc connector jar>
+export JARS=<GCS location for JDBC connector jar>
 
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
@@ -94,7 +94,7 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 bin/start.sh \
 -- --template GCSTOJDBC \
 --templateProperty project.id=<gcp-project-id> \
---templateProperty gcs.jdbc.input.format=<avro | parquet | orc> \
+--templateProperty gcs.jdbc.input.format=<avro | csv | parquet | orc> \
 --templateProperty gcs.jdbc.input.location=<gcs path> \
 --templateProperty gcs.jdbc.output.driver=<jdbc driver required in single quotes> \
 --templateProperty gcs.jdbc.output.url=<jdbc url along with username and password in single quotes> \
@@ -153,7 +153,7 @@ bin/start.sh \
 --templateProperty gcs.gcs.input.format=avro \
 --templateProperty gcs.gcs.output.location=gs://my-gcp-project-output-bucket \
 --templateProperty gcs.gcs.output.format=csv \
---templateProperty gcs.jdbc.output.saveMode=Overwrite 
+--templateProperty gcs.jdbc.output.saveMode=Overwrite
 --templateProperty gcs.gcs.temp.table=tempTable \
 --templateProperty gcs.gcs.temp.query='select * from global_temp.tempTable where sal>1500'
 
