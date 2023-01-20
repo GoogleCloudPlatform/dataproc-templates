@@ -89,6 +89,13 @@ class JDBCToGCSTemplate(BaseTemplate):
             help='Determines how many rows to fetch per round trip'
         )
         parser.add_argument(
+            f'--{constants.JDBCTOGCS_SESSIONINITSTATEMENT}',
+            dest=constants.JDBCTOGCS_SESSIONINITSTATEMENT,
+            required=False,
+            default="",
+            help='Custom SQL statement to execute in each reader database session'
+        )
+        parser.add_argument(
             f'--{constants.JDBCTOGCS_OUTPUT_LOCATION}',
             dest=constants.JDBCTOGCS_OUTPUT_LOCATION,
             required=True,
@@ -169,6 +176,7 @@ class JDBCToGCSTemplate(BaseTemplate):
         input_jdbc_upperbound: str = args[constants.JDBCTOGCS_INPUT_UPPERBOUND]
         jdbc_numpartitions: str = args[constants.JDBCTOGCS_NUMPARTITIONS]
         input_jdbc_fetchsize: int = args[constants.JDBCTOGCS_INPUT_FETCHSIZE]
+        input_jdbc_sessioninitstatement: str = args[constants.JDBCTOGCS_SESSIONINITSTATEMENT]
         output_location: str = args[constants.JDBCTOGCS_OUTPUT_LOCATION]
         output_format: str = args[constants.JDBCTOGCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.JDBCTOGCS_OUTPUT_MODE]
@@ -184,30 +192,26 @@ class JDBCToGCSTemplate(BaseTemplate):
         # Read
         input_data: DataFrame
 
-        partition_parameters=str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
+        partition_parameters = str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
         if ((partition_parameters != "") & ((input_jdbc_partitioncolumn == "") | (input_jdbc_lowerbound == "") | (input_jdbc_upperbound == ""))):
             logger.error("Set all the sql partitioning parameters together-jdbctogcs.input.partitioncolumn,jdbctogcs.input.lowerbound,jdbctogcs.input.upperbound. Refer to README.md for more instructions.")
             exit (1)
-        elif (partition_parameters == ""):
-            input_data=spark.read \
+
+        properties = {constants.JDBC_URL: input_jdbc_url,
+                      constants.JDBC_DRIVER: input_jdbc_driver,
+                      constants.JDBC_TABLE: input_jdbc_table,
+                      constants.JDBC_NUMPARTITIONS: jdbc_numpartitions,
+                      constants.JDBC_FETCHSIZE: input_jdbc_fetchsize}
+        if input_jdbc_sessioninitstatement:
+            properties[constants.JDBC_SESSIONINITSTATEMENT] = input_jdbc_sessioninitstatement
+        if partition_parameters:
+            properties.update({constants.JDBC_PARTITIONCOLUMN: input_jdbc_partitioncolumn,
+                               constants.JDBC_LOWERBOUND: input_jdbc_lowerbound,
+                               constants.JDBC_UPPERBOUND: input_jdbc_upperbound})
+
+        input_data = spark.read \
                 .format(constants.FORMAT_JDBC) \
-                .option(constants.JDBC_URL, input_jdbc_url) \
-                .option(constants.JDBC_DRIVER, input_jdbc_driver) \
-                .option(constants.JDBC_TABLE, input_jdbc_table) \
-                .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
-                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
-                .load()
-        else:
-            input_data=spark.read \
-                .format(constants.FORMAT_JDBC) \
-                .option(constants.JDBC_URL, input_jdbc_url) \
-                .option(constants.JDBC_DRIVER, input_jdbc_driver) \
-                .option(constants.JDBC_TABLE, input_jdbc_table) \
-                .option(constants.JDBC_PARTITIONCOLUMN, input_jdbc_partitioncolumn) \
-                .option(constants.JDBC_LOWERBOUND, input_jdbc_lowerbound) \
-                .option(constants.JDBC_UPPERBOUND, input_jdbc_upperbound) \
-                .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
-                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
+                .options(**properties) \
                 .load()
 
         if sql_query:
