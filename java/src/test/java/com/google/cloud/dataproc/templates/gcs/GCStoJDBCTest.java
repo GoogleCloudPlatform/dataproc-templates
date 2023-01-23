@@ -16,6 +16,7 @@
 package com.google.cloud.dataproc.templates.gcs;
 
 import static com.google.cloud.dataproc.templates.gcs.GCSToJDBCConfig.*;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -36,6 +37,7 @@ class GCStoJDBCTest {
 
   @BeforeEach
   void setUp() {
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     PropertyUtil.getProperties().setProperty(GCS_JDBC_INPUT_FORMAT, "avro");
     PropertyUtil.getProperties().setProperty(GCS_JDBC_INPUT_LOCATION, "some_value");
     PropertyUtil.getProperties().setProperty(GCS_JDBC_OUTPUT_DRIVER, "some_value");
@@ -60,6 +62,7 @@ class GCStoJDBCTest {
 
   static Stream<String> requiredPropertyKeys() {
     return Stream.of(
+        PROJECT_ID_PROP,
         GCS_JDBC_INPUT_FORMAT,
         GCS_JDBC_INPUT_LOCATION,
         GCS_JDBC_OUTPUT_DRIVER,

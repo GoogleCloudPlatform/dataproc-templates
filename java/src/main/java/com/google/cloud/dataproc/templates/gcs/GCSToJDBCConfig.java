@@ -15,6 +15,10 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_AVRO_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_CSV_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_ORC_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_PRQT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,6 +41,7 @@ public class GCSToJDBCConfig {
   public static final String GCS_JDBC_OUTPUT_SAVE_MODE = "gcs.jdbc.output.saveMode";
   public static final String GCS_JDBC_OUTPUT_BATCH_INSERT_SIZE = "gcs.jdbc.output.batchInsertSize";
   public static final String GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver";
+  public static final String CUSTOM_SPARK_PARTITIONS = "gcs.jdbc.spark.partitions";
 
   static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -47,7 +52,15 @@ public class GCSToJDBCConfig {
 
   @JsonProperty(value = GCS_JDBC_INPUT_FORMAT)
   @NotEmpty
-  @Pattern(regexp = "avro|parquet|orc")
+  @Pattern(
+      regexp =
+          GCS_JDBC_AVRO_FORMAT
+              + "|"
+              + GCS_JDBC_CSV_FORMAT
+              + "|"
+              + GCS_JDBC_ORC_FORMAT
+              + "|"
+              + GCS_JDBC_PRQT_FORMAT)
   private String inputFormat;
 
   @JsonProperty(value = PROJECT_ID_PROP)
@@ -74,6 +87,10 @@ public class GCSToJDBCConfig {
   @JsonProperty(value = GCS_JDBC_OUTPUT_BATCH_INSERT_SIZE)
   @Min(value = 1)
   private long batchInsertSize = 1000;
+
+  @JsonProperty(value = CUSTOM_SPARK_PARTITIONS)
+  @Min(value = 0)
+  private String customSparkPartitions;
 
   public String getInputLocation() {
     return inputLocation;
@@ -112,6 +129,10 @@ public class GCSToJDBCConfig {
     return batchInsertSize;
   }
 
+  public String getCustomSparkPartitions() {
+    return customSparkPartitions;
+  }
+
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
@@ -123,6 +144,7 @@ public class GCSToJDBCConfig {
         .add("saveModeString", saveModeString)
         .add("jdbcUrl", jdbcUrl)
         .add("jdbcDriver", jdbcDriver)
+        .add("customSparkPartitions", customSparkPartitions)
         .toString();
   }
 

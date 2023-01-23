@@ -168,6 +168,20 @@ public interface TemplateConstants {
   // Number of records to be written per message to BigQuery
   String PUBSUB_BQ_BATCH_SIZE_PROP = "pubsub.bq.batch.size";
 
+  /** Property values for PubSub To BigTable */
+  String PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP = "pubsub.bigtable.output.instance.id";
+  // BigTable Instance Id
+  String PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP = "pubsub.bigtable.output.project.id";
+  // Project that contains the output table
+  String PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP = "pubsub.bigtable.output.table";
+  // BigTable table name
+  String ROWKEY = "rowkey";
+  String COLUMN_FAMILY = "columnfamily";
+  String COLUMN_NAME = "columnname";
+  String COLUMN_VALUE = "columnvalue";
+  String COLUMNS = "columns";
+  // Constants to be used for parsing the JSON from pubsub
+
   /** GCS to Bigquery properties */
   String GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location";
 
@@ -188,6 +202,15 @@ public interface TemplateConstants {
   String GCS_BQ_OUTPUT = "table";
   String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
 
+  /** GCS to BigTable properties */
+  String GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location";
+
+  String GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format";
+  String GCS_BT_OUTPUT_INSTANCE_ID = "gcs.bigtable.output.instance.id";
+  String GCS_BT_OUTPUT_PROJECT_ID = "gcs.bigtable.output.project.id";
+  String GCS_BT_OUTPUT_TABLE_NAME = "gcs.bigtable.table.name";
+  String GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY = "gcs.bigtable.column.family";
+
   /** GCS to GCS properties */
   String GCS_GCS_INPUT_LOCATION = "gcs.gcs.input.location";
 
@@ -198,6 +221,15 @@ public interface TemplateConstants {
   String GCS_GCS_OUTPUT_PARTITION_COLUMN = "gcs.gcs.output.partition.col";
   String GCS_GCS_TEMP_TABLE = "gcs.gcs.temp.table";
   String GCS_GCS_TEMP_QUERY = "gcs.gcs.temp.query";
+
+  /** GCS to JDBC properties */
+  String GCS_JDBC_AVRO_FORMAT = "avro";
+
+  String GCS_JDBC_CSV_FORMAT = "csv";
+  String GCS_JDBC_CSV_HEADER = "header";
+  String GCS_JDBC_CSV_INFER_SCHEMA = "inferSchema";
+  String GCS_JDBC_ORC_FORMAT = "orc";
+  String GCS_JDBC_PRQT_FORMAT = "parquet";
 
   /** S3 to Bigquery properties */
   String S3_BQ_INPUT_LOCATION = "s3.bq.input.location";

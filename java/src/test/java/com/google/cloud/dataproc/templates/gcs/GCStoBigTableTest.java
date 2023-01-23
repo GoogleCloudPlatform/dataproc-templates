@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Google LLC
+ * Copyright (C) 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -15,12 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_INPUT_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_INPUT_LOCATION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_OUTPUT_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_OUTPUT_LOCATION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_GCS_WRITE_MODE;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,11 +31,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GCStoGCSTest {
+public class GCStoBigTableTest {
 
-  private GCStoGCS GCScsvToGCSTest;
+  private GCStoBigTable gcsCsvToBigtableTest;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(GCStoGCSTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigTableTest.class);
 
   @BeforeEach
   void setUp() {
@@ -53,14 +48,15 @@ public class GCStoGCSTest {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     Properties props = PropertyUtil.getProperties();
     PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
-    props.setProperty(GCS_GCS_INPUT_LOCATION, "gs://input-bucket");
-    props.setProperty(GCS_GCS_INPUT_FORMAT, "parquet");
-    props.setProperty(GCS_GCS_OUTPUT_LOCATION, "gs://output-bucket");
-    props.setProperty(GCS_GCS_OUTPUT_FORMAT, "parquet");
-    props.setProperty(GCS_GCS_WRITE_MODE, "overwrite");
-    GCScsvToGCSTest = new GCStoGCS();
+    props.setProperty(GCS_BT_INPUT_LOCATION, "gs://test-bucket/test/filename.csv");
+    props.setProperty(GCS_BT_OUTPUT_INSTANCE_ID, "test-instance-id");
+    props.setProperty(GCS_BT_OUTPUT_TABLE_NAME, "table-name");
+    props.setProperty(GCS_BT_OUTPUT_PROJECT_ID, "test-project-id");
+    props.setProperty(GCS_BT_INPUT_FORMAT, "csv");
+    props.setProperty(GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY, "cf");
+    gcsCsvToBigtableTest = new GCStoBigTable();
 
-    assertDoesNotThrow(GCScsvToGCSTest::validateInput);
+    assertDoesNotThrow(gcsCsvToBigtableTest::validateInput);
   }
 
   @ParameterizedTest
@@ -68,12 +64,12 @@ public class GCStoGCSTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    GCScsvToGCSTest = new GCStoGCS();
+    gcsCsvToBigtableTest = new GCStoBigTable();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> GCScsvToGCSTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> gcsCsvToBigtableTest.runTemplate());
     assertEquals(
-        "Required parameters for GCStoGCS not passed. "
-            + "Set mandatory parameter for GCStoGCS template"
+        "Required parameters for GCStoBT not passed. "
+            + "Set mandatory parameter for GCStoBT template"
             + " in resources/conf/template.properties file.",
         exception.getMessage());
   }
@@ -81,10 +77,11 @@ public class GCStoGCSTest {
   static Stream<String> propertyKeys() {
     return Stream.of(
         PROJECT_ID_PROP,
-        GCS_GCS_INPUT_LOCATION,
-        GCS_GCS_INPUT_FORMAT,
-        GCS_GCS_OUTPUT_LOCATION,
-        GCS_GCS_OUTPUT_FORMAT,
-        GCS_GCS_WRITE_MODE);
+        GCS_BT_INPUT_LOCATION,
+        GCS_BT_OUTPUT_INSTANCE_ID,
+        GCS_BT_OUTPUT_TABLE_NAME,
+        GCS_BT_OUTPUT_PROJECT_ID,
+        GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY,
+        GCS_BT_INPUT_FORMAT);
   }
 }
