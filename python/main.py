@@ -61,7 +61,7 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.MONGOTOGCS: MongoToGCSTemplate,
     TemplateName.SNOWFLAKETOGCS: SnowflakeToGCSTemplate,
     TemplateName.REDSHIFTTOGCS: RedshiftToGCSTemplate,
-    TemplateName.CASSANDRATOBQ: CassandraToBQTemplate
+    TemplateName.CASSANDRATOBQ: CassandraToBQTemplate,
     TemplateName.CASSANDRATOGCS: CassandraToGCSTemplate
 
 }

@@ -30,21 +30,19 @@ class TestCassandraToGCSTemplate:
 
         cassandra_to_gcs_template = CassandraToGCSTemplate()
         parsed_args = cassandra_to_bq_template.parse_args(
-            ["--cassandratobq.input.table=tablename",
-             "--cassandratobq.input.host=192.168.2.2",
-             "--cassandratobq.bigquery.location=dataset.table",
-             "--cassandratobq.output.mode=append",
-             "--cassandratobq.temp.gcs.location=xyz",
-             "--cassandratobq.input.query=select one from sample",
-             "--cassandratobq.input.catalog.name=casscon",
-             "--cassandratobq.input.keyspace=tk1"
+            ["--cassandratogcs.input.table=tablename",
+             "--cassandratogcs.input.host=192.168.2.2",
+             "--cassandratogcs.output.format=csv",
+             "--cassandratogcs.output.path=dataset.table",
+             "--cassandratogcs.output.savemode=append",
+             "--cassandratogcs.input.catalog.name=casscon",
+             "--cassandratogcs.input.keyspace=tk1"
              ])
 
-        assert parsed_args["cassandratobq.input.table"] == "tablename"
-        assert parsed_args["cassandratobq.input.host"] == "192.168.2.2"
-        assert parsed_args["cassandratobq.bigquery.location"] == "dataset.table"
-        assert parsed_args["cassandratobq.output.mode"] == "append"
-        assert parsed_args["cassandratobq.temp.gcs.location"] == "xyz"
-        assert parsed_args["cassandratobq.input.query"] == "select one from sample"
-        assert parsed_args["cassandratobq.input.catalog.name"] == "casscon"
-        assert parsed_args["cassandratobq.input.keyspace"] == "tk1"
+        assert parsed_args["cassandratogcs.input.table"] == "tablename"
+        assert parsed_args["cassandratogcs.input.host"] == "192.168.2.2"
+        assert parsed_args["cassandratogcs.output.format"] == "csv"
+        assert parsed_args["cassandratogcs.output.path"] == "dataset.table"
+        assert parsed_args["cassandratogcs.output.savemode"] == "append"
+        assert parsed_args["cassandratogcs.input.catalog.name"] == "casscon"
+        assert parsed_args["cassandratogcs.input.keyspace"] == "tk1"
