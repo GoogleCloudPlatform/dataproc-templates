@@ -71,6 +71,9 @@ public class JDBCToSpannerConfig {
   @JsonProperty(value = JDBC_TO_SPANNER_JDBC_FETCH_SIZE)
   private String jdbcFetchSize;
 
+  @JsonProperty(value = JDBC_TO_SPANNER_JDBC_SESSION_INIT_STATEMENT)
+  private String jdbcSessionInitStatement;
+
   @JsonProperty(value = JDBC_TO_SPANNER_TEMP_TABLE)
   private String tempTable;
 
@@ -161,6 +164,10 @@ public class JDBCToSpannerConfig {
 
   public String getJdbcFetchSize() {
     return jdbcFetchSize;
+  }
+
+  public String getJdbcSessionInitStatement() {
+    return jdbcSessionInitStatement;
   }
 
   public String getTempTable() {

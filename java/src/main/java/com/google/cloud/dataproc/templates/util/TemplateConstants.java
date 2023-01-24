@@ -94,6 +94,7 @@ public interface TemplateConstants {
   String JDBC_TO_BQ_JDBC_URL = "jdbctobq.jdbc.url";
   String JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME = "jdbctobq.jdbc.driver.class.name";
   String JDBC_TO_BQ_JDBC_FETCH_SIZE = "jdbctobq.jdbc.fetchsize";
+  String JDBC_TO_BQ_JDBC_SESSION_INIT_STATEMENT = "jdbctobq.jdbc.sessioninitstatement";
   String JDBC_TO_BQ_TEMP_GCS_BUCKET = "jdbctobq.temp.gcs.bucket";
   String JDBC_TO_BQ_SQL = "jdbctobq.sql";
   String JDBC_TO_BQ_SQL_PARTITION_COLUMN = "jdbctobq.sql.partitionColumn";
@@ -111,6 +112,7 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_JDBC_URL = "jdbctogcs.jdbc.url";
   String JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME = "jdbctogcs.jdbc.driver.class.name";
   String JDBC_TO_GCS_JDBC_FETCH_SIZE = "jdbctogcs.jdbc.fetchsize";
+  String JDBC_TO_GCS_JDBC_SESSION_INIT_STATEMENT = "jdbctogcs.jdbc.sessioninitstatement";
   String JDBC_TO_GCS_WRITE_MODE = "jdbctogcs.write.mode";
   String JDBC_TO_GCS_SQL = "jdbctogcs.sql";
   String JDBC_TO_GCS_SQL_FILE = "jdbctogcs.sql.file";
@@ -127,6 +129,7 @@ public interface TemplateConstants {
 
   String JDBC_TO_SPANNER_JDBC_DRIVER_CLASS_NAME = "jdbctospanner.jdbc.driver.class.name";
   String JDBC_TO_SPANNER_JDBC_FETCH_SIZE = "jdbctospanner.jdbc.fetchsize";
+  String JDBC_TO_SPANNER_JDBC_SESSION_INIT_STATEMENT = "jdbctospanner.jdbc.sessioninitstatement";
   String JDBC_TO_SPANNER_SQL = "jdbctospanner.sql";
   String JDBC_TO_SPANNER_SQL_FILE = "jdbctospanner.sql.file";
   String JDBC_TO_SPANNER_SQL_PARTITION_COLUMN = "jdbctospanner.sql.partitionColumn";

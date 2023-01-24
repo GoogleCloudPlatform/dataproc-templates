@@ -86,6 +86,9 @@ public class JDBCToGCSConfig {
   @JsonProperty(value = JDBC_TO_GCS_JDBC_FETCH_SIZE)
   private String jdbcFetchSize;
 
+  @JsonProperty(value = JDBC_TO_GCS_JDBC_SESSION_INIT_STATEMENT)
+  private String jdbcSessionInitStatement;
+
   @JsonProperty(value = JDBC_TO_GCS_TEMP_TABLE)
   private String tempTable;
 
@@ -141,6 +144,10 @@ public class JDBCToGCSConfig {
 
   public String getJdbcFetchSize() {
     return jdbcFetchSize;
+  }
+
+  public String getJdbcSessionInitStatement() {
+    return jdbcSessionInitStatement;
   }
 
   public String getGcsWriteMode() {
@@ -240,6 +247,9 @@ public class JDBCToGCSConfig {
         + "'"
         + ", jdbcFetchSize='"
         + getJdbcFetchSize()
+        + "'"
+        + ", jdbcSessionInitStatement='"
+        + getJdbcSessionInitStatement()
         + "'"
         + "}";
   }

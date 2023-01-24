@@ -38,6 +38,7 @@ bin/start.sh \
 --templateProperty jdbctobq.jdbc.url=<jdbc url> \
 --templateProperty jdbctobq.jdbc.driver.class.name=<jdbc driver class name> \
 --templateProperty jdbctobq.jdbc.fetchsize=<optional-fetch-size> \
+--templateProperty jdbctobq.jdbc.sessioninitstatement=<optional-session-init-statement> \
 --templateProperty jdbctobq.sql=<input-sql> \
 --templateProperty jdbctobq.sql.partitionColumn=<optional-partition-column-name> \
 --templateProperty jdbctobq.sql.lowerBound=<optional-partition-start-value> \
@@ -96,6 +97,7 @@ bin/start.sh \
 --templateProperty jdbctogcs.jdbc.url=<jdbc url> \
 --templateProperty jdbctogcs.jdbc.driver.class.name=<jdbc-driver-class-name> \
 --templateProperty jdbctogcs.jdbc.fetchsize=<optional-fetch-size> \
+--templateProperty jdbctogcs.jdbc.sessioninitstatement=<optional-session-init-statement> \
 --templateProperty jdbctogcs.output.location=<gcs-ouput-location> \
 --templateProperty jdbctogcs.output.format=<csv|avro|orc|json|parquet> \
 --templateProperty jdbctogcs.write.mode=<optional_write-mode> \
@@ -181,6 +183,7 @@ bin/start.sh \
 --templateProperty jdbctospanner.jdbc.url=<jdbc url> \
 --templateProperty jdbctospanner.jdbc.driver.class.name=<jdbc-driver-class-name> \
 --templateProperty jdbctospanner.jdbc.fetchsize=<optional-fetch-size> \
+--templateProperty jdbctospanner.jdbc.sessioninitstatement=<optional-session-init-statement> \
 --templateProperty jdbctospanner.sql=<input-sql> \
 --templateProperty jdbctospanner.sql.partitionColumn=<optional-partition-column-name> \
 --templateProperty jdbctospanner.sql.lowerBound=<optional-partition-start-value> \
