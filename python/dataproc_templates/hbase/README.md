@@ -97,23 +97,23 @@ optional arguments:
 **Manual Process**
 ```
 
-export GCP_PROJECT=<project_id>
-export SUBNET=<subnet>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export GCP_PROJECT=my-project
+export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 
 #For manual process JARS environment variable need to be set. Not required for automated process
-export JARS="gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
+export JARS="gs://my-input-bucket/hbase-client-2.4.12.jar, \
+             gs://my-input-bucket/hbase-shaded-mapreduce-2.4.12.jar, \
              file:///usr/lib/spark/external/hbase-spark.jar"
 
 ./bin/start.sh \
---container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>" \
+--container-image="gcr.io/my-project/hbase-gcs-image:1.0.1" \
 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \ # image with hbase-site.xml in /etc/hbase/conf/
 -- --template=HBASETOGCS \
-   --hbase.gcs.output.location="<gs://bucket/path>" \
-   --hbase.gcs.output.format="<json|csv|parquet|avro>" \
-   --hbase.gcs.output.mode="<append|overwrite|ignore|errorifexists>" \
+   --hbase.gcs.output.location="gs://my-output-bucket/hbase-gcs-output" \
+   --hbase.gcs.output.format="csv" \
+   --hbase.gcs.output.mode="overwrite" \
    --hbase.gcs.catalog.json='''{
                         "table":{"namespace":"default","name":"my_table"},
                         "rowkey":"key",
@@ -125,12 +125,12 @@ export JARS="gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
 ```
 **Automated process**
 ```
-export GCP_PROJECT=<project_id>
-export SUBNET=<subnet>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export GCP_PROJECT=my-project
+export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-export IMAGE_NAME_VERSION=<image-name>:<version>
+export IMAGE_NAME_VERSION=hbase-gcs-image:1.0.1
 export HBASE_SITE_PATH=/home/anishks/hbase-site.xml
 export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
 export SKIP_IMAGE_BUILD=FALSE #It is a required envrironment variable. Set it to true if you want to use existing IMAGE
@@ -139,7 +139,7 @@ bin/start.sh \
 --container-image=$IMAGE \
 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
 -- --template=HBASETOGCS \
-   --hbase.gcs.output.location=gs://myproject/output \
+   --hbase.gcs.output.location=gs://my-project/output \
    --hbase.gcs.output.format=csv \
    --hbase.gcs.output.mode=append \
    --hbase.gcs.catalog.json=$CATALOG
