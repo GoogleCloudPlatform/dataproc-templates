@@ -109,6 +109,8 @@ Specifying spark partitions is recommeneded when we have small number of current
 
 For the batchInsertSize, a high number is recommended for faster upload to RDBMS in case of bulk loads. By default it is 1000.
 
+When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the JDBC URL to provide a significant performance improvement over the default setting.
+
 
 Example execution:-
 
