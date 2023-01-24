@@ -15,6 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.databases;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_GCS_INPUT_DATABASE_ID;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_GCS_INPUT_TABLE_ID;
@@ -40,6 +41,7 @@ public class SpannerToGCSTest {
 
   @BeforeEach
   void setUp() {
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     PropertyUtil.getProperties().setProperty(SPANNER_GCS_OUTPUT_GCS_PATH, "gs://test-bucket/");
     PropertyUtil.getProperties().setProperty(SPANNER_GCS_OUTPUT_FORMAT, "csv");
     PropertyUtil.getProperties().setProperty(SPANNER_GCS_OUTPUT_GCS_SAVEMODE, "Append");
@@ -69,6 +71,7 @@ public class SpannerToGCSTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
+        PROJECT_ID_PROP,
         SPANNER_GCS_OUTPUT_GCS_PATH,
         SPANNER_GCS_OUTPUT_FORMAT,
         SPANNER_GCS_OUTPUT_GCS_SAVEMODE,

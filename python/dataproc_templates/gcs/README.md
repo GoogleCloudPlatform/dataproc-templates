@@ -49,19 +49,19 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 
 ./bin/start.sh \
 -- --template=GCSTOBIGQUERY \
-    --gcs.bigquery.input.format="<json|csv|parquet|avro>" \
-    --gcs.bigquery.input.location="<gs://bucket/path>" \
-    --gcs.bigquery.output.dataset="<dataset>" \
-    --gcs.bigquery.output.table="<table>" \
-    --gcs.bigquery.output.mode=<append|overwrite|ignore|errorifexists>\
-    --gcs.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
+    --gcs.bigquery.input.format="parquet" \
+    --gcs.bigquery.input.location="gs://my-input-bucket/gcs-bq-input/" \
+    --gcs.bigquery.output.dataset="python_templates_dataset" \
+    --gcs.bigquery.output.table="gcs_bq_table" \
+    --gcs.bigquery.output.mode=overwrite \
+    --gcs.bigquery.temp.bucket.name="temp-bucket"
 ```
 
 # GCS To BigTable
@@ -162,9 +162,9 @@ optional arguments:
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar, \
              gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
              gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
@@ -172,11 +172,11 @@ export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-
              file:///usr/lib/spark/external/hbase-spark.jar"
 
 ./bin/start.sh \
---container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>" \
+--container-image="gcr.io/my-project/gcstobt-image:1.0.1" \
 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \ # image with hbase-site.xml in /etc/hbase/conf/
 -- --template=GCSTOBIGTABLE \
-   --gcs.bigtable.input.format="<json|csv|parquet|avro>" \
-   --gcs.bigtable.input.location="<gs://bucket/path>" \
+   --gcs.bigtable.input.format="csv" \
+   --gcs.bigtable.input.location="gs://my-input-bucket/gcstobt-input/emp.csv" \
    --gcs.bigtable.hbase.catalog.json='''{
                         "table":{"namespace":"default","name":"my_table"},
                         "rowkey":"key",
@@ -253,15 +253,18 @@ Once the jar file gets downloaded, please upload the file into a GCS Bucket.
 ## Example submission
 
 ```
-export JARS=<gcs-bucket-location-containing-jar-file>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
+export JARS="gs://my-input-bucket/mysql-connector-java-8.0.29.jar"
 
 ./bin/start.sh \
--- --template=GCSTOBIGQUERY \
-    --gcs.jdbc.input.format="<json|csv|parquet|avro>" \
-    --gcs.jdbc.input.location="<gs://bucket/path>" \
-    --gcs.bigquery.output.table="<table>" \
-    --gcs.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
-    --gcs.jdbc.output.driver="com.mysql.cj.jdbc.driver" \
+-- --template=GCSTOJDBC \
+    --gcs.jdbc.input.format="csv" \
+    --gcs.jdbc.input.location="gs://my-input-bucket/gcstojdbc-input/sample.csv" \
+    --gcs.jdbc.output.table="demo" \
+    --gcs.jdbc.output.mode="overwrite" \
+    --gcs.jdbc.output.driver="com.mysql.cj.jdbc.Driver" \
     --gcs.jdbc.batch.size=1000 \
     --gcs.jdbc.output.url="jdbc:mysql://12.345.678.9:3306/test?user=root&password=root"
 ```
@@ -329,20 +332,20 @@ sudo wget https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.9.1/mon
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS=<gcs-bucket-location-containing-jar-file>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
+export JARS="gs://my-input-bucket/mongo-java-driver-3.9.1.jar,gs://my-input-bucket/mongo-spark-connector_2.12-2.4.0.jar"
 
 ./bin/start.sh \
 -- --template=GCSTOMONGO \
-    --gcs.mongo.input.format="<json|csv|parquet|avro>" \
-    --gcs.mongo.input.location="<gs://bucket/path>" \
-    --gcs.mongo.output.uri="mongodb://<username>:<password>@<Host_Name>:<Port_Number>" \
-    --gcs.mongo.output.database="<Database_Name>" \
-    --gcs.mongo.output.collection="<Collection_Name>" \
-    --gcs.mongo.batch.size=512 \
-    --gcs.mongo.output.mode="<append|overwrite|ignore|errorifexists>"
+    --gcs.mongo.input.format="avro" \
+    --gcs.mongo.input.location="gs:///my-input-bucket/empavro" \
+    --gcs.mongo.output.uri="mongodb://1.2.3.45:27017" \
+    --gcs.mongo.output.database="demo" \
+    --gcs.mongo.output.collection="analysis" \
+    --gcs.mongo.output.mode="overwrite" \
+    --gcs.mongo.batch.size=512
 ```
 
 
@@ -399,20 +402,20 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 
 ./bin/start.sh \
 -- --template=TEXTTOBIGQUERY \
-    --text.bigquery.input.compression="<gzip|bzip4|lz4|deflate|none>" \
-    --text.bigquery.input.delimiter="<delimiter>" \
-    --text.bigquery.input.location="<gs://bucket/path>" \
-    --text.bigquery.output.dataset="<dataset>" \
-    --text.bigquery.output.table="<table>" \
-    --text.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
-    --text.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
+    --text.bigquery.input.compression="gzip" \
+    --text.bigquery.input.delimiter="," \
+    --text.bigquery.input.location="gs://my-input-bucket/text-bq-input/" \
+    --text.bigquery.output.dataset="python_templates_dataset" \
+    --text.bigquery.output.table="text_bq_table" \
+    --text.bigquery.output.mode=overwrite \
+    --text.bigquery.temp.bucket.name="temp-bucket"
 ```
 # GCS To GCS - SQL Transformation
 
@@ -484,18 +487,17 @@ No specific jar files are needed for this template. For using AVRO file format, 
 ## Example submission
 
 ```
-export GCP_PROJECT=<project_id>
-export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS=<gcs-bucket-location-containing-jar-file>
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export GCS_STAGING_LOCATION="gs://my-bucket"
 
 ./bin/start.sh \
--- --template=GCSTOGCS \
-    --gcs.to.gcs.input.location="<gs://bucket/path>" \
-    --gcs.to.gcs.input.format="<json|csv|parquet|avro>" \
+-- --template=GCSTOGCS \ 
+    --gcs.to.gcs.input.location="gs://my-input-bucket/avro-folder" \
+    --gcs.to.gcs.input.format="avro" \
     --gcs.to.gcs.temp.view.name="temp" \
-    --gcs.to.gcs.sql.query="select *, 1 as col from temp" \
-    --gcs.to.gcs.output.format="<json|csv|parquet|avro>" \
-    --gcs.to.gcs.output.mode="<append|overwrite|ignore|errorifexists>" \
-    --gcs.to.gcs.output.location="<gs://bucket/path>"
+    --gcs.to.gcs.sql.query="select * from temp where sal>1500" \
+    --gcs.to.gcs.output.format="csv" \
+    --gcs.to.gcs.output.mode="overwrite" \
+    --gcs.to.gcs.output.location="gs://my-output-bucket/output"
 ```
