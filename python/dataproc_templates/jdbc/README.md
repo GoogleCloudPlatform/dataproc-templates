@@ -292,7 +292,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.input.upperbound="20" \
 --jdbctojdbc.numpartitions="4" \
 --jdbctojdbc.input.fetchsize="200" \
---jdbctojdbc.input.sessioninitstatement="BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET \"_serial_direct_read\"=true'; END;" \
+--jdbctojdbc.input.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOJDBC'); END;" \
 --jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123" \
 --jdbctojdbc.output.driver="org.postgresql.Driver" \
 --jdbctojdbc.output.table="employees_out" \
@@ -452,7 +452,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.input.upperbound="20" \
 --jdbctogcs.numpartitions="4" \
 --jdbctogcs.input.fetchsize="200" \
---jdbctogcs.input.sessioninitstatement="BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET \"_serial_direct_read\"=true'; END;" \
+--jdbctogcs.input.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOGCS'); END;" \
 --jdbctogcs.output.location="gs://output_bucket/output/" \
 --jdbctogcs.output.mode="overwrite" \
 --jdbctogcs.output.format="csv" \
@@ -649,7 +649,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbc.bigquery.input.upperbound="20" \
 --jdbc.bigquery.input.numpartitions="4" \
 --jdbc.bigquery.input.fetchsize="200" \
---jdbc.bigquery.input.sessioninitstatement="BEGIN EXECUTE IMMEDIATE 'ALTER SESSION SET \"_serial_direct_read\"=true'; END;" \
+--jdbc.bigquery.input.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOBIGQUERY'); END;" \
 --jdbc.bigquery.output.mode="overwrite" \
 --jdbc.bigquery.output.dataset="bq-dataset" \
 --jdbc.bigquery.output.table="bq-table" \
