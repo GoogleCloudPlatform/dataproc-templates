@@ -1,0 +1,12 @@
+{
+    "release-type": "python",
+    "packages": {
+        "python": {
+            "component": "python-package",
+            "release-type": "python",
+            "extra-files": [
+                "version.py"
+            ]
+        }
+    }
+}
