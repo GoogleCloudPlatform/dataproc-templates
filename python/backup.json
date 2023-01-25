@@ -547,6 +547,19 @@ pipeline {
                             stage('Cassandra TO GCS') {
                                 steps{
                                     sh'''
+
+                                        python3.8 -m pip install --user virtualenv    
+        
+                                        python3.8 -m venv env
+
+                                        source env/bin/activate
+                                        
+                                        export GCP_PROJECT=yadavaja-sandbox
+                                        export REGION=us-west1
+                                        export SUBNET=projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1
+                                        export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                        export JARS="gs://spark-cassandra-connector/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://spark-cassandra-connector/jnr-posix-3.1.8.jar"
+
                                        cd python
 
                                        bin/start.sh \

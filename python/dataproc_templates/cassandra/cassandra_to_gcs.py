@@ -99,6 +99,12 @@ class CassandraToGCSTemplate(BaseTemplate):
             default="casscon",
             help='To provide a name for connection between Cassandra and GCS'
         )
+       parser.add_argument(
+            f'--{constants.CASSANDRA_TO_GCS_QUERY}',
+            dest=constants.CASSANDRA_TO_GCS_QUERY,
+            required=False,
+            help='Optional query for selective exports'
+        )
  
        known_args: argparse.Namespace
        known_args, _ = parser.parse_known_args(args)
@@ -117,6 +123,7 @@ class CassandraToGCSTemplate(BaseTemplate):
        output_mode: str = args[constants.CASSANDRA_TO_GCS_OUTPUT_SAVEMODE]
        output_location: str = args[constants.CASSANDRA_TO_GCS_OUTPUT_PATH]
        catalog: str = args[constants.CASSANDRA_TO_GCS_CATALOG]
+       query: str = args[constants.CASSANDRA_TO_GCS_QUERY]
  
        logger.info(
            "Starting CASSANDRA to GCS spark job with parameters:\n"
@@ -134,9 +141,10 @@ class CassandraToGCSTemplate(BaseTemplate):
         .getOrCreate())
  
        # Read
-       input_data = spark.read.table(f"{catalog}.{input_keyspace}.{input_table}")
-       
-
+       if(not query):
+           input_data = spark.read.table(f"{catalog}.{input_keyspace}.{input_table}")
+       else:
+           input_data = spark.sql(query)  
  
        # Write
        writer: DataFrameWriter = input_data.write.mode(output_mode)
