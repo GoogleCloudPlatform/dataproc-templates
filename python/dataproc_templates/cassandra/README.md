@@ -84,3 +84,86 @@ export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,g
 --cassandratobq.temp.gcs.location=bucketname \
 --cassandratobq.input.query="select emp_id from casscon.tk1.emp"
 ```
+
+
+## Cassandra to GCS
+
+Template for exporting a Cassandra table to GCS
+
+
+## Arguments
+* `cassandratogcs.input.keyspace`: Input keyspace name for cassandra
+* `cassandratogcs.input.table`: Input table name of cassandra 
+* `cassandratogcs.input.host`: Cassandra Host IP 
+* `cassandratogcs.output.path`: GCS Bucket Path
+* `cassandratogcs.output.savemode`: Output mode of Cassandra to GCS
+#### Optional Arguments
+* `cassandratobq.input.query` : Customised query for selective migration
+* `cassandratogcs.input.catalog.name`: Connection name, defaults to casscon
+
+
+## Usage
+
+```
+$ python main.py --template CASSANDRATOGCS --help
+
+usage: main.py --template CASSANDRATOGCS [-h] \
+	--cassandratogcs.input.keyspace CASSANDRATOGCS.INPUT.KEYSPACE \
+	--cassandratogcs.input.table CASSANDRATOGCS.INPUT.TABLE \
+	--cassandratogcs.input.host CASSANDRATOGCS.INPUT.HOST \
+	--cassandratogcs.bigquery.location CASSANDRATOGCS.OUTPUT.PATH \
+	--cassandratogcs.temp.gcs.location TEMPORARY.GCS.STAGING.LOCATION \
+    --cassandratogcs.output.savemode {overwrite,append,ignore,errorifexists}
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --cassandratogcs.input.query   Input query for customised migration
+                       
+  --cassandratobq.input.catalog.name   Cassandra connection name
+                        
+```
+
+## Required JAR files
+
+This template requires the [Spark Cassandra connector](https://github.com/datastax/spark-cassandra-connector) to be available in the Dataproc cluster.
+This can be downloaded using the following [link](https://repo1.maven.org/maven2/com/datastax/spark/spark-cassandra-connector-assembly_2.12/3.2.0/spark-cassandra-connector-assembly_2.12-3.2.0.jar).
+Another jar of POSIX handler is also required which can be downloaded from this [link](https://repo1.maven.org/maven2/com/github/jnr/jnr-posix/3.1.8/jnr-posix-3.1.8.jar)
+## Example submission
+Use the following command to download the jar-:
+```
+wget https://repo1.maven.org/maven2/com/datastax/spark/spark-cassandra-connector-assembly_2.12/3.2.0/spark-cassandra-connector-assembly_2.12-3.2.0.jar
+```
+```
+wget https://repo1.maven.org/maven2/com/github/jnr/jnr-posix/3.1.8/jnr-posix-3.1.8.jar
+```
+Jar files named `spark-cassandra-connector-assembly_2.12-3.2.0.jar` and `jnr-posix-3.1.8.jar` would be downloaded, this can be passed to provide spark drivers and workers with cassandra connector class and its dependencies.
+```
+export GCP_PROJECT=<project_id>
+export JARS="gs://path/to/jar/spark-cassandra-connector_2.12-3.2.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar,gs://path/to/jnr-posix-3.1.8.jar" # Pass the downloaded jar path and bigquery connector jar
+export REGION=<region>
+
+./bin/start.sh \
+-- --template=CASSANDRATOGCS \
+	--cassandratogcs.input.keyspace=<keyspace name> \
+	--cassandratogcs.input.table=<cassandra table name> \
+	--cassandratogcs.input.host=<cassandra host IP> \
+	--cassandratogcs.output.path=<gcs output bucket path> \
+	--cassandratogcs.output.savemode=<overwrite|append|ignore|errorifexists>
+```
+## Sample Submission
+After downloading the jar, a sample submission -:
+```
+export GCP_PROJECT=my-project
+export REGION=us-central1
+export SUBNET=projects/my-project/regions/us-central1/subnetworks/default
+export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar,gs://jar-bucket/jnr-posix-3.1.8.jar"
+
+
+    ./bin/start.sh \
+-- --template=CASSANDRATOBQ \
+--cassandratogcs.input.keyspace=tk1 \
+--cassandratogcs.input.table=emp \
+--cassandratogcs.input.host=10.1X8.X.XX \
+--cassandratogcs.output.path=demo.cassandramig \
+--cassandratogcs.input.query="select emp_id from casscon.tk1.emp"
+```
