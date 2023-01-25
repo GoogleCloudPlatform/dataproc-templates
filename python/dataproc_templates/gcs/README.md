@@ -201,6 +201,7 @@ Template for reading files from Google Cloud Storage and writing them to a JDBC 
 * `gcs.jdbc.output.driver`: JDBC output driver name
 * `gcs.jdbc.batch.size`: JDBC output batch size
 * `gcs.jdbc.output.url`: JDBC output URL. When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the URL to provide a significant performance improvement over the default setting.
+* `gcs.jdbc.numpartitions`: The maximum number of partitions to be used for parallelism in table writing
 
 
 ## Usage
@@ -215,7 +216,8 @@ usage: main.py --template GCSTOJDBC [-h] \
     --gcs.jdbc.output.mode {overwrite,append,ignore,errorifexists} \
     --gcs.jdbc.output.driver GCS.JDBC.OUTPUT.DRIVER \
     --gcs.jdbc.batch.size GCS.JDBC.BATCH.SIZE \
-    --gcs.jdbc.output.url GCS.JDBC.OUTPUT.URL
+    --gcs.jdbc.output.url GCS.JDBC.OUTPUT.URL \
+    --gcs.jdbc.numpartitions GCS.JDBC.NUMPARTITIONS
 
 
 optional arguments:
@@ -233,7 +235,9 @@ optional arguments:
   --gcs.jdbc.batch.size GCS.JDBC.BATCH.SIZE
                         Batch size of the data means number of records wanted to insert in one round trip into JDBC Table
   --gcs.jdbc.output.url GCS.JDBC.OUTPUT.URL
-                        JDBC Driver URL to connect with consisting of username and passwprd as well
+                        JDBC Driver URL to connect with consisting of username and password as well
+  --gcs.jdbc.numpartitions  GCS.JDBC.NUMPARTITIONS
+                        The maximum number of partitions to be used for parallelism in table writing
 ```
 
 ## Required JAR files
@@ -266,7 +270,8 @@ export JARS="gs://my-input-bucket/mysql-connector-java-8.0.29.jar"
     --gcs.jdbc.output.mode="overwrite" \
     --gcs.jdbc.output.driver="com.mysql.cj.jdbc.Driver" \
     --gcs.jdbc.batch.size=1000 \
-    --gcs.jdbc.output.url="jdbc:mysql://12.345.678.9:3306/test?user=root&password=root"
+    --gcs.jdbc.output.url="jdbc:mysql://12.345.678.9:3306/test?user=root&password=root" \
+    --gcs.jdbc.numpartitions=10
 ```
 
 # GCS To MongoDB
