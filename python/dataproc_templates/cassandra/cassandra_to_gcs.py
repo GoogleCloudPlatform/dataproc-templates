@@ -55,7 +55,7 @@ class CassandraToGCSTemplate(BaseTemplate):
            f'--{constants.CASSANDRA_TO_GCS_INPUT_HOST}',
            dest=constants.CASSANDRA_TO_GCS_INPUT_HOST,
            required=True,
-           help='CASSANDRA GCS Input Host'
+           help='CASSANDRA GCS Input Host IP'
        )
        parser.add_argument(
            f'--{constants.CASSANDRA_TO_GCS_OUTPUT_FORMAT}',
