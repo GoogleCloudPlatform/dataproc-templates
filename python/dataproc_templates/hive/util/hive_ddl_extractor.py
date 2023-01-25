@@ -26,12 +26,6 @@ from pyspark.sql import SparkSession
 from datetime import datetime
 
 
-def WriteToCloud (ddls_to_rdd, bucket, path):
-    # Write
-    now = datetime.now()
-    timedate = now.strftime("%m-%d-%Y %H.%M.%S")
-    ddls_to_rdd.coalesce(1).saveAsTextFile("gs://"+bucket+"/"+path+timedate)
-
 class HiveDDLExtractorTemplate(BaseTemplate): 
     """
     Dataproc template implementing exports from Hive to BigQuery
@@ -46,13 +40,6 @@ class HiveDDLExtractorTemplate(BaseTemplate):
             dest=constants.HIVE_DDL_EXTRACTOR_INPUT_DATABASE,
             required=True,
             help='Hive database for importing data to BigQuery'
-        )
-
-        parser.add_argument(
-            f'--{constants.HIVE_DDL_EXTRACTOR_OUTPUT_BUCKET}',
-            dest=constants.HIVE_DDL_EXTRACTOR_OUTPUT_BUCKET,
-            required=True,
-            help='Bucket for the output'
         )
 
         parser.add_argument(
@@ -77,7 +64,6 @@ class HiveDDLExtractorTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         hive_database: str = args[constants.HIVE_DDL_EXTRACTOR_INPUT_DATABASE]
-        gcs_output_bucket: str = args[constants.HIVE_DDL_EXTRACTOR_OUTPUT_BUCKET]
         gcs_output_path: str = args[constants.HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH]
 
         logger.info(
@@ -87,12 +73,14 @@ class HiveDDLExtractorTemplate(BaseTemplate):
         
                
         def get_ddl(hive_database, table_name):
-            return spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name} as serde").rdd.map(lambda x: x[0] + ";").collect()[0]
-        
-        output_path="gs://"+gcs_output_bucket+"/"+gcs_output_path+"/"+hive_database+"/"+str(ct)
-        tables_names = spark.sql(f"SHOW TABLES IN {hive_database}").select("tableName")
-        tables_name_list=tables_names.rdd.map(lambda x: x[0]).collect()
-        tables_ddls = [ get_ddl(hive_database, table_name) for table_name in tables_name_list ]
-        ddls_rdd = spark.sparkContext.parallelize(tables_ddls)
+            return spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name}").rdd.map(lambda x: x[0] + ";").collect()[0]
+
         ct = datetime.now().strftime("%m-%d-%Y %H.%M.%S")
+        output_path = gcs_output_path+"/"+hive_database+"/"+str(ct)
+
+        tables_names = spark.sql(f"SHOW TABLES IN {hive_database}").select("tableName")
+        tables_name_list = tables_names.rdd.map(lambda x: x[0]).collect()
+        tables_ddls = [ get_ddl(hive_database, table_name) for table_name in tables_name_list ]
+
+        ddls_rdd = spark.sparkContext.parallelize(tables_ddls)
         ddls_rdd.coalesce(1).saveAsTextFile(output_path)
