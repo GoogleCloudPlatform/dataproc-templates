@@ -32,12 +32,10 @@ class TestHiveDDLExtractorTemplate:
         hive_ddl_extractor_template = HiveDDLExtractorTemplate()
         parsed_args = hive_ddl_extractor_template.parse_args(
             ["--hive.ddl.extractor.input.database=database",
-             "--hive.ddl.extractor.output.bucket=bucket",
-             "--hive.ddl.extractor.output.path=path"])
+             "--hive.ddl.extractor.output.path=gs://bucket/path"])
 
         assert parsed_args["hive.ddl.extractor.input.database"] == "database"
-        assert parsed_args["hive.ddl.extractor.output.bucket"] == "bucket"
-        assert parsed_args["hive.ddl.extractor.output.path"] == "path"
+        assert parsed_args["hive.ddl.extractor.output.path"] == "gs://bucket/path"
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run(self, mock_spark_session):
@@ -46,8 +44,7 @@ class TestHiveDDLExtractorTemplate:
         hive_ddl_extractor_template = HiveDDLExtractorTemplate()
         mock_parsed_args = hive_ddl_extractor_template.parse_args(
             ["--hive.ddl.extractor.input.database=database",
-             "--hive.ddl.extractor.output.bucket=bucket",
-             "--hive.ddl.extractor.output.path=path"])
+             "--hive.ddl.extractor.output.path=gs://bucket/path"])
         mock_spark_session.sql.return_value=mock_spark_session.dataframe.DataFrame
         mock_spark_session.sparkContext.parallelize.return_value=mock_spark_session.rdd.RDD
         hive_ddl_extractor_template.run(mock_spark_session, mock_parsed_args)
