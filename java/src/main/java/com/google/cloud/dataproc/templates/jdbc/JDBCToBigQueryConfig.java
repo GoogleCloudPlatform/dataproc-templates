@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -80,23 +80,21 @@ public class JDBCToBigQueryConfig {
 
 	@AssertTrue(message = "Required parameters for JDBCToBigquery not passed. Set mandatory parameter for JDBCToBigQuery template in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.")
 	private boolean isSqlPropertyValid() {
-		System.out.println("bqLocation is : "+bqLocation+" "+jdbcURL+" "+jdbcDriverClassName+" "+jdbcSQL+" "+temporaryGcsBucket+" "+bqWriteMode);
-		boolean b =(StringUtils.isAllBlank(bqLocation) || StringUtils.isAllBlank(jdbcURL)
-				|| StringUtils.isAllBlank(jdbcDriverClassName) || StringUtils.isAllBlank(jdbcSQL)
-				|| StringUtils.isAllBlank(temporaryGcsBucket )|| StringUtils.isAllBlank(bqWriteMode));
-		System.out.println("b value is :"+b);
-		return (StringUtils.isAllBlank(bqLocation) || StringUtils.isAllBlank(jdbcURL)
-				|| StringUtils.isAllBlank(jdbcDriverClassName) || StringUtils.isAllBlank(jdbcSQL)
-				|| StringUtils.isAllBlank(temporaryGcsBucket )|| StringUtils.isAllBlank(bqWriteMode));
+	    return (StringUtils.isNotBlank(bqLocation) && StringUtils.isNotBlank(jdbcURL)
+				&& StringUtils.isNotBlank(jdbcDriverClassName) && StringUtils.isNotBlank(jdbcSQL)
+				&& StringUtils.isNotBlank(temporaryGcsBucket ) && StringUtils.isNotBlank(bqWriteMode));
 	}
 
 	@AssertTrue(message = "Required parameters for JDBCToBigquery not passed. Set all the sql partitioning parameter together for JDBCToBigquery template in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.")
 	private boolean isPartitionsPropertyValid() {
-		System.out.println("concat value: " +getConcatedPartitionProps());
-		return StringUtils.isNotBlank(getConcatedPartitionProps())
-				&& ((StringUtils.isBlank(jdbcSQLPartitionColumn) || StringUtils.isBlank(jdbcSQLLowerBound)
-						|| StringUtils.isBlank(jdbcSQLUpperBound)) || StringUtils.isBlank(jdbcSQLNumPartitions));
-	}
+		
+		if(StringUtils.isNotBlank(getConcatedPartitionProps())) {
+			return (StringUtils.isNotBlank(jdbcSQLPartitionColumn) && StringUtils.isNotBlank(jdbcSQLLowerBound)
+					&& StringUtils.isNotBlank(jdbcSQLUpperBound)) && StringUtils.isNotBlank(jdbcSQLNumPartitions);
+		}
+		
+		return true;
+	} 
 
 
 	public String getJdbcURL() {
