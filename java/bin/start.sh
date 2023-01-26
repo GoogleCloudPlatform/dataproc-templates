@@ -146,8 +146,6 @@ elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
       ${OPT_JARS} \
       ${OPT_LABELS} \
       ${OPT_DEPS_BUCKET} \
-      ${OPT_FILES} \
-      ${OPT_PROPERTIES} \
       ${OPT_CLASS} \
       ${OPT_SUBNET} \
       ${OPT_HISTORY_SERVER_CLUSTER} \
