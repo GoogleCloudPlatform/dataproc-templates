@@ -95,6 +95,7 @@ Template for exporting a Cassandra table to GCS
 * `cassandratogcs.input.keyspace`: Input keyspace name for cassandra
 * `cassandratogcs.input.table`: Input table name of cassandra 
 * `cassandratogcs.input.host`: Cassandra Host IP 
+* `cassandratogcs.output.format` : Output File Format
 * `cassandratogcs.output.path`: GCS Bucket Path
 * `cassandratogcs.output.savemode`: Output mode of Cassandra to GCS
 #### Optional Arguments
@@ -111,7 +112,8 @@ usage: main.py --template CASSANDRATOGCS [-h] \
 	--cassandratogcs.input.keyspace CASSANDRATOGCS.INPUT.KEYSPACE \
 	--cassandratogcs.input.table CASSANDRATOGCS.INPUT.TABLE \
 	--cassandratogcs.input.host CASSANDRATOGCS.INPUT.HOST \
-	--cassandratogcs.bigquery.location CASSANDRATOGCS.OUTPUT.PATH \
+	--cassandratogcs.output.format CASSANDRATOGCS.OUTPUT.FORMAT \
+	--cassandratogcs.output.path CASSANDRATOGCS.OUTPUT.PATH \
 	--cassandratogcs.temp.gcs.location TEMPORARY.GCS.STAGING.LOCATION \
     --cassandratogcs.output.savemode {overwrite,append,ignore,errorifexists}
 
@@ -119,7 +121,7 @@ optional arguments:
   -h, --help            show this help message and exit
   --cassandratogcs.input.query   Input query for customised migration
                        
-  --cassandratobq.input.catalog.name   Cassandra connection name
+  --cassandratogcs.input.catalog.name   Cassandra connection name
                         
 ```
 
@@ -147,6 +149,7 @@ export REGION=<region>
 	--cassandratogcs.input.keyspace=<keyspace name> \
 	--cassandratogcs.input.table=<cassandra table name> \
 	--cassandratogcs.input.host=<cassandra host IP> \
+	--cassandratogcs.output.format=<output file format> \
 	--cassandratogcs.output.path=<gcs output bucket path> \
 	--cassandratogcs.output.savemode=<overwrite|append|ignore|errorifexists>
 ```
@@ -160,10 +163,12 @@ export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,g
 
 
     ./bin/start.sh \
--- --template=CASSANDRATOBQ \
+-- --template=CASSANDRATOGCS \
 --cassandratogcs.input.keyspace=tk1 \
 --cassandratogcs.input.table=emp \
 --cassandratogcs.input.host=10.1X8.X.XX \
---cassandratogcs.output.path=demo.cassandramig \
+--cassandratogcs.output.format=csv \
+--cassandratogcs.output.path=bucketname \
+--cassandratogcs.output.savemode=overwrite \
 --cassandratogcs.input.query="select emp_id from casscon.tk1.emp"
 ```
