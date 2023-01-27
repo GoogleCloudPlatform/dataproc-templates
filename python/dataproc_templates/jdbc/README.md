@@ -315,6 +315,7 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 * `jdbctogcs.input.url`: JDBC input URL
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
+* `jdbctogcs.input.sql.query`: JDBC input SQL query
 * `jdbctogcs.output.location`: GCS location for output files (format: `gs://BUCKET/...`)
 * `jdbctogcs.output.format`: Output file format (one of: avro,parquet,csv,json)
 * `jdbctogcs.input.partitioncolumn` (Optional): JDBC input table partition column name
@@ -334,6 +335,7 @@ usage: main.py --template JDBCTOGCS \
     --jdbctogcs.input.url JDBCTOGCS.INPUT.URL \
     --jdbctogcs.input.driver JDBCTOGCS.INPUT.DRIVER \
     --jdbctogcs.input.table JDBCTOGCS.INPUT.TABLE \
+    --jdbctogcs.input.sql.query JDBCTOGCS.INPUT.SQL.QUERY \ (refer NOTE)
     --jdbctogcs.output.location JDBCTOGCS.OUTPUT.LOCATION \
     --jdbctogcs.output.format {avro,parquet,csv,json} \
 
@@ -347,7 +349,7 @@ optional arguments:
     --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN \
 ```
-
+NOTE: While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.input.sql.query```. Passing both the properties would result in an error.
 ## General execution:
 
 ```
@@ -362,6 +364,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctogcs.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
 --jdbctogcs.input.driver=<jdbc-driver-class-name> \
 --jdbctogcs.input.table=<input table name or subquery with where clause filter> \
+--jdbctogcs.input.sql.query=<input sql query> \ (refer NOTE)
 --jdbctogcs.input.partitioncolumn=<optional-partition-column-name> \
 --jdbctogcs.input.lowerbound=<optional-partition-start-value>  \
 --jdbctogcs.input.upperbound=<optional-partition-end-value>  \
@@ -372,6 +375,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctogcs.output.format=<output-write-format> \
 --jdbctogcs.output.partitioncolumn=<optional-output-partition-column-name>
 ```
+NOTE: While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.input.sql.query```. Passing both the properties would result in an error.
 
 ## Example execution:
 
@@ -459,8 +463,6 @@ There are two optional properties as well with "JDBC to GCS" Template. Please fi
 ```
 These properties are responsible for applying some spark sql transformations before loading data into GCS.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
-
-While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.sql.query```. Passing both the properties would result in an error.
 
 # 3. JDBC To BigQuery
 
