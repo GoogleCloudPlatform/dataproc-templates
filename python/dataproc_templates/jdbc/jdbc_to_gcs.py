@@ -241,6 +241,8 @@ class JDBCToGCSTemplate(BaseTemplate):
                 .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
                 .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
                 .load()
+        else:
+            sys.exit('ArgumentParser Error: Arguments must have either input table or input sql query')
 
         if temp_sql_query:
             # Create temp view on source data
