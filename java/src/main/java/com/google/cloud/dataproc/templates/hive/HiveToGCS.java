@@ -71,7 +71,6 @@ public class HiveToGCS implements BaseTemplate {
     SparkSession spark =
         SparkSession.builder().appName("Spark HiveToGcs Job").enableHiveSupport().getOrCreate();
 
- 
     // Set log level
     spark.sparkContext().setLogLevel(sparkLogLevel);
 
