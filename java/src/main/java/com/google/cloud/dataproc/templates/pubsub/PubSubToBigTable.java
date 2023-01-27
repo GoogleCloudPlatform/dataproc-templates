@@ -48,6 +48,7 @@ public class PubSubToBigTable implements BaseTemplate {
   private String pubSubBigTableOutputInstanceId;
   private String pubSubBigTableOutputProjectId;
   private String pubSubBigTableOutputTable;
+  private final String sparkLogLevel;
 
   public PubSubToBigTable() {
     inputProjectID = getProperties().getProperty(PUBSUB_INPUT_PROJECT_ID_PROP);
@@ -61,6 +62,7 @@ public class PubSubToBigTable implements BaseTemplate {
     pubSubBigTableOutputProjectId =
         getProperties().getProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP);
     pubSubBigTableOutputTable = getProperties().getProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -73,6 +75,10 @@ public class PubSubToBigTable implements BaseTemplate {
     try {
       SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigTable Dataproc Job");
       jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
+
+      // Set log level
+      jsc.sparkContext().setLogLevel(sparkLogLevel);
+
       JavaDStream<SparkPubsubMessage> stream = null;
       for (int i = 0; i < totalReceivers; i += 1) {
         JavaDStream<SparkPubsubMessage> pubSubReciever =
