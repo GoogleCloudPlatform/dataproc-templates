@@ -4,6 +4,8 @@ This is a PySpark utility to extract DDLs of all the tables from a HIVE database
 
 It queries Hive Metastore via thrift to get DDLs for each table in the database, and outputs a single text file of semicolon-separated DDLs to a GCS bucket path, creating it with the following sub-path: *"/<database-name>/%m-%d-%Y %H.%M.%S/part-00000"*.  
 
+Note that it uses the "SHOW CREATE TABLE <...> AS SERDE" statement. Feel free to remove the AS SERDE suffix if you need DDLs of tables created using Spark.
+
 ## Arguments
 
 * `spark.hadoop.hive.metastore.uris`: Hive metastore URI

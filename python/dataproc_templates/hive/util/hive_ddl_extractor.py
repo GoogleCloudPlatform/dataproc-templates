@@ -73,7 +73,7 @@ class HiveDDLExtractorTemplate(BaseTemplate):
         
                
         def get_ddl(hive_database, table_name):
-            return spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name}").rdd.map(lambda x: x[0] + ";").collect()[0]
+            return spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name} AS SERDE").rdd.map(lambda x: x[0] + ";").collect()[0]
 
         ct = datetime.now().strftime("%m-%d-%Y %H.%M.%S")
         output_path = gcs_output_path+"/"+hive_database+"/"+str(ct)
