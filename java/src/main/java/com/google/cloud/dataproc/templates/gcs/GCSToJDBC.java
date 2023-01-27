@@ -54,7 +54,11 @@ public class GCSToJDBC implements BaseTemplate {
   public void runTemplate() {
     validateInput();
     try (SparkSession spark = SparkSession.builder().appName("GCS to JDBC").getOrCreate()) {
+      // Set log level
+      spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+
       Dataset<Row> dataset = load(spark);
+
       write(dataset);
     }
   }
