@@ -64,6 +64,10 @@ public class CassandraToGCSConfig {
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_QUERY)
   private String query;
 
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
+
   public String getKeyspace() {
     return keyspace;
   }
@@ -94,6 +98,10 @@ public class CassandraToGCSConfig {
 
   public String getCatalog() {
     return catalog;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   @JsonIgnore

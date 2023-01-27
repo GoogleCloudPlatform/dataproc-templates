@@ -26,6 +26,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_HEADER;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_INFOR_SCHEMA;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_READ_FORMAT_BIGQUERY;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
@@ -45,11 +46,13 @@ public class BigQueryToGCS implements BaseTemplate {
   private final String inputTableName;
   private final String outputFileFormat;
   private final String outputFileLocation;
+  private final String sparkLogLevel;
 
   public BigQueryToGCS() {
     inputTableName = getProperties().getProperty(BQ_GCS_INPUT_TABLE_NAME);
     outputFileFormat = getProperties().getProperty(BQ_GCS_OUTPUT_FORMAT);
     outputFileLocation = getProperties().getProperty(BQ_GCS_OUTPUT_LOCATION);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -60,6 +63,10 @@ public class BigQueryToGCS implements BaseTemplate {
     SparkSession spark = null;
     try {
       spark = SparkSession.builder().appName("BigQuery to GCS").getOrCreate();
+
+      // Set log level
+      spark.sparkContext().setLogLevel(sparkLogLevel);
+
       Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
       DataFrameWriter<Row> writer = inputData.write();
       switch (outputFileFormat) {
