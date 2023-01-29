@@ -20,7 +20,7 @@ This notebook is built on top of:
 3) Divides the migration into multiple batches and automatically computes metadata.
 4) Parallely migrates mutiple Hive tables to BigQuery.
 5) Simple, easy to use and customizable.
-6) Can create partitioned and clustered tables in Bigquery using [BQ translation API](https://cloud.google.com/bigquery/docs/reference/migration) by detect partition and clustering keys in HIVE tables. 
+6) Can create partitioned and clustered tables in Bigquery using [BQ translation API](https://cloud.google.com/bigquery/docs/reference/migration) by detecting partitioning and clustering keys in HIVE tables. 
 
 ### Requirements
 
@@ -49,7 +49,7 @@ Step by Step instructions ar given before each cell in the python notebook.
 * Run all the cells from Menu->Run->Run All Cells
 * Get the status of Dataproc Jobs from VertexAI UI using the link printed after running Step 11
 * Detailed logs can be seen from [Dataproc Batch UI](https://console.cloud.google.com/dataproc/batches)
-  * Dataproc Job naming convention: "hive2bq-"+HIVE-TABLE+"-"+ CURRENT_DATETIME
+ * Dataproc Job naming convention: "hive2bq-"+HIVE-TABLE+"-"+ CURRENT_DATETIME
 
 ### Parallel Jobs
 Once the notebook is triggered, you can visualize parallel jobs by either using the link generated after 

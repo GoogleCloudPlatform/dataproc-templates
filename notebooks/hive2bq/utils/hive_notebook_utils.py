@@ -4,8 +4,12 @@ from datetime import datetime, timedelta
 import time
 from google.cloud import storage
 from google.cloud import bigquery
+from google.cloud import bigquery_migration_v2
 
 def get_spark_session(HIVE_METASTORE):
+    """
+    Create Spark Session
+    """
     spark = SparkSession \
     .builder \
     .appName("extract_hive_ddl") \
@@ -17,14 +21,19 @@ def get_spark_session(HIVE_METASTORE):
 
 
 def WriteToCloud ( ddls_combined,bucket,db_name ):
-  client = storage.Client()
-  bucket = client.get_bucket( bucket )
-  blob = bucket.blob(f"hive_ddls/input/{db_name}/{db_name}.sql" )
-  blob.upload_from_string( ddls_combined )
+    """
+    Write combined queries to GCS location
+    """
+    client = storage.Client()
+    bucket = client.get_bucket( bucket )
+    blob = bucket.blob(f"hive_ddls/input/{db_name}/{db_name}.sql" )
+    blob.upload_from_string( ddls_combined )
     
     
-#get_hive_ddls(INPUT_HIVE_DATABASE,TABLE_LIST,TEMP_BUCKET,spark)
 def get_hive_ddls(INPUT_HIVE_DATABASE,TABLE_LIST,TEMP_BUCKET,spark):
+    """
+    Extract HIVE DDLs from HIVE Metastore and save in GCS location
+    """
     ddls_combined=""
     for tbl in TABLE_LIST:
         ddl_hive=""
@@ -50,8 +59,12 @@ def get_hive_ddls(INPUT_HIVE_DATABASE,TABLE_LIST,TEMP_BUCKET,spark):
 
 def create_migration_workflow(
     gcs_input_path: str, gcs_output_path: str, project_id: str, bq_dataset: str) -> None:
-    from google.cloud import bigquery_migration_v2
-    """Creates a migration workflow of a Batch SQL Translation and prints the response."""
+    
+    """
+    Creates a migration workflow of a Batch SQL Translation 
+    to convert HIVE DDLs to BQ.
+    Stores the DDLs in output GCS location.
+    """
     parent = f"projects/{project_id}/locations/us"
     # Construct a BigQuery Migration client object.
     client = bigquery_migration_v2.MigrationServiceClient()
@@ -93,9 +106,11 @@ def create_migration_workflow(
         time.sleep(5)
     print("Current state: "+response.state.name)
 
-# create_bq_tables(TEMP_BUCKET,INPUT_HIVE_DATABASE)
-def create_bq_tables(TEMP_BUCKET,INPUT_HIVE_DATABASE):
 
+def create_bq_tables(TEMP_BUCKET,INPUT_HIVE_DATABASE):
+    """
+    Create BQ tables using the DDL sql file provided in the GCS location.
+    """
     client = storage.Client()
     bucket = client.get_bucket(TEMP_BUCKET)
     query_file_uri = f"hive_ddls/output/{INPUT_HIVE_DATABASE}/{INPUT_HIVE_DATABASE}.sql"
