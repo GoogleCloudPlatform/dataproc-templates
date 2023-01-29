@@ -20,6 +20,7 @@ This notebook is built on top of:
 3) Divides the migration into multiple batches and automatically computes metadata.
 4) Parallely migrates mutiple Hive tables to BigQuery.
 5) Simple, easy to use and customizable.
+6) Can create partitioned and clustered tables in Bigquery using [BQ translation API](https://cloud.google.com/bigquery/docs/reference/migration) by detect partition and clustering keys in HIVE tables. 
 
 ### Requirements
 
@@ -83,6 +84,5 @@ OPTIONS(
 
 ### Limitations:
 
-* The current version does not generate hive table partitions to Bigquery.
 * The current version does not support incremental load.
 * User has to implement Kerberos authentication themselves if needed.
