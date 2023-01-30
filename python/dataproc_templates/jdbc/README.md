@@ -335,7 +335,6 @@ usage: main.py --template JDBCTOGCS \
     --jdbctogcs.input.url JDBCTOGCS.INPUT.URL \
     --jdbctogcs.input.driver JDBCTOGCS.INPUT.DRIVER \
     --jdbctogcs.input.table JDBCTOGCS.INPUT.TABLE \
-    --jdbctogcs.input.sql.query JDBCTOGCS.INPUT.SQL.QUERY \ (refer NOTE)
     --jdbctogcs.output.location JDBCTOGCS.OUTPUT.LOCATION \
     --jdbctogcs.output.format {avro,parquet,csv,json} \
 
@@ -349,7 +348,6 @@ optional arguments:
     --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN \
 ```
-NOTE: While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.input.sql.query```. Passing both the properties would result in an error.
 ## General execution:
 
 ```
@@ -364,7 +362,6 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctogcs.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
 --jdbctogcs.input.driver=<jdbc-driver-class-name> \
 --jdbctogcs.input.table=<input table name or subquery with where clause filter> \
---jdbctogcs.input.sql.query=<input sql query> \ (refer NOTE)
 --jdbctogcs.input.partitioncolumn=<optional-partition-column-name> \
 --jdbctogcs.input.lowerbound=<optional-partition-start-value>  \
 --jdbctogcs.input.upperbound=<optional-partition-end-value>  \
@@ -375,7 +372,12 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctogcs.output.format=<output-write-format> \
 --jdbctogcs.output.partitioncolumn=<optional-output-partition-column-name>
 ```
-NOTE: While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.input.sql.query```. Passing both the properties would result in an error.
+
+Instead of input table name, an input SQL query can also be passed. Example,
+```
+--jdbctogcs.input.sql.query="select * from table"
+```
+Note: While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.input.sql.query```. Passing both the properties would result in an error.
 
 ## Example execution:
 
