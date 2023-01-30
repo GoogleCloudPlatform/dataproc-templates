@@ -94,6 +94,12 @@ class GCSToJDBCTemplate(BaseTemplate):
             default=1000,
             help='JDBC output batch size'
         )
+        parser.add_argument(
+            f'--{constants.GCS_JDBC_NUMPARTITIONS}',
+            dest=constants.GCS_JDBC_NUMPARTITIONS,
+            required=False,
+            help='The maximum number of partitions to be used for parallelism in table writing'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -112,6 +118,7 @@ class GCSToJDBCTemplate(BaseTemplate):
         output_mode: str = args[constants.GCS_JDBC_OUTPUT_MODE]
         output_driver: str = args[constants.GCS_JDBC_OUTPUT_DRIVER]
         batch_size: int = args[constants.GCS_JDBC_BATCH_SIZE]
+        jdbc_numpartitions: int = args[constants.GCS_JDBC_NUMPARTITIONS]
 
         logger.info(
             "Starting GCS to JDBC spark job with parameters:\n"
@@ -139,11 +146,15 @@ class GCSToJDBCTemplate(BaseTemplate):
                 .json(input_file_location)
 
         # Write
+        if not jdbc_numpartitions:
+            jdbc_numpartitions = input_data.rdd.getNumPartitions()
+
         input_data.write \
             .format(constants.FORMAT_JDBC) \
             .option(constants.JDBC_URL, jdbc_url) \
             .option(constants.JDBC_TABLE, jdbc_table) \
             .option(constants.JDBC_DRIVER, output_driver) \
             .option(constants.JDBC_BATCH_SIZE, batch_size) \
+            .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
             .mode(output_mode) \
             .save()
