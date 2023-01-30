@@ -72,7 +72,7 @@ public class KafkaToPubSub implements BaseTemplate {
             .option("startingOffsets", kafkaStartingOffsets)
             .load();
 
-    // Extract the value field and cast it to a double
+    // Extract the value and cast it to a double
     df = df.selectExpr("cast(value as String) value");
 
     // Send the data to Pub/Sub
