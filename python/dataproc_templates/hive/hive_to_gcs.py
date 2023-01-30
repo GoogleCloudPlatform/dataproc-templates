@@ -17,7 +17,9 @@ from logging import Logger
 import argparse
 import pprint
 import sys
-from pyspark.sql import SparkSession, DataFrameWriter
+import re
+from pyspark.sql import SparkSession, DataFrameWriter, DataFrame
+from pyspark.sql.functions import regexp_replace, col, regexp_extract, explode, split, trim
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -110,6 +112,19 @@ class HiveToGCSTemplate(BaseTemplate):
 
         return vars(known_args)
 
+    def get_hive_partitions(self, input_table_name: str, spark: SparkSession) -> list:
+        
+        hive_create_stmt_df = spark.sql(f'show create table {input_table_name}')
+        partition_col_names = hive_create_stmt_df.withColumn('replaced',regexp_replace('createtab_stmt','\n','')) \
+                .withColumn("extracted_partitions",regexp_extract(col("replaced"),"PARTITIONED BY \((.*?)\)",1)) \
+                .withColumn('splitted_partitions',explode(split(col("extracted_partitions"),","))) \
+                .withColumn('partition_cols',split(trim(col("splitted_partitions"))," ")) \
+                .selectExpr('regexp_replace(partition_cols[0],"`","") as column_names').collect()
+        partition_cols=[row.column_names for row in partition_col_names]
+    
+        return partition_cols if partition_cols else None
+
+
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
         logger: Logger = self.get_logger(spark=spark)
@@ -129,8 +144,9 @@ class HiveToGCSTemplate(BaseTemplate):
         )
 
         # Read
-        input_data = spark.table(hive_database + "." + hive_table)
-
+        input_table_name = hive_database + "." + hive_table
+        input_data = spark.table(input_table_name)
+      
         if sql_query:
             # Create temp view on source data
             input_data.createGlobalTempView(hive_temp_view)
@@ -139,8 +155,17 @@ class HiveToGCSTemplate(BaseTemplate):
         else:
             output_data = input_data
 
+        #Get partition columns from Hive
+        partition_cols = self.get_hive_partitions(input_table_name,spark)
+        logger.info(
+                "Method get_hive_partitions: received partition columns as: "
+                f"{partition_cols} for hive table {input_table_name}"
+                )
+
         # Write
         writer: DataFrameWriter = output_data.write.mode(output_mode)
+        if not sql_query.strip() and partition_cols:
+            writer = writer.partitionBy(partition_cols)
 
         if output_format == constants.FORMAT_PRQT:
             writer.parquet(output_location)
