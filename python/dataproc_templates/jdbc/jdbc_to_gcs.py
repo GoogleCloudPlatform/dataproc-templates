@@ -205,7 +205,8 @@ class JDBCToGCSTemplate(BaseTemplate):
                 (constants.JDBC_QUERY, input_jdbc_sql_query)
             ])
         else:
-            sys.exit('ArgumentParser Error: Arguments must have either input table or input sql query')
+            logger.error("Arguments must have either input table or input sql query")
+            exit(1)
 
         partition_parameters = str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
         if ((partition_parameters != "") & ((input_jdbc_partitioncolumn == "") | (input_jdbc_lowerbound == "") | (input_jdbc_upperbound == ""))):
