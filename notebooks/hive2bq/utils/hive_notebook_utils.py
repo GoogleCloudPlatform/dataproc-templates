@@ -38,7 +38,6 @@ def get_hive_ddls(INPUT_HIVE_DATABASE,TABLE_LIST,TEMP_BUCKET,spark):
     for tbl in TABLE_LIST:
         ddl_hive=""
         try:
-            print(spark.sql(f"show create table  {INPUT_HIVE_DATABASE}.{tbl} as serde").first()[0])
             ddl_hive=spark.sql(f"show create table  {INPUT_HIVE_DATABASE}.{tbl} as serde").first()[0].split("\nLOCATION '")[0]
         except Exception as e:
             print(e)
