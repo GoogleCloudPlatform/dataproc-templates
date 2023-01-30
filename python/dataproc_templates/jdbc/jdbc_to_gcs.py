@@ -49,8 +49,14 @@ class JDBCToGCSTemplate(BaseTemplate):
         parser.add_argument(
             f'--{constants.JDBCTOGCS_INPUT_TABLE}',
             dest=constants.JDBCTOGCS_INPUT_TABLE,
-            required=True,
+            required=False,
             help='JDBC input table name'
+        )
+        parser.add_argument(
+            f'--{constants.JDBCTOGCS_INPUT_SQL_QUERY}',
+            dest=constants.JDBCTOGCS_INPUT_SQL_QUERY,
+            required=False,
+            help='JDBC input SQL query'
         )
         parser.add_argument(
             f'--{constants.JDBCTOGCS_INPUT_PARTITIONCOLUMN}',
@@ -138,8 +144,8 @@ class JDBCToGCSTemplate(BaseTemplate):
             help='Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query'
         )
         parser.add_argument(
-            f'--{constants.JDBCTOGCS_SQL_QUERY}',
-            dest=constants.JDBCTOGCS_SQL_QUERY,
+            f'--{constants.JDBCTOGCS_TEMP_SQL_QUERY}',
+            dest=constants.JDBCTOGCS_TEMP_SQL_QUERY,
             required=False,
             default="",
             help='SQL query for data transformation. This must use the temp view name as the table to query from.'
@@ -148,10 +154,10 @@ class JDBCToGCSTemplate(BaseTemplate):
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
-        if getattr(known_args, constants.JDBCTOGCS_INPUT_TABLE) and getattr(known_args, constants.JDBCTOGCS_SQL_QUERY):
+        if getattr(known_args, constants.JDBCTOGCS_INPUT_TABLE) and getattr(known_args, constants.JDBCTOGCS_INPUT_SQL_QUERY):
             sys.exit('ArgumentParser Error: Arguments cannot have both input table and sql query, use either one.')
 
-        if getattr(known_args, constants.JDBCTOGCS_SQL_QUERY) and not getattr(known_args, constants.JDBCTOGCS_TEMP_VIEW_NAME):
+        if getattr(known_args, constants.JDBCTOGCS_TEMP_SQL_QUERY) and not getattr(known_args, constants.JDBCTOGCS_TEMP_VIEW_NAME):
             sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
 
         return vars(known_args)
@@ -164,6 +170,7 @@ class JDBCToGCSTemplate(BaseTemplate):
         input_jdbc_url: str = args[constants.JDBCTOGCS_INPUT_URL]
         input_jdbc_driver: str = args[constants.JDBCTOGCS_INPUT_DRIVER]
         input_jdbc_table: str = args[constants.JDBCTOGCS_INPUT_TABLE]
+        input_jdbc_sql_query: str = args[constants.JDBCTOGCS_INPUT_SQL_QUERY]
         input_jdbc_partitioncolumn: str = args[constants.JDBCTOGCS_INPUT_PARTITIONCOLUMN]
         input_jdbc_lowerbound: str = args[constants.JDBCTOGCS_INPUT_LOWERBOUND]
         input_jdbc_upperbound: str = args[constants.JDBCTOGCS_INPUT_UPPERBOUND]
@@ -174,7 +181,7 @@ class JDBCToGCSTemplate(BaseTemplate):
         output_mode: str = args[constants.JDBCTOGCS_OUTPUT_MODE]
         output_partitioncolumn: str = args[constants.JDBCTOGCS_OUTPUT_PARTITIONCOLUMN]
         temp_view: str = args[constants.JDBCTOGCS_TEMP_VIEW_NAME]
-        sql_query:str = args[constants.JDBCTOGCS_SQL_QUERY]
+        temp_sql_query:str = args[constants.JDBCTOGCS_TEMP_SQL_QUERY]
 
         logger.info(
             "Starting JDBC to GCS Spark job with parameters:\n"
@@ -184,37 +191,51 @@ class JDBCToGCSTemplate(BaseTemplate):
         # Read
         input_data: DataFrame
 
-        partition_parameters=str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
+        read_properties = dict()
+        if (input_jdbc_table):
+            read_properties.update([
+                (constants.JDBC_URL, input_jdbc_url),
+                (constants.JDBC_DRIVER, input_jdbc_driver),
+                (constants.JDBC_TABLE, input_jdbc_table)
+            ])
+        elif (input_jdbc_sql_query):
+            read_properties.update([
+                (constants.JDBC_URL, input_jdbc_url),
+                (constants.JDBC_DRIVER, input_jdbc_driver),
+                (constants.JDBC_QUERY, input_jdbc_sql_query)
+            ])
+        else:
+            logger.error("Arguments must have either input table or input sql query")
+            exit(1)
+
+        partition_parameters = str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
         if ((partition_parameters != "") & ((input_jdbc_partitioncolumn == "") | (input_jdbc_lowerbound == "") | (input_jdbc_upperbound == ""))):
             logger.error("Set all the sql partitioning parameters together-jdbctogcs.input.partitioncolumn,jdbctogcs.input.lowerbound,jdbctogcs.input.upperbound. Refer to README.md for more instructions.")
-            exit (1)
+            exit(1)
         elif (partition_parameters == ""):
-            input_data=spark.read \
-                .format(constants.FORMAT_JDBC) \
-                .option(constants.JDBC_URL, input_jdbc_url) \
-                .option(constants.JDBC_DRIVER, input_jdbc_driver) \
-                .option(constants.JDBC_TABLE, input_jdbc_table) \
-                .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
-                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
-                .load()
+            read_properties.update([
+                (constants.JDBC_NUMPARTITIONS, jdbc_numpartitions),
+                (constants.JDBC_FETCHSIZE, str(input_jdbc_fetchsize))
+            ])
         else:
-            input_data=spark.read \
-                .format(constants.FORMAT_JDBC) \
-                .option(constants.JDBC_URL, input_jdbc_url) \
-                .option(constants.JDBC_DRIVER, input_jdbc_driver) \
-                .option(constants.JDBC_TABLE, input_jdbc_table) \
-                .option(constants.JDBC_PARTITIONCOLUMN, input_jdbc_partitioncolumn) \
-                .option(constants.JDBC_LOWERBOUND, input_jdbc_lowerbound) \
-                .option(constants.JDBC_UPPERBOUND, input_jdbc_upperbound) \
-                .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
-                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
-                .load()
+            read_properties.update([
+                (constants.JDBC_PARTITIONCOLUMN, input_jdbc_partitioncolumn),
+                (constants.JDBC_LOWERBOUND, input_jdbc_lowerbound),
+                (constants.JDBC_UPPERBOUND, input_jdbc_upperbound),
+                (constants.JDBC_NUMPARTITIONS, jdbc_numpartitions),
+                (constants.JDBC_FETCHSIZE, str(input_jdbc_fetchsize))
+            ])
 
-        if sql_query:
+        input_data = spark.read \
+            .format(constants.FORMAT_JDBC) \
+            .options(**read_properties) \
+            .load()
+
+        if temp_sql_query:
             # Create temp view on source data
             input_data.createGlobalTempView(temp_view)
             # Execute SQL
-            output_data = spark.sql(sql_query)
+            output_data = spark.sql(temp_sql_query)
         else:
             output_data = input_data
 
