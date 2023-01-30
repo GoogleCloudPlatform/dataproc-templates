@@ -40,6 +40,7 @@ public class GCStoBigTable implements BaseTemplate, java.io.Serializable {
   private String bigTableProjectId;
   private String bigTableColumnFamily;
   private String inputFileFormat;
+  private final String sparkLogLevel;
 
   public GCStoBigTable() {
 
@@ -50,6 +51,7 @@ public class GCStoBigTable implements BaseTemplate, java.io.Serializable {
     bigTableProjectId = getProperties().getProperty(GCS_BT_OUTPUT_PROJECT_ID);
     bigTableColumnFamily = getProperties().getProperty(GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY);
     inputFileFormat = getProperties().getProperty(GCS_BT_INPUT_FORMAT);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -60,6 +62,9 @@ public class GCStoBigTable implements BaseTemplate, java.io.Serializable {
     LOGGER.info("input format: {}", inputFileFormat);
 
     spark = SparkSession.builder().appName("GCS to Bigtable load").getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     Dataset<Row> inputData = null;
 

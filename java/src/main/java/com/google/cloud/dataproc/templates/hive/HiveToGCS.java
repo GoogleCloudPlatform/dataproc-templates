@@ -39,6 +39,7 @@ public class HiveToGCS implements BaseTemplate {
   private String gcsSaveMode;
   private String tempTable;
   private String tempQuery;
+  private final String sparkLogLevel;
 
   /**
    * Spark job to move data from Hive table to GCS bucket. For detailed list of properties refer
@@ -58,6 +59,7 @@ public class HiveToGCS implements BaseTemplate {
     gcsSaveMode = getProperties().getProperty(HIVE_GCS_SAVE_MODE);
     tempTable = getProperties().getProperty(HIVE_GCS_TEMP_TABLE);
     tempQuery = getProperties().getProperty(HIVE_GCS_TEMP_QUERY);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -68,6 +70,9 @@ public class HiveToGCS implements BaseTemplate {
     // Confiure spark session to read from hive.
     SparkSession spark =
         SparkSession.builder().appName("Spark HiveToGcs Job").enableHiveSupport().getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     // Read source Hive table.
     Dataset<Row> inputData = spark.table(hiveInputDb + "." + hiveInputTable);

@@ -101,6 +101,10 @@ public class JDBCToSpannerConfig {
   @Min(value = 1)
   private long batchInsertSize = 1000;
 
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
+
   @AssertTrue(
       message =
           "Required parameters for JDBCToSpanner not passed. Template property should be provided for either the SQL Query or the SQL File, but not both. Refer to jdbc/README.md for more instructions.")
@@ -198,6 +202,10 @@ public class JDBCToSpannerConfig {
 
   public long getBatchInsertSize() {
     return batchInsertSize;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   public String getSQL() {
