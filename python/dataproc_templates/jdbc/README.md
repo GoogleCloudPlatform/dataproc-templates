@@ -296,7 +296,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.output.batch.size="1000"
 ```
 
-There are two optional properties as well with "Hive to JDBC" Template. Please find below the details :-
+There are two optional properties as well with "JDBC to JDBC" Template. Please find below the details :-
 
 ```
 --templateProperty jdbctojdbc.temp.view.name='temporary_view_name'
