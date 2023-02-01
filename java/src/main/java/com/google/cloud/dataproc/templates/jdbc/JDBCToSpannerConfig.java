@@ -99,7 +99,7 @@ public class JDBCToSpannerConfig {
 
   @JsonProperty(value = JDBC_TO_SPANNER_OUTPUT_BATCH_INSERT_SIZE)
   @Min(value = 1)
-  private long batchInsertSize = 1000;
+  private long batchInsertSize;
 
   @JsonProperty(value = SPARK_LOG_LEVEL)
   @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")

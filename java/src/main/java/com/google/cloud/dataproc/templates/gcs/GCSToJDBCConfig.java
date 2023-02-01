@@ -85,7 +85,7 @@ public class GCSToJDBCConfig {
 
   @JsonProperty(value = GCS_JDBC_OUTPUT_BATCH_INSERT_SIZE)
   @Min(value = 1)
-  private long batchInsertSize = 1000;
+  private long batchInsertSize;
 
   @JsonProperty(value = CUSTOM_SPARK_PARTITIONS)
   @Min(value = 0)
