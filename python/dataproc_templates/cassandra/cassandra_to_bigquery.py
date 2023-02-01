@@ -16,6 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
+import sys
 
 from pyspark.sql import SparkSession, DataFrameWriter
 
@@ -37,7 +38,7 @@ class CassandraToBQTemplate(BaseTemplate):
         parser.add_argument(
             f'--{constants.CASSANDRA_TO_BQ_INPUT_TABLE}',
             dest=constants.CASSANDRA_TO_BQ_INPUT_TABLE,
-            required=True,
+            required=False,
             help='Cassandra to BQ Input table name'
         )
         parser.add_argument(
@@ -91,12 +92,16 @@ class CassandraToBQTemplate(BaseTemplate):
         parser.add_argument(
             f'--{constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE}',
             dest=constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE,
-            required=True,
+            required=False,
             help='Keyspace Name of Cassandra Table'
         )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
+
+        if (not getattr(known_args, constants.CASSANDRA_TO_BQ_QUERY) and (not getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE) or not getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_TABLE)) 
+        or getattr(known_args, constants.CASSANDRA_TO_BQ_QUERY) and (getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE) or getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_TABLE))):
+            sys.exit("ArgumentParser Error: Provide either input query or both input keyspace and table. Refer to cassandra/README.md for more instructions.")
 
         return vars(known_args)
 
