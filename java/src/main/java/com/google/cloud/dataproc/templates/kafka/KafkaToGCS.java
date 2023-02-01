@@ -101,12 +101,14 @@ public class KafkaToGCS implements BaseTemplate {
   public void validateInput() {
     if (StringUtils.isAllBlank(gcsOutputLocation)
         || StringUtils.isAllBlank(kafkaBootstrapServers)
-        || StringUtils.isAllBlank(kafkaTopic)) {
+        || StringUtils.isAllBlank(kafkaTopic)
+        || StringUtils.isAllBlank(kafkaMessageFormat)) {
       LOGGER.error(
-          "{},{},{} is required parameter. ",
+          "{},{},{},{} is required parameter. ",
           KAFKA_GCS_OUTPUT_LOCATION,
           KAFKA_BOOTSTRAP_SERVERS,
-          KAFKA_TOPIC);
+          KAFKA_TOPIC,
+          KAFKA_MESSAGE_FORMAT);
       throw new IllegalArgumentException(
           "Required parameters for KafkaToGCS not passed. "
               + "Set mandatory parameter for KafkaToGCS template "
