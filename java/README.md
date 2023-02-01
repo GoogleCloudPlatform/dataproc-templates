@@ -22,6 +22,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  
 * [JDBCToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc#3-jdbc-to-spanner)
 * [KafkaToBQ](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#1-kafka-to-bigquery) (blogpost [link](https://medium.com/google-cloud/export-data-from-apache-kafka-to-bigquery-using-dataproc-serverless-4a666535117c))
 * [KafkaToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md#2-kafka-to-gcs) (blogpost [link](https://medium.com/@pniralakeri/importing-data-from-kafka-to-gcs-using-dataproc-serverless-38e449d559f9))
+* [KafkaToPubSub](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md#3-kafka-to-pubsub)
 * [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#1-pubsub-to-bigquery) (blogpost [link](https://medium.com/google-cloud/from-pub-sub-to-bigquery-streaming-data-in-near-real-time-b550aeff595d))
 * [PubSubToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#1-pubsub-to-bigtable) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-bigtable-using-dataproc-serverless-3142c1bcc22a))
 * [PubSubToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md#2-pubsub-to-gcs) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-cloud-storage-using-dataproc-serverless-7a1e4823926e))
@@ -78,6 +79,10 @@ Dataproc Templates (Java - Spark) submit jobs to Dataproc Serverless using [batc
     * Template options, such as the critical `--template` option which says which template to run and
       `--templateProperty` options for passing in properties at runtime (as an alternative to setting
       them in `src/main/resources/template.properties`).
+    * Other common template property: `log.level`, which is an optional parameter to define the log level of Spark Context and it defaults to INFO. Possible choices are the Spark log levels: ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"]
+      ```
+      --templateProperty log.level=ERROR
+      ```
 
     * Usage syntax:
         ```

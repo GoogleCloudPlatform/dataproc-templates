@@ -48,6 +48,7 @@ public class JDBCToBigQuery implements BaseTemplate {
   private String concatedPartitionProps;
   private String tempTable;
   private String tempQuery;
+  private final String sparkLogLevel;
 
   public JDBCToBigQuery() {
 
@@ -70,6 +71,7 @@ public class JDBCToBigQuery implements BaseTemplate {
         jdbcSQLPartitionColumn + jdbcSQLLowerBound + jdbcSQLUpperBound + jdbcSQLNumPartitions;
     tempTable = getProperties().getProperty(JDBC_BQ_TEMP_TABLE);
     tempQuery = getProperties().getProperty(JDBC_BQ_TEMP_QUERY);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   public String getSQL(String jdbcURL, String sqlQuery) {
@@ -93,6 +95,9 @@ public class JDBCToBigQuery implements BaseTemplate {
             .config("temporaryGcsBucket", temporaryGcsBucket)
             .enableHiveSupport()
             .getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     HashMap<String, String> jdbcProperties = new HashMap<>();
     jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);

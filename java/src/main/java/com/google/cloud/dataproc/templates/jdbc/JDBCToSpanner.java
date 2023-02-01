@@ -55,6 +55,9 @@ public class JDBCToSpanner implements BaseTemplate {
             .enableHiveSupport()
             .getOrCreate();
 
+    // Set log level
+    spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+
     /** Read Input data from JDBC table */
     validateInput();
 

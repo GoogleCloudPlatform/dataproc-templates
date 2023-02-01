@@ -300,7 +300,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.output.batch.size="1000"
 ```
 
-There are two optional properties as well with "Hive to JDBC" Template. Please find below the details :-
+There are two optional properties as well with "JDBC to JDBC" Template. Please find below the details :-
 
 ```
 --templateProperty jdbctojdbc.temp.view.name='temporary_view_name'
@@ -319,6 +319,7 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 * `jdbctogcs.input.url`: JDBC input URL
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
+* `jdbctogcs.input.sql.query`: JDBC input SQL query
 * `jdbctogcs.output.location`: GCS location for output files (format: `gs://BUCKET/...`)
 * `jdbctogcs.output.format`: Output file format (one of: avro,parquet,csv,json)
 * `jdbctogcs.input.partitioncolumn` (Optional): JDBC input table partition column name
@@ -353,7 +354,6 @@ optional arguments:
     --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN \
 ```
-
 ## General execution:
 
 ```
@@ -379,6 +379,12 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctogcs.output.format=<output-write-format> \
 --jdbctogcs.output.partitioncolumn=<optional-output-partition-column-name>
 ```
+
+Instead of input table name, an input SQL query can also be passed. Example,
+```
+--jdbctogcs.input.sql.query="select * from table"
+```
+Note: While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.input.sql.query```. Passing both the properties would result in an error.
 
 ## Example execution:
 
@@ -463,12 +469,10 @@ There are two optional properties as well with "JDBC to GCS" Template. Please fi
 
 ```
 --templateProperty jdbctogcs.temp.view.name='temporary_view_name'
---templateProperty jdbctogcs.sql.query='select * from global_temp.temporary_view_name'
+--templateProperty jdbctogcs.temp.sql.query='select * from global_temp.temporary_view_name'
 ```
 These properties are responsible for applying some spark sql transformations before loading data into GCS.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
-
-While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.sql.query```. Passing both the properties would result in an error.
 
 # 3. JDBC To BigQuery
 

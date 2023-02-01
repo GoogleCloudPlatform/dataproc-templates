@@ -53,8 +53,6 @@ bin/start.sh \
 ### Configurable Parameters
 Update Following properties in [template.properties](../../../../../../../resources/template.properties) file:
 ```
-## Source Hive warehouse dir.
-spark.sql.warehouse.dir=<warehouse-path>
 ## GCS output path.
 hive.gcs.output.path=<gcs-output-path>
 ## Name of hive input table.

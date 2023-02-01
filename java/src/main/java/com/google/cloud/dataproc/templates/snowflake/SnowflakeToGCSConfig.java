@@ -82,6 +82,10 @@ public class SnowflakeToGCSConfig {
   @JsonProperty(value = SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN)
   private String gcsPartitionColumn;
 
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
+
   public String getSfUrl() {
     return this.sfUrl;
   }
@@ -132,6 +136,10 @@ public class SnowflakeToGCSConfig {
 
   public String getGcsPartitionColumn() {
     return this.gcsPartitionColumn;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   @AssertTrue(

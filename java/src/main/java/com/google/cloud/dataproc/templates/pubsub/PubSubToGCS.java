@@ -52,6 +52,7 @@ public class PubSubToGCS implements BaseTemplate {
   private String gcsBucketName;
   private int batchSize;
   private String outputDataFormat;
+  private final String sparkLogLevel;
 
   public PubSubToGCS() {
     inputProjectID = getProperties().getProperty(PUBSUB_GCS_INPUT_PROJECT_ID_PROP);
@@ -64,6 +65,7 @@ public class PubSubToGCS implements BaseTemplate {
     gcsBucketName = getProperties().getProperty(PUBSUB_GCS_BUCKET_NAME);
     batchSize = Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_BATCH_SIZE_PROP));
     outputDataFormat = getProperties().getProperty(PUBSUB_GCS_OUTPUT_DATA_FORMAT);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -73,6 +75,9 @@ public class PubSubToGCS implements BaseTemplate {
     try {
       SparkConf sparkConf = new SparkConf().setAppName("PubSubToGCS Dataproc Job");
       jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
+
+      // Set log level
+      jsc.sparkContext().setLogLevel(sparkLogLevel);
 
       JavaDStream<SparkPubsubMessage> stream = null;
       for (int i = 0; i < totalReceivers; i += 1) {

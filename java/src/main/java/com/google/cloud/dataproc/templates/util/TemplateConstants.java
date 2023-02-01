@@ -19,6 +19,7 @@ public interface TemplateConstants {
 
   String DEFAULT_PROPERTY_FILE = "template.properties";
   String PROJECT_ID_PROP = "project.id";
+  String SPARK_LOG_LEVEL = "log.level";
   String BIGTABLE_INSTANCE_ID_PROP = "project.id";
   String BIGTABLE_OUTPUT_TABLE_NAME_PROP = "bigtable.output.table.name";
   String SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID = "spanner.gcs.input.spanner.id";
@@ -331,6 +332,17 @@ public interface TemplateConstants {
   String SPARK_READ_FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery";
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
   String INTERMEDIATE_FORMAT_ORC = "orc";
+
+  /** Kafka To PubSub properties */
+  String KAFKA_PUBSUB_CHECKPOINT_LOCATION = "kafka.pubsub.checkpoint.location";
+
+  String KAFKA_PUBSUB_BOOTSTRAP_SERVERS = "kafka.pubsub.bootstrap.servers";
+  String KAFKA_PUBSUB_INPUT_TOPIC = "kafka.pubsub.input.topic";
+  String KAFKA_PUBSUB_OUTPUT_PROJECT_ID = "kafka.pubsub.output.projectId";
+  String KAFKA_PUBSUB_OUTPUT_TOPIC = "kafka.pubsub.output.topic";
+  String KAFKA_PUBSUB_STARTING_OFFSET = "kafka.pubsub.starting.offset";
+  String KAFKA_PUBSUB_AWAIT_TERMINATION_TIMEOUT = "kafka.pubsub.await.termination.timeout";
+
   String SPARK_SAVE_MODE_OVERWRITE = "overwrite";
   String BQ_TABLE_NAME_FORMAT = "%s.%s.%s";
 

@@ -32,6 +32,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_DATASET_NAME;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_OUTPUT_TABLE_NAME;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.Objects;
@@ -58,6 +59,8 @@ public class GCStoBigquery implements BaseTemplate {
 
   private String bqTempQuery;
 
+  private final String sparkLogLevel;
+
   public GCStoBigquery() {
 
     projectID = getProperties().getProperty(PROJECT_ID_PROP);
@@ -68,6 +71,7 @@ public class GCStoBigquery implements BaseTemplate {
     bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
     bqTempTable = getProperties().getProperty(GCS_BQ_TEMP_TABLE);
     bqTempQuery = getProperties().getProperty(GCS_BQ_TEMP_QUERY);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -79,6 +83,9 @@ public class GCStoBigquery implements BaseTemplate {
 
     try {
       spark = SparkSession.builder().appName("GCS to Bigquery load").getOrCreate();
+
+      // Set log level
+      spark.sparkContext().setLogLevel(sparkLogLevel);
 
       Dataset<Row> inputData = null;
 
