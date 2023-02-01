@@ -92,8 +92,8 @@ Template for exporting a Cassandra table to GCS
 
 
 ## Arguments
-* `cassandratogcs.input.keyspace`: Input keyspace name for cassandra
-* `cassandratogcs.input.table`: Input table name of cassandra 
+* `cassandratogcs.input.keyspace`: Input keyspace name for cassandra (not required when query is present)
+* `cassandratogcs.input.table`: Input table name of cassandra (not required when query is present)
 * `cassandratogcs.input.host`: Cassandra Host IP 
 * `cassandratogcs.output.format` : Output File Format
 * `cassandratogcs.output.path`: GCS Bucket Path
@@ -153,6 +153,17 @@ export REGION=<region>
 	--cassandratogcs.output.path=<gcs output bucket path> \
 	--cassandratogcs.output.savemode=<overwrite|append|ignore|errorifexists>
 ```
+One can add additional property to submit query. Please see format below-:
+```
+--cassandratogcs.input.catalog.name=<catalog-name>
+--cassandratogcs.input.query="select * from <catalog-name>.<keyspace-name>.<table-name>"
+```
+Note-: ```cassandratogcs.input.catalog.name=<catalog-name>``` is used to provide a name to the connection with Cassandra. This name is used for querying purpose and has a default value of ```casscon``` if nothing is passed. 
+To query using default catalog name -:
+```
+--templateProperty cassandratogcs.input.query="select * from casscon.<keyspace-name>.<table-name>"
+```
+You can replace the ```casscon``` with your catalog name if it is passed. This is an important step to query the data from Cassandra. Additional details on usage of query can be found in this [link](https://github.com/datastax/spark-cassandra-connector/blob/master/doc/14_data_frames.md).
 ## Sample Submission
 After downloading the jar, a sample submission -:
 ```
