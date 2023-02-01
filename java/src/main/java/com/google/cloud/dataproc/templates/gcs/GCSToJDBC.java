@@ -122,7 +122,7 @@ public class GCSToJDBC implements BaseTemplate {
         .option(
             JDBCOptions.JDBC_BATCH_INSERT_SIZE(), config.getBatchInsertSize()) // default is 1000
         .option(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJDBCDriver())
-        .mode(config.getSaveMode())
+        .mode(config.getSaveModeString())
         .save();
   }
 

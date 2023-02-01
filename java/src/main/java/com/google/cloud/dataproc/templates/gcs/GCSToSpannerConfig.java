@@ -70,7 +70,7 @@ public class GCSToSpannerConfig {
 
   @JsonProperty(value = GCS_SPANNER_OUTPUT_SAVE_MODE)
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
-  private String saveModeString = "ErrorIfExists";
+  private String saveModeString;
 
   @JsonProperty(value = GCS_SPANNER_OUTPUT_PRIMARY_KEY)
   @NotEmpty

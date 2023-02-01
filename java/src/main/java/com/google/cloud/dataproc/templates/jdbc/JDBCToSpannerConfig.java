@@ -91,7 +91,7 @@ public class JDBCToSpannerConfig {
 
   @JsonProperty(value = JDBC_TO_SPANNER_OUTPUT_SAVE_MODE)
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
-  private String saveModeString = "ErrorIfExists";
+  private String saveModeString;
 
   @JsonProperty(value = JDBC_TO_SPANNER_OUTPUT_PRIMARY_KEY)
   @NotEmpty
