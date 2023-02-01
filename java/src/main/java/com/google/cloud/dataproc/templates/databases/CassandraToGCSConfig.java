@@ -59,7 +59,7 @@ public class CassandraToGCSConfig {
   private String outputpath;
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_CATALOG)
-  private String catalog = "casscon";
+  private String catalog;
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_QUERY)
   private String query;
