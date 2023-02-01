@@ -40,18 +40,6 @@ class CassandraToGCSTemplate(BaseTemplate):
        parser: argparse.ArgumentParser = argparse.ArgumentParser()
  
        parser.add_argument(
-           f'--{constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE}',
-           dest=constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE,
-           required=True,
-           help='CASSANDRA GCS Input Keyspace'
-       )
-       parser.add_argument(
-           f'--{constants.CASSANDRA_TO_GCS_INPUT_TABLE}',
-           dest=constants.CASSANDRA_TO_GCS_INPUT_TABLE,
-           required=True,
-           help='CASSANDRA GCS Input Table'
-       )
-       parser.add_argument(
            f'--{constants.CASSANDRA_TO_GCS_INPUT_HOST}',
            dest=constants.CASSANDRA_TO_GCS_INPUT_HOST,
            required=True,
@@ -104,6 +92,19 @@ class CassandraToGCSTemplate(BaseTemplate):
             dest=constants.CASSANDRA_TO_GCS_QUERY,
             required=False,
             help='Optional query for selective exports'
+        )
+
+       parser.add_argument(
+            f'--{constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE}',
+            dest=constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE,
+            required=(constants.CASSANDRA_TO_GCS_QUERY is None),
+            help='CASSANDRA GCS Input Keyspace'
+        )
+       parser.add_argument(
+           f'--{constants.CASSANDRA_TO_GCS_INPUT_TABLE}',
+           dest=constants.CASSANDRA_TO_GCS_INPUT_TABLE,
+           required=(constants.CASSANDRA_TO_GCS_QUERY is None),
+           help='CASSANDRA GCS Input Table'
         )
  
        known_args: argparse.Namespace
