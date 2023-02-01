@@ -41,6 +41,7 @@ public class KafkaToBQ implements BaseTemplate {
   private String bigQueryTable;
   private String tempGcsBucket;
   private String streamOutputMode;
+  private final String sparkLogLevel;
 
   public KafkaToBQ() {
     projectId = getProperties().getProperty(PROJECT_ID_PROP);
@@ -55,6 +56,7 @@ public class KafkaToBQ implements BaseTemplate {
     kafkaAwaitTerminationTimeout =
         Long.valueOf(getProperties().getProperty(KAFKA_BQ_AWAIT_TERMINATION_TIMEOUT));
     streamOutputMode = getProperties().getProperty(KAFKA_BQ_STREAM_OUTPUT_MODE);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -63,6 +65,9 @@ public class KafkaToBQ implements BaseTemplate {
 
     // Initialize the Spark session
     SparkSession spark = SparkSession.builder().appName("Spark KafkaToBQ Job").getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     // Stream data from Kafka topic
     Dataset<Row> inputData =

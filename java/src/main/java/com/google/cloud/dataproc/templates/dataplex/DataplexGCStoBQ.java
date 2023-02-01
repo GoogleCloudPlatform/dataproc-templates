@@ -103,6 +103,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private String bqTempBucket;
   private String sparkSaveMode;
   private String incrementalParittionCopy;
+  private String sparkLogLevel;
 
   public DataplexGCStoBQ(
       String customSqlGCSPath,
@@ -122,6 +123,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
     targetEntity = getProperties().getProperty(DATAPLEX_GCS_BQ_TARGET_ENTITY);
     bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
     sparkSaveMode = getProperties().getProperty(DATAPLEX_GCS_BQ_SAVE_MODE);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
     incrementalParittionCopy =
         getProperties().getProperty(DATAPLEX_GCS_BQ_INCREMENTAL_PARTITION_COPY);
     if (incrementalParittionCopy.equals(INCREMENTAL_PARTITION_COPY_NO)) {
@@ -448,6 +450,10 @@ public class DataplexGCStoBQ implements BaseTemplate {
   public void runTemplate() {
     try {
       this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
+
+      // Set log level
+      this.spark.sparkContext().setLogLevel(sparkLogLevel);
+
       this.sqlContext = new SQLContext(spark);
       validateInput();
 

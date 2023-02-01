@@ -60,6 +60,10 @@ public class CassandraToBqConfig {
   @JsonProperty(value = CASSANDRA_TO_BQ_CATALOG)
   private String catalog = "casscon";
 
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
+
   public String getKeyspace() {
     return keyspace;
   }
@@ -90,6 +94,10 @@ public class CassandraToBqConfig {
 
   public String getTemplocation() {
     return templocation;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   @Override

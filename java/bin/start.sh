@@ -55,28 +55,20 @@ if [ -z "$SKIP_BUILD" ]; then
   build_status=$?
 
   check_status $build_status "\n Code build went successful, thus we are good to go \n" "\n We ran into some issues while building the jar file, seems like mvn clean install is not running fine \n"
-  mvn dependency:get -Dartifact=io.grpc:grpc-grpclb:1.40.1 -Dmaven.repo.local=./grpc_lb
-
+ 
   #Copy jar file to GCS bucket Staging folder
   echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_LOCATION}/${JAR_FILE}"
   gsutil cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_LOCATION}/${JAR_FILE}
   check_status $? "\n Commands to copy the project jar file to GCS Staging location went fine, thus we are good to go \n" "\n It seems like there is some issue in copying the project jar file to GCS Staging location \n"
 
-  gsutil cp ${PROJECT_ROOT_DIR}/grpc_lb/io/grpc/grpc-grpclb/1.40.1/grpc-grpclb-1.40.1.jar ${GCS_STAGING_LOCATION}/grpc-grpclb-1.40.1.jar
-  check_status $? "\n Commands to copy the library jar file to GCS Staging location went fine, thus we are good to go \n" "\n It seems like there is some issue in copying the library jar file to GCS Staging location \n"
-
-  gsutil cp ${PROJECT_ROOT_DIR}/src/test/resources/log4j-spark-driver-template.properties ${GCS_STAGING_LOCATION}/log4j-spark-driver-template.properties
-  check_status $? "\n Commands to copy the properties file to GCS Staging location went fine, thus we are good to go \n" "\n It seems like there is some issue in copying the properties file to GCS Staging location \n"
 
 fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
-OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/grpc-grpclb-1.40.1.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
-OPT_FILES="--files=${GCS_STAGING_LOCATION}/log4j-spark-driver-template.properties"
-OPT_PROPERTIES="--properties=spark.driver.extraJavaOptions=-Dlog4j.configuration=file:log4j-spark-driver-template.properties"
 OPT_CLASS="--class=com.google.cloud.dataproc.templates.main.DataProcTemplate"
 
 # Optional arguments
@@ -132,8 +124,6 @@ if [ "${JOB_TYPE}" == "CLUSTER" ]; then
       ${OPT_CLUSTER} \
       ${OPT_JARS} \
       ${OPT_LABELS} \
-      ${OPT_FILES} \
-      ${OPT_PROPERTIES} \
       ${OPT_CLASS}
 EOF
 )
@@ -146,8 +136,6 @@ elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
       ${OPT_JARS} \
       ${OPT_LABELS} \
       ${OPT_DEPS_BUCKET} \
-      ${OPT_FILES} \
-      ${OPT_PROPERTIES} \
       ${OPT_CLASS} \
       ${OPT_SUBNET} \
       ${OPT_HISTORY_SERVER_CLUSTER} \

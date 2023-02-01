@@ -40,6 +40,7 @@ public interface BaseTemplate {
     GENERAL,
     DATAPLEXGCSTOBQ,
     PUBSUBTOGCS,
+    KAFKATOPUBSUB,
     HBASETOGCS,
     GCSTOJDBC,
     KAFKATOBQ,

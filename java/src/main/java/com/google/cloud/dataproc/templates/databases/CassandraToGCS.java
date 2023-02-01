@@ -59,6 +59,9 @@ public class CassandraToGCS implements BaseTemplate, TemplateConstants {
                 config.getHost())
             .getOrCreate();
 
+    // Set log level
+    spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+
     if (StringUtils.isAllBlank(config.getQuery())) {
       dataset =
           spark.sql(

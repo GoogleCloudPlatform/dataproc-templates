@@ -33,6 +33,7 @@ import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToSpanner;
 import com.google.cloud.dataproc.templates.kafka.KafkaToBQ;
 import com.google.cloud.dataproc.templates.kafka.KafkaToGCS;
+import com.google.cloud.dataproc.templates.kafka.KafkaToPubSub;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBigTable;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
@@ -78,6 +79,7 @@ public class DataProcTemplate {
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
           .put(TemplateName.SPANNERTOGCS, SpannerToGCS::of)
           .put(TemplateName.JDBCTOBIGQUERY, (args) -> new JDBCToBigQuery())
+          .put(TemplateName.KAFKATOPUBSUB, (args) -> new KafkaToPubSub())
           .put(TemplateName.CASSANDRATOBQ, CassandraToBQ::of)
           .put(TemplateName.CASSANDRATOGCS, CassandraToGCS::of)
           .put(TemplateName.JDBCTOGCS, JDBCToGCS::of)
