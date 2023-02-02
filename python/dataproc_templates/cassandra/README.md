@@ -34,6 +34,8 @@ optional arguments:
   --cassandratobq.input.catalog.name CASSANDRA_TO_BQ_CATALOG
 ```
 
+**Note:** Make sure that either ```cassandratobq.input.query``` or both ```cassandratobq.input.keyspace``` and ```cassandratobq.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
+
 ## Required JAR files
 
 This template requires the [Spark Cassandra connector](https://github.com/datastax/spark-cassandra-connector) to be available in the Dataproc cluster.
