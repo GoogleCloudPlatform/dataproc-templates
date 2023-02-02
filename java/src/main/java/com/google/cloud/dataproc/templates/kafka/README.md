@@ -144,6 +144,7 @@ bin/start.sh \
 --templateProperty kafka.gcs.output.location=<gcs path> \
 --templateProperty kafka.bootstrap.servers=<kafka broker list> \
 --templateProperty kafka.topic=<kafka topic name> \
+--templateProperty kafka.message.format=<kafka message format> 
 ```
 
 
@@ -162,6 +163,7 @@ bin/start.sh \
 --templateProperty kafka.bootstrap.servers=102.1.1.20:9092 \
 --templateProperty kafka.topic=events-topic \
 --templateProperty kafka.starting.offset=latest \
+--templateProperty kafka.message.format=json \
 --templateProperty kafka.schema.url=$GCS_SCHEMA_FILE \
 --templateProperty kafka.gcs.await.termination.timeout.ms=1200000 \
 --templateProperty kafka.gcs.output.location=$GCS_OUTPUT_PATH \
