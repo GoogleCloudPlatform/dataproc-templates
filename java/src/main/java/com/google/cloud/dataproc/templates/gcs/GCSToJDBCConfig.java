@@ -22,6 +22,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDB
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +31,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import java.util.Properties;
+import org.apache.spark.sql.SaveMode;
 
 public class GCSToJDBCConfig {
 
@@ -121,6 +123,11 @@ public class GCSToJDBCConfig {
 
   public String getSaveModeString() {
     return saveModeString;
+  }
+
+  @JsonIgnore
+  public SaveMode getSaveMode() {
+    return SaveMode.valueOf(getSaveModeString());
   }
 
   public long getBatchInsertSize() {
