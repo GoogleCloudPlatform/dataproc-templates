@@ -164,7 +164,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
                 or not getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_TABLE))
             and not getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_QUERY)):
 
-            sys.exit("ArgumentParser Error: Either of snowflake.to.gcs.sf.database, snowflake.to.gcs.schema and snowflake.to.gcs.table "
+            sys.exit("ArgumentParser Error: Either of snowflake.to.gcs.sf.database, snowflake.to.gcs.sf.schema and snowflake.to.gcs.sf.table "
                         + "OR snowflake.to.gcs.sf.query needs to be provided as argument to read data from Snowflake")
             
         elif ((getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_DATABASE) 
@@ -172,8 +172,8 @@ class SnowflakeToGCSTemplate(BaseTemplate):
                 or getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_TABLE))
             and getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_QUERY)):
             
-            sys.exit("ArgumentParser Error: Both snowflake.to.gcs.sf.database, snowflake.to.gcs.schema and snowflake.to.gcs.table "
-                        + "AND snowflake.to.gcs.sf.query cannot be provided as arguments at the same time. Pick either of the two.")
+            sys.exit("ArgumentParser Error: All three snowflake.to.gcs.sf.database, snowflake.to.gcs.sf.schema and snowflake.to.gcs.sf.table "
+                        + "AND snowflake.to.gcs.sf.query cannot be provided as arguments at the same time.")
 
         return vars(known_args)
     

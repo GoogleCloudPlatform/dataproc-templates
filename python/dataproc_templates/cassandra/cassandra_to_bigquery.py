@@ -101,12 +101,17 @@ class CassandraToBQTemplate(BaseTemplate):
 
         if (not getattr(known_args, constants.CASSANDRA_TO_BQ_QUERY) 
             and (not getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE) 
-            or not getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_TABLE)) 
-        or getattr(known_args, constants.CASSANDRA_TO_BQ_QUERY) 
+            or not getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_TABLE))):
+            
+            sys.exit("ArgumentParser Error: Either of cassandratobq.input.keyspace and cassandratobq.input.table "
+                        + "OR cassandratobq.input.query needs to be provided as argument to read data from Cassandra")
+
+        elif (getattr(known_args, constants.CASSANDRA_TO_BQ_QUERY)
             and (getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE) 
             or getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_TABLE))):
-            sys.exit("ArgumentParser Error: Provide either input query or both input keyspace and table."
-                    + " Refer to cassandra/README.md for more instructions.")
+            
+            sys.exit("ArgumentParser Error: Both cassandratobq.input.keyspace and cassandratobq.input.table "
+                        + "AND cassandratobq.input.query cannot be provided as arguments at the same time.")
 
         return vars(known_args)
 
