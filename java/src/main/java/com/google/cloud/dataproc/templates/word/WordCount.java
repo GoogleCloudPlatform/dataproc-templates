@@ -15,7 +15,6 @@
  */
 package com.google.cloud.dataproc.templates.word;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.WORD_COUNT_INPUT_FORMAT_PROP;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.WORD_COUNT_INPUT_PATH_PROP;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.WORD_COUNT_OUTPUT_PATH_PROP;
 
