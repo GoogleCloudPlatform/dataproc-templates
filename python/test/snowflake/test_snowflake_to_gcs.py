@@ -35,7 +35,6 @@ class TestSnowflakeToGCSTemplate:
             ["--snowflake.to.gcs.sf.url=url", 
              "--snowflake.to.gcs.sf.user=user", 
              "--snowflake.to.gcs.sf.password=password", 
-             "--snowflake.to.gcs.sf.database=database",
              "--snowflake.to.gcs.sf.query=select 1", 
              "--snowflake.to.gcs.output.location=gs://test", 
              "--snowflake.to.gcs.output.format=csv", 
@@ -45,7 +44,6 @@ class TestSnowflakeToGCSTemplate:
         assert parsed_args["snowflake.to.gcs.sf.url"] == "url"
         assert parsed_args["snowflake.to.gcs.sf.user"] == "user"
         assert parsed_args["snowflake.to.gcs.sf.password"] == "password"
-        assert parsed_args["snowflake.to.gcs.sf.database"] == "database"
         assert parsed_args["snowflake.to.gcs.sf.query"] == "select 1"
         assert parsed_args["snowflake.to.gcs.output.location"] == "gs://test"
         assert parsed_args["snowflake.to.gcs.output.format"] == "csv"
@@ -154,7 +152,6 @@ class TestSnowflakeToGCSTemplate:
             ["--snowflake.to.gcs.sf.url=url", 
              "--snowflake.to.gcs.sf.user=user", 
              "--snowflake.to.gcs.sf.password=password", 
-             "--snowflake.to.gcs.sf.database=database",
              "--snowflake.to.gcs.sf.warehouse=dwh",
              "--snowflake.to.gcs.sf.query=select 1", 
              "--snowflake.to.gcs.output.location=gs://test", 
@@ -170,7 +167,7 @@ class TestSnowflakeToGCSTemplate:
         assert sf_options["sfURL"] == "url"
         assert sf_options["sfUser"] == "user"
         assert sf_options["sfPassword"] == "password"
-        assert sf_options["sfDatabase"] == "database"
+        assert sf_options["sfDatabase"] == ""
         assert sf_options["sfSchema"] == ""
         assert sf_options["sfWarehouse"] == "dwh"
         assert sf_options["autopushdown"] == "yes"
@@ -217,8 +214,8 @@ class TestSnowflakeToGCSTemplate:
             "sfURL" : "url",
             "sfUser" : "user",
             "sfPassword" : "password",
-            "sfDatabase" : "database",
-            "sfSchema" : "schema",
+            "sfDatabase" : "",
+            "sfSchema" : "",
             "sfWarehouse" : "dwh",
             "autopushdown" : "yes"
         }
@@ -246,7 +243,6 @@ class TestSnowflakeToGCSTemplate:
             ["--snowflake.to.gcs.sf.url=url", 
              "--snowflake.to.gcs.sf.user=user", 
              "--snowflake.to.gcs.sf.password=password", 
-             "--snowflake.to.gcs.sf.database=database",
              "--snowflake.to.gcs.sf.warehouse=dwh",
              "--snowflake.to.gcs.sf.query=select 1", 
              "--snowflake.to.gcs.output.location=gs://test", 
@@ -275,7 +271,6 @@ class TestSnowflakeToGCSTemplate:
             ["--snowflake.to.gcs.sf.url=url", 
              "--snowflake.to.gcs.sf.user=user", 
              "--snowflake.to.gcs.sf.password=password", 
-             "--snowflake.to.gcs.sf.database=database",
              "--snowflake.to.gcs.sf.warehouse=dwh",
              "--snowflake.to.gcs.sf.query=select 1", 
              "--snowflake.to.gcs.output.location=gs://test", 
@@ -301,7 +296,6 @@ class TestSnowflakeToGCSTemplate:
             ["--snowflake.to.gcs.sf.url=url", 
              "--snowflake.to.gcs.sf.user=user", 
              "--snowflake.to.gcs.sf.password=password", 
-             "--snowflake.to.gcs.sf.database=database",
              "--snowflake.to.gcs.sf.warehouse=dwh",
              "--snowflake.to.gcs.sf.query=select 1", 
              "--snowflake.to.gcs.output.location=gs://test", 
@@ -327,7 +321,6 @@ class TestSnowflakeToGCSTemplate:
             ["--snowflake.to.gcs.sf.url=url", 
              "--snowflake.to.gcs.sf.user=user", 
              "--snowflake.to.gcs.sf.password=password", 
-             "--snowflake.to.gcs.sf.database=database",
              "--snowflake.to.gcs.sf.warehouse=dwh",
              "--snowflake.to.gcs.sf.query=select 1", 
              "--snowflake.to.gcs.output.location=gs://test", 
