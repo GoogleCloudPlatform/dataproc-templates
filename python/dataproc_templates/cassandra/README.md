@@ -27,11 +27,11 @@ usage: main.py --template CASSANDRATOBQ [-h] \
 
 optional arguments:
   -h, --help            show this help message and exit
-  --cassandratobq.input.keyspace CASSANDRA.INPUT.KEYSPACE.NAME \
-  --cassandratobq.input.table CASSANDRA.INPUT.KEYSPACE.NAME \
+  --cassandratobq.input.keyspace CASSANDRA.INPUT.KEYSPACE \
+  --cassandratobq.input.table CASSANDRA.INPUT.TABLE \
   --cassandratobq.output.mode {overwrite,append,ignore,errorifexists} \
-  --cassandratobq.input.query CASSANDRA_TO_BQ_QUERY \
-  --cassandratobq.input.catalog.name CASSANDRA_TO_BQ_CATALOG
+  --cassandratobq.input.query CASSANDRA.INPUT.QUERY \
+  --cassandratobq.input.catalog.name CASSANDRA.INPUT.CATALOG.NAME
 ```
 
 **Note:** Make sure that either ```cassandratobq.input.query``` or both ```cassandratobq.input.keyspace``` and ```cassandratobq.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
