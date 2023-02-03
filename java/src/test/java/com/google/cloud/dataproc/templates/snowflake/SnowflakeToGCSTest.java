@@ -40,9 +40,7 @@ class SnowflakeToGCSTest {
     PropertyUtil.getProperties().setProperty(SNOWFLAKE_GCS_OUTPUT_LOCATION, "gs://some_location");
     PropertyUtil.getProperties().setProperty(SNOWFLAKE_GCS_OUTPUT_MODE, "overwrite");
     PropertyUtil.getProperties().setProperty(SNOWFLAKE_GCS_QUERY, "some_value");
-    PropertyUtil.getProperties().setProperty(SNOWFLAKE_GCS_SFDATABASE, "some_value");
     PropertyUtil.getProperties().setProperty(SNOWFLAKE_GCS_SFPASSWORD, "some_value");
-    PropertyUtil.getProperties().setProperty(SNOWFLAKE_GCS_SFSCHEMA, "some_value");
     PropertyUtil.getProperties().setProperty(SNOWFLAKE_GCS_SFURL, "some_value");
     PropertyUtil.getProperties().setProperty(SNOWFLAKE_GCS_SFUSER, "some_value");
   }
@@ -66,10 +64,7 @@ class SnowflakeToGCSTest {
         SNOWFLAKE_GCS_OUTPUT_FORMAT,
         SNOWFLAKE_GCS_OUTPUT_LOCATION,
         SNOWFLAKE_GCS_OUTPUT_MODE,
-        SNOWFLAKE_GCS_QUERY,
-        SNOWFLAKE_GCS_SFDATABASE,
         SNOWFLAKE_GCS_SFPASSWORD,
-        SNOWFLAKE_GCS_SFSCHEMA,
         SNOWFLAKE_GCS_SFURL,
         SNOWFLAKE_GCS_SFUSER);
   }

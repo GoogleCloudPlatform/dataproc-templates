@@ -44,11 +44,9 @@ public class SnowflakeToGCSConfig {
   private String sfPassword;
 
   @JsonProperty(value = SNOWFLAKE_GCS_SFDATABASE)
-  @NotEmpty
   private String sfDatabase;
 
   @JsonProperty(value = SNOWFLAKE_GCS_SFSCHEMA)
-  @NotEmpty
   private String sfSchema;
 
   @JsonProperty(value = SNOWFLAKE_GCS_SFWAREHOUSE)
@@ -144,10 +142,12 @@ public class SnowflakeToGCSConfig {
 
   @AssertTrue(
       message =
-          "Required parameters for SnowflakeToGCS not passed. Template property should be provided for either the input table or an equivalent query, but not both. Refer to snowflake/README.md for more instructions.")
+          "Required parameters for SnowflakeToGCS not passed. Template property should be provided for either the input database, schema, table OR an equivalent query, but not all four together. Refer to snowflake/README.md for more instructions.")
   private boolean isPropertyValid() {
-    return (StringUtils.isBlank(sfTable) || StringUtils.isBlank(sfQuery))
-        && (StringUtils.isNotBlank(sfTable) || StringUtils.isNotBlank(sfQuery));
+    return ((StringUtils.isBlank(sfQuery)
+            || (StringUtils.isBlank(sfDatabase) && StringUtils.isBlank(sfSchema) && StringUtils.isBlank(sfTable)))
+        && (StringUtils.isNotBlank(sfQuery)
+            || (StringUtils.isNotBlank(sfDatabase) && StringUtils.isNotBlank(sfSchema) && StringUtils.isNotBlank(sfTable))));
   }
 
   @Override
