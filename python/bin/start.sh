@@ -60,7 +60,7 @@ if [ -n "${FILES}" ]; then
   OPT_FILES="--files=${FILES}"
 fi
 if [ -n "${PY_FILES}" ]; then
-  OPT_FILES="${OPT_PY_FILES},${PY_FILES}"
+  OPT_PY_FILES="${OPT_PY_FILES},${PY_FILES}"
 fi
 #if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
 if [ -n "${CATALOG}" ]; then
