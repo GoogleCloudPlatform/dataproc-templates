@@ -57,7 +57,7 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, gs://{jars_
 
 ./bin/start.sh \
 -- --template=GCSTOBIGQUERY \
-    --gcs.bigquery.input.format="<json|csv|parquet|avro>" \
+    --gcs.bigquery.input.format="<json|csv|parquet|avro|delta>" \
     --gcs.bigquery.input.location="<gs://bucket/path>" \
     --gcs.bigquery.output.dataset="<dataset>" \
     --gcs.bigquery.output.table="<table>" \
