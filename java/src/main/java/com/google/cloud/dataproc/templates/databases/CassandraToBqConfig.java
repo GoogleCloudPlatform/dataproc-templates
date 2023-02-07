@@ -68,10 +68,12 @@ public class CassandraToBqConfig {
       message =
           "Provide either input query or both input keyspace and table. Refer to databases/README.md for more instructions.")
   private boolean isInputValid() {
-    return ((StringUtils.isBlank(query)
-            || (StringUtils.isBlank(keyspace) && StringUtils.isBlank(inputTable)))
-        && (StringUtils.isNotBlank(query)
-            || (StringUtils.isNotBlank(keyspace) && StringUtils.isNotBlank(inputTable))));
+    return (StringUtils.isNotBlank(query)
+            && StringUtils.isBlank(keyspace)
+            && StringUtils.isBlank(inputTable))
+        || (StringUtils.isBlank(query)
+            && StringUtils.isNotBlank(keyspace)
+            && StringUtils.isNotBlank(inputTable));
   }
 
   public String getKeyspace() {
