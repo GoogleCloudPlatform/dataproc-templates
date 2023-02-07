@@ -143,17 +143,25 @@ public class SnowflakeToGCSConfig {
   @AssertTrue(
       message =
           "Required parameters for SnowflakeToGCS not passed. "
-              + "Template property should be provided for either the input database, schema, table OR an equivalent query, but not all four together. "
+              + "Template property should be provided for EITHER the input database, schema, table OR an equivalent query to read data from Snowflake. "
               + "Refer to snowflake/README.md for more instructions.")
-  private boolean isPropertyValid() {
-    return ((StringUtils.isBlank(sfQuery)
-            || (StringUtils.isBlank(sfDatabase)
-                && StringUtils.isBlank(sfSchema)
-                && StringUtils.isBlank(sfTable)))
-        && (StringUtils.isNotBlank(sfQuery)
-            || (StringUtils.isNotBlank(sfDatabase)
-                && StringUtils.isNotBlank(sfSchema)
-                && StringUtils.isNotBlank(sfTable))));
+  private boolean isPropertiesNotSet() {
+    return (StringUtils.isNotBlank(sfQuery)
+        || (StringUtils.isNotBlank(sfDatabase)
+            && StringUtils.isNotBlank(sfSchema)
+            && StringUtils.isNotBlank(sfTable)));
+  }
+
+  @AssertTrue(
+      message =
+          "Required parameters for SnowflakeToGCS not passed. "
+              + "Template property cannot be provided for BOTH the input database, schema, table AND an equivalent query. "
+              + "Refer to snowflake/README.md for more instructions.")
+  private boolean isPropertiesBothSet() {
+    return (StringUtils.isBlank(sfQuery)
+        || (StringUtils.isBlank(sfDatabase)
+            && StringUtils.isBlank(sfSchema)
+            && StringUtils.isBlank(sfTable)));
   }
 
   @Override
