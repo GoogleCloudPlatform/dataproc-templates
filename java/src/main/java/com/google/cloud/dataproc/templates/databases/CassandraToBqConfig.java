@@ -58,7 +58,7 @@ public class CassandraToBqConfig {
   private String query;
 
   @JsonProperty(value = CASSANDRA_TO_BQ_CATALOG)
-  private String catalog = "casscon";
+  private String catalog;
 
   @JsonProperty(value = SPARK_LOG_LEVEL)
   @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
