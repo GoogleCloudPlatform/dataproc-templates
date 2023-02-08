@@ -109,8 +109,6 @@ Template for exporting a Cassandra table to GCS
 $ python main.py --template CASSANDRATOGCS --help
 
 usage: main.py --template CASSANDRATOGCS [-h] \
-	--cassandratogcs.input.keyspace CASSANDRATOGCS.INPUT.KEYSPACE \
-	--cassandratogcs.input.table CASSANDRATOGCS.INPUT.TABLE \
 	--cassandratogcs.input.host CASSANDRATOGCS.INPUT.HOST \
 	--cassandratogcs.output.format CASSANDRATOGCS.OUTPUT.FORMAT \
 	--cassandratogcs.output.path CASSANDRATOGCS.OUTPUT.PATH \
@@ -122,6 +120,10 @@ optional arguments:
   --cassandratogcs.input.query   Input query for customised migration
                        
   --cassandratogcs.input.catalog.name   Cassandra connection name
+
+  --cassandratogcs.input.keyspace CASSANDRATOGCS.INPUT.KEYSPACE \
+
+  --cassandratogcs.input.table CASSANDRATOGCS.INPUT.TABLE \
                         
 ```
 
@@ -153,7 +155,7 @@ export REGION=<region>
 	--cassandratogcs.output.path=<gcs output bucket path> \
 	--cassandratogcs.output.savemode=<overwrite|append|ignore|errorifexists>
 ```
-One can add additional property to submit query. Please see format below-:
+One can add additional property to submit query (If query is provided, don't provide keyspace and table). Please see format below-:
 ```
 --cassandratogcs.input.catalog.name=<catalog-name>
 --cassandratogcs.input.query="select * from <catalog-name>.<keyspace-name>.<table-name>"
@@ -183,3 +185,7 @@ export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,g
 --cassandratogcs.output.savemode=overwrite \
 --cassandratogcs.input.query="select emp_id from casscon.tk1.emp"
 ```
+
+**Note:** Make sure that either ```cassandratogcs.input.query``` or both ```cassandratogcs.input.keyspace``` and ```cassandratogcs.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
+
+
