@@ -109,6 +109,20 @@ class CassandraToGCSTemplate(BaseTemplate):
  
        known_args: argparse.Namespace
        known_args, _ = parser.parse_known_args(args)
+       if (not getattr(known_args, constants.CASSANDRA_TO_GCS_QUERY) 
+            and (not getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE) 
+            or not getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_TABLE))):
+
+            sys.exit("ArgumentParser Error: Either of cassandratogcs.input.keyspace and cassandratogcs.input.table "
+                        + "OR cassandratogcs.input.query needs to be provided as argument to read data from Cassandra")
+
+       elif (getattr(known_args, constants.CASSANDRA_TO_GCS_QUERY)
+            and (getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE) 
+            or getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_TABLE))):
+
+            sys.exit("ArgumentParser Error: Both cassandratogcs.input.keyspace and cassandratogcs.input.table "
+                        + "AND cassandratogcs.input.query cannot be provided as arguments at the same time.")
+ 
  
        return vars(known_args)
  
