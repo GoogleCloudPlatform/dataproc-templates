@@ -61,7 +61,8 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 constants.FORMAT_AVRO,
                 constants.FORMAT_PRQT,
                 constants.FORMAT_CSV,
-                constants.FORMAT_JSON
+                constants.FORMAT_JSON,
+                constants.FORMAT_DELTA
             ]
         )
         parser.add_argument(
@@ -129,6 +130,10 @@ class GCSToBigQueryTemplate(BaseTemplate):
         elif input_file_format == constants.FORMAT_JSON:
             input_data = spark.read \
                 .json(input_file_location)
+        elif input_file_format == constants.FORMAT_DELTA:
+            input_data = spark.read \
+                .format(constants.FORMAT_DELTA) \
+                .load(input_file_location)
 
         # Write
         input_data.write \

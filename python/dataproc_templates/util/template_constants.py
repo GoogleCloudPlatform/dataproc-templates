@@ -27,6 +27,7 @@ HEADER = "header"
 INFER_SCHEMA = "inferSchema"
 FORMAT_JSON = "json"
 FORMAT_CSV = "csv"
+FORMAT_DELTA = "delta"
 FORMAT_TXT = "txt"
 FORMAT_AVRO = "avro"
 FORMAT_PRQT = "parquet"
@@ -63,6 +64,7 @@ AWS_S3SECRETKEY = "fs.s3a.secret.key"
 SQL_EXTENSION= "spark.sql.extensions"
 CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
 CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
+
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -250,6 +252,16 @@ SNOWFLAKE_TO_GCS_OUTPUT_LOCATION = "snowflake.to.gcs.output.location"
 SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
 SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
 SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
+
+# Cassandra To GCS
+CASSANDRA_TO_GCS_INPUT_KEYSPACE = "cassandratogcs.input.keyspace"
+CASSANDRA_TO_GCS_INPUT_TABLE = "cassandratogcs.input.table"
+CASSANDRA_TO_GCS_INPUT_HOST = "cassandratogcs.input.host"
+CASSANDRA_TO_GCS_OUTPUT_FORMAT = "cassandratogcs.output.format"
+CASSANDRA_TO_GCS_OUTPUT_PATH = "cassandratogcs.output.path"
+CASSANDRA_TO_GCS_OUTPUT_SAVEMODE = "cassandratogcs.output.savemode"
+CASSANDRA_TO_GCS_CATALOG = "cassandratogcs.input.catalog.name"
+CASSANDRA_TO_GCS_QUERY = "cassandratogcs.input.query"
 
 # Hive DDL Extractor Util
 HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"
