@@ -4,12 +4,12 @@ Template for exporting a Cassandra table to Bigquery
 
 
 ## Arguments
-* `cassandratobq.input.keyspace`: Input keyspace name for cassandra
-* `cassandratobq.input.table`: Input table name of cassandra 
 * `cassandratobq.input.host`: Cassandra Host IP 
 * `cassandratobq.bigquery.location`: Dataset and Table name
 * `cassandratobq.temp.gcs.location`: Temp GCS location for staging
 #### Optional Arguments
+* `cassandratobq.input.keyspace`: Input keyspace name for cassandra
+* `cassandratobq.input.table`: Input table name of cassandra
 * `cassandratobq.input.query` : Customised query for selective migration
 * `cassandratobq.input.catalog.name`: Connection name, defaults to casscon
 * `cassandratobq.output.mode`: Output mode of Cassandra to Bq, defaults to Append mode
@@ -21,20 +21,20 @@ Template for exporting a Cassandra table to Bigquery
 $ python main.py --template CASSANDRATOBQ --help
 
 usage: main.py --template CASSANDRATOBQ [-h] \
-	--cassandratobq.input.keyspace CASSANDRA.INPUT.KEYSPACE.NAME \
-	--cassandratobq.input.table CASSANDRA.INPUT.KEYSPACE.NAME \
 	--cassandratobq.input.host CASSANDRA.DATABASE.HOST.IP \
 	--cassandratobq.bigquery.location BIGQUERY.DATASET.TABLE.LOCATION \
 	--cassandratobq.temp.gcs.location TEMPORARY.GCS.STAGING.LOCATION \
-    [ --cassandratobq.output.mode {overwrite,append,ignore,errorifexists}]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --cassandratobq.input.query   Input query for customised migration
-                       
-  --cassandratobq.input.catalog.name   Cassandra connection name
-                        
+  --cassandratobq.input.keyspace CASSANDRA.INPUT.KEYSPACE \
+  --cassandratobq.input.table CASSANDRA.INPUT.TABLE \
+  --cassandratobq.output.mode {overwrite,append,ignore,errorifexists} \
+  --cassandratobq.input.query CASSANDRA.INPUT.QUERY \
+  --cassandratobq.input.catalog.name CASSANDRA.INPUT.CATALOG.NAME
 ```
+
+**Note:** Make sure that either ```cassandratobq.input.query``` or both ```cassandratobq.input.keyspace``` and ```cassandratobq.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
 
 ## Required JAR files
 
@@ -77,8 +77,6 @@ export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,g
 
     ./bin/start.sh \
 -- --template=CASSANDRATOBQ \
---cassandratobq.input.keyspace=tk1 \
---cassandratobq.input.table=emp \
 --cassandratobq.input.host=10.1X8.X.XX \
 --cassandratobq.bigquery.location=demo.cassandramig \
 --cassandratobq.temp.gcs.location=bucketname \

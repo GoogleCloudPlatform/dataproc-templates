@@ -91,6 +91,8 @@ To query using default catalog name -:
 ```
 You can replace the ```casscon``` with your catalog name if it is passed. This is an important step to query the data from Cassandra. Additional details on usage of query can be found in this [link](https://github.com/datastax/spark-cassandra-connector/blob/master/doc/14_data_frames.md).
 
+Make sure that either ```cassandratogcs.input.query``` or both ```cassandratogcs.input.keyspace``` and ```cassandratogcs.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
+
 ## Executing Cassandra to Bigquery Template
 ### General Execution
 
@@ -140,6 +142,8 @@ To query using default catalog name -:
 --templateProperty cassandratobq.input.query="select * from casscon.employee.salaries"
 ```
 You can replace the ```casscon``` with your catalog name if it is passed. This is an important step to query the data from Cassandra. Additional details on usage of query can be found in this [link](https://github.com/datastax/spark-cassandra-connector/blob/master/doc/14_data_frames.md).
+
+Make sure that either ```cassandratobq.input.query``` or both ```cassandratobq.input.keyspace``` and ```cassandratobq.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
 
 
 ## Executing Redshift to GCS template
