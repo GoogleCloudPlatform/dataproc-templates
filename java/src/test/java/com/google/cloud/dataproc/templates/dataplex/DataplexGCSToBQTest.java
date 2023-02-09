@@ -17,48 +17,25 @@ package com.google.cloud.dataproc.templates.dataplex;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import java.util.Properties;
+import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// import com.google.auth.oauth2.GoogleCredentials;
-// import com.google.cloud.dataproc.templates.BaseTemplate;
-// import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
-// import com.google.cloud.dataproc.templates.util.Dataplex.DataplexAssetUtil;
-// import com.google.cloud.dataproc.templates.util.Dataplex.DataplexEntityUtil;
-// import com.google.cloud.dataproc.templates.util.DataprocTemplateException;
-// import
-// com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.connector.common.BigQueryConnectorException;
-// import com.google.cloud.storage.Blob;
-// import com.google.cloud.storage.Storage;
-// import com.google.cloud.storage.StorageOptions;
-// import java.io.IOException;
-// import java.util.List;
-// import java.util.Objects;
-// import java.util.stream.Collectors;
-// import java.util.stream.Stream;
-// import com.google.cloud.dataproc.templates.util.PropertyUtil;
-
-// import org.apache.commons.cli.*;
-// import org.apache.commons.lang3.StringUtils;
-// import org.apache.spark.sql.DataFrameReader;
-// import org.apache.spark.sql.DataFrameWriter;
-// import org.apache.spark.sql.Dataset;
-// import org.apache.spark.sql.Encoders;
-// import org.apache.spark.sql.Row;
-// import org.apache.spark.sql.SQLContext;
-// import org.apache.spark.sql.SaveMode;
-
-public class DataplexGCStoBQTest {
+public class DataplexGCSToBQTest {
 
   private DataplexGCStoBQ dataplexGCStoBQTest;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DataplexGCStoBQTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DataplexGCSToBQTest.class);
 
   @BeforeEach
   void setUp() {
@@ -70,51 +47,35 @@ public class DataplexGCStoBQTest {
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     Properties props = PropertyUtil.getProperties();
+    props.setProperty(PROJECT_ID_PROP, "projectID");
+    props.setProperty(DATAPLEX_GCS_BQ_TARGET_DATASET, "dataplex_gcs_to_bq");
     props.setProperty(
-        PROJECT_ID_PROP,
-        "projectID"); // if not given it should throw an error, it does not right now
-    props.setProperty(DATAPLEX_GCS_BQ_TARGET_DATASET, "gs://test-bucket");
-    props.setProperty(DATAPLEX_GCS_BQ_TARGET_ASSET, "bigqueryDataset");
-    props.setProperty(DATAPLEX_GCS_BQ_TARGET_ENTITY, "bigqueryTable");
-    props.setProperty(DATAPLEX_GCS_BQ_SAVE_MODE, "parquet");
-    props.setProperty(DATAPLEX_GCS_BQ_INCREMENTAL_PARTITION_COPY, "parquet");
-    props.setProperty(DATAPLEX_GCS_BQ_INCREMENTAL_PARTITION_COPY, "parquet");
-    props.setProperty(DATAPLEX_GCS_BQ_INCREMENTAL_PARTITION_COPY, "parquet");
-    props.setProperty(GCS_BQ_LD_TEMP_BUCKET_NAME, "gs://temp-bucket");
+        DATAPLEX_GCS_BQ_TARGET_ENTITY,
+        "projects/yadavaja-sandbox/locations/us-west1/lakes/dataproc-templates-test-lake/zones/dataplex-gcs-to-bq/entities/dataplex_gcs_to_bq");
     dataplexGCStoBQTest =
         new DataplexGCStoBQ(
             null,
             "projects/yadavaja-sandbox/locations/us-west1/lakes/dataproc-templates-test-lake/zones/dataplex-gcs-to-bq/entities/dataplex_gcs",
             null,
             null,
-            "projects/yadavaja-sandbox/locations/us-west1/lakes/dataproc-templates-test-lake/zones/dataplex-gcs-to-bq/entities/dataplex-gcs-to-bq");
+            "destination_table");
 
     assertDoesNotThrow(dataplexGCStoBQTest::validateInput);
   }
 
-  //     @ParameterizedTest
-  //     @MethodSource("propertyKeys")
-  //     void runTemplateWithInvalidParameters(String propKey) {
-  //         LOGGER.info("Running test: runTemplateWithInvalidParameters");
-  //         PropertyUtil.getProperties().setProperty(propKey, "");
-  //         gcsCsvToBiqueryTest = new GCStoBigquery();
-  //         Exception exception =
-  //             assertThrows(IllegalArgumentException.class, () ->
-  // gcsCsvToBiqueryTest.runTemplate());
-  //         assertEquals(
-  //             "Required parameters for GCStoBQ not passed. "
-  //                 + "Set mandatory parameter for GCStoBQ template"
-  //                 + " in resources/conf/template.properties file.",
-  //             exception.getMessage());
-  //     }
+  @ParameterizedTest
+  @MethodSource("propertyKeys")
+  void runTemplateWithInvalidParameters(String propKey) {
+    LOGGER.info("Running test: runTemplateWithInvalidParameters");
+    PropertyUtil.getProperties().setProperty(propKey, "");
+    dataplexGCStoBQTest = new DataplexGCStoBQ(null, null, null, null, "destination_table");
+    Exception exception =
+        assertThrows(IllegalArgumentException.class, () -> dataplexGCStoBQTest.runTemplate());
+    assertEquals("Please specify the dataplexEntity property", exception.getMessage());
+  }
 
-  //     static Stream<String> propertyKeys() {
-  //         return Stream.of(
-  //             PROJECT_ID_PROP,
-  //             GCS_BQ_INPUT_LOCATION,
-  //             GCS_OUTPUT_DATASET_NAME,
-  //             GCS_OUTPUT_TABLE_NAME,
-  //             GCS_BQ_INPUT_FORMAT);
-  //     }
+  static Stream<String> propertyKeys() {
+    return Stream.of(
+        PROJECT_ID_PROP, DATAPLEX_GCS_BQ_TARGET_DATASET, DATAPLEX_GCS_BQ_TARGET_ENTITY);
+  }
 }
-
