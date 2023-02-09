@@ -89,6 +89,13 @@ class JDBCToJDBCTemplate(BaseTemplate):
             help='Determines how many rows to fetch per round trip'
         )
         parser.add_argument(
+            f'--{constants.JDBCTOJDBC_SESSIONINITSTATEMENT}',
+            dest=constants.JDBCTOJDBC_SESSIONINITSTATEMENT,
+            required=False,
+            default="",
+            help='Custom SQL statement to execute in each reader database session'
+        )
+        parser.add_argument(
             f'--{constants.JDBCTOJDBC_OUTPUT_URL}',
             dest=constants.JDBCTOJDBC_OUTPUT_URL,
             required=True,
@@ -173,6 +180,7 @@ class JDBCToJDBCTemplate(BaseTemplate):
         input_jdbc_upperbound: str = args[constants.JDBCTOJDBC_INPUT_UPPERBOUND]
         jdbc_numpartitions: str = args[constants.JDBCTOJDBC_NUMPARTITIONS]
         input_jdbc_fetchsize: int = args[constants.JDBCTOJDBC_INPUT_FETCHSIZE]
+        input_jdbc_sessioninitstatement: str = args[constants.JDBCTOJDBC_SESSIONINITSTATEMENT]
         output_jdbc_url: str = args[constants.JDBCTOJDBC_OUTPUT_URL]
         output_jdbc_driver: str = args[constants.JDBCTOJDBC_OUTPUT_DRIVER]
         output_jdbc_table: str = args[constants.JDBCTOJDBC_OUTPUT_TABLE]
@@ -186,35 +194,30 @@ class JDBCToJDBCTemplate(BaseTemplate):
             "Starting JDBC to JDBC spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
-        
+
         # Read
         input_data: DataFrame
-        
-        partition_parameters=str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
+
+        partition_parameters = str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
         if ((partition_parameters != "") & ((input_jdbc_partitioncolumn == "") | (input_jdbc_lowerbound == "") | (input_jdbc_upperbound == ""))):
             logger.error("Set all the sql partitioning parameters together-jdbctojdbc.input.partitioncolumn,jdbctojdbc.input.lowerbound,jdbctojdbc.input.upperbound. Refer to README.md for more instructions.")
             exit (1)
-        elif (partition_parameters == ""):
-            input_data=spark.read \
-                .format(constants.FORMAT_JDBC) \
-                .option(constants.JDBC_URL, input_jdbc_url) \
-                .option(constants.JDBC_DRIVER, input_jdbc_driver) \
-                .option(constants.JDBC_TABLE, input_jdbc_table) \
-                .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
-                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
-                .load()
-        else:
-            input_data=spark.read \
-                .format(constants.FORMAT_JDBC) \
-                .option(constants.JDBC_URL, input_jdbc_url) \
-                .option(constants.JDBC_DRIVER, input_jdbc_driver) \
-                .option(constants.JDBC_TABLE, input_jdbc_table) \
-                .option(constants.JDBC_PARTITIONCOLUMN, input_jdbc_partitioncolumn) \
-                .option(constants.JDBC_LOWERBOUND, input_jdbc_lowerbound) \
-                .option(constants.JDBC_UPPERBOUND, input_jdbc_upperbound) \
-                .option(constants.JDBC_NUMPARTITIONS, jdbc_numpartitions) \
-                .option(constants.JDBC_FETCHSIZE, input_jdbc_fetchsize) \
-                .load()
+
+        properties = {constants.JDBC_URL: input_jdbc_url,
+                      constants.JDBC_DRIVER: input_jdbc_driver,
+                      constants.JDBC_TABLE: input_jdbc_table,
+                      constants.JDBC_NUMPARTITIONS: jdbc_numpartitions,
+                      constants.JDBC_FETCHSIZE: input_jdbc_fetchsize}
+        if input_jdbc_sessioninitstatement:
+            properties[constants.JDBC_SESSIONINITSTATEMENT] = input_jdbc_sessioninitstatement
+        if partition_parameters:
+            properties.update({constants.JDBC_PARTITIONCOLUMN: input_jdbc_partitioncolumn,
+                               constants.JDBC_LOWERBOUND: input_jdbc_lowerbound,
+                               constants.JDBC_UPPERBOUND: input_jdbc_upperbound})
+        input_data = spark.read \
+            .format(constants.FORMAT_JDBC) \
+            .options(**properties) \
+            .load()
 
         if sql_query:
             # Create temp view on source data

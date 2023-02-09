@@ -39,6 +39,7 @@ class TestJDBCToGCSTemplate:
              "--jdbctogcs.input.upperbound=2",
              "--jdbctogcs.numpartitions=5",
              "--jdbctogcs.input.fetchsize=100",
+             "--jdbctogcs.input.sessioninitstatement=EXEC some_setup_sql('data1')",
              "--jdbctogcs.output.location=gs://test",
              "--jdbctogcs.output.format=csv",
              "--jdbctogcs.output.mode=append",
@@ -53,6 +54,7 @@ class TestJDBCToGCSTemplate:
         assert parsed_args["jdbctogcs.input.upperbound"] == "2"
         assert parsed_args["jdbctogcs.numpartitions"] == "5"
         assert parsed_args["jdbctogcs.input.fetchsize"] == 100
+        assert parsed_args["jdbctogcs.input.sessioninitstatement"] == "EXEC some_setup_sql('data1')"
         assert parsed_args["jdbctogcs.output.location"] == "gs://test"
         assert parsed_args["jdbctogcs.output.format"] == "csv"
         assert parsed_args["jdbctogcs.output.mode"] == "append"
@@ -72,6 +74,7 @@ class TestJDBCToGCSTemplate:
              "--jdbctogcs.input.lowerbound=1",
              "--jdbctogcs.input.upperbound=2",
              "--jdbctogcs.numpartitions=5",
+             "--jdbctogcs.input.sessioninitstatement=EXEC some_setup_sql('data2')",
              "--jdbctogcs.output.location=gs://test",
              "--jdbctogcs.output.format=parquet",
              "--jdbctogcs.output.mode=overwrite"
@@ -88,7 +91,8 @@ class TestJDBCToGCSTemplate:
             constants.JDBC_LOWERBOUND: "1",
             constants.JDBC_UPPERBOUND: "2",
             constants.JDBC_NUMPARTITIONS: "5",
-            constants.JDBC_FETCHSIZE: "0"
+            constants.JDBC_FETCHSIZE: 0,
+            constants.JDBC_SESSIONINITSTATEMENT: "EXEC some_setup_sql('data2')"
         })
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
@@ -125,8 +129,7 @@ class TestJDBCToGCSTemplate:
             constants.JDBC_LOWERBOUND: "1",
             constants.JDBC_UPPERBOUND: "2",
             constants.JDBC_NUMPARTITIONS: "5",
-            constants.JDBC_FETCHSIZE: "50"
-
+            constants.JDBC_FETCHSIZE: 50
         })
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
@@ -163,7 +166,7 @@ class TestJDBCToGCSTemplate:
             constants.JDBC_LOWERBOUND: "1",
             constants.JDBC_UPPERBOUND: "2",
             constants.JDBC_NUMPARTITIONS: "5",
-            constants.JDBC_FETCHSIZE: "0"
+            constants.JDBC_FETCHSIZE: 0
         })
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
@@ -199,7 +202,7 @@ class TestJDBCToGCSTemplate:
             constants.JDBC_LOWERBOUND: "1",
             constants.JDBC_UPPERBOUND: "2",
             constants.JDBC_NUMPARTITIONS: "5",
-            constants.JDBC_FETCHSIZE: "0"
+            constants.JDBC_FETCHSIZE: 0
         })
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
@@ -227,7 +230,7 @@ class TestJDBCToGCSTemplate:
             constants.JDBC_DRIVER: "driver",
             constants.JDBC_TABLE: "table1",
             constants.JDBC_NUMPARTITIONS: "10",
-            constants.JDBC_FETCHSIZE: "0"
+            constants.JDBC_FETCHSIZE: 0
         })
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
@@ -258,7 +261,7 @@ class TestJDBCToGCSTemplate:
             constants.JDBC_DRIVER: "driver",
             constants.JDBC_TABLE: "table1",
             constants.JDBC_NUMPARTITIONS: "10",
-            constants.JDBC_FETCHSIZE: "0"
+            constants.JDBC_FETCHSIZE: 0
         })
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)

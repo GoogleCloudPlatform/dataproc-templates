@@ -106,6 +106,7 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 * `jdbctojdbc.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbctojdbc.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
 * `jdbctojdbc.input.fetchsize` (Optional): Determines how many rows to fetch per round trip
+* `jdbctojdbc.input.sessioninitstatement` (Optional): Custom SQL statement to execute in each reader database session
 * `jdbctojdbc.output.create_table.option` (Optional): This option allows setting of database-specific table and partition options when creating a output table
 * `jdbctojdbc.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `jdbctojdbc.output.batch.size` (Optional): JDBC output batch size. Default set to 1000
@@ -130,6 +131,7 @@ optional arguments:
     --jdbctojdbc.input.upperbound JDBCTOJDBC.INPUT.UPPERBOUND \
     --jdbctojdbc.numpartitions JDBCTOJDBC.NUMPARTITIONS \
     --jdbctojdbc.input.fetchsize JDBCTOJDBC.INPUT.FETCHSIZE \
+    --jdbctojdbc.input.sessioninitstatement JDBCTOJDBC.INPUT.SESSIONINITSTATEMENT \
     --jdbctojdbc.output.create_table.option JDBCTOJDBC.OUTPUT.CREATE_TABLE.OPTION \
     --jdbctojdbc.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctojdbc.output.batch.size JDBCTOJDBC.OUTPUT.BATCH.SIZE \
@@ -165,6 +167,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctojdbc.input.upperbound=<optional-partition-end-value>  \
 --jdbctojdbc.numpartitions=<optional-partition-number> \
 --jdbctojdbc.input.fetchsize=<optional-fetch-size> \
+--jdbctojdbc.input.sessioninitstatement=<optional-SQL-statement> \
 --jdbctojdbc.output.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
 --jdbctojdbc.output.driver=<jdbc-driver-class-name> \
 --jdbctojdbc.output.table=<output-table-name> \
@@ -289,6 +292,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.input.upperbound="20" \
 --jdbctojdbc.numpartitions="4" \
 --jdbctojdbc.input.fetchsize="200" \
+--jdbctojdbc.input.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOJDBC'); END;" \
 --jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123&reWriteBatchedInserts=True" \
 --jdbctojdbc.output.driver="org.postgresql.Driver" \
 --jdbctojdbc.output.table="employees_out" \
@@ -323,6 +327,7 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 * `jdbctogcs.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbctogcs.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
 * `jdbctogcs.input.fetchsize` (Optional): Determines how many rows to fetch per round trip
+* `jdbctogcs.input.sessioninitstatement` (Optional): Custom SQL statement to execute in each reader database session
 * `jdbctogcs.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 * `jdbctogcs.output.partitioncolumn` (Optional): Output partition column name
 
@@ -345,6 +350,7 @@ optional arguments:
     --jdbctogcs.input.upperbound JDBCTOGCS.INPUT.UPPERBOUND \
     --jdbctogcs.numpartitions JDBCTOGCS.NUMPARTITIONS \
     --jdbctogcs.input.fetchsize JDBCTOJDBC.INPUT.FETCHSIZE \
+    --jdbctogcs.input.sessioninitstatement JDBCTOGCS.INPUT.SESSIONINITSTATEMENT \
     --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN \
 ```
@@ -367,6 +373,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctogcs.input.upperbound=<optional-partition-end-value>  \
 --jdbctogcs.numpartitions=<optional-partition-number> \
 --jdbctogcs.input.fetchsize=<optional-fetch-size> \
+--jdbctogcs.input.sessioninitstatement=<optional-SQL-statement> \
 --jdbctogcs.output.location=<gcs-output-location> \
 --jdbctogcs.output.mode=<optional-write-mode> \
 --jdbctogcs.output.format=<output-write-format> \
@@ -451,6 +458,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.input.upperbound="20" \
 --jdbctogcs.numpartitions="4" \
 --jdbctogcs.input.fetchsize="200" \
+--jdbctogcs.input.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOGCS'); END;" \
 --jdbctogcs.output.location="gs://output_bucket/output/" \
 --jdbctogcs.output.mode="overwrite" \
 --jdbctogcs.output.format="csv" \
@@ -484,6 +492,7 @@ This template requires the JBDC jar files mentioned, and also the [Spark BigQuer
 * `jdbc.bigquery.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbc.bigquery.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
 * `jdbc.bigquery.input.fetchsize` (Optional): Determines how many rows to fetch per round trip
+* `jdbc.bigquery.input.sessioninitstatement` (Optional): Custom SQL statement to execute in each reader database session
 * `jdbc.bigquery.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 
 ## Usage
@@ -506,6 +515,7 @@ usage: main.py [-h] --jdbc.bigquery.output.dataset
                [--jdbc.bigquery.input.upperbound JDBC.BIGQUERY.INPUT.UPPERBOUND]
                [--jdbc.bigquery.numpartitions JDBC.BIGQUERY.NUMPARTITIONS]
                [--jdbc.bigquery.input.fetchsize JDBC.BIGQUERY.INPUT.FETCHSIZE]
+               [--jdbc.bigquery.input.sessioninitstatement JDBC.BIGQUERY.INPUT.SESSIONINITSTATEMENT]
                [--jdbc.bigquery.output.mode {overwrite,append,ignore,errorifexists}]
 
 optional arguments:
@@ -538,6 +548,8 @@ optional arguments:
                         writing. Default set to 10
   --jdbc.bigquery.input.fetchsize JDBC.BIGQUERY.INPUT.FETCHSIZE
                         Determines how many rows to fetch per round trip
+  --jdbc.bigquery.input.sessioninitstatement JDBC.BIGQUERY.INPUT.SESSIONINITSTATEMENT
+                        Custom SQL statement to execute in each reader database session
   --jdbc.bigquery.output.mode {overwrite,append,ignore,errorifexists}
                         Output write mode (one of:
                         append,overwrite,ignore,errorifexists)
@@ -641,6 +653,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbc.bigquery.input.upperbound="20" \
 --jdbc.bigquery.input.numpartitions="4" \
 --jdbc.bigquery.input.fetchsize="200" \
+--jdbc.bigquery.input.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOBIGQUERY'); END;" \
 --jdbc.bigquery.output.mode="overwrite" \
 --jdbc.bigquery.output.dataset="bq-dataset" \
 --jdbc.bigquery.output.table="bq-table" \

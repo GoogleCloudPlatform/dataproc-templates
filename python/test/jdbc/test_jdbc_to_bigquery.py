@@ -27,7 +27,7 @@ class TestJDBCToBigQueryTemplate:
     """
 
     def test_parse_args1(self):
-        """Tests JDBCToBigQueryTemplate.parse_args()"""
+        """Tests JDBCToBigQueryTemplate.parse_args() with partition column"""
 
         jdbc_to_bigquery_template = JDBCToBigQueryTemplate()
         parsed_args = jdbc_to_bigquery_template.parse_args(
@@ -39,6 +39,7 @@ class TestJDBCToBigQueryTemplate:
              "--jdbc.bigquery.input.upperbound=2",
              "--jdbc.bigquery.numpartitions=5",
              "--jdbc.bigquery.input.fetchsize=100",
+             "--jdbc.bigquery.input.sessioninitstatement=EXEC some_setup_sql('data1')",
              "--jdbc.bigquery.output.mode=append",
              "--jdbc.bigquery.output.dataset=bq-dataset",
              "--jdbc.bigquery.output.table=bq-table",
@@ -53,13 +54,14 @@ class TestJDBCToBigQueryTemplate:
         assert parsed_args["jdbc.bigquery.input.upperbound"] == "2"
         assert parsed_args["jdbc.bigquery.numpartitions"] == "5"
         assert parsed_args["jdbc.bigquery.input.fetchsize"] == 100
+        assert parsed_args["jdbc.bigquery.input.sessioninitstatement"] == "EXEC some_setup_sql('data1')"
         assert parsed_args["jdbc.bigquery.output.mode"] == "append"
         assert parsed_args["jdbc.bigquery.output.dataset"] == "bq-dataset"
         assert parsed_args["jdbc.bigquery.output.table"] == "bq-table"
         assert parsed_args["jdbc.bigquery.temp.bucket.name"] == "bucket-name"
 
     def test_run_pass_args2(self):
-        """Tests JDBCToBigQueryTemplate pass args"""
+        """Tests JDBCToBigQueryTemplate.parse_args() without partition column"""
 
         jdbc_to_bigquery_template = JDBCToBigQueryTemplate()
 
@@ -68,6 +70,7 @@ class TestJDBCToBigQueryTemplate:
              "--jdbc.bigquery.input.driver=driver",
              "--jdbc.bigquery.input.table=table1",
              "--jdbc.bigquery.input.fetchsize=200",
+             "--jdbc.bigquery.input.sessioninitstatement=EXEC some_setup_sql('data2')",
              "--jdbc.bigquery.output.mode=append",
              "--jdbc.bigquery.output.dataset=bq-dataset",
              "--jdbc.bigquery.output.table=bq-table",
@@ -78,6 +81,7 @@ class TestJDBCToBigQueryTemplate:
         assert parsed_args["jdbc.bigquery.input.driver"] == "driver"
         assert parsed_args["jdbc.bigquery.input.table"] == "table1"
         assert parsed_args["jdbc.bigquery.input.fetchsize"] == 200
+        assert parsed_args["jdbc.bigquery.input.sessioninitstatement"] == "EXEC some_setup_sql('data2')"
         assert parsed_args["jdbc.bigquery.output.mode"] == "append"
         assert parsed_args["jdbc.bigquery.output.dataset"] == "bq-dataset"
         assert parsed_args["jdbc.bigquery.output.table"] == "bq-table"
@@ -85,7 +89,10 @@ class TestJDBCToBigQueryTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args3(self, mock_spark_session):
-        """Tests JDBCToBigQueryTemplate pass args"""
+        """Tests JDBCToBigQueryTemplate pass args with partition column
+
+        Intentionally left out sessionInitStatement which reduces the number of option() calls and therefore the number needed for mock.
+        """
 
         jdbc_to_bigquery_template = JDBCToBigQueryTemplate()
 
@@ -102,18 +109,20 @@ class TestJDBCToBigQueryTemplate:
              "--jdbc.bigquery.output.table=bq-table",
              "--jdbc.bigquery.temp.bucket.name=bucket-name",
              ])
-        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
-        mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
-        mock_spark_session.read.format().option().option.assert_called_with(constants.JDBC_DRIVER, "driver")
-        mock_spark_session.read.format().option().option().option.assert_called_with(constants.JDBC_TABLE, "table1")
-        mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.JDBC_PARTITIONCOLUMN, "column")
-        mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_LOWERBOUND, "1")
-        mock_spark_session.read.format().option().option().option().option().option().option.assert_called_with(constants.JDBC_UPPERBOUND, "2")
-        mock_spark_session.read.format().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "5")
-        mock_spark_session.read.format().option().option().option().option().option().option().option().option.assert_called_with(constants.JDBC_FETCHSIZE, 0)
-        mock_spark_session.read.format().option().option().option().option().option().option().option().option().load()
+        _, kwargs = mock_spark_session.read.format().options.call_args
+        assert (constants.JDBC_URL, "url") in kwargs.items()
+        assert (constants.JDBC_DRIVER, "driver") in kwargs.items()
+        assert (constants.JDBC_TABLE, "table1") in kwargs.items()
+        assert (constants.JDBC_PARTITIONCOLUMN, "column") in kwargs.items()
+        assert (constants.JDBC_LOWERBOUND, "1") in kwargs.items()
+        assert (constants.JDBC_UPPERBOUND, "2") in kwargs.items()
+        assert (constants.JDBC_NUMPARTITIONS, "5") in kwargs.items()
+        assert (constants.JDBC_FETCHSIZE, 0) in kwargs.items()
+        assert constants.JDBC_SESSIONINITSTATEMENT not in kwargs
+        mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(
@@ -127,7 +136,7 @@ class TestJDBCToBigQueryTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args4(self, mock_spark_session):
-        """Tests JDBCToBigQueryTemplate pass args"""
+        """Tests JDBCToBigQueryTemplate pass args without partition column"""
 
         jdbc_to_bigquery_template = JDBCToBigQueryTemplate()
 
@@ -136,20 +145,23 @@ class TestJDBCToBigQueryTemplate:
              "--jdbc.bigquery.input.driver=driver",
              "--jdbc.bigquery.input.table=table1",
              "--jdbc.bigquery.input.fetchsize=100",
+             "--jdbc.bigquery.input.sessioninitstatement=EXEC some_setup_sql('data4')",
              "--jdbc.bigquery.output.mode=append",
              "--jdbc.bigquery.output.dataset=bq-dataset",
              "--jdbc.bigquery.output.table=bq-table",
              "--jdbc.bigquery.temp.bucket.name=bucket-name",
              ])
-        mock_spark_session.read.format().option().option().option().option().option().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
         jdbc_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
-        mock_spark_session.read.format().option.assert_called_with(constants.JDBC_URL, "url")
-        mock_spark_session.read.format().option().option.assert_called_with(constants.JDBC_DRIVER, "driver")
-        mock_spark_session.read.format().option().option().option.assert_called_with(constants.JDBC_TABLE, "table1")
-        mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.JDBC_NUMPARTITIONS, "10")
-        mock_spark_session.read.format().option().option().option().option().option.assert_called_with(constants.JDBC_FETCHSIZE, 100)
-        mock_spark_session.read.format().option().option().option().option().option().load()
+        _, kwargs = mock_spark_session.read.format().options.call_args
+        assert (constants.JDBC_URL, "url") in kwargs.items()
+        assert (constants.JDBC_DRIVER, "driver") in kwargs.items()
+        assert (constants.JDBC_TABLE, "table1") in kwargs.items()
+        assert (constants.JDBC_NUMPARTITIONS, "10") in kwargs.items()
+        assert (constants.JDBC_FETCHSIZE, 100) in kwargs.items()
+        assert (constants.JDBC_SESSIONINITSTATEMENT, "EXEC some_setup_sql('data4')") in kwargs.items()
+        mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(

@@ -12,13 +12,13 @@
 Following databases are supported via Spark JDBC by default:
 - DB2
 - MySQL / MariaDB
-- MS Sql
+- Microsoft SQL Server
 - Oracle
 - PostgreSQL
 
 ## 1. JDBC To BigQuery
 
-Note - Add dependency jar's specific to database in jars variable.
+Note - Add dependency jars specific to database in JARS variable.
 
 Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 
@@ -38,6 +38,7 @@ bin/start.sh \
 --templateProperty jdbctobq.jdbc.url=<jdbc url> \
 --templateProperty jdbctobq.jdbc.driver.class.name=<jdbc driver class name> \
 --templateProperty jdbctobq.jdbc.fetchsize=<optional-fetch-size> \
+--templateProperty jdbctobq.jdbc.sessioninitstatement=<optional-session-init-statement> \
 --templateProperty jdbctobq.sql=<input-sql> \
 --templateProperty jdbctobq.sql.partitionColumn=<optional-partition-column-name> \
 --templateProperty jdbctobq.sql.lowerBound=<optional-partition-start-value> \
@@ -47,13 +48,13 @@ bin/start.sh \
 --templateProperty jdbctobq.temp.gcs.bucket=<temp gcs bucket name>
 ```
 
-Note: Following is example JDBC URL for mysql database
+**Note**: Following is example JDBC URL for MySQL database:
 
 ```
 --templateProperty  jdbctobq.jdbc.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>"
 ```
 
-Have SQL query within double quotes. Example,
+**Note**: Have SQL query within double quotes, for example:
 
 ```
 --templateProperty  jdbctobq.sql="select * from dbname.tablename"
@@ -73,11 +74,16 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 
 Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
 
+**Note**: sessioninitstatement is a custom SQL statement to execute in each reader database session, for example:
+```
+jdbctobq.jdbc.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOBQ'); END;"
+```
+
 ***
 
 ## 2. JDBC To GCS
 
-Note - Add dependency jar's specific to database in jars variable.
+Note - Add dependency jars specific to database in JARS variable.
 
 Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 
@@ -96,6 +102,7 @@ bin/start.sh \
 --templateProperty jdbctogcs.jdbc.url=<jdbc url> \
 --templateProperty jdbctogcs.jdbc.driver.class.name=<jdbc-driver-class-name> \
 --templateProperty jdbctogcs.jdbc.fetchsize=<optional-fetch-size> \
+--templateProperty jdbctogcs.jdbc.sessioninitstatement=<optional-session-init-statement> \
 --templateProperty jdbctogcs.output.location=<gcs-ouput-location> \
 --templateProperty jdbctogcs.output.format=<csv|avro|orc|json|parquet> \
 --templateProperty jdbctogcs.write.mode=<optional_write-mode> \
@@ -107,13 +114,13 @@ bin/start.sh \
 --templateProperty jdbctogcs.output.partition.col=<optional_partition-col>
 ```
 
-Note: Following is example JDBC URL for mysql database
+**Note**: Following is example JDBC URL for MySQL database:
 
 ```
 --templateProperty  'jdbctogcs.jdbc.url=jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>'
 ```
 
-Have SQL query within double quotes. Example,
+**Note**: Have SQL query within double quotes, for example:
 
 ```
 --templateProperty  'jdbctogcs.sql=select * from dbname.tablename'
@@ -130,6 +137,11 @@ Instead of SQL query, cloud storage path to the SQL file can also be provided. E
 If one is specified then all needs to be specified.
 
 Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
+
+**Note**: sessioninitstatement is a custom SQL statement to execute in each reader database session, for example:
+```
+jdbctogcs.jdbc.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOBQ'); END;"
+```
 
 Example execution:
 
@@ -162,7 +174,7 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 
 ## 3. JDBC To SPANNER
 
-Note - Add dependency jar's specific to database in jars variable.
+Note - Add dependency jars specific to database in JARS variable.
 
 Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 
@@ -181,6 +193,7 @@ bin/start.sh \
 --templateProperty jdbctospanner.jdbc.url=<jdbc url> \
 --templateProperty jdbctospanner.jdbc.driver.class.name=<jdbc-driver-class-name> \
 --templateProperty jdbctospanner.jdbc.fetchsize=<optional-fetch-size> \
+--templateProperty jdbctospanner.jdbc.sessioninitstatement=<optional-session-init-statement> \
 --templateProperty jdbctospanner.sql=<input-sql> \
 --templateProperty jdbctospanner.sql.partitionColumn=<optional-partition-column-name> \
 --templateProperty jdbctospanner.sql.lowerBound=<optional-partition-start-value> \
@@ -194,13 +207,13 @@ bin/start.sh \
 --templateProperty jdbctospanner.output.batchInsertSize=<optional integer>
 ```
 
-Note: Following is example JDBC URL for mysql database
+**Note**: Following is example JDBC URL for MySQL database:
 
 ```
 --templateProperty  'jdbctospanner.jdbc.url=jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>'
 ```
 
-Have SQL query within double quotes. Example,
+**Note**: Have SQL query within double quotes, for example:
 
 ```
 --templateProperty  'jdbctospanner.sql=select * from dbname.tablename'
@@ -217,6 +230,11 @@ Instead of SQL query, cloud storage path to the SQL file can also be provided. E
 If one is specified then all needs to be specified.
 
 Additional execution details [refer spark jdbc doc](https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html)
+
+**Note**: sessioninitstatement is a custom SQL statement to execute in each reader database session, for example:
+```
+jdbctospanner.jdbc.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOBQ'); END;"
+```
 
 Example execution:
 
