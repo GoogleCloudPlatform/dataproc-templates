@@ -27,7 +27,7 @@ usage: main.py --template AZURETOBQ [-h] \
     --azure.bigquery.output.table AZURE.BIGQUERY.OUTPUT.TABLE \
     --azure.bigquery.input.format {avro,parquet,csv,json} \
     --azure.bigquery.temp.bucket.name AZURE.BIGQUERY.TEMP.BUCKET.NAME \
-    [--azure.bigquery.output.mode {overwrite,append,ignore,errorifexists}] \ 
+    --azure.bigquery.output.mode {overwrite,append,ignore,errorifexists} \ 
     --azure.storage.account AZURE.STORAGE.ACCOUNT \
     --azure.container.name AZURE.CONTAINER.NAME \
     --azure.sas AZURE.SAS  
@@ -56,18 +56,15 @@ optional arguments:
 
 ## Required JAR files
 
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
+This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example)  and [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster.
 
-***For delta.io input format you need to provide delta dependencies `delta-core.jar` for example dataproc serverless (PySpark) Runtime version 1.0 (Spark 3.2, Java 11, Scala 2.12) requires delta version 1.1.0 you can check the delta and spark dependencies [here](https://docs.delta.io/latest/releases.html)***
 ## Example submission
 
 ```
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
-## for delta.io format 
-# export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, gs://{jars_bucket}/delta-core_2.12-1.1.0.jar" 
+export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, gs://{jars_bucket}/delta-core_2.12-1.1.0.jar" 
 
 ./bin/start.sh \
 -- --template=AZURETOBQ \
