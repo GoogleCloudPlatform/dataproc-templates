@@ -19,7 +19,7 @@ bin/start.sh \
 --snowflake.to.gcs.sf.database=<snowflake-database> \
 --snowflake.to.gcs.sf.schema=<snowflake-schema> \
 --snowflake.to.gcs.sf.warehouse=<snowflake-warehouse> \
---snowflake.to.gcs.sf.query=<snowflake-select-query> \
+--snowflake.to.gcs.sf.table=<snowflake-table> \
 --snowflake.to.gcs.output.location=<gcs-output-location> \
 --snowflake.to.gcs.output.format=<csv|avro|orc|json|parquet> \
 --snowflake.to.gcs.output.mode=<Overwrite|ErrorIfExists|Append|Ignore> \
@@ -40,16 +40,11 @@ snowflake.to.gcs.sf.user
 # Mandatory Parameter: Snowflake user password
 snowflake.to.gcs.sf.password
 
-# Mandatory Parameter: Snowflake database name
+# Optional Parameter: Snowflake database name
 snowflake.to.gcs.sf.database
 
 # Optional Parameter: Snowflake schema name
 snowflake.to.gcs.sf.schema
-Note: Schema name is mandatory when you use snowflake.to.gcs.sf.table property. Incase of snowflake.to.gcs.sf.query, if the query contains joins on 
-multiple tables from different schemas, make sure to mention all the schemas 
-within the query. As for the snowflake.to.gcs.sf.schema property in this 
-case, you can either not use it at all or provide name of one of the schemas 
-being used in the query.
 
 # Optional Parameter: Snowflake warehouse
 snowflake.to.gcs.sf.warehouse
@@ -60,11 +55,12 @@ Note: If not specified explicitly through execution command, the default value i
 
 # Optional Parameter: Snowflake input table
 snowflake.to.gcs.sf.table
-Note: Either one of the template properties snowflake.to.gcs.sf.table and snowflake.to.gcs.sf.query must be provided.
 
 # Optional Parameter: Snowflake select query
 snowflake.to.gcs.sf.query
-Note: Either one of the template properties snowflake.to.gcs.sf.table and snowflake.to.gcs.sf.query must be provided.
+Note: Incase of snowflake.to.gcs.sf.query, if the query contains joins on
+multiple tables from different schemas, make sure to mention all the schemas
+within the query.
 
 # Mandatory Parameter: GCS output location. Format: gs://<bucket-name>/<dir>
 snowflake.to.gcs.output.location
@@ -80,6 +76,7 @@ Note: If not specified explicitly through execution command, the default value i
 # Optional property: GCS output data partiton by column name
 snowflake.to.gcs.partition.column
 ```
+**Note:** Make sure that either `snowflake.to.gcs.sf.query` OR `snowflake.to.gcs.sf.database`, `snowflake.to.gcs.sf.schema` and `snowflake.to.gcs.sf.table` are provided.
 
 ### Important properties
 
@@ -99,19 +96,19 @@ snowflake.to.gcs.partition.column
         ```
     Note: If not specified explicitly, it will take the default virtual warehouse configured at Snowflake.
 
-* Usage of `snowflake.to.gcs.sf.table` and `snowflake.to.gcs.sf.query`
-    * Provide the table name or an equivalent select query.
-      
-      Note: Only one of the below properties should be provided through the execution command.
-        ```
-        --snowflake.to.gcs.sf.table="EMPLOYEE_GEO"
-        ```
-        NOTE: Schema name is mandatory when you use snowflake.to.gcs.sf.table property. 
 
+* Usage of `snowflake.to.gcs.sf.database`, `snowflake.to.gcs.sf.schema`, `snowflake.to.gcs.sf.table` and `snowflake.to.gcs.sf.query`
+    * Provide the database, schema, table name OR an equivalent select query with the fully-qualified table name.
         ```
-        --snowflake.to.gcs.sf.query="SELECT ED.EMP_NAME, CD.COUNTRY FROM EMP.EMPLOYEE_DETAILS AS ED INNER JOIN GEO.COUNTRY_DETAILS AS CD ON ED.C_ID = CD.C_ID"
+        --snowflake.to.gcs.sf.database="SNOWFLAKE_SAMPLE_DATA" \
+        --snowflake.to.gcs.sf.schema="TPCDS_SF100TCL" \
+        --snowflake.to.gcs.sf.table="CALL_CENTER"
         ```
-        NOTE: Incase of snowflake.to.gcs.sf.query, if the query contains joins on multiple tables from different schemas, ensure all the schemas are mentioned within the query. As for the snowflake.to.gcs.sf.schema property in this case, you can either not use it at all or provide name of one of the schemas being used in the query.
+      OR
+        ```
+        --snowflake.to.gcs.sf.query="SELECT * FROM SNOWFLAKE_SAMPLE_DATA.TPCDS_SF100TCL.CALL_CENTER"
+        ```
+        NOTE: In case of `snowflake.to.gcs.sf.query`, if the query contains joins on multiple tables from different schemas, ensure all the schemas are mentioned within the query.
 
 ### JARS Required
 
@@ -135,7 +132,7 @@ bin/start.sh \
 --snowflake.to.gcs.sf.password="pwd1234" \
 --snowflake.to.gcs.sf.database="SNOWFLAKE_SAMPLE_DATA" \
 --snowflake.to.gcs.sf.schema="TPCDS_SF100TCL" \
---snowflake.to.gcs.sf.query="SELECT * FROM CALL_CENTER" \
+--snowflake.to.gcs.sf.table="CALL_CENTER" \
 --snowflake.to.gcs.sf.autopushdown="off" \
 --snowflake.to.gcs.output.location="gs://test-bucket/snowflake" \
 --snowflake.to.gcs.output.format="avro" \

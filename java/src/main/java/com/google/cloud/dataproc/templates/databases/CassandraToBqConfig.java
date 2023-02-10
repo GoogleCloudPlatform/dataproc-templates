@@ -20,9 +20,11 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import java.util.Properties;
+import org.apache.commons.lang3.StringUtils;
 
 public class CassandraToBqConfig {
 
@@ -30,11 +32,9 @@ public class CassandraToBqConfig {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @JsonProperty(value = CASSANDRA_TO_BQ_INPUT_KEYSPACE)
-  @NotEmpty
   private String keyspace;
 
   @JsonProperty(value = CASSANDRA_TO_BQ_INPUT_TABLE)
-  @NotEmpty
   private String inputTable;
 
   @JsonProperty(value = CASSANDRA_TO_BQ_INPUT_HOST)
@@ -58,11 +58,23 @@ public class CassandraToBqConfig {
   private String query;
 
   @JsonProperty(value = CASSANDRA_TO_BQ_CATALOG)
-  private String catalog = "casscon";
+  private String catalog;
 
   @JsonProperty(value = SPARK_LOG_LEVEL)
   @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
   private String sparkLogLevel;
+
+  @AssertTrue(
+      message =
+          "Provide either input query or both input keyspace and table. Refer to databases/README.md for more instructions.")
+  private boolean isInputValid() {
+    return (StringUtils.isNotBlank(query)
+            && StringUtils.isBlank(keyspace)
+            && StringUtils.isBlank(inputTable))
+        || (StringUtils.isBlank(query)
+            && StringUtils.isNotBlank(keyspace)
+            && StringUtils.isNotBlank(inputTable));
+  }
 
   public String getKeyspace() {
     return keyspace;

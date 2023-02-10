@@ -21,9 +21,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import java.util.Properties;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.SaveMode;
 
 public class CassandraToGCSConfig {
@@ -32,11 +34,9 @@ public class CassandraToGCSConfig {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_KEYSPACE)
-  @NotEmpty
   private String keyspace;
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_TABLE)
-  @NotEmpty
   private String inputTable;
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_HOST)
@@ -59,7 +59,7 @@ public class CassandraToGCSConfig {
   private String outputpath;
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_CATALOG)
-  private String catalog = "casscon";
+  private String catalog;
 
   @JsonProperty(value = CASSANDRA_TO_GSC_INPUT_QUERY)
   private String query;
@@ -67,6 +67,18 @@ public class CassandraToGCSConfig {
   @JsonProperty(value = SPARK_LOG_LEVEL)
   @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
   private String sparkLogLevel;
+
+  @AssertTrue(
+      message =
+          "Provide either input query or both input keyspace and table. Refer to databases/README.md for more instructions.")
+  private boolean isInputValid() {
+    return (StringUtils.isNotBlank(query)
+            && StringUtils.isBlank(keyspace)
+            && StringUtils.isBlank(inputTable))
+        || (StringUtils.isBlank(query)
+            && StringUtils.isNotBlank(keyspace)
+            && StringUtils.isNotBlank(inputTable));
+  }
 
   public String getKeyspace() {
     return keyspace;
