@@ -24,7 +24,7 @@ import dataproc_templates.util.template_constants as constants
 from dataproc_templates import BaseTemplate
 from pyspark.sql import SparkSession
 from datetime import datetime
-
+from google.cloud import storage
 
 class HiveDDLExtractorTemplate(BaseTemplate): 
     """
@@ -49,6 +49,22 @@ class HiveDDLExtractorTemplate(BaseTemplate):
             help='GCS output path'
         )
        
+        parser.add_argument(
+            f'--{constants.HIVE_DDL_CONSIDER_SPARK_TABLES}',
+            dest=constants.HIVE_DDL_CONSIDER_SPARK_TABLES,
+            required=False,
+            default=False,
+            help='Flag to extract DDL of Spark tables'
+        )
+
+        parser.add_argument(
+            f'--{constants.HIVE_DDL_TRANSLATION_DISPOSITION}',
+            dest=constants.HIVE_DDL_TRANSLATION_DISPOSITION,
+            required=False,
+            default=False,
+            help='Remove location parameter from HIVE DDL if set to TRUE'
+        )
+
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
@@ -65,22 +81,36 @@ class HiveDDLExtractorTemplate(BaseTemplate):
 
         hive_database: str = args[constants.HIVE_DDL_EXTRACTOR_INPUT_DATABASE]
         gcs_output_path: str = args[constants.HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH]
+        spark_tbls_flag: bool = args[constants.HIVE_DDL_CONSIDER_SPARK_TABLES]
+        remove_location_flag: bool = args[constants.HIVE_DDL_TRANSLATION_DISPOSITION]
+        gcs_bucket: str = gcs_output_path.split("gs://")[1].split("/")[0]
+        gcs_output_path: str = gcs_output_path.split("gs://")[1].split("/",maxsplit=1)[1]
 
         logger.info(
                 "Starting Hive DDL Extraction job with parameters:\n"
                 f"{pprint.pformat(args)}"
             )
         
-               
-        def get_ddl(hive_database, table_name):
-            return spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name} AS SERDE").rdd.map(lambda x: x[0] + ";").collect()[0]
+        def WriteToCloud(ddl, bucket, path, hive_database):
+            """
+            Write String as a file to GCS
+            """
+            print("Writing DDL to GCS: " + hive_database)
+            client = storage.Client()
+            bucket = client.get_bucket(bucket)
+            blob = bucket.blob(path + "/" + hive_database + ".sql")
+            blob.upload_from_string(ddl)
 
-        ct = datetime.now().strftime("%m-%d-%Y %H.%M.%S")
-        output_path = gcs_output_path+"/"+hive_database+"/"+str(ct)
 
+        def get_ddl(hive_database, table_name, spark_tbls_opt, remove_location_flag):
+            ddl_str = spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name} {spark_tbls_opt}").rdd.map(lambda x: x[0] + ";").collect()[0]
+            ddl = ddl_str if str(remove_location_flag).upper() != "TRUE" else ddl_str.split("\nLOCATION '")[0].split("\nUSING ")[0]
+            return ddl
+
+        spark_tbls_opt = "" if str(spark_tbls_flag).upper() == "TRUE" else "AS SERDE"
         tables_names = spark.sql(f"SHOW TABLES IN {hive_database}").select("tableName")
         tables_name_list = tables_names.rdd.map(lambda x: x[0]).collect()
-        tables_ddls = [ get_ddl(hive_database, table_name) for table_name in tables_name_list ]
+        tables_ddls = [ get_ddl(hive_database, table_name, spark_tbls_opt, remove_location_flag) for table_name in tables_name_list ]
+        table_ddls_str = ';\n'.join(tables_ddls) 
+        WriteToCloud(table_ddls_str, gcs_bucket, gcs_output_path, hive_database)
 
-        ddls_rdd = spark.sparkContext.parallelize(tables_ddls)
-        ddls_rdd.coalesce(1).saveAsTextFile(output_path)

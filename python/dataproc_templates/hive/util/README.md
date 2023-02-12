@@ -12,6 +12,11 @@ Note that it uses the "SHOW CREATE TABLE <...> AS SERDE" statement. Feel free to
 * `hive.ddl.extractor.input.database`: Hive database for input table  
 * `hive.ddl.extractor.output.path`: Output GCS path. Ex: gs://bucket-name/path/to/directory  
 
+## Optional Arguments
+
+* `hive.ddl.consider.spark.tables`: Flag to extract DDL of Spark tables 
+* `hive.ddl.translation.disposition`: Flag to remove location parameter from HIVE DDL
+
 ## Usage
 
 ```
@@ -27,6 +32,8 @@ optional arguments:
                         Hive database for importing DDLs to GCS
   --hive.ddl.extractor.output.path HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH
                         GCS directory path e.g gs://bucket-name/path/to/directory
+  --hive.ddl.extractor.input.database HIVE_DDL_CONSIDER_SPARK_TABLES
+                        True / False
 ```
 
 ## Example submission
@@ -41,4 +48,5 @@ export SUBNET=<subnet>
     -- --template=HIVEDDLEXTRACTOR \
     --hive.ddl.extractor.input.database="<database>" \
     --hive.ddl.extractor.output.path="<gs://bucket-name/path/to/directory>"
+    --hive.ddl.extractor.input.database=True
 ```
