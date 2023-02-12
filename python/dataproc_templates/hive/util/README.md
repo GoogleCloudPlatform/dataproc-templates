@@ -13,7 +13,7 @@ It queries Hive Metastore via thrift to get DDLs for each table in the database,
 ## Optional Arguments
 
 * `hive.ddl.consider.spark.tables`: Flag to extract DDL of Spark tables 
-* `hive.ddl.translation.disposition`: Flag to remove location parameter from HIVE DDL
+* `hive.ddl.translation.disposition`: Flag to remove location parameter from HIVE DDL to make DDL compatible with BQ Translation API
 
 ## Usage
 
