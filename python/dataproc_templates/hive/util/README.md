@@ -2,9 +2,7 @@
 
 This is a PySpark utility to extract DDLs of all the tables from a HIVE database using Hive Metastore. Users can use this utility to accelerate their Hive migration journey.  
 
-It queries Hive Metastore via thrift to get DDLs for each table in the database, and outputs a single text file of semicolon-separated DDLs to a GCS bucket path, creating it with the following sub-path: *"/<database-name>/%m-%d-%Y %H.%M.%S/part-00000"*.  
-
-Note that it uses the "SHOW CREATE TABLE <...> AS SERDE" statement. Feel free to remove the AS SERDE suffix if you need DDLs of tables created using Spark.
+It queries Hive Metastore via thrift to get DDLs for each table in the database, and outputs a single text file of semicolon-separated DDLs to the given GCS bucket path with the name as <HIVE_DB>.sql
 
 ## Arguments
 
