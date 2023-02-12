@@ -91,8 +91,8 @@ class HiveDDLExtractorTemplate(BaseTemplate):
 
         def get_ddl(hive_database, table_name, spark_tbls_opt, remove_location_flag):
             ddl_str = spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name} {spark_tbls_opt}").rdd.map(lambda x: x[0]).collect()[0]
-            ddl = ddl_str if str(remove_location_flag).upper() != "TRUE" else ddl_str.split("\nLOCATION '")[0].split("\nUSING ")[0]
-            return ddl+";"
+            ddl = (ddl_str if str(remove_location_flag).upper() != "TRUE" else ddl_str.split("\nLOCATION '")[0].split("\nUSING ")[0])+";"
+            return ddl
 
         output_path = gcs_output_path+"/"+hive_database
         spark_tbls_opt = "" if str(spark_tbls_flag).upper() == "TRUE" else "AS SERDE"
