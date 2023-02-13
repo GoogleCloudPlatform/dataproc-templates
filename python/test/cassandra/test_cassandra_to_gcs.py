@@ -29,7 +29,7 @@ class TestCassandraToGCSTemplate:
         """Tests CassandraToGCSTemplate.parse_args()"""
 
         cassandra_to_gcs_template = CassandraToGCSTemplate()
-        parsed_args = cassandra_to_bq_template.parse_args(
+        parsed_args = cassandra_to_gcs_template.parse_args(
             ["--cassandratogcs.input.table=tablename",
              "--cassandratogcs.input.host=192.168.2.2",
              "--cassandratogcs.output.format=csv",
