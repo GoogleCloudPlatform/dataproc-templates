@@ -131,7 +131,6 @@ bin/start.sh \
 ## 5. GCS to GCS
 
 ```
-
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
 GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
@@ -159,4 +158,45 @@ bin/start.sh \
 --templateProperty gcs.gcs.temp.table=tempTable \
 --templateProperty gcs.gcs.temp.query='select * from global_temp.tempTable where sal>1500'
 
+```
+
+## 6. GCS To Mongo:
+
+Please download the MongoDb connector spark driver and copy it to GCS bucket location.
+
+```
+export GCP_PROJECT=<project-id>\
+export REGION=<region>\
+export SUBNET=<subnet>\
+export GCS_STAGING_LOCATION=<gcs-staging-location-folder>\
+export JARS=<gcs-location-to-mongodb-drivers>\
+
+bin/start.sh \
+-- --template GCSTOMONGO \
+--templateProperty log.level=“ERROR” \
+--templateProperty gcs.mongodb.input.format=<input file format> \
+--templateProperty gcs.mongodb.input.location=<gcs-input-location> \
+--templateProperty gcs.mongodb.output.uri=<mongodb-output-uri> \
+--templateProperty gcs.mongodb.output.database=<database-name>\
+--templateProperty gcs.mongodb.output.collection=<collection-name> \
+--templateProperty gcs.mongo.output.mode=<output-mode> \
+
+```
+Example execution:
+```
+export GCP_PROJECT=mygcpproject
+export REGION=us-west1
+export SUBNET=projects/mygcpproject/regions/us-west1/subnetworks/test-subnet1
+export GCS_STAGING_LOCATION="gs://dataproctemplatesbucket”
+export JARS="gs://dataproctemplatesbucket/mongo_dependencies/mongo-java-driver-3.9.1.jar,gs://dataproctemplatesbucket/mongo_jar/mongo-spark-connector_2.12-2.4.0.jar"
+
+bin/start.sh \
+-- --template GCSTOMONGO \
+--templateProperty log.level=“ERROR” \
+--templateProperty gcs.mongodb.input.format=avro \
+--templateProperty gcs.mongodb.input.location="gs://dataproctemplatesbucket/empavro" \
+--templateProperty gcs.mongodb.output.uri="mongodb://1.2.3.4:27017" \
+--templateProperty gcs.mongodb.output.database=“demo” \
+--templateProperty gcs.mongodb.output.collection=“test” \
+--templateProperty gcs.mongo.output.mode="overwrite" \
 ```
