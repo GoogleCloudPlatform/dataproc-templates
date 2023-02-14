@@ -252,16 +252,16 @@ class TestSnowflakeToGCSTemplate:
              "--snowflake.to.gcs.output.mode=append"
              ]
         )
-        
+
         mock_spark_session.read.format().options().option().load.return_value = mock_spark_session.dataframe.DataFrame
         snowflake_to_gcs_template.write_data(Logger, mock_parsed_args, mock_spark_session.dataframe.DataFrame)
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.mode().partitionBy.assert_called_with("col")
-        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option.assert_called_with(constants.HEADER, True)
+        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option.assert_called_with(constants.CSV_HEADER, True)
         mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option().csv.assert_called_with("gs://test")
-        
-    @mock.patch.object(pyspark.sql, 'SparkSession')       
-    @mock.patch.object(logging, 'Logger')     
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    @mock.patch.object(logging, 'Logger')
     def test_write_data_parquet(self, Logger, mock_spark_session):
         """Tests SnowflakeToGCSTemplate to write data"""    
         

@@ -98,10 +98,10 @@ class TestGCSToGCSTemplate:
 
         mock_spark_session.read.format.assert_called_once_with(constants.FORMAT_CSV)
         mock_spark_session.read.format() \
-            .option.assert_called_once_with(constants.HEADER, True)
+            .option.assert_called_once_with(constants.CSV_HEADER, True)
         mock_spark_session.read.format() \
             .option() \
-            .option.assert_called_once_with(constants.INFER_SCHEMA, True)
+            .option.assert_called_once_with(constants.CSV_INFER_SCHEMA, True)
         mock_spark_session.read.format() \
             .option() \
             .option() \
@@ -121,7 +121,7 @@ class TestGCSToGCSTemplate:
         mock_spark_session.sql().write \
             .mode() \
             .partitionBy() \
-            .option.assert_called_once_with(constants.HEADER, True)
+            .option.assert_called_once_with(constants.CSV_HEADER, True)
             
         mock_spark_session.sql().write \
             .mode() \

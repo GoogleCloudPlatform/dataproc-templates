@@ -11,25 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
- 
+
 from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
 import sys
- 
+
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
- 
+
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
 from pyspark import SparkConf, SparkContext
 from pyspark.sql import SparkSession
 
- 
+
 __all__ = ['CassandraToGCSTemplate']
- 
- 
+
+
 class CassandraToGCSTemplate(BaseTemplate):
    """
    Dataproc template implementing exports from CASSANDRA to GCS
@@ -38,7 +38,7 @@ class CassandraToGCSTemplate(BaseTemplate):
    @staticmethod
    def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
        parser: argparse.ArgumentParser = argparse.ArgumentParser()
- 
+
        parser.add_argument(
            f'--{constants.CASSANDRA_TO_GCS_INPUT_HOST}',
            dest=constants.CASSANDRA_TO_GCS_INPUT_HOST,
@@ -106,30 +106,30 @@ class CassandraToGCSTemplate(BaseTemplate):
            required=(constants.CASSANDRA_TO_GCS_QUERY is None),
            help='CASSANDRA GCS Input Table'
         )
- 
+
        known_args: argparse.Namespace
        known_args, _ = parser.parse_known_args(args)
-       if (not getattr(known_args, constants.CASSANDRA_TO_GCS_QUERY) 
-            and (not getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE) 
+       if (not getattr(known_args, constants.CASSANDRA_TO_GCS_QUERY)
+            and (not getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE)
             or not getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_TABLE))):
 
             sys.exit("ArgumentParser Error: Either of cassandratogcs.input.keyspace and cassandratogcs.input.table "
                         + "OR cassandratogcs.input.query needs to be provided as argument to read data from Cassandra")
 
        elif (getattr(known_args, constants.CASSANDRA_TO_GCS_QUERY)
-            and (getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE) 
+            and (getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE)
             or getattr(known_args, constants.CASSANDRA_TO_GCS_INPUT_TABLE))):
 
             sys.exit("ArgumentParser Error: Both cassandratogcs.input.keyspace and cassandratogcs.input.table "
                         + "AND cassandratogcs.input.query cannot be provided as arguments at the same time.")
- 
- 
+
+
        return vars(known_args)
- 
+
    def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
- 
+
        logger: Logger = self.get_logger(spark=spark)
- 
+
        # Arguments
        input_host: str = args[constants.CASSANDRA_TO_GCS_INPUT_HOST]
        input_keyspace: str = args[constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE]
@@ -139,12 +139,12 @@ class CassandraToGCSTemplate(BaseTemplate):
        output_location: str = args[constants.CASSANDRA_TO_GCS_OUTPUT_PATH]
        catalog: str = args[constants.CASSANDRA_TO_GCS_CATALOG]
        query: str = args[constants.CASSANDRA_TO_GCS_QUERY]
- 
+
        logger.info(
            "Starting CASSANDRA to GCS spark job with parameters:\n"
            f"{pprint.pformat(args)}"
        )
-       
+
        # Set configuration to connect to Cassandra by overwriting the spark session
        spark = (
         SparkSession
@@ -154,16 +154,16 @@ class CassandraToGCSTemplate(BaseTemplate):
         .config(f"spark.sql.catalog.{catalog}", constants.CASSANDRA_CATALOG)
         .config(f"spark.sql.catalog.{catalog}.spark.cassandra.connection.host",input_host)
         .getOrCreate())
- 
+
        # Read
        if(not query):
            input_data = spark.read.table(f"{catalog}.{input_keyspace}.{input_table}")
        else:
-           input_data = spark.sql(query)  
- 
+           input_data = spark.sql(query)
+
        # Write
        writer: DataFrameWriter = input_data.write.mode(output_mode)
- 
+
        if output_format == constants.FORMAT_PRQT:
            writer.parquet(output_location)
        elif output_format == constants.FORMAT_AVRO:
@@ -172,7 +172,7 @@ class CassandraToGCSTemplate(BaseTemplate):
                .save(output_location)
        elif output_format == constants.FORMAT_CSV:
            writer \
-               .option(constants.HEADER, True) \
+               .option(constants.CSV_HEADER, True) \
                .csv(output_location)
        elif output_format == constants.FORMAT_JSON:
            writer.json(output_location)

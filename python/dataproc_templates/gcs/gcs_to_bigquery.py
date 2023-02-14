@@ -65,6 +65,14 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 constants.FORMAT_DELTA
             ]
         )
+        for option_name, spark_option_name in constants.GCS_BQ_INPUT_OPTIONAL_CSV_OPTIONS.items():
+            parser.add_argument(
+                f'--{option_name}',
+                dest=option_name,
+                required=False,
+                default=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_DEFAULT, ""),
+                help=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_HELP, "")
+            )
         parser.add_argument(
             f'--{constants.GCS_BQ_LD_TEMP_BUCKET_NAME}',
             dest=constants.GCS_BQ_LD_TEMP_BUCKET_NAME,
@@ -107,7 +115,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
         output_mode: str = args[constants.GCS_BQ_OUTPUT_MODE]
 
         logger.info(
-            "Starting GCS to Bigquery spark job with parameters:\n"
+            "Starting GCS to BigQuery Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -122,10 +130,14 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 .format(constants.FORMAT_AVRO_EXTD) \
                 .load(input_file_location)
         elif input_file_format == constants.FORMAT_CSV:
+            read_properties = {}
+            # Add any optional CSV options to argument dict.
+            for option_name, spark_option_name in constants.GCS_BQ_INPUT_OPTIONAL_CSV_OPTIONS.items():
+                if args.get(option_name):
+                    read_properties[spark_option_name] = args[option_name]
             input_data = spark.read \
                 .format(constants.FORMAT_CSV) \
-                .option(constants.HEADER, True) \
-                .option(constants.INFER_SCHEMA, True) \
+                .options(**read_properties) \
                 .load(input_file_location)
         elif input_file_format == constants.FORMAT_JSON:
             input_data = spark.read \

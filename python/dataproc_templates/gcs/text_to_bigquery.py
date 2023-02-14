@@ -40,6 +40,14 @@ class TextToBigQueryTemplate(BaseTemplate):
             required=True,
             help='GCS location of the input text files'
         )
+        for option_name, spark_option_name in constants.TEXT_BQ_INPUT_OPTIONAL_CSV_OPTIONS.items():
+            parser.add_argument(
+                f'--{option_name}',
+                dest=option_name,
+                required=False,
+                default=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_DEFAULT, ""),
+                help=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_HELP, "")
+            )
         parser.add_argument(
             f'--{constants.TEXT_BQ_OUTPUT_DATASET}',
             dest=constants.TEXT_BQ_OUTPUT_DATASET,
@@ -106,7 +114,6 @@ class TextToBigQueryTemplate(BaseTemplate):
         return vars(known_args)
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
-
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
@@ -126,11 +133,14 @@ class TextToBigQueryTemplate(BaseTemplate):
         # Read
         input_data: DataFrame
 
+        read_properties = {constants.INPUT_COMPRESSION: input_file_codec_format,
+                           constants.INPUT_DELIMITER: input_delimiter}
+        # Add any optional CSV options to argument dict.
+        for option_name, spark_option_name in constants.TEXT_BQ_INPUT_OPTIONAL_CSV_OPTIONS.items():
+            if args.get(option_name):
+                read_properties[spark_option_name] = args[option_name]
         input_data = spark.read\
-            .option(constants.HEADER, True) \
-            .option(constants.INFER_SCHEMA, True) \
-            .option(constants.INPUT_COMPRESSION, input_file_codec_format)\
-            .option(constants.INPUT_DELIMITER, input_delimiter)\
+            .options(**read_properties) \
             .csv(input_file_location)
 
         # Write
