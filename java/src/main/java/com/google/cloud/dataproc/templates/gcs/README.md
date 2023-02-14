@@ -173,7 +173,7 @@ export JARS=<gcs-location-to-mongodb-drivers>\
 
 bin/start.sh \
 -- --template GCSTOMONGO \
---templateProperty log.level=“ERROR” \
+--templateProperty log.level="ERROR" \
 --templateProperty gcs.mongodb.input.format=<input file format> \
 --templateProperty gcs.mongodb.input.location=<gcs-input-location> \
 --templateProperty gcs.mongodb.output.uri=<mongodb-output-uri> \
@@ -187,16 +187,16 @@ Example execution:
 export GCP_PROJECT=mygcpproject
 export REGION=us-west1
 export SUBNET=projects/mygcpproject/regions/us-west1/subnetworks/test-subnet1
-export GCS_STAGING_LOCATION="gs://dataproctemplatesbucket”
+export GCS_STAGING_LOCATION="gs://dataproctemplatesbucket"
 export JARS="gs://dataproctemplatesbucket/mongo_dependencies/mongo-java-driver-3.9.1.jar,gs://dataproctemplatesbucket/mongo_jar/mongo-spark-connector_2.12-2.4.0.jar"
 
 bin/start.sh \
 -- --template GCSTOMONGO \
---templateProperty log.level=“ERROR” \
+--templateProperty log.level="ERROR" \
 --templateProperty gcs.mongodb.input.format=avro \
 --templateProperty gcs.mongodb.input.location="gs://dataproctemplatesbucket/empavro" \
 --templateProperty gcs.mongodb.output.uri="mongodb://1.2.3.4:27017" \
---templateProperty gcs.mongodb.output.database=“demo” \
---templateProperty gcs.mongodb.output.collection=“test” \
+--templateProperty gcs.mongodb.output.database="demo" \
+--templateProperty gcs.mongodb.output.collection="test" \
 --templateProperty gcs.mongo.output.mode="overwrite" \
 ```
