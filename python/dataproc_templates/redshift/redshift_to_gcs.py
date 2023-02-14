@@ -131,7 +131,7 @@ class RedshiftToGCSTemplate(BaseTemplate):
         input_redshift_iam_role: str = args[constants.REDSHIFTTOGCS_IAM_ROLEARN]
         input_redshift_accesskey: str = args[constants.REDSHIFTTOGCS_S3_ACCESSKEY]
         input_redshift_secretkey: str = args[constants.REDSHIFTTOGCS_S3_SECRETKEY]
-        
+
         output_location: str = args[constants.REDSHIFTTOGCS_OUTPUT_LOCATION]
         output_format: str = args[constants.REDSHIFTTOGCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.REDSHIFTTOGCS_OUTPUT_MODE]
@@ -141,13 +141,13 @@ class RedshiftToGCSTemplate(BaseTemplate):
             "Starting REDSHIFT to GCS spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
-        
+
         # Read
         input_data: DataFrame
-        
+
         spark._jsc.hadoopConfiguration().set(constants.AWS_S3ACCESSKEY, input_redshift_accesskey)
         spark._jsc.hadoopConfiguration().set(constants.AWS_S3SECRETKEY, input_redshift_secretkey)
-        
+
         input_data=spark.read \
                 .format(constants.FORMAT_REDSHIFT) \
                 .option(constants.JDBC_URL, input_redshift_url) \
@@ -161,7 +161,7 @@ class RedshiftToGCSTemplate(BaseTemplate):
             writer: DataFrameWriter = input_data.write.mode(output_mode).partitionBy(output_partitioncolumn)
         else:
             writer: DataFrameWriter = input_data.write.mode(output_mode)
-            
+
         if output_format == constants.FORMAT_PRQT:
             writer \
                 .parquet(output_location)
@@ -171,7 +171,7 @@ class RedshiftToGCSTemplate(BaseTemplate):
                 .save(output_location)
         elif output_format == constants.FORMAT_CSV:
             writer \
-                .option(constants.HEADER, True) \
+                .option(constants.CSV_HEADER, True) \
                 .csv(output_location)
         elif output_format == constants.FORMAT_JSON:
             writer \

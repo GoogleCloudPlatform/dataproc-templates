@@ -52,6 +52,14 @@ class GCSToBigTableTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
+        for option_name, spark_option_name in constants.GCS_BT_INPUT_OPTIONAL_CSV_OPTIONS.items():
+            parser.add_argument(
+                f'--{option_name}',
+                dest=option_name,
+                required=False,
+                default=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_DEFAULT, ""),
+                help=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_HELP, "")
+            )
         parser.add_argument(
             f'--{constants.GCS_BT_HBASE_CATALOG_JSON}',
             dest=constants.GCS_BT_HBASE_CATALOG_JSON,
@@ -74,7 +82,7 @@ class GCSToBigTableTemplate(BaseTemplate):
         catalog: str = ''.join(args[constants.GCS_BT_HBASE_CATALOG_JSON].split())
 
         logger.info(
-            "Starting GCS to BigTable spark job with parameters:\n"
+            "Starting GCS to BigTable Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -89,10 +97,14 @@ class GCSToBigTableTemplate(BaseTemplate):
                 .format(constants.FORMAT_AVRO_EXTD) \
                 .load(input_file_location)
         elif input_file_format == constants.FORMAT_CSV:
+            read_properties = {}
+            # Add any optional CSV options to argument dict.
+            for option_name, spark_option_name in constants.GCS_BT_INPUT_OPTIONAL_CSV_OPTIONS.items():
+                if args.get(option_name):
+                    read_properties[spark_option_name] = args[option_name]
             input_data = spark.read \
                 .format(constants.FORMAT_CSV) \
-                .option(constants.HEADER, True) \
-                .option(constants.INFER_SCHEMA, True) \
+                .options(**read_properties) \
                 .load(input_file_location)
         elif input_file_format == constants.FORMAT_JSON:
             input_data = spark.read \

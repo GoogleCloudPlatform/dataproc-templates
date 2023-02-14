@@ -30,10 +30,10 @@ class GCSToGCSTemplate(BaseTemplate):
     """
     Dataproc template implementing loads from GCS into GCS post SQL transformation
     """
-    
+
     @staticmethod
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
-        
+
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
@@ -68,7 +68,7 @@ class GCSToGCSTemplate(BaseTemplate):
             default="",
             help='SQL query for data transformation. This must use the temp view name as the table to query from.'
         )
-        
+
         parser.add_argument(
             f'--{constants.GCS_TO_GCS_OUTPUT_PARTITION_COLUMN}',
             dest=constants.GCS_TO_GCS_OUTPUT_PARTITION_COLUMN,
@@ -93,7 +93,7 @@ class GCSToGCSTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
-        
+
         parser.add_argument(
             f'--{constants.GCS_TO_GCS_OUTPUT_MODE}',
             dest=constants.GCS_TO_GCS_OUTPUT_MODE,
@@ -111,7 +111,7 @@ class GCSToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
-        
+
         parser.add_argument(
             f'--{constants.GCS_TO_GCS_OUTPUT_LOCATION}',
             dest=constants.GCS_TO_GCS_OUTPUT_LOCATION,
@@ -120,15 +120,15 @@ class GCSToGCSTemplate(BaseTemplate):
                 'destination GCS location'
             )
         )
-        
+
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
-        
+
         if getattr(known_args, constants.GCS_TO_GCS_SQL_QUERY) and not getattr(known_args, constants.GCS_TO_GCS_TEMP_VIEW_NAME):
             sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
 
         return vars(known_args)
-    
+
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
         logger: Logger = self.get_logger(spark=spark)
@@ -141,15 +141,15 @@ class GCSToGCSTemplate(BaseTemplate):
         gcs_output_mode: str = args[constants.GCS_TO_GCS_OUTPUT_MODE]
         gcs_output_format: str = args[constants.GCS_TO_GCS_OUTPUT_FORMAT]
         gcs_output_location: str = args[constants.GCS_TO_GCS_OUTPUT_LOCATION]
-        
+
         logger.info(
             "Starting GCS to GCS with tranformations spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
-        
+
         # Read
         input_data: DataFrame
-        
+
         if gcs_input_format == constants.FORMAT_PRQT:
             input_data = spark.read \
                 .parquet(gcs_input_location)
@@ -160,13 +160,13 @@ class GCSToGCSTemplate(BaseTemplate):
         elif gcs_input_format == constants.FORMAT_CSV:
             input_data = spark.read \
                 .format(constants.FORMAT_CSV) \
-                .option(constants.HEADER, True) \
-                .option(constants.INFER_SCHEMA, True) \
+                .option(constants.CSV_HEADER, True) \
+                .option(constants.CSV_INFER_SCHEMA, True) \
                 .load(gcs_input_location)
         elif gcs_input_format == constants.FORMAT_JSON:
             input_data = spark.read \
                 .json(gcs_input_location)
-        
+
         if sql_query:
             # Create temp view on source data
             input_data.createOrReplaceTempView(gcs_temp_view)
@@ -174,13 +174,13 @@ class GCSToGCSTemplate(BaseTemplate):
             output_data = spark.sql(sql_query)
         else:
             output_data = input_data
-        
+
         # Write
         if output_partition_column:
             writer: DataFrameWriter = output_data.write.mode(gcs_output_mode).partitionBy(output_partition_column)
         else:
             writer: DataFrameWriter = output_data.write.mode(gcs_output_mode)
-            
+
         if gcs_output_format == constants.FORMAT_PRQT:
             writer \
                 .parquet(gcs_output_location)
@@ -190,7 +190,7 @@ class GCSToGCSTemplate(BaseTemplate):
                 .save(gcs_output_location)
         elif gcs_output_format == constants.FORMAT_CSV:
             writer \
-                .option(constants.HEADER, True) \
+                .option(constants.CSV_HEADER, True) \
                 .csv(gcs_output_location)
         elif gcs_output_format == constants.FORMAT_JSON:
             writer \

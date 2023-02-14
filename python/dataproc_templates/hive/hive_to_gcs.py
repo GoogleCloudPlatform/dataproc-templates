@@ -59,7 +59,7 @@ class HiveToGCSTemplate(BaseTemplate):
             required=False,
             default=constants.FORMAT_PRQT,
             help=(
-                'Output file format ' 
+                'Output file format '
                 '(one of: avro,parquet,csv,json) '
                 '(Defaults to parquet)'
             ),
@@ -150,7 +150,7 @@ class HiveToGCSTemplate(BaseTemplate):
                 .save(output_location)
         elif output_format == constants.FORMAT_CSV:
             writer \
-                .option(constants.HEADER, True) \
+                .option(constants.CSV_HEADER, True) \
                 .csv(output_location)
         elif output_format == constants.FORMAT_JSON:
             writer.json(output_location)

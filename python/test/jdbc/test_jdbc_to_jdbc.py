@@ -29,7 +29,6 @@ class TestJDBCToJDBCTemplate:
     def test_parse_args(self):
         """Tests JDBCToJDBCTemplate.parse_args()"""
 
-        print('NJNJ')
         jdbc_to_jdbc_template = JDBCToJDBCTemplate()
         parsed_args = jdbc_to_jdbc_template.parse_args(
             ["--jdbctojdbc.input.url=url",

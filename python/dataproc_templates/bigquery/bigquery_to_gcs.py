@@ -113,7 +113,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
                 .save(output_location)
         elif output_format == constants.FORMAT_CSV:
             writer \
-                .option(constants.HEADER, True) \
+                .option(constants.CSV_HEADER, True) \
                 .csv(output_location)
         elif output_format == constants.FORMAT_JSON:
             writer.json(output_location)
