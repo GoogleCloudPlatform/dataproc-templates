@@ -17,10 +17,13 @@ from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
+from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_reader import get_gcs_reader
+
 
 __all__ = ['TextToBigQueryTemplate']
 
@@ -40,14 +43,7 @@ class TextToBigQueryTemplate(BaseTemplate):
             required=True,
             help='GCS location of the input text files'
         )
-        for option_name, spark_option_name in constants.TEXT_BQ_INPUT_OPTIONAL_CSV_OPTIONS.items():
-            parser.add_argument(
-                f'--{option_name}',
-                dest=option_name,
-                required=False,
-                default=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_DEFAULT, ""),
-                help=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_HELP, "")
-            )
+        add_spark_options(parser, constants.TEXT_BQ_INPUT_SPARK_OPTIONS)
         parser.add_argument(
             f'--{constants.TEXT_BQ_OUTPUT_DATASET}',
             dest=constants.TEXT_BQ_OUTPUT_DATASET,
@@ -126,22 +122,15 @@ class TextToBigQueryTemplate(BaseTemplate):
         input_file_codec_format: str = args[constants.TEXT_INPUT_COMPRESSION]
 
         logger.info(
-            "Starting GCS to Bigquery spark job with parameters:\n"
+            "Starting GCS to Bigquery Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        input_data: DataFrame
-
-        read_properties = {constants.INPUT_COMPRESSION: input_file_codec_format,
-                           constants.INPUT_DELIMITER: input_delimiter}
-        # Add any optional CSV options to argument dict.
-        for option_name, spark_option_name in constants.TEXT_BQ_INPUT_OPTIONAL_CSV_OPTIONS.items():
-            if args.get(option_name):
-                read_properties[spark_option_name] = args[option_name]
-        input_data = spark.read\
-            .options(**read_properties) \
-            .csv(input_file_location)
+        spark_options = spark_options_from_template_args(args, constants.TEXT_BQ_INPUT_SPARK_OPTIONS)
+        spark_options.update({constants.INPUT_COMPRESSION: input_file_codec_format,
+                              constants.INPUT_DELIMITER: input_delimiter})
+        input_data = get_gcs_reader(spark, constants.FORMAT_CSV, input_file_location, spark_options)
 
         # Write
         input_data.write \

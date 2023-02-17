@@ -14,12 +14,16 @@
  * limitations under the License.
 """
 
+import argparse
 from typing import List
 
 import pytest
 
 from dataproc_templates import TemplateName
-from dataproc_templates.util.argument_parsing import get_template_name, get_log_level
+from dataproc_templates.util.argument_parsing import (
+    add_spark_options, get_template_name, get_log_level, spark_options_from_template_args
+)
+import dataproc_templates.util.template_constants as constants
 
 
 def test_get_valid_template_names():
@@ -32,11 +36,13 @@ def test_get_valid_template_names():
         )
         assert template_name == parsed_template_name.value
 
+
 def test_get_invalid_template_name():
     """Tests that an invalid template name raises an error"""
     template_name = "GCSTOSMALLQUERY"
     with pytest.raises(SystemExit):
         get_template_name(["--template=" + template_name])
+
 
 def test_get_valid_log_level():
     """Tests valid log levels"""
@@ -48,8 +54,52 @@ def test_get_valid_log_level():
         )
         assert log_level == parsed_log_level
 
+
 def test_get_invalid_log_level():
     """Tests that an invalid log level raises an error"""
     log_level = "AWESOME_LOG_LEVEL"
     with pytest.raises(SystemExit):
         get_template_name(["--log_level=" + log_level])
+
+
+def test_add_spark_options():
+    for option_set, set_name, option_prefix in [
+        (constants.GCS_JDBC_INPUT_SPARK_OPTIONS, 'GCS_JDBC_INPUT_SPARK_OPTIONS', 'gcs.jdbc'),
+        (constants.GCS_BQ_INPUT_SPARK_OPTIONS, 'GCS_BQ_INPUT_SPARK_OPTIONS', 'gcs.bigquery'),
+        (constants.GCS_BT_INPUT_SPARK_OPTIONS, 'GCS_BT_INPUT_SPARK_OPTIONS', 'gcs.bigtable'),
+        (constants.GCS_MONGO_INPUT_SPARK_OPTIONS, 'GCS_MONGO_INPUT_SPARK_OPTIONS', 'gcs.mongo'),
+        (constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS, 'GCS_TO_GCS_INPUT_SPARK_OPTIONS', 'gcs.to.gcs'),
+        (constants.TEXT_BQ_INPUT_SPARK_OPTIONS, 'TEXT_BQ_INPUT_SPARK_OPTIONS', 'text.bigquery'),
+    ]:
+        parser: argparse.ArgumentParser = argparse.ArgumentParser()
+        add_spark_options(parser, option_set)
+        known_args, _ = parser.parse_known_args()
+        for k in option_set:
+            assert k.startswith(option_prefix), f'Attribute {k} does not start with {option_prefix}'
+            assert hasattr(known_args, k), f'Attribute {k} missing from {set_name} args'
+
+
+def test_spark_options_from_template_args():
+    input_args = {
+        'template.arg1': 1,
+        'template.arg2': 2,
+        'template.arg3': 3,
+        'template.arg4': None,
+    }
+    option_map = {
+        'template.arg1': 'real.arg1',
+        'template.arg2': 'real.arg2',
+        'template.arg3': 'real.arg3',
+    }
+    assert spark_options_from_template_args(
+            input_args,
+            {'template.arg2': 'real.arg2'}
+        ) == {'real.arg2': 2}
+    assert spark_options_from_template_args(
+            input_args,
+            {'template.arg1': 'real.arg1',
+             'template.arg3': 'real.arg3',
+             'template.arg4': 'real.arg4'}
+        ) == {'real.arg1': 1,
+              'real.arg3': 3}
+    assert spark_options_from_template_args({}, option_map) == {}

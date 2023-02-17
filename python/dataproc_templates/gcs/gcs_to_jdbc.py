@@ -17,10 +17,13 @@ from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
+from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_reader import get_gcs_reader
+
 
 __all__ = ['GCSToJDBCTemplate']
 
@@ -52,14 +55,7 @@ class GCSToJDBCTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
-        for option_name, spark_option_name in constants.GCS_JDBC_INPUT_OPTIONAL_CSV_OPTIONS.items():
-            parser.add_argument(
-                f'--{option_name}',
-                dest=option_name,
-                required=False,
-                default=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_DEFAULT, ""),
-                help=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_HELP, "")
-            )
+        add_spark_options(parser, constants.GCS_JDBC_INPUT_SPARK_OPTIONS)
         parser.add_argument(
             f'--{constants.GCS_JDBC_OUTPUT_TABLE}',
             dest=constants.GCS_JDBC_OUTPUT_TABLE,
@@ -115,7 +111,6 @@ class GCSToJDBCTemplate(BaseTemplate):
         return vars(known_args)
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
-
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
@@ -134,28 +129,8 @@ class GCSToJDBCTemplate(BaseTemplate):
         )
 
         # Read
-        input_data: DataFrame
-
-        if input_file_format == constants.FORMAT_PRQT:
-            input_data = spark.read \
-                .parquet(input_file_location)
-        elif input_file_format == constants.FORMAT_AVRO:
-            input_data = spark.read \
-                .format(constants.FORMAT_AVRO_EXTD) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_CSV:
-            read_properties = {}
-            # Add any optional CSV options to argument dict.
-            for option_name, spark_option_name in constants.GCS_JDBC_INPUT_OPTIONAL_CSV_OPTIONS.items():
-                if args.get(option_name):
-                    read_properties[spark_option_name] = args[option_name]
-            input_data = spark.read \
-                .format(constants.FORMAT_CSV) \
-                .options(**read_properties) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_JSON:
-            input_data = spark.read \
-                .json(input_file_location)
+        spark_options = spark_options_from_template_args(args, constants.GCS_JDBC_INPUT_SPARK_OPTIONS)
+        input_data = get_gcs_reader(spark, input_file_format, input_file_location, spark_options)
 
         # Write
         if not jdbc_numpartitions:
