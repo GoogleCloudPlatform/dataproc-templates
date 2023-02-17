@@ -16,11 +16,12 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
-from pyspark.sql import SparkSession, DataFrame
-from pyspark import SparkContext, SparkConf
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
+from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_reader import get_gcs_reader
 
 __all__ = ['GCSToMONGOTemplate']
 
@@ -52,14 +53,7 @@ class GCSToMONGOTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
-        for option_name, spark_option_name in constants.GCS_MONGO_INPUT_OPTIONAL_CSV_OPTIONS.items():
-            parser.add_argument(
-                f'--{option_name}',
-                dest=option_name,
-                required=False,
-                default=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_DEFAULT, ""),
-                help=constants.CSV_OPTIONS[spark_option_name].get(constants.OPTION_HELP, "")
-            )
+        add_spark_options(parser, constants.GCS_MONGO_INPUT_SPARK_OPTIONS)
         parser.add_argument(
             f'--{constants.GCS_MONGO_OUTPUT_URI}',
             dest=constants.GCS_MONGO_OUTPUT_URI,
@@ -127,29 +121,10 @@ class GCSToMONGOTemplate(BaseTemplate):
         )
 
         # Read
-        input_data: DataFrame
+        spark_options = spark_options_from_template_args(args, constants.GCS_MONGO_INPUT_SPARK_OPTIONS)
+        input_data = get_gcs_reader(spark, input_file_format, input_file_location, spark_options)
 
-        if input_file_format == constants.FORMAT_PRQT:
-            input_data = spark.read \
-                .parquet(input_file_location)
-        elif input_file_format == constants.FORMAT_AVRO:
-            input_data = spark.read \
-                .format(constants.FORMAT_AVRO_EXTD) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_CSV:
-            read_properties = {}
-            # Add any optional CSV options to argument dict.
-            for option_name, spark_option_name in constants.GCS_MONGO_INPUT_OPTIONAL_CSV_OPTIONS.items():
-                if args.get(option_name):
-                    read_properties[spark_option_name] = args[option_name]
-            input_data = spark.read \
-                .format(constants.FORMAT_CSV) \
-                .options(**read_properties) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_JSON:
-            input_data = spark.read \
-                .json(input_file_location)
-
+        # Write
         input_data.write.format(constants.FORMAT_MONGO)\
             .option(constants.MONGO_URL, output_uri) \
             .option(constants.MONGO_DATABASE, output_database) \

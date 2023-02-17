@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Union
 import argparse
 
+import dataproc_templates.util.template_constants as constants
 from dataproc_templates import TemplateName
 
 
@@ -92,3 +93,26 @@ def get_log_level(args: Optional[Sequence[str]] = None) -> str:
     return known_args.log_level
 
 
+def add_spark_options(parser: argparse.ArgumentParser, template_to_spark_option_map: dict) -> None:
+    if not template_to_spark_option_map:
+        return
+
+    for option_name, spark_option_name in template_to_spark_option_map.items():
+        parser.add_argument(
+            f'--{option_name}',
+            dest=option_name,
+            required=False,
+            default=constants.SPARK_OPTIONS[spark_option_name].get(constants.OPTION_DEFAULT, ""),
+            help=constants.SPARK_OPTIONS[spark_option_name].get(constants.OPTION_HELP, "")
+        )
+
+
+def spark_options_from_template_args(arg_dict: dict, arg_to_option_map: dict) -> dict:
+    """
+    Accepts an argument dict and converts any template arguments that translate to Spark options to the correct Spark name.
+    Only options with a Truthy value are included.
+    """
+    if not arg_dict:
+        return arg_dict
+
+    return {arg_to_option_map[k]: v for k, v in arg_dict.items() if k in arg_to_option_map and v}

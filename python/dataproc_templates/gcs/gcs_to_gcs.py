@@ -22,9 +22,12 @@ from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
+from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_reader import get_gcs_reader
 
 
 __all__ = ['GCSToGCSTemplate']
+
 
 class GCSToGCSTemplate(BaseTemplate):
     """
@@ -54,6 +57,7 @@ class GCSToGCSTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
+        add_spark_options(parser, constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS)
         parser.add_argument(
             f'--{constants.GCS_TO_GCS_TEMP_VIEW_NAME}',
             dest=constants.GCS_TO_GCS_TEMP_VIEW_NAME,
@@ -143,29 +147,13 @@ class GCSToGCSTemplate(BaseTemplate):
         gcs_output_location: str = args[constants.GCS_TO_GCS_OUTPUT_LOCATION]
 
         logger.info(
-            "Starting GCS to GCS with tranformations spark job with parameters:\n"
+            "Starting GCS to GCS with tranformations Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        input_data: DataFrame
-
-        if gcs_input_format == constants.FORMAT_PRQT:
-            input_data = spark.read \
-                .parquet(gcs_input_location)
-        elif gcs_input_format == constants.FORMAT_AVRO:
-            input_data = spark.read \
-                .format(constants.FORMAT_AVRO) \
-                .load(gcs_input_location)
-        elif gcs_input_format == constants.FORMAT_CSV:
-            input_data = spark.read \
-                .format(constants.FORMAT_CSV) \
-                .option(constants.CSV_HEADER, True) \
-                .option(constants.CSV_INFER_SCHEMA, True) \
-                .load(gcs_input_location)
-        elif gcs_input_format == constants.FORMAT_JSON:
-            input_data = spark.read \
-                .json(gcs_input_location)
+        spark_options = spark_options_from_template_args(args, constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS)
+        input_data = get_gcs_reader(spark, gcs_input_format, gcs_input_location, spark_options, avro_format_override=constants.FORMAT_AVRO)
 
         if sql_query:
             # Create temp view on source data
