@@ -36,7 +36,7 @@ if [ -z "$SKIP_BUILD" ]; then
     python3 ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
 fi
 
-OPT_SPARK_VERSION="--version=1.0.29"
+OPT_SPARK_VERSION="--version=1.1"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
 OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
