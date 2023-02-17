@@ -38,6 +38,8 @@ from dataproc_templates.snowflake.snowflake_to_gcs import SnowflakeToGCSTemplate
 from dataproc_templates.redshift.redshift_to_gcs import RedshiftToGCSTemplate
 from dataproc_templates.cassandra.cassandra_to_bigquery import CassandraToBQTemplate
 from dataproc_templates.hive.util.hive_ddl_extractor import HiveDDLExtractorTemplate
+from dataproc_templates.kafka.kafka_to_bq import KafkaToBigQueryTemplate
+from dataproc_templates.kafka.kafka_to_gcs import KafkaToGCSTemplate
 
 from dataproc_templates.cassandra.cassandra_to_gcs import CassandraToGCSTemplate
 
@@ -64,7 +66,9 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.REDSHIFTTOGCS: RedshiftToGCSTemplate,
     TemplateName.CASSANDRATOBQ: CassandraToBQTemplate,
     TemplateName.CASSANDRATOGCS: CassandraToGCSTemplate,
-    TemplateName.HIVEDDLEXTRACTOR: HiveDDLExtractorTemplate
+    TemplateName.HIVEDDLEXTRACTOR: HiveDDLExtractorTemplate,
+    TemplateName.KAFKATOBQ: KafkaToBigQueryTemplate,
+    TemplateName.KAFKATOGCS: KafkaToGCSTemplate
 
 }
 
