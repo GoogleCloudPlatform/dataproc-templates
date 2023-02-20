@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import pprint
 from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
-import dataproc_templates.util.template_constants as constants
 from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_reader import get_gcs_reader
+from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
+import dataproc_templates.util.template_constants as constants
 
 
 __all__ = ['TextToBigQueryTemplate']
@@ -127,10 +127,12 @@ class TextToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        spark_options = spark_options_from_template_args(args, constants.TEXT_BQ_INPUT_SPARK_OPTIONS)
-        spark_options.update({constants.INPUT_COMPRESSION: input_file_codec_format,
-                              constants.INPUT_DELIMITER: input_delimiter})
-        input_data = get_gcs_reader(spark, constants.FORMAT_CSV, input_file_location, spark_options)
+        spark_read_options = spark_options_from_template_args(args, constants.TEXT_BQ_INPUT_SPARK_OPTIONS)
+        spark_read_options.update({constants.INPUT_COMPRESSION: input_file_codec_format,
+                                   constants.INPUT_DELIMITER: input_delimiter})
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, constants.FORMAT_CSV, input_file_location, spark_read_options
+        )
 
         # Write
         input_data.write \

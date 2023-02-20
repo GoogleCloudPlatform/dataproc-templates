@@ -20,7 +20,10 @@ import pprint
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_writer import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['HbaseToGCSTemplate']
 
@@ -38,7 +41,7 @@ class HbaseToGCSTemplate(BaseTemplate):
             f'--{constants.HBASE_GCS_OUTPUT_LOCATION}',
             dest=constants.HBASE_GCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS location for output files'
+            help='Cloud Storage location for output files'
         )
         parser.add_argument(
             f'--{constants.HBASE_GCS_OUTPUT_FORMAT}',
@@ -73,8 +76,9 @@ class HbaseToGCSTemplate(BaseTemplate):
             f'--{constants.HBASE_GCS_CATALOG_JSON}',
             dest=constants.HBASE_GCS_CATALOG_JSON,
             required=True,
-            help='Hbase catalog json'
+            help='Hbase catalog JSON'
         )
+        add_spark_options(parser, constants.HBASE_GCS_OUTPUT_SPARK_OPTIONS)
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -92,7 +96,7 @@ class HbaseToGCSTemplate(BaseTemplate):
         catalog: str = ''.join(args[constants.HBASE_GCS_CATALOG_JSON].split())
 
         logger.info(
-            "Starting Hbase to GCS spark job with parameters:\n"
+            "Starting Hbase to Cloud Storage Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -103,18 +107,8 @@ class HbaseToGCSTemplate(BaseTemplate):
                            .option("hbase.spark.use.hbasecontext", "false") \
                            .load()
 
-        #write
+        # Write
         writer: DataFrameWriter = input_data.write.mode(output_mode)
 
-        if output_format == constants.FORMAT_PRQT:
-            writer.parquet(output_location)
-        elif output_format == constants.FORMAT_AVRO:
-            writer \
-                .format(constants.FORMAT_AVRO) \
-                .save(output_location)
-        elif output_format == constants.FORMAT_CSV:
-            writer \
-                .option(constants.CSV_HEADER, True) \
-                .csv(output_location)
-        elif output_format == constants.FORMAT_JSON:
-            writer.json(output_location)
+        spark_write_options = spark_options_from_template_args(args, constants.HBASE_GCS_OUTPUT_SPARK_OPTIONS)
+        persist_dataframe_to_cloud_storage(writer, output_format, output_location, spark_write_options)

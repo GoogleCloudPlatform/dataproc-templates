@@ -19,34 +19,24 @@ from pyspark.sql import DataFrame, SparkSession
 import dataproc_templates.util.template_constants as constants
 
 
-def ingest_dataframe_from_cloud_storage(
-    spark: SparkSession,
+def persist_dataframe_to_cloud_storage(
+    input_dataframe: DataFrame,
     file_format: str,
     file_location: str,
     spark_options: dict,
-    avro_format_override: Optional[str] = None
 ) -> DataFrame:
-    """Return a Dataframe reader object with methods and options applied for reading from Cloud Storage."""
-    input_data: DataFrame
-
+    """Persist input_dataframe object with methods and options applied for writing to Cloud Storage."""
     if file_format == constants.FORMAT_PRQT:
-        input_data = spark.read \
+        input_dataframe \
             .parquet(file_location)
     elif file_format == constants.FORMAT_AVRO:
-        input_data = spark.read \
-            .format(avro_format_override or constants.FORMAT_AVRO_EXTD) \
-            .load(file_location)
+        input_dataframe \
+            .format(constants.FORMAT_AVRO) \
+            .save(file_location)
     elif file_format == constants.FORMAT_CSV:
-        input_data = spark.read \
-            .format(constants.FORMAT_CSV) \
+        input_dataframe \
             .options(**spark_options) \
-            .load(file_location)
+            .csv(file_location)
     elif file_format == constants.FORMAT_JSON:
-        input_data = spark.read \
+        input_dataframe \
             .json(file_location)
-    elif file_format == constants.FORMAT_DELTA:
-        input_data = spark.read \
-            .format(constants.FORMAT_DELTA) \
-            .load(file_location)
-
-    return input_data

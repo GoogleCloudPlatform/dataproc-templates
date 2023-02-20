@@ -64,12 +64,23 @@ def test_get_invalid_log_level():
 
 def test_add_spark_options():
     for option_set, set_name, option_prefix in [
-        (constants.GCS_JDBC_INPUT_SPARK_OPTIONS, 'GCS_JDBC_INPUT_SPARK_OPTIONS', 'gcs.jdbc'),
-        (constants.GCS_BQ_INPUT_SPARK_OPTIONS, 'GCS_BQ_INPUT_SPARK_OPTIONS', 'gcs.bigquery'),
-        (constants.GCS_BT_INPUT_SPARK_OPTIONS, 'GCS_BT_INPUT_SPARK_OPTIONS', 'gcs.bigtable'),
-        (constants.GCS_MONGO_INPUT_SPARK_OPTIONS, 'GCS_MONGO_INPUT_SPARK_OPTIONS', 'gcs.mongo'),
-        (constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS, 'GCS_TO_GCS_INPUT_SPARK_OPTIONS', 'gcs.to.gcs'),
-        (constants.TEXT_BQ_INPUT_SPARK_OPTIONS, 'TEXT_BQ_INPUT_SPARK_OPTIONS', 'text.bigquery'),
+        # Read options
+        (constants.GCS_JDBC_INPUT_SPARK_OPTIONS, 'GCS_JDBC_INPUT_SPARK_OPTIONS', 'gcs.jdbc.input'),
+        (constants.GCS_BQ_INPUT_SPARK_OPTIONS, 'GCS_BQ_INPUT_SPARK_OPTIONS', 'gcs.bigquery.input'),
+        (constants.GCS_BT_INPUT_SPARK_OPTIONS, 'GCS_BT_INPUT_SPARK_OPTIONS', 'gcs.bigtable.input'),
+        (constants.GCS_MONGO_INPUT_SPARK_OPTIONS, 'GCS_MONGO_INPUT_SPARK_OPTIONS', 'gcs.mongo.input'),
+        (constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS, 'GCS_TO_GCS_INPUT_SPARK_OPTIONS', 'gcs.to.gcs.input'),
+        (constants.TEXT_BQ_INPUT_SPARK_OPTIONS, 'TEXT_BQ_INPUT_SPARK_OPTIONS', 'text.bigquery.input'),
+        # Write options
+        (constants.BQ_GCS_OUTPUT_SPARK_OPTIONS, 'BQ_GCS_OUTPUT_SPARK_OPTIONS', 'bigquery.gcs.output'),
+        (constants.CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS, 'CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS', 'cassandratogcs.output'),
+        (constants.GCS_TO_GCS_OUTPUT_SPARK_OPTIONS, 'GCS_TO_GCS_OUTPUT_SPARK_OPTIONS', 'gcs.to.gcs.output'),
+        (constants.HBASE_GCS_OUTPUT_SPARK_OPTIONS, 'HBASE_GCS_OUTPUT_SPARK_OPTIONS', 'hbase.gcs.output'),
+        (constants.HIVE_GCS_OUTPUT_SPARK_OPTIONS, 'HIVE_GCS_OUTPUT_SPARK_OPTIONS', 'hive.gcs.output'),
+        (constants.JDBCTOGCS_OUTPUT_SPARK_OPTIONS, 'JDBCTOGCS_OUTPUT_SPARK_OPTIONS', 'jdbctogcs.output'),
+        (constants.MONGO_GCS_OUTPUT_SPARK_OPTIONS, 'MONGO_GCS_OUTPUT_SPARK_OPTIONS', 'mongo.gcs.output'),
+        (constants.REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS, 'REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS', 'redshifttogcs.output'),
+        (constants.SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS, 'SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS', 'snowflake.to.gcs.output'),
     ]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
         add_spark_options(parser, option_set)
