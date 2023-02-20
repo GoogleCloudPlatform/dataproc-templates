@@ -64,6 +64,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for 
 * [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery) (blogpost [link](https://medium.com/google-cloud/dataproc-serverless-pyspark-template-for-ingesting-compressed-text-files-to-bigquery-c6eab8fb6bc9))
 * [KafkaToBigQuery](/python/dataproc_templates/kafka/#kafka-to-bq)
 
+
 ## Dataproc Templates (Notebooks)
 Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more information
 
