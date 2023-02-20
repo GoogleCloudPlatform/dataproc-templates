@@ -77,6 +77,13 @@ def test_add_spark_options():
         for k in option_set:
             assert k.startswith(option_prefix), f'Attribute {k} does not start with {option_prefix}'
             assert hasattr(known_args, k), f'Attribute {k} missing from {set_name} args'
+            assert option_set[k] in constants.SPARK_OPTIONS, \
+                f'Attribute {k} maps to invalid Spark option {option_set[k]}'
+            spark_option = option_set[k]
+            assert (constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_HELP)
+                    or constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_READ_HELP)
+                    or constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_WRITE_HELP)), \
+                f'Attribute {spark_option} has no help text in SPARK_OPTIONS'
 
 
 def test_spark_options_from_template_args():
