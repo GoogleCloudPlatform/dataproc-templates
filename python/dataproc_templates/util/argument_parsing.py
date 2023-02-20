@@ -93,17 +93,23 @@ def get_log_level(args: Optional[Sequence[str]] = None) -> str:
     return known_args.log_level
 
 
-def add_spark_options(parser: argparse.ArgumentParser, template_to_spark_option_map: dict) -> None:
+def add_spark_options(parser: argparse.ArgumentParser, template_to_spark_option_map: dict, read_options: bool = True) -> None:
     if not template_to_spark_option_map:
         return
 
     for option_name, spark_option_name in template_to_spark_option_map.items():
+        if read_options:
+            help_text = (constants.SPARK_OPTIONS[spark_option_name].get(constants.OPTION_READ_HELP, "")
+                         or constants.SPARK_OPTIONS[spark_option_name].get(constants.OPTION_HELP, ""))
+        else:
+            help_text = (constants.SPARK_OPTIONS[spark_option_name].get(constants.OPTION_WRITE_HELP, "")
+                         or constants.SPARK_OPTIONS[spark_option_name].get(constants.OPTION_HELP, ""))
         parser.add_argument(
             f'--{option_name}',
             dest=option_name,
             required=False,
             default=constants.SPARK_OPTIONS[spark_option_name].get(constants.OPTION_DEFAULT, ""),
-            help=constants.SPARK_OPTIONS[spark_option_name].get(constants.OPTION_HELP, "")
+            help=help_text
         )
 
 
