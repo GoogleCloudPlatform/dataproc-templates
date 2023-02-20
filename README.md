@@ -62,6 +62,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for 
 * [RedshiftToGCS](/python/dataproc_templates/redshift#redshift-to-gcs) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
 * [SnowflakeToGCS](/python/dataproc_templates/snowflake#1-snowflake-to-gcs) (blogpost [link](https://medium.com/@varunikagupta96/exporting-data-from-snowflake-to-gcs-using-pyspark-on-dataproc-serverless-363d3bed551b))
 * [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery) (blogpost [link](https://medium.com/google-cloud/dataproc-serverless-pyspark-template-for-ingesting-compressed-text-files-to-bigquery-c6eab8fb6bc9))
+* [KafkaToBigQuery](/python/dataproc_templates/kafka/#kafka-to-bq)
 
 ## Dataproc Templates (Notebooks)
 Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more information
