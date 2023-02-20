@@ -21,6 +21,8 @@ import sys
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_writer import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
 
 from pyspark import SparkConf, SparkContext
@@ -43,7 +45,7 @@ class CassandraToGCSTemplate(BaseTemplate):
            f'--{constants.CASSANDRA_TO_GCS_INPUT_HOST}',
            dest=constants.CASSANDRA_TO_GCS_INPUT_HOST,
            required=True,
-           help='CASSANDRA GCS Input Host IP'
+           help='CASSANDRA Cloud Storage Input Host IP'
        )
        parser.add_argument(
            f'--{constants.CASSANDRA_TO_GCS_OUTPUT_FORMAT}',
@@ -61,7 +63,7 @@ class CassandraToGCSTemplate(BaseTemplate):
            f'--{constants.CASSANDRA_TO_GCS_OUTPUT_PATH}',
            dest=constants.CASSANDRA_TO_GCS_OUTPUT_PATH,
            required=True,
-           help='GCS location for output files'
+           help='Cloud Storage location for output files'
        )
        parser.add_argument(
            f'--{constants.CASSANDRA_TO_GCS_OUTPUT_SAVEMODE}',
@@ -86,26 +88,27 @@ class CassandraToGCSTemplate(BaseTemplate):
             required=False,
             default="casscon",
             help='To provide a name for connection between Cassandra and GCS'
-        )
+       )
        parser.add_argument(
             f'--{constants.CASSANDRA_TO_GCS_QUERY}',
             dest=constants.CASSANDRA_TO_GCS_QUERY,
             required=False,
             help='Optional query for selective exports'
-        )
+       )
 
        parser.add_argument(
             f'--{constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE}',
             dest=constants.CASSANDRA_TO_GCS_INPUT_KEYSPACE,
             required=(constants.CASSANDRA_TO_GCS_QUERY is None),
-            help='CASSANDRA GCS Input Keyspace'
-        )
+            help='CASSANDRA Cloud Storage Input Keyspace'
+       )
        parser.add_argument(
            f'--{constants.CASSANDRA_TO_GCS_INPUT_TABLE}',
            dest=constants.CASSANDRA_TO_GCS_INPUT_TABLE,
            required=(constants.CASSANDRA_TO_GCS_QUERY is None),
-           help='CASSANDRA GCS Input Table'
-        )
+           help='CASSANDRA Cloud Storage Input Table'
+       )
+       add_spark_options(parser, constants.CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS)
 
        known_args: argparse.Namespace
        known_args, _ = parser.parse_known_args(args)
@@ -141,7 +144,7 @@ class CassandraToGCSTemplate(BaseTemplate):
        query: str = args[constants.CASSANDRA_TO_GCS_QUERY]
 
        logger.info(
-           "Starting CASSANDRA to GCS spark job with parameters:\n"
+           "Starting CASSANDRA to Cloud Storage spark job with parameters:\n"
            f"{pprint.pformat(args)}"
        )
 
@@ -164,15 +167,5 @@ class CassandraToGCSTemplate(BaseTemplate):
        # Write
        writer: DataFrameWriter = input_data.write.mode(output_mode)
 
-       if output_format == constants.FORMAT_PRQT:
-           writer.parquet(output_location)
-       elif output_format == constants.FORMAT_AVRO:
-           writer \
-               .format(constants.FORMAT_AVRO) \
-               .save(output_location)
-       elif output_format == constants.FORMAT_CSV:
-           writer \
-               .option(constants.CSV_HEADER, True) \
-               .csv(output_location)
-       elif output_format == constants.FORMAT_JSON:
-           writer.json(output_location)
+       spark_write_options = spark_options_from_template_args(args, constants.CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS)
+       persist_dataframe_to_cloud_storage(writer, output_format, output_location, spark_write_options)

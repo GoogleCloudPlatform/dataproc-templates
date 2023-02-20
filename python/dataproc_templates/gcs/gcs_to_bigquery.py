@@ -21,8 +21,8 @@ from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
 import dataproc_templates.util.template_constants as constants
-from dataproc_templates.util.dataframe_reader import get_gcs_reader
 
 
 __all__ = ['GCSToBigQueryTemplate']
@@ -111,13 +111,15 @@ class GCSToBigQueryTemplate(BaseTemplate):
         output_mode: str = args[constants.GCS_BQ_OUTPUT_MODE]
 
         logger.info(
-            "Starting GCS to BigQuery Spark job with parameters:\n"
+            "Starting Cloud Storage to BigQuery Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        spark_options = spark_options_from_template_args(args, constants.GCS_BQ_INPUT_SPARK_OPTIONS)
-        input_data = get_gcs_reader(spark, input_file_format, input_file_location, spark_options)
+        spark_read_options = spark_options_from_template_args(args, constants.GCS_BQ_INPUT_SPARK_OPTIONS)
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, input_file_format, input_file_location, spark_read_options
+        )
 
         # Write
         input_data.write \

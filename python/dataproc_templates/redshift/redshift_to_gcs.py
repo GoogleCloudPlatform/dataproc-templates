@@ -20,14 +20,17 @@ import pprint
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_writer import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['RedshiftToGCSTemplate']
 
 
 class RedshiftToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from REDSHIFT into GCS
+    Dataproc template implementing loads from REDSHIFT into Cloud Storage
     """
 
     @staticmethod
@@ -76,7 +79,7 @@ class RedshiftToGCSTemplate(BaseTemplate):
             f'--{constants.REDSHIFTTOGCS_OUTPUT_LOCATION}',
             dest=constants.REDSHIFTTOGCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS location for output files'
+            help='Cloud Storage location for output files'
         )
         parser.add_argument(
             f'--{constants.REDSHIFTTOGCS_OUTPUT_FORMAT}',
@@ -112,8 +115,9 @@ class RedshiftToGCSTemplate(BaseTemplate):
             dest=constants.REDSHIFTTOGCS_OUTPUT_PARTITIONCOLUMN,
             required=False,
             default="",
-            help='GCS partition column name'
+            help='Cloud Storage partition column name'
         )
+        add_spark_options(parser, constants.REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS)
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -138,7 +142,7 @@ class RedshiftToGCSTemplate(BaseTemplate):
         output_partitioncolumn: str = args[constants.REDSHIFTTOGCS_OUTPUT_PARTITIONCOLUMN]
 
         logger.info(
-            "Starting REDSHIFT to GCS spark job with parameters:\n"
+            "Starting REDSHIFT to Cloud Storage Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -162,17 +166,5 @@ class RedshiftToGCSTemplate(BaseTemplate):
         else:
             writer: DataFrameWriter = input_data.write.mode(output_mode)
 
-        if output_format == constants.FORMAT_PRQT:
-            writer \
-                .parquet(output_location)
-        elif output_format == constants.FORMAT_AVRO:
-            writer \
-                .format(constants.FORMAT_AVRO) \
-                .save(output_location)
-        elif output_format == constants.FORMAT_CSV:
-            writer \
-                .option(constants.CSV_HEADER, True) \
-                .csv(output_location)
-        elif output_format == constants.FORMAT_JSON:
-            writer \
-                .json(output_location)
+        spark_write_options = spark_options_from_template_args(args, constants.REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS)
+        persist_dataframe_to_cloud_storage(writer, output_format, output_location, spark_write_options)

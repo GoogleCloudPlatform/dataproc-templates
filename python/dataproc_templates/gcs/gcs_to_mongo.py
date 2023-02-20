@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ from pyspark.sql import SparkSession
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_reader import get_gcs_reader
+from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
+
 
 __all__ = ['GCSToMONGOTemplate']
 
@@ -121,8 +122,10 @@ class GCSToMONGOTemplate(BaseTemplate):
         )
 
         # Read
-        spark_options = spark_options_from_template_args(args, constants.GCS_MONGO_INPUT_SPARK_OPTIONS)
-        input_data = get_gcs_reader(spark, input_file_format, input_file_location, spark_options)
+        spark_read_options = spark_options_from_template_args(args, constants.GCS_MONGO_INPUT_SPARK_OPTIONS)
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, input_file_format, input_file_location, spark_read_options
+        )
 
         # Write
         input_data.write.format(constants.FORMAT_MONGO)\

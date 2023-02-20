@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@ from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_reader import get_gcs_reader
+from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
+from dataproc_templates.util.dataframe_writer import persist_dataframe_to_cloud_storage
 
 
 __all__ = ['GCSToGCSTemplate']
@@ -31,7 +32,7 @@ __all__ = ['GCSToGCSTemplate']
 
 class GCSToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from GCS into GCS post SQL transformation
+    Dataproc template implementing loads from Cloud Storage into Cloud Storage post SQL transformation
     """
 
     @staticmethod
@@ -43,13 +44,13 @@ class GCSToGCSTemplate(BaseTemplate):
             f'--{constants.GCS_TO_GCS_INPUT_LOCATION}',
             dest=constants.GCS_TO_GCS_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input files'
+            help='Cloud Storage location of the input files'
         )
         parser.add_argument(
             f'--{constants.GCS_TO_GCS_INPUT_FORMAT}',
             dest=constants.GCS_TO_GCS_INPUT_FORMAT,
             required=True,
-            help='GCS input file format (one of: avro,parquet,csv,json)',
+            help='Cloud Storage input file format (one of: avro,parquet,csv,json)',
             choices=[
                 constants.FORMAT_AVRO,
                 constants.FORMAT_PRQT,
@@ -58,6 +59,7 @@ class GCSToGCSTemplate(BaseTemplate):
             ]
         )
         add_spark_options(parser, constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.GCS_TO_GCS_OUTPUT_SPARK_OPTIONS)
         parser.add_argument(
             f'--{constants.GCS_TO_GCS_TEMP_VIEW_NAME}',
             dest=constants.GCS_TO_GCS_TEMP_VIEW_NAME,
@@ -121,7 +123,7 @@ class GCSToGCSTemplate(BaseTemplate):
             dest=constants.GCS_TO_GCS_OUTPUT_LOCATION,
             required=True,
             help=(
-                'destination GCS location'
+                'Destination Cloud Storage location'
             )
         )
 
@@ -147,13 +149,16 @@ class GCSToGCSTemplate(BaseTemplate):
         gcs_output_location: str = args[constants.GCS_TO_GCS_OUTPUT_LOCATION]
 
         logger.info(
-            "Starting GCS to GCS with tranformations Spark job with parameters:\n"
+            "Starting Cloud Storage to Cloud Storage with tranformations Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        spark_options = spark_options_from_template_args(args, constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS)
-        input_data = get_gcs_reader(spark, gcs_input_format, gcs_input_location, spark_options, avro_format_override=constants.FORMAT_AVRO)
+        spark_read_options = spark_options_from_template_args(args, constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS)
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, gcs_input_format, gcs_input_location, spark_read_options,
+            avro_format_override=constants.FORMAT_AVRO
+        )
 
         if sql_query:
             # Create temp view on source data
@@ -169,17 +174,5 @@ class GCSToGCSTemplate(BaseTemplate):
         else:
             writer: DataFrameWriter = output_data.write.mode(gcs_output_mode)
 
-        if gcs_output_format == constants.FORMAT_PRQT:
-            writer \
-                .parquet(gcs_output_location)
-        elif gcs_output_format == constants.FORMAT_AVRO:
-            writer \
-                .format(constants.FORMAT_AVRO) \
-                .save(gcs_output_location)
-        elif gcs_output_format == constants.FORMAT_CSV:
-            writer \
-                .option(constants.CSV_HEADER, True) \
-                .csv(gcs_output_location)
-        elif gcs_output_format == constants.FORMAT_JSON:
-            writer \
-                .json(gcs_output_location)
+        spark_write_options = spark_options_from_template_args(args, constants.GCS_TO_GCS_OUTPUT_SPARK_OPTIONS)
+        persist_dataframe_to_cloud_storage(writer, gcs_output_format, gcs_output_location, spark_write_options)

@@ -21,14 +21,17 @@ import sys
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_writer import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['SnowflakeToGCSTemplate']
 
 
 class SnowflakeToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from Snowflake to GCS
+    Dataproc template implementing loads from Snowflake to Cloud Storage
     """
 
     @staticmethod
@@ -109,7 +112,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             f'--{constants.SNOWFLAKE_TO_GCS_OUTPUT_LOCATION}',
             dest=constants.SNOWFLAKE_TO_GCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS output location where the migrated data will be placed'
+            help='Cloud Storage output location where the migrated data will be placed'
         )
 
         parser.add_argument(
@@ -153,8 +156,9 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             dest=constants.SNOWFLAKE_TO_GCS_PARTITION_COLUMN,
             required=False,
             default="",
-            help='Column name to partition data by, in GCS bucket'
+            help='Column name to partition data by, in Cloud Storage bucket'
         )
+        add_spark_options(parser, constants.SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS)
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -191,7 +195,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
         sf_query: str = args[constants.SNOWFLAKE_TO_GCS_SF_QUERY]
 
         logger.info(
-            "Starting Snowflake to GCS spark job with parameters:\n"
+            "Starting Snowflake to Cloud Storage Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -211,6 +215,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
         }
 
         return sf_options, data_options
+
 
     def read_data(self, logger: Logger, spark: SparkSession, sf_opt: Dict[str,Any], data_opt: Dict[str,Any] ) -> DataFrame:
 
@@ -242,6 +247,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
 
         return input_data
 
+
     def write_data(self, logger: Logger, args: Dict[str, Any], input_data: DataFrame) -> None:
 
         gcs_output_format: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_FORMAT]
@@ -251,7 +257,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
 
         # Write
         logger.info(
-            "Starting process of writing data to GCS \n"
+            "Starting process of writing data to Cloud Storage \n"
         )
 
         if gcs_partition_col:
@@ -260,23 +266,11 @@ class SnowflakeToGCSTemplate(BaseTemplate):
         else:
             writer: DataFrameWriter = input_data.write.mode(gcs_output_mode)
 
-        if gcs_output_format == constants.FORMAT_PRQT:
-            writer \
-                .parquet(gcs_output_location)
-        elif gcs_output_format == constants.FORMAT_AVRO:
-            writer \
-                .format(constants.FORMAT_AVRO) \
-                .save(gcs_output_location)
-        elif gcs_output_format == constants.FORMAT_CSV:
-            writer \
-                .option(constants.CSV_HEADER, True) \
-                .csv(gcs_output_location)
-        elif gcs_output_format == constants.FORMAT_JSON:
-            writer \
-                .json(gcs_output_location)
+        spark_write_options = spark_options_from_template_args(args, constants.SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS)
+        persist_dataframe_to_cloud_storage(writer, gcs_output_format, gcs_output_location, spark_write_options)
 
         logger.info(
-            "Data from source has been loaded to GCS successfully"
+            "Data from source has been loaded to Cloud Storage successfully"
         )
 
 
@@ -289,7 +283,3 @@ class SnowflakeToGCSTemplate(BaseTemplate):
         input_data = self.read_data(logger, spark, sf_options, data_options)
 
         self.write_data(logger, args, input_data)
-
-
-
-

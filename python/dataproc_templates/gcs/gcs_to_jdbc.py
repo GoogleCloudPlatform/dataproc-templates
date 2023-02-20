@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ from pyspark.sql import SparkSession
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_reader import get_gcs_reader
+from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
 
 
 __all__ = ['GCSToJDBCTemplate']
@@ -30,7 +30,7 @@ __all__ = ['GCSToJDBCTemplate']
 
 class GCSToJDBCTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from GCS into JDBC
+    Dataproc template implementing loads from Cloud Storage into JDBC
     """
 
     @staticmethod
@@ -41,7 +41,7 @@ class GCSToJDBCTemplate(BaseTemplate):
             f'--{constants.GCS_JDBC_INPUT_LOCATION}',
             dest=constants.GCS_JDBC_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input files'
+            help='Cloud Storage location of the input files'
         )
         parser.add_argument(
             f'--{constants.GCS_JDBC_INPUT_FORMAT}',
@@ -124,18 +124,21 @@ class GCSToJDBCTemplate(BaseTemplate):
         jdbc_numpartitions: int = args[constants.GCS_JDBC_NUMPARTITIONS]
 
         logger.info(
-            "Starting GCS to JDBC Spark job with parameters:\n"
+            "Starting Cloud Storage to JDBC Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        spark_options = spark_options_from_template_args(args, constants.GCS_JDBC_INPUT_SPARK_OPTIONS)
-        input_data = get_gcs_reader(spark, input_file_format, input_file_location, spark_options)
+        spark_read_options = spark_options_from_template_args(args, constants.GCS_JDBC_INPUT_SPARK_OPTIONS)
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, input_file_format, input_file_location, spark_read_options
+        )
 
         # Write
         if not jdbc_numpartitions:
             jdbc_numpartitions = input_data.rdd.getNumPartitions()
 
+        # TODO Convert this call to a function in dataproc_templates.util.dataframe_writer
         input_data.write \
             .format(constants.FORMAT_JDBC) \
             .option(constants.JDBC_URL, jdbc_url) \

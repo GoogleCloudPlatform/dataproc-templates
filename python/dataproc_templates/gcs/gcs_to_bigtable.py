@@ -20,9 +20,9 @@ import pprint
 from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
-import dataproc_templates.util.template_constants as constants
 from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_reader import get_gcs_reader
+from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
+import dataproc_templates.util.template_constants as constants
 
 
 __all__ = ['GCSToBigTableTemplate']
@@ -78,13 +78,15 @@ class GCSToBigTableTemplate(BaseTemplate):
         catalog: str = ''.join(args[constants.GCS_BT_HBASE_CATALOG_JSON].split())
 
         logger.info(
-            "Starting GCS to BigTable Spark job with parameters:\n"
+            "Starting Cloud Storage to BigTable Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        spark_options = spark_options_from_template_args(args, constants.GCS_BT_INPUT_SPARK_OPTIONS)
-        input_data = get_gcs_reader(spark, input_file_format, input_file_location, spark_options)
+        spark_read_options = spark_options_from_template_args(args, constants.GCS_BT_INPUT_SPARK_OPTIONS)
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, input_file_format, input_file_location, spark_read_options
+        )
 
         # Write
         input_data.write \

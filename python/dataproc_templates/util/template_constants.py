@@ -48,6 +48,7 @@ JDBC_CREATE_TABLE_OPTIONS = "createTableOptions"
 CSV_CHARTOESCAPEQUOTEESCAPING = "charToEscapeQuoteEscaping"
 CSV_COLUMNNAMEOFCORRUPTRECORD = "columnNameOfCorruptRecord"
 CSV_COMMENT = "comment"
+CSV_COMPRESSION = "compression"
 CSV_DATEFORMAT = "dateFormat"
 CSV_EMPTYVALUE = "emptyValue"
 CSV_ENCODING = "encoding"
@@ -110,6 +111,9 @@ SPARK_OPTIONS = {
     CSV_COMMENT:
         {OPTION_READ_HELP: "Sets a single character used for skipping lines beginning with this "
                            "character. By default it is disabled"},
+    CSV_COMPRESSION:
+        {OPTION_WRITE_HELP: "Compression codec to use when saving to file. This can be one of the known "
+                            "case-insensitive short names (none, bzip2, gzip, lz4, snappy and deflate)"},
     CSV_DATEFORMAT:
         {OPTION_HELP: "Sets the string that indicates a date format. This applies to date type"},
     CSV_EMPTYVALUE:
@@ -188,6 +192,60 @@ SPARK_OPTIONS = {
                            "Valid values are: STOP_AT_CLOSING_QUOTE, BACK_TO_DELIMITER, STOP_AT_DELIMITER, SKIP_VALUE, RAISE_ERROR"},
 }
 
+# Helper functions for applying SPARK_OPTIONS to templates
+def get_template_input_spark_options(prefix):
+    return {
+        prefix + CSV_CHARTOESCAPEQUOTEESCAPING.lower(): CSV_CHARTOESCAPEQUOTEESCAPING,
+        prefix + CSV_COLUMNNAMEOFCORRUPTRECORD.lower(): CSV_COLUMNNAMEOFCORRUPTRECORD,
+        prefix + CSV_COMMENT.lower(): CSV_COMMENT,
+        prefix + CSV_DATEFORMAT.lower(): CSV_DATEFORMAT,
+        prefix + CSV_EMPTYVALUE.lower(): CSV_EMPTYVALUE,
+        prefix + CSV_ENCODING.lower(): CSV_ENCODING,
+        prefix + CSV_ENFORCESCHEMA.lower(): CSV_ENFORCESCHEMA,
+        prefix + CSV_ESCAPE.lower(): CSV_ESCAPE,
+        prefix + CSV_HEADER.lower(): CSV_HEADER,
+        prefix + CSV_IGNORELEADINGWHITESPACE.lower(): CSV_IGNORELEADINGWHITESPACE,
+        prefix + CSV_IGNORETRAILINGWHITESPACE.lower(): CSV_IGNORETRAILINGWHITESPACE,
+        prefix + CSV_INFER_SCHEMA.lower(): CSV_INFER_SCHEMA,
+        prefix + CSV_LINESEP.lower(): CSV_LINESEP,
+        prefix + CSV_LOCALE.lower(): CSV_LOCALE,
+        prefix + CSV_MAXCHARSPERCOLUMN.lower(): CSV_MAXCHARSPERCOLUMN,
+        prefix + CSV_MAXCOLUMNS.lower(): CSV_MAXCOLUMNS,
+        prefix + CSV_MODE.lower(): CSV_MODE,
+        prefix + CSV_MULTILINE.lower(): CSV_MULTILINE,
+        prefix + CSV_NANVALUE.lower(): CSV_NANVALUE,
+        prefix + CSV_NULLVALUE.lower(): CSV_NULLVALUE,
+        prefix + CSV_NEGATIVEINF.lower(): CSV_NEGATIVEINF,
+        prefix + CSV_POSITIVEINF.lower(): CSV_POSITIVEINF,
+        prefix + CSV_QUOTE.lower(): CSV_QUOTE,
+        prefix + CSV_SAMPLINGRATIO.lower(): CSV_SAMPLINGRATIO,
+        prefix + CSV_SEP.lower(): CSV_SEP,
+        prefix + CSV_TIMESTAMPFORMAT.lower(): CSV_TIMESTAMPFORMAT,
+        prefix + CSV_TIMESTAMPNTZFORMAT.lower(): CSV_TIMESTAMPNTZFORMAT,
+        prefix + CSV_UNESCAPEDQUOTEHANDLING.lower(): CSV_UNESCAPEDQUOTEHANDLING,
+    }
+
+def get_template_output_spark_options(prefix):
+    return {
+        prefix + CSV_CHARTOESCAPEQUOTEESCAPING.lower(): CSV_CHARTOESCAPEQUOTEESCAPING,
+        prefix + CSV_COMPRESSION.lower(): CSV_COMPRESSION,
+        prefix + CSV_DATEFORMAT.lower(): CSV_DATEFORMAT,
+        prefix + CSV_EMPTYVALUE.lower(): CSV_EMPTYVALUE,
+        prefix + CSV_ENCODING.lower(): CSV_ENCODING,
+        prefix + CSV_ESCAPE.lower(): CSV_ESCAPE,
+        prefix + CSV_ESCAPEQUOTES.lower(): CSV_ESCAPEQUOTES,
+        prefix + CSV_HEADER.lower(): CSV_HEADER,
+        prefix + CSV_IGNORELEADINGWHITESPACE.lower(): CSV_IGNORELEADINGWHITESPACE,
+        prefix + CSV_IGNORETRAILINGWHITESPACE.lower(): CSV_IGNORETRAILINGWHITESPACE,
+        prefix + CSV_LINESEP.lower(): CSV_LINESEP,
+        prefix + CSV_NULLVALUE.lower(): CSV_NULLVALUE,
+        prefix + CSV_QUOTE.lower(): CSV_QUOTE,
+        prefix + CSV_QUOTEALL.lower(): CSV_QUOTEALL,
+        prefix + CSV_SEP.lower(): CSV_SEP,
+        prefix + CSV_TIMESTAMPFORMAT.lower(): CSV_TIMESTAMPFORMAT,
+        prefix + CSV_TIMESTAMPNTZFORMAT.lower(): CSV_TIMESTAMPNTZFORMAT,
+    }
+
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
 OUTPUT_MODE_APPEND = "append"
@@ -202,65 +260,8 @@ GCS_BQ_OUTPUT_TABLE = "gcs.bigquery.output.table"
 GCS_BQ_OUTPUT_MODE = "gcs.bigquery.output.mode"
 GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name"
-GCS_BQ_INPUT_CHARTOESCAPEQUOTEESCAPING = "gcs.bigquery.input.chartoescapequoteescaping"
-GCS_BQ_INPUT_COLUMNNAMEOFCORRUPTRECORD = "gcs.bigquery.input.columnnameofcorruptrecord"
-GCS_BQ_INPUT_COMMENT = "gcs.bigquery.input.comment"
-GCS_BQ_INPUT_DATEFORMAT = "gcs.bigquery.input.dateformat"
-GCS_BQ_INPUT_EMPTYVALUE = "gcs.bigquery.input.emptyvalue"
-GCS_BQ_INPUT_ENCODING = "gcs.bigquery.input.encoding"
-GCS_BQ_INPUT_ENFORCESCHEMA = "gcs.bigquery.input.enforceschema"
-GCS_BQ_INPUT_ESCAPE = "gcs.bigquery.input.escape"
-GCS_BQ_INPUT_HEADER = "gcs.bigquery.input.header"
-GCS_BQ_INPUT_IGNORELEADINGWHITESPACE = "gcs.bigquery.input.ignoreleadingwhitespace"
-GCS_BQ_INPUT_IGNORETRAILINGWHITESPACE = "gcs.bigquery.input.ignoretrailingwhitespace"
-GCS_BQ_INPUT_INFER_SCHEMA = "gcs.bigquery.input.inferschema"
-GCS_BQ_INPUT_LINESEP = "gcs.bigquery.input.linesep"
-GCS_BQ_INPUT_LOCALE = "gcs.bigquery.input.locale"
-GCS_BQ_INPUT_MAXCHARSPERCOLUMN = "gcs.bigquery.input.maxcharspercolumn"
-GCS_BQ_INPUT_MAXCOLUMNS = "gcs.bigquery.input.maxcolumns"
-GCS_BQ_INPUT_MODE = "gcs.bigquery.input.mode"
-GCS_BQ_INPUT_MULTILINE = "gcs.bigquery.input.multiline"
-GCS_BQ_INPUT_NANVALUE = "gcs.bigquery.input.nanvalue"
-GCS_BQ_INPUT_NULLVALUE = "gcs.bigquery.input.nullvalue"
-GCS_BQ_INPUT_NEGATIVEINF = "gcs.bigquery.input.negativeinf"
-GCS_BQ_INPUT_POSITIVEINF = "gcs.bigquery.input.positiveinf"
-GCS_BQ_INPUT_QUOTE = "gcs.bigquery.input.quote"
-GCS_BQ_INPUT_SAMPLINGRATIO = "gcs.bigquery.input.samplingratio"
-GCS_BQ_INPUT_SEP = "gcs.bigquery.input.sep"
-GCS_BQ_INPUT_TIMESTAMPFORMAT = "gcs.bigquery.input.timestampformat"
-GCS_BQ_INPUT_TIMESTAMPNTZFORMAT = "gcs.bigquery.input.timestampntzformat"
-GCS_BQ_INPUT_UNESCAPEDQUOTEHANDLING = "gcs.bigquery.input.unescapedquotehandling"
-# Template options linked to JDBC option names.
-GCS_BQ_INPUT_SPARK_OPTIONS = {
-    GCS_BQ_INPUT_CHARTOESCAPEQUOTEESCAPING: CSV_CHARTOESCAPEQUOTEESCAPING,
-    GCS_BQ_INPUT_COLUMNNAMEOFCORRUPTRECORD: CSV_COLUMNNAMEOFCORRUPTRECORD,
-    GCS_BQ_INPUT_COMMENT: CSV_COMMENT,
-    GCS_BQ_INPUT_DATEFORMAT: CSV_DATEFORMAT,
-    GCS_BQ_INPUT_EMPTYVALUE: CSV_EMPTYVALUE,
-    GCS_BQ_INPUT_ENCODING: CSV_ENCODING,
-    GCS_BQ_INPUT_ENFORCESCHEMA: CSV_ENFORCESCHEMA,
-    GCS_BQ_INPUT_ESCAPE: CSV_ESCAPE,
-    GCS_BQ_INPUT_HEADER: CSV_HEADER,
-    GCS_BQ_INPUT_IGNORELEADINGWHITESPACE: CSV_IGNORELEADINGWHITESPACE,
-    GCS_BQ_INPUT_IGNORETRAILINGWHITESPACE: CSV_IGNORETRAILINGWHITESPACE,
-    GCS_BQ_INPUT_INFER_SCHEMA: CSV_INFER_SCHEMA,
-    GCS_BQ_INPUT_LINESEP: CSV_LINESEP,
-    GCS_BQ_INPUT_LOCALE: CSV_LOCALE,
-    GCS_BQ_INPUT_MAXCHARSPERCOLUMN: CSV_MAXCHARSPERCOLUMN,
-    GCS_BQ_INPUT_MAXCOLUMNS: CSV_MAXCOLUMNS,
-    GCS_BQ_INPUT_MODE: CSV_MODE,
-    GCS_BQ_INPUT_MULTILINE: CSV_MULTILINE,
-    GCS_BQ_INPUT_NANVALUE: CSV_NANVALUE,
-    GCS_BQ_INPUT_NULLVALUE: CSV_NULLVALUE,
-    GCS_BQ_INPUT_NEGATIVEINF: CSV_NEGATIVEINF,
-    GCS_BQ_INPUT_POSITIVEINF: CSV_POSITIVEINF,
-    GCS_BQ_INPUT_QUOTE: CSV_QUOTE,
-    GCS_BQ_INPUT_SAMPLINGRATIO: CSV_SAMPLINGRATIO,
-    GCS_BQ_INPUT_SEP: CSV_SEP,
-    GCS_BQ_INPUT_TIMESTAMPFORMAT: CSV_TIMESTAMPFORMAT,
-    GCS_BQ_INPUT_TIMESTAMPNTZFORMAT: CSV_TIMESTAMPNTZFORMAT,
-    GCS_BQ_INPUT_UNESCAPEDQUOTEHANDLING: CSV_UNESCAPEDQUOTEHANDLING,
-}
+# Template options linked to Spark Dataframe option names.
+GCS_BQ_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.bigquery.input.")
 
 # GCS to JDBC
 GCS_JDBC_INPUT_LOCATION = "gcs.jdbc.input.location"
@@ -271,65 +272,8 @@ GCS_JDBC_OUTPUT_URL = "gcs.jdbc.output.url"
 GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver"
 GCS_JDBC_BATCH_SIZE = "gcs.jdbc.batch.size"
 GCS_JDBC_NUMPARTITIONS = "gcs.jdbc.numpartitions"
-GCS_JDBC_INPUT_CHARTOESCAPEQUOTEESCAPING = "gcs.jdbc.input.chartoescapequoteescaping"
-GCS_JDBC_INPUT_COLUMNNAMEOFCORRUPTRECORD = "gcs.jdbc.input.columnnameofcorruptrecord"
-GCS_JDBC_INPUT_COMMENT = "gcs.jdbc.input.comment"
-GCS_JDBC_INPUT_DATEFORMAT = "gcs.jdbc.input.dateformat"
-GCS_JDBC_INPUT_EMPTYVALUE = "gcs.jdbc.input.emptyvalue"
-GCS_JDBC_INPUT_ENCODING = "gcs.jdbc.input.encoding"
-GCS_JDBC_INPUT_ENFORCESCHEMA = "gcs.jdbc.input.enforceschema"
-GCS_JDBC_INPUT_ESCAPE = "gcs.jdbc.input.escape"
-GCS_JDBC_INPUT_HEADER = "gcs.jdbc.input.header"
-GCS_JDBC_INPUT_IGNORELEADINGWHITESPACE = "gcs.jdbc.input.ignoreleadingwhitespace"
-GCS_JDBC_INPUT_IGNORETRAILINGWHITESPACE = "gcs.jdbc.input.ignoretrailingwhitespace"
-GCS_JDBC_INPUT_INFER_SCHEMA = "gcs.jdbc.input.inferschema"
-GCS_JDBC_INPUT_LINESEP = "gcs.jdbc.input.linesep"
-GCS_JDBC_INPUT_LOCALE = "gcs.jdbc.input.locale"
-GCS_JDBC_INPUT_MAXCHARSPERCOLUMN = "gcs.jdbc.input.maxcharspercolumn"
-GCS_JDBC_INPUT_MAXCOLUMNS = "gcs.jdbc.input.maxcolumns"
-GCS_JDBC_INPUT_MODE = "gcs.jdbc.input.mode"
-GCS_JDBC_INPUT_MULTILINE = "gcs.jdbc.input.multiline"
-GCS_JDBC_INPUT_NANVALUE = "gcs.jdbc.input.nanvalue"
-GCS_JDBC_INPUT_NULLVALUE = "gcs.jdbc.input.nullvalue"
-GCS_JDBC_INPUT_NEGATIVEINF = "gcs.jdbc.input.negativeinf"
-GCS_JDBC_INPUT_POSITIVEINF = "gcs.jdbc.input.positiveinf"
-GCS_JDBC_INPUT_QUOTE = "gcs.jdbc.input.quote"
-GCS_JDBC_INPUT_SAMPLINGRATIO = "gcs.jdbc.input.samplingratio"
-GCS_JDBC_INPUT_SEP = "gcs.jdbc.input.sep"
-GCS_JDBC_INPUT_TIMESTAMPFORMAT = "gcs.jdbc.input.timestampformat"
-GCS_JDBC_INPUT_TIMESTAMPNTZFORMAT = "gcs.jdbc.input.timestampntzformat"
-GCS_JDBC_INPUT_UNESCAPEDQUOTEHANDLING = "gcs.jdbc.input.unescapedquotehandling"
-# Template options linked to JDBC option names.
-GCS_JDBC_INPUT_SPARK_OPTIONS = {
-    GCS_JDBC_INPUT_CHARTOESCAPEQUOTEESCAPING: CSV_CHARTOESCAPEQUOTEESCAPING,
-    GCS_JDBC_INPUT_COLUMNNAMEOFCORRUPTRECORD: CSV_COLUMNNAMEOFCORRUPTRECORD,
-    GCS_JDBC_INPUT_COMMENT: CSV_COMMENT,
-    GCS_JDBC_INPUT_DATEFORMAT: CSV_DATEFORMAT,
-    GCS_JDBC_INPUT_EMPTYVALUE: CSV_EMPTYVALUE,
-    GCS_JDBC_INPUT_ENCODING: CSV_ENCODING,
-    GCS_JDBC_INPUT_ENFORCESCHEMA: CSV_ENFORCESCHEMA,
-    GCS_JDBC_INPUT_ESCAPE: CSV_ESCAPE,
-    GCS_JDBC_INPUT_HEADER: CSV_HEADER,
-    GCS_JDBC_INPUT_IGNORELEADINGWHITESPACE: CSV_IGNORELEADINGWHITESPACE,
-    GCS_JDBC_INPUT_IGNORETRAILINGWHITESPACE: CSV_IGNORETRAILINGWHITESPACE,
-    GCS_JDBC_INPUT_INFER_SCHEMA: CSV_INFER_SCHEMA,
-    GCS_JDBC_INPUT_LINESEP: CSV_LINESEP,
-    GCS_JDBC_INPUT_LOCALE: CSV_LOCALE,
-    GCS_JDBC_INPUT_MAXCHARSPERCOLUMN: CSV_MAXCHARSPERCOLUMN,
-    GCS_JDBC_INPUT_MAXCOLUMNS: CSV_MAXCOLUMNS,
-    GCS_JDBC_INPUT_MODE: CSV_MODE,
-    GCS_JDBC_INPUT_MULTILINE: CSV_MULTILINE,
-    GCS_JDBC_INPUT_NANVALUE: CSV_NANVALUE,
-    GCS_JDBC_INPUT_NULLVALUE: CSV_NULLVALUE,
-    GCS_JDBC_INPUT_NEGATIVEINF: CSV_NEGATIVEINF,
-    GCS_JDBC_INPUT_POSITIVEINF: CSV_POSITIVEINF,
-    GCS_JDBC_INPUT_QUOTE: CSV_QUOTE,
-    GCS_JDBC_INPUT_SAMPLINGRATIO: CSV_SAMPLINGRATIO,
-    GCS_JDBC_INPUT_SEP: CSV_SEP,
-    GCS_JDBC_INPUT_TIMESTAMPFORMAT: CSV_TIMESTAMPFORMAT,
-    GCS_JDBC_INPUT_TIMESTAMPNTZFORMAT: CSV_TIMESTAMPNTZFORMAT,
-    GCS_JDBC_INPUT_UNESCAPEDQUOTEHANDLING: CSV_UNESCAPEDQUOTEHANDLING,
-}
+# Template options linked to Spark Dataframe option names.
+GCS_JDBC_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.jdbc.input.")
 
 #GCS to Mongo
 GCS_MONGO_INPUT_LOCATION = "gcs.mongo.input.location"
@@ -339,65 +283,8 @@ GCS_MONGO_OUTPUT_DATABASE = "gcs.mongo.output.database"
 GCS_MONGO_OUTPUT_COLLECTION = "gcs.mongo.output.collection"
 GCS_MONGO_OUTPUT_MODE = "gcs.mongo.output.mode"
 GCS_MONGO_BATCH_SIZE = "gcs.mongo.batch.size"
-GCS_MONGO_INPUT_CHARTOESCAPEQUOTEESCAPING = "gcs.mongo.input.chartoescapequoteescaping"
-GCS_MONGO_INPUT_COLUMNNAMEOFCORRUPTRECORD = "gcs.mongo.input.columnnameofcorruptrecord"
-GCS_MONGO_INPUT_COMMENT = "gcs.mongo.input.comment"
-GCS_MONGO_INPUT_DATEFORMAT = "gcs.mongo.input.dateformat"
-GCS_MONGO_INPUT_EMPTYVALUE = "gcs.mongo.input.emptyvalue"
-GCS_MONGO_INPUT_ENCODING = "gcs.mongo.input.encoding"
-GCS_MONGO_INPUT_ENFORCESCHEMA = "gcs.mongo.input.enforceschema"
-GCS_MONGO_INPUT_ESCAPE = "gcs.mongo.input.escape"
-GCS_MONGO_INPUT_HEADER = "gcs.mongo.input.header"
-GCS_MONGO_INPUT_IGNORELEADINGWHITESPACE = "gcs.mongo.input.ignoreleadingwhitespace"
-GCS_MONGO_INPUT_IGNORETRAILINGWHITESPACE = "gcs.mongo.input.ignoretrailingwhitespace"
-GCS_MONGO_INPUT_INFER_SCHEMA = "gcs.mongo.input.inferschema"
-GCS_MONGO_INPUT_LINESEP = "gcs.mongo.input.linesep"
-GCS_MONGO_INPUT_LOCALE = "gcs.mongo.input.locale"
-GCS_MONGO_INPUT_MAXCHARSPERCOLUMN = "gcs.mongo.input.maxcharspercolumn"
-GCS_MONGO_INPUT_MAXCOLUMNS = "gcs.mongo.input.maxcolumns"
-GCS_MONGO_INPUT_MODE = "gcs.mongo.input.mode"
-GCS_MONGO_INPUT_MULTILINE = "gcs.mongo.input.multiline"
-GCS_MONGO_INPUT_NANVALUE = "gcs.mongo.input.nanvalue"
-GCS_MONGO_INPUT_NULLVALUE = "gcs.mongo.input.nullvalue"
-GCS_MONGO_INPUT_NEGATIVEINF = "gcs.mongo.input.negativeinf"
-GCS_MONGO_INPUT_POSITIVEINF = "gcs.mongo.input.positiveinf"
-GCS_MONGO_INPUT_QUOTE = "gcs.mongo.input.quote"
-GCS_MONGO_INPUT_SAMPLINGRATIO = "gcs.mongo.input.samplingratio"
-GCS_MONGO_INPUT_SEP = "gcs.mongo.input.sep"
-GCS_MONGO_INPUT_TIMESTAMPFORMAT = "gcs.mongo.input.timestampformat"
-GCS_MONGO_INPUT_TIMESTAMPNTZFORMAT = "gcs.mongo.input.timestampntzformat"
-GCS_MONGO_INPUT_UNESCAPEDQUOTEHANDLING = "gcs.mongo.input.unescapedquotehandling"
-# Template options linked to JDBC option names.
-GCS_MONGO_INPUT_SPARK_OPTIONS = {
-    GCS_MONGO_INPUT_CHARTOESCAPEQUOTEESCAPING: CSV_CHARTOESCAPEQUOTEESCAPING,
-    GCS_MONGO_INPUT_COLUMNNAMEOFCORRUPTRECORD: CSV_COLUMNNAMEOFCORRUPTRECORD,
-    GCS_MONGO_INPUT_COMMENT: CSV_COMMENT,
-    GCS_MONGO_INPUT_DATEFORMAT: CSV_DATEFORMAT,
-    GCS_MONGO_INPUT_EMPTYVALUE: CSV_EMPTYVALUE,
-    GCS_MONGO_INPUT_ENCODING: CSV_ENCODING,
-    GCS_MONGO_INPUT_ENFORCESCHEMA: CSV_ENFORCESCHEMA,
-    GCS_MONGO_INPUT_ESCAPE: CSV_ESCAPE,
-    GCS_MONGO_INPUT_HEADER: CSV_HEADER,
-    GCS_MONGO_INPUT_IGNORELEADINGWHITESPACE: CSV_IGNORELEADINGWHITESPACE,
-    GCS_MONGO_INPUT_IGNORETRAILINGWHITESPACE: CSV_IGNORETRAILINGWHITESPACE,
-    GCS_MONGO_INPUT_INFER_SCHEMA: CSV_INFER_SCHEMA,
-    GCS_MONGO_INPUT_LINESEP: CSV_LINESEP,
-    GCS_MONGO_INPUT_LOCALE: CSV_LOCALE,
-    GCS_MONGO_INPUT_MAXCHARSPERCOLUMN: CSV_MAXCHARSPERCOLUMN,
-    GCS_MONGO_INPUT_MAXCOLUMNS: CSV_MAXCOLUMNS,
-    GCS_MONGO_INPUT_MODE: CSV_MODE,
-    GCS_MONGO_INPUT_MULTILINE: CSV_MULTILINE,
-    GCS_MONGO_INPUT_NANVALUE: CSV_NANVALUE,
-    GCS_MONGO_INPUT_NULLVALUE: CSV_NULLVALUE,
-    GCS_MONGO_INPUT_NEGATIVEINF: CSV_NEGATIVEINF,
-    GCS_MONGO_INPUT_POSITIVEINF: CSV_POSITIVEINF,
-    GCS_MONGO_INPUT_QUOTE: CSV_QUOTE,
-    GCS_MONGO_INPUT_SAMPLINGRATIO: CSV_SAMPLINGRATIO,
-    GCS_MONGO_INPUT_SEP: CSV_SEP,
-    GCS_MONGO_INPUT_TIMESTAMPFORMAT: CSV_TIMESTAMPFORMAT,
-    GCS_MONGO_INPUT_TIMESTAMPNTZFORMAT: CSV_TIMESTAMPNTZFORMAT,
-    GCS_MONGO_INPUT_UNESCAPEDQUOTEHANDLING: CSV_UNESCAPEDQUOTEHANDLING,
-}
+# Template options linked to Spark Dataframe option names.
+GCS_MONGO_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.mongo.input.")
 
 # Mongo to GCS
 MONGO_GCS_OUTPUT_LOCATION = "mongo.gcs.output.location"
@@ -406,6 +293,7 @@ MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode"
 MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri"
 MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database"
 MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection"
+MONGO_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("mongo.gcs.output.")
 
 #Cassandra to BQ
 CASSANDRA_TO_BQ_INPUT_TABLE = "cassandratobq.input.table"
@@ -421,71 +309,15 @@ CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace"
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
 GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format"
 GCS_BT_HBASE_CATALOG_JSON = "gcs.bigtable.hbase.catalog.json"
-GCS_BT_INPUT_CHARTOESCAPEQUOTEESCAPING = "gcs.bigtable.input.chartoescapequoteescaping"
-GCS_BT_INPUT_COLUMNNAMEOFCORRUPTRECORD = "gcs.bigtable.input.columnnameofcorruptrecord"
-GCS_BT_INPUT_COMMENT = "gcs.bigtable.input.comment"
-GCS_BT_INPUT_DATEFORMAT = "gcs.bigtable.input.dateformat"
-GCS_BT_INPUT_EMPTYVALUE = "gcs.bigtable.input.emptyvalue"
-GCS_BT_INPUT_ENCODING = "gcs.bigtable.input.encoding"
-GCS_BT_INPUT_ENFORCESCHEMA = "gcs.bigtable.input.enforceschema"
-GCS_BT_INPUT_ESCAPE = "gcs.bigtable.input.escape"
-GCS_BT_INPUT_HEADER = "gcs.bigtable.input.header"
-GCS_BT_INPUT_IGNORELEADINGWHITESPACE = "gcs.bigtable.input.ignoreleadingwhitespace"
-GCS_BT_INPUT_IGNORETRAILINGWHITESPACE = "gcs.bigtable.input.ignoretrailingwhitespace"
-GCS_BT_INPUT_INFER_SCHEMA = "gcs.bigtable.input.inferschema"
-GCS_BT_INPUT_LINESEP = "gcs.bigtable.input.linesep"
-GCS_BT_INPUT_LOCALE = "gcs.bigtable.input.locale"
-GCS_BT_INPUT_MAXCHARSPERCOLUMN = "gcs.bigtable.input.maxcharspercolumn"
-GCS_BT_INPUT_MAXCOLUMNS = "gcs.bigtable.input.maxcolumns"
-GCS_BT_INPUT_MODE = "gcs.bigtable.input.mode"
-GCS_BT_INPUT_MULTILINE = "gcs.bigtable.input.multiline"
-GCS_BT_INPUT_NANVALUE = "gcs.bigtable.input.nanvalue"
-GCS_BT_INPUT_NULLVALUE = "gcs.bigtable.input.nullvalue"
-GCS_BT_INPUT_NEGATIVEINF = "gcs.bigtable.input.negativeinf"
-GCS_BT_INPUT_POSITIVEINF = "gcs.bigtable.input.positiveinf"
-GCS_BT_INPUT_QUOTE = "gcs.bigtable.input.quote"
-GCS_BT_INPUT_SAMPLINGRATIO = "gcs.bigtable.input.samplingratio"
-GCS_BT_INPUT_SEP = "gcs.bigtable.input.sep"
-GCS_BT_INPUT_TIMESTAMPFORMAT = "gcs.bigtable.input.timestampformat"
-GCS_BT_INPUT_TIMESTAMPNTZFORMAT = "gcs.bigtable.input.timestampntzformat"
-GCS_BT_INPUT_UNESCAPEDQUOTEHANDLING = "gcs.bigtable.input.unescapedquotehandling"
-# Template options linked to JDBC option names.
-GCS_BT_INPUT_SPARK_OPTIONS = {
-    GCS_BT_INPUT_CHARTOESCAPEQUOTEESCAPING: CSV_CHARTOESCAPEQUOTEESCAPING,
-    GCS_BT_INPUT_COLUMNNAMEOFCORRUPTRECORD: CSV_COLUMNNAMEOFCORRUPTRECORD,
-    GCS_BT_INPUT_COMMENT: CSV_COMMENT,
-    GCS_BT_INPUT_DATEFORMAT: CSV_DATEFORMAT,
-    GCS_BT_INPUT_EMPTYVALUE: CSV_EMPTYVALUE,
-    GCS_BT_INPUT_ENCODING: CSV_ENCODING,
-    GCS_BT_INPUT_ENFORCESCHEMA: CSV_ENFORCESCHEMA,
-    GCS_BT_INPUT_ESCAPE: CSV_ESCAPE,
-    GCS_BT_INPUT_HEADER: CSV_HEADER,
-    GCS_BT_INPUT_IGNORELEADINGWHITESPACE: CSV_IGNORELEADINGWHITESPACE,
-    GCS_BT_INPUT_IGNORETRAILINGWHITESPACE: CSV_IGNORETRAILINGWHITESPACE,
-    GCS_BT_INPUT_INFER_SCHEMA: CSV_INFER_SCHEMA,
-    GCS_BT_INPUT_LINESEP: CSV_LINESEP,
-    GCS_BT_INPUT_LOCALE: CSV_LOCALE,
-    GCS_BT_INPUT_MAXCHARSPERCOLUMN: CSV_MAXCHARSPERCOLUMN,
-    GCS_BT_INPUT_MAXCOLUMNS: CSV_MAXCOLUMNS,
-    GCS_BT_INPUT_MODE: CSV_MODE,
-    GCS_BT_INPUT_MULTILINE: CSV_MULTILINE,
-    GCS_BT_INPUT_NANVALUE: CSV_NANVALUE,
-    GCS_BT_INPUT_NULLVALUE: CSV_NULLVALUE,
-    GCS_BT_INPUT_NEGATIVEINF: CSV_NEGATIVEINF,
-    GCS_BT_INPUT_POSITIVEINF: CSV_POSITIVEINF,
-    GCS_BT_INPUT_QUOTE: CSV_QUOTE,
-    GCS_BT_INPUT_SAMPLINGRATIO: CSV_SAMPLINGRATIO,
-    GCS_BT_INPUT_SEP: CSV_SEP,
-    GCS_BT_INPUT_TIMESTAMPFORMAT: CSV_TIMESTAMPFORMAT,
-    GCS_BT_INPUT_TIMESTAMPNTZFORMAT: CSV_TIMESTAMPNTZFORMAT,
-    GCS_BT_INPUT_UNESCAPEDQUOTEHANDLING: CSV_UNESCAPEDQUOTEHANDLING,
-}
+# Template options linked to Spark Dataframe option names.
+GCS_BT_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.bigtable.input.")
 
 # BigQuery to GCS
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
 BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format"
 BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode"
 BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location"
+BQ_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("bigquery.gcs.output.")
 
 # GCS To GCS with transformations
 GCS_TO_GCS_INPUT_LOCATION = "gcs.to.gcs.input.location"
@@ -496,65 +328,9 @@ GCS_TO_GCS_OUTPUT_FORMAT = "gcs.to.gcs.output.format"
 GCS_TO_GCS_OUTPUT_MODE = "gcs.to.gcs.output.mode"
 GCS_TO_GCS_OUTPUT_PARTITION_COLUMN = "gcs.to.gcs.output.partition.column"
 GCS_TO_GCS_OUTPUT_LOCATION = "gcs.to.gcs.output.location"
-GCS_TO_GCS_INPUT_CHARTOESCAPEQUOTEESCAPING = "gcs.to.gcs.input.chartoescapequoteescaping"
-GCS_TO_GCS_INPUT_COLUMNNAMEOFCORRUPTRECORD = "gcs.to.gcs.input.columnnameofcorruptrecord"
-GCS_TO_GCS_INPUT_COMMENT = "gcs.to.gcs.input.comment"
-GCS_TO_GCS_INPUT_DATEFORMAT = "gcs.to.gcs.input.dateformat"
-GCS_TO_GCS_INPUT_EMPTYVALUE = "gcs.to.gcs.input.emptyvalue"
-GCS_TO_GCS_INPUT_ENCODING = "gcs.to.gcs.input.encoding"
-GCS_TO_GCS_INPUT_ENFORCESCHEMA = "gcs.to.gcs.input.enforceschema"
-GCS_TO_GCS_INPUT_ESCAPE = "gcs.to.gcs.input.escape"
-GCS_TO_GCS_INPUT_HEADER = "gcs.to.gcs.input.header"
-GCS_TO_GCS_INPUT_IGNORELEADINGWHITESPACE = "gcs.to.gcs.input.ignoreleadingwhitespace"
-GCS_TO_GCS_INPUT_IGNORETRAILINGWHITESPACE = "gcs.to.gcs.input.ignoretrailingwhitespace"
-GCS_TO_GCS_INPUT_INFER_SCHEMA = "gcs.to.gcs.input.inferschema"
-GCS_TO_GCS_INPUT_LINESEP = "gcs.to.gcs.input.linesep"
-GCS_TO_GCS_INPUT_LOCALE = "gcs.to.gcs.input.locale"
-GCS_TO_GCS_INPUT_MAXCHARSPERCOLUMN = "gcs.to.gcs.input.maxcharspercolumn"
-GCS_TO_GCS_INPUT_MAXCOLUMNS = "gcs.to.gcs.input.maxcolumns"
-GCS_TO_GCS_INPUT_MODE = "gcs.to.gcs.input.mode"
-GCS_TO_GCS_INPUT_MULTILINE = "gcs.to.gcs.input.multiline"
-GCS_TO_GCS_INPUT_NANVALUE = "gcs.to.gcs.input.nanvalue"
-GCS_TO_GCS_INPUT_NULLVALUE = "gcs.to.gcs.input.nullvalue"
-GCS_TO_GCS_INPUT_NEGATIVEINF = "gcs.to.gcs.input.negativeinf"
-GCS_TO_GCS_INPUT_POSITIVEINF = "gcs.to.gcs.input.positiveinf"
-GCS_TO_GCS_INPUT_QUOTE = "gcs.to.gcs.input.quote"
-GCS_TO_GCS_INPUT_SAMPLINGRATIO = "gcs.to.gcs.input.samplingratio"
-GCS_TO_GCS_INPUT_SEP = "gcs.to.gcs.input.sep"
-GCS_TO_GCS_INPUT_TIMESTAMPFORMAT = "gcs.to.gcs.input.timestampformat"
-GCS_TO_GCS_INPUT_TIMESTAMPNTZFORMAT = "gcs.to.gcs.input.timestampntzformat"
-GCS_TO_GCS_INPUT_UNESCAPEDQUOTEHANDLING = "gcs.to.gcs.input.unescapedquotehandling"
-# Template options linked to JDBC option names.
-GCS_TO_GCS_INPUT_SPARK_OPTIONS = {
-    GCS_TO_GCS_INPUT_CHARTOESCAPEQUOTEESCAPING: CSV_CHARTOESCAPEQUOTEESCAPING,
-    GCS_TO_GCS_INPUT_COLUMNNAMEOFCORRUPTRECORD: CSV_COLUMNNAMEOFCORRUPTRECORD,
-    GCS_TO_GCS_INPUT_COMMENT: CSV_COMMENT,
-    GCS_TO_GCS_INPUT_DATEFORMAT: CSV_DATEFORMAT,
-    GCS_TO_GCS_INPUT_EMPTYVALUE: CSV_EMPTYVALUE,
-    GCS_TO_GCS_INPUT_ENCODING: CSV_ENCODING,
-    GCS_TO_GCS_INPUT_ENFORCESCHEMA: CSV_ENFORCESCHEMA,
-    GCS_TO_GCS_INPUT_ESCAPE: CSV_ESCAPE,
-    GCS_TO_GCS_INPUT_HEADER: CSV_HEADER,
-    GCS_TO_GCS_INPUT_IGNORELEADINGWHITESPACE: CSV_IGNORELEADINGWHITESPACE,
-    GCS_TO_GCS_INPUT_IGNORETRAILINGWHITESPACE: CSV_IGNORETRAILINGWHITESPACE,
-    GCS_TO_GCS_INPUT_INFER_SCHEMA: CSV_INFER_SCHEMA,
-    GCS_TO_GCS_INPUT_LINESEP: CSV_LINESEP,
-    GCS_TO_GCS_INPUT_LOCALE: CSV_LOCALE,
-    GCS_TO_GCS_INPUT_MAXCHARSPERCOLUMN: CSV_MAXCHARSPERCOLUMN,
-    GCS_TO_GCS_INPUT_MAXCOLUMNS: CSV_MAXCOLUMNS,
-    GCS_TO_GCS_INPUT_MODE: CSV_MODE,
-    GCS_TO_GCS_INPUT_MULTILINE: CSV_MULTILINE,
-    GCS_TO_GCS_INPUT_NANVALUE: CSV_NANVALUE,
-    GCS_TO_GCS_INPUT_NULLVALUE: CSV_NULLVALUE,
-    GCS_TO_GCS_INPUT_NEGATIVEINF: CSV_NEGATIVEINF,
-    GCS_TO_GCS_INPUT_POSITIVEINF: CSV_POSITIVEINF,
-    GCS_TO_GCS_INPUT_QUOTE: CSV_QUOTE,
-    GCS_TO_GCS_INPUT_SAMPLINGRATIO: CSV_SAMPLINGRATIO,
-    GCS_TO_GCS_INPUT_SEP: CSV_SEP,
-    GCS_TO_GCS_INPUT_TIMESTAMPFORMAT: CSV_TIMESTAMPFORMAT,
-    GCS_TO_GCS_INPUT_TIMESTAMPNTZFORMAT: CSV_TIMESTAMPNTZFORMAT,
-    GCS_TO_GCS_INPUT_UNESCAPEDQUOTEHANDLING: CSV_UNESCAPEDQUOTEHANDLING,
-}
+# Template options linked to Spark Dataframe option names.
+GCS_TO_GCS_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.to.gcs.input.")
+GCS_TO_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("gcs.to.gcs.output.")
 
 # Hive to BigQuery
 HIVE_BQ_OUTPUT_MODE = "hive.bigquery.output.mode"
@@ -574,6 +350,7 @@ HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
 HIVE_GCS_OUTPUT_MODE = "hive.gcs.output.mode"
 HIVE_GCS_TEMP_VIEW_NAME = "hive.gcs.temp.view.name"
 HIVE_GCS_SQL_QUERY = "hive.gcs.sql.query"
+HIVE_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("hive.gcs.output.")
 
 # Text to BigQuery
 TEXT_INPUT_COMPRESSION = "text.bigquery.input.compression"
@@ -584,72 +361,15 @@ TEXT_BQ_OUTPUT_TABLE = "text.bigquery.output.table"
 TEXT_BQ_OUTPUT_MODE = "text.bigquery.output.mode"
 TEXT_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 TEXT_BQ_LD_TEMP_BUCKET_NAME = "text.bigquery.temp.bucket.name"
-TEXT_BQ_INPUT_INFERSCHEMA = "text.bigquery.input.inferschema"
-TEXT_BQ_INPUT_CHARTOESCAPEQUOTEESCAPING = "text.bigquery.input.chartoescapequoteescaping"
-TEXT_BQ_INPUT_COLUMNNAMEOFCORRUPTRECORD = "text.bigquery.input.columnnameofcorruptrecord"
-TEXT_BQ_INPUT_COMMENT = "text.bigquery.input.comment"
-TEXT_BQ_INPUT_DATEFORMAT = "text.bigquery.input.dateformat"
-TEXT_BQ_INPUT_EMPTYVALUE = "text.bigquery.input.emptyvalue"
-TEXT_BQ_INPUT_ENCODING = "text.bigquery.input.encoding"
-TEXT_BQ_INPUT_ENFORCESCHEMA = "text.bigquery.input.enforceschema"
-TEXT_BQ_INPUT_ESCAPE = "text.bigquery.input.escape"
-TEXT_BQ_INPUT_HEADER = "text.bigquery.input.header"
-TEXT_BQ_INPUT_IGNORELEADINGWHITESPACE = "text.bigquery.input.ignoreleadingwhitespace"
-TEXT_BQ_INPUT_IGNORETRAILINGWHITESPACE = "text.bigquery.input.ignoretrailingwhitespace"
-TEXT_BQ_INPUT_INFER_SCHEMA = "text.bigquery.input.inferschema"
-TEXT_BQ_INPUT_LINESEP = "text.bigquery.input.linesep"
-TEXT_BQ_INPUT_LOCALE = "text.bigquery.input.locale"
-TEXT_BQ_INPUT_MAXCHARSPERCOLUMN = "text.bigquery.input.maxcharspercolumn"
-TEXT_BQ_INPUT_MAXCOLUMNS = "text.bigquery.input.maxcolumns"
-TEXT_BQ_INPUT_MODE = "text.bigquery.input.mode"
-TEXT_BQ_INPUT_MULTILINE = "text.bigquery.input.multiline"
-TEXT_BQ_INPUT_NANVALUE = "text.bigquery.input.nanvalue"
-TEXT_BQ_INPUT_NULLVALUE = "text.bigquery.input.nullvalue"
-TEXT_BQ_INPUT_NEGATIVEINF = "text.bigquery.input.negativeinf"
-TEXT_BQ_INPUT_POSITIVEINF = "text.bigquery.input.positiveinf"
-TEXT_BQ_INPUT_QUOTE = "text.bigquery.input.quote"
-TEXT_BQ_INPUT_SAMPLINGRATIO = "text.bigquery.input.samplingratio"
-TEXT_BQ_INPUT_SEP = "text.bigquery.input.sep"
-TEXT_BQ_INPUT_TIMESTAMPFORMAT = "text.bigquery.input.timestampformat"
-TEXT_BQ_INPUT_TIMESTAMPNTZFORMAT = "text.bigquery.input.timestampntzformat"
-TEXT_BQ_INPUT_UNESCAPEDQUOTEHANDLING = "text.bigquery.input.unescapedquotehandling"
-# Optional CSV options linked to JDBC option names.
-TEXT_BQ_INPUT_SPARK_OPTIONS = {
-    TEXT_BQ_INPUT_CHARTOESCAPEQUOTEESCAPING: CSV_CHARTOESCAPEQUOTEESCAPING,
-    TEXT_BQ_INPUT_COLUMNNAMEOFCORRUPTRECORD: CSV_COLUMNNAMEOFCORRUPTRECORD,
-    TEXT_BQ_INPUT_COMMENT: CSV_COMMENT,
-    TEXT_BQ_INPUT_DATEFORMAT: CSV_DATEFORMAT,
-    TEXT_BQ_INPUT_EMPTYVALUE: CSV_EMPTYVALUE,
-    TEXT_BQ_INPUT_ENCODING: CSV_ENCODING,
-    TEXT_BQ_INPUT_ENFORCESCHEMA: CSV_ENFORCESCHEMA,
-    TEXT_BQ_INPUT_ESCAPE: CSV_ESCAPE,
-    TEXT_BQ_INPUT_HEADER: CSV_HEADER,
-    TEXT_BQ_INPUT_IGNORELEADINGWHITESPACE: CSV_IGNORELEADINGWHITESPACE,
-    TEXT_BQ_INPUT_IGNORETRAILINGWHITESPACE: CSV_IGNORETRAILINGWHITESPACE,
-    TEXT_BQ_INPUT_INFER_SCHEMA: CSV_INFER_SCHEMA,
-    TEXT_BQ_INPUT_LINESEP: CSV_LINESEP,
-    TEXT_BQ_INPUT_LOCALE: CSV_LOCALE,
-    TEXT_BQ_INPUT_MAXCHARSPERCOLUMN: CSV_MAXCHARSPERCOLUMN,
-    TEXT_BQ_INPUT_MAXCOLUMNS: CSV_MAXCOLUMNS,
-    TEXT_BQ_INPUT_MODE: CSV_MODE,
-    TEXT_BQ_INPUT_MULTILINE: CSV_MULTILINE,
-    TEXT_BQ_INPUT_NANVALUE: CSV_NANVALUE,
-    TEXT_BQ_INPUT_NULLVALUE: CSV_NULLVALUE,
-    TEXT_BQ_INPUT_NEGATIVEINF: CSV_NEGATIVEINF,
-    TEXT_BQ_INPUT_POSITIVEINF: CSV_POSITIVEINF,
-    TEXT_BQ_INPUT_QUOTE: CSV_QUOTE,
-    TEXT_BQ_INPUT_SAMPLINGRATIO: CSV_SAMPLINGRATIO,
-    TEXT_BQ_INPUT_SEP: CSV_SEP,
-    TEXT_BQ_INPUT_TIMESTAMPFORMAT: CSV_TIMESTAMPFORMAT,
-    TEXT_BQ_INPUT_TIMESTAMPNTZFORMAT: CSV_TIMESTAMPNTZFORMAT,
-    TEXT_BQ_INPUT_UNESCAPEDQUOTEHANDLING: CSV_UNESCAPEDQUOTEHANDLING,
-}
+# Template options linked to Spark Dataframe option names.
+TEXT_BQ_INPUT_SPARK_OPTIONS = get_template_input_spark_options("text.bigquery.input.")
 
 # Hbase to GCS
 HBASE_GCS_OUTPUT_LOCATION = "hbase.gcs.output.location"
 HBASE_GCS_OUTPUT_FORMAT = "hbase.gcs.output.format"
 HBASE_GCS_OUTPUT_MODE = "hbase.gcs.output.mode"
 HBASE_GCS_CATALOG_JSON = "hbase.gcs.catalog.json"
+HBASE_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("hbase.gcs.output.")
 
 # JDBC to JDBC
 JDBCTOJDBC_INPUT_URL = "jdbctojdbc.input.url"
@@ -687,6 +407,7 @@ JDBCTOGCS_OUTPUT_MODE = "jdbctogcs.output.mode"
 JDBCTOGCS_OUTPUT_PARTITIONCOLUMN = "jdbctogcs.output.partitioncolumn"
 JDBCTOGCS_TEMP_VIEW_NAME = "jdbctogcs.temp.view.name"
 JDBCTOGCS_TEMP_SQL_QUERY = "jdbctogcs.temp.sql.query"
+JDBCTOGCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("jdbctogcs.output.")
 
 # JDBC to BigQuery
 JDBC_BQ_INPUT_URL = "jdbc.bigquery.input.url"
@@ -716,6 +437,7 @@ REDSHIFTTOGCS_OUTPUT_LOCATION = "redshifttogcs.output.location"
 REDSHIFTTOGCS_OUTPUT_FORMAT = "redshifttogcs.output.format"
 REDSHIFTTOGCS_OUTPUT_MODE = "redshifttogcs.output.mode"
 REDSHIFTTOGCS_OUTPUT_PARTITIONCOLUMN = "redshifttogcs.output.partitioncolumn"
+REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("redshifttogcs.output.")
 
 # Snowflake To GCS
 SNOWFLAKE_TO_GCS_SF_URL = "snowflake.to.gcs.sf.url"
@@ -731,6 +453,7 @@ SNOWFLAKE_TO_GCS_OUTPUT_LOCATION = "snowflake.to.gcs.output.location"
 SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
 SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
 SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
+SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("snowflake.to.gcs.output.")
 
 # Cassandra To GCS
 CASSANDRA_TO_GCS_INPUT_KEYSPACE = "cassandratogcs.input.keyspace"
@@ -741,6 +464,7 @@ CASSANDRA_TO_GCS_OUTPUT_PATH = "cassandratogcs.output.path"
 CASSANDRA_TO_GCS_OUTPUT_SAVEMODE = "cassandratogcs.output.savemode"
 CASSANDRA_TO_GCS_CATALOG = "cassandratogcs.input.catalog.name"
 CASSANDRA_TO_GCS_QUERY = "cassandratogcs.input.query"
+CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("cassandratogcs.output.")
 
 # Hive DDL Extractor Util
 HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"

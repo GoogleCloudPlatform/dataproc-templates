@@ -20,14 +20,17 @@ import sys
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
+from dataproc_templates.util.dataframe_writer import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['JDBCToGCSTemplate']
 
 
 class JDBCToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from JDBC into GCS
+    Dataproc template implementing loads from JDBC into Cloud Storage
     """
 
     @staticmethod
@@ -105,7 +108,7 @@ class JDBCToGCSTemplate(BaseTemplate):
             f'--{constants.JDBCTOGCS_OUTPUT_LOCATION}',
             dest=constants.JDBCTOGCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS location for output files'
+            help='Cloud Storage location for output files'
         )
         parser.add_argument(
             f'--{constants.JDBCTOGCS_OUTPUT_FORMAT}',
@@ -141,7 +144,7 @@ class JDBCToGCSTemplate(BaseTemplate):
             dest=constants.JDBCTOGCS_OUTPUT_PARTITIONCOLUMN,
             required=False,
             default="",
-            help='GCS partition column name'
+            help='Cloud Storage partition column name'
         )
         parser.add_argument(
             f'--{constants.JDBCTOGCS_TEMP_VIEW_NAME}',
@@ -157,6 +160,7 @@ class JDBCToGCSTemplate(BaseTemplate):
             default="",
             help='SQL query for data transformation. This must use the temp view name as the table to query from.'
         )
+        add_spark_options(parser, constants.JDBCTOGCS_OUTPUT_SPARK_OPTIONS)
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -192,7 +196,7 @@ class JDBCToGCSTemplate(BaseTemplate):
         temp_sql_query:str = args[constants.JDBCTOGCS_TEMP_SQL_QUERY]
 
         logger.info(
-            "Starting JDBC to GCS Spark job with parameters:\n"
+            "Starting JDBC to Cloud Storage Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -207,7 +211,7 @@ class JDBCToGCSTemplate(BaseTemplate):
         elif input_jdbc_sql_query:
             read_properties.update({constants.JDBC_QUERY: input_jdbc_sql_query})
         else:
-            logger.error("Arguments must have either input table or input sql query")
+            logger.error("Arguments must have either input table or input SQL query")
             exit(1)
 
         read_properties.update({constants.JDBC_NUMPARTITIONS: jdbc_numpartitions,
@@ -245,17 +249,5 @@ class JDBCToGCSTemplate(BaseTemplate):
         else:
             writer: DataFrameWriter = output_data.write.mode(output_mode)
 
-        if output_format == constants.FORMAT_PRQT:
-            writer \
-                .parquet(output_location)
-        elif output_format == constants.FORMAT_AVRO:
-            writer \
-                .format(constants.FORMAT_AVRO) \
-                .save(output_location)
-        elif output_format == constants.FORMAT_CSV:
-            writer \
-                .option(constants.CSV_HEADER, True) \
-                .csv(output_location)
-        elif output_format == constants.FORMAT_JSON:
-            writer \
-                .json(output_location)
+        spark_write_options = spark_options_from_template_args(args, constants.JDBCTOGCS_OUTPUT_SPARK_OPTIONS)
+        persist_dataframe_to_cloud_storage(writer, output_format, output_location, spark_write_options)
