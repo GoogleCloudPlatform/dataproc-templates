@@ -135,9 +135,6 @@ class S3ToBigQueryTemplate(BaseTemplate):
 
         # Set configuration to connect to Amazon S3
         spark._jsc.hadoopConfiguration().set(
-            constants.AWS_S3ENDPOINT, constants.S3_BQ_ENDPOINT_VALUE
-        )
-        spark._jsc.hadoopConfiguration().set(
             constants.AWS_S3ACCESSKEY, access_key
         )
         spark._jsc.hadoopConfiguration().set(
