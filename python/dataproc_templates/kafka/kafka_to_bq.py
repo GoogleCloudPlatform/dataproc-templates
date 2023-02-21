@@ -88,7 +88,6 @@ class KafkaToBigQueryTemplate(BaseTemplate):
         bq_temp_bucket: str = args[constants.KAFKA_BQ_TEMP_BUCKET_NAME]
         timeout: int = int(args[constants.KAFKA_BQ_TERMINATION_TIMEOUT])
         offset:str = args[constants.KAFKA_BQ_STARTING_OFFSET]
-        project_id = 'yadavaja-sandbox'
         
 
         df = spark.readStream.format(constants.KAFKA_INPUT_FORMAT) \
@@ -101,7 +100,7 @@ class KafkaToBigQueryTemplate(BaseTemplate):
 
         print(df)
         logger.info(
-            "Starting Kafka to GCS Pyspark job with parameters:\n"
+            "Starting Kafka to Bigquery Pyspark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 

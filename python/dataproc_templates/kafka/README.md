@@ -1,6 +1,6 @@
 # Kafka To BigQuery
 
-Template for reading files from Cloud Storage and writing them to a BigQuery table. It supports reading JSON, CSV, Parquet and Avro formats.
+Template for reading files from streaming Kafka topic and writing them to a BigQuery table.
 
 It uses the 
   - [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
@@ -10,8 +10,8 @@ It uses the
 ## Arguments
 
 * `kafka.to.bq.checkpoint.location`: Cloud Storage location for storing checkpoints during transfer (format: `gs://bucket/...`)
-* `kafka.bootstrap.servers`: List of kafka bootstrap servers (format: *'[x1.x2.x3.x4:port1,y1.y2.y3.y4:port2]')*
-* `kafka.bq.topic`: Topic names for respective kafka server
+* `kafka.to.bootstrap.servers`: List of kafka bootstrap servers (format: *'[x1.x2.x3.x4:port1,y1.y2.y3.y4:port2]')*
+* `kafka.to.bq.topic`: Topic names for respective kafka server
 * `kafka.to.bq.starting.offset`:  Offset to start reading from. Accepted values: "earliest", "latest" (streaming only), or json string """ {"topicA":{"0":23,"1":-1},"topicB":{"0":-2}} """
 * `kafka.to.bq.dataset`: Temporary bucket for the Spark BigQuery connector
 * `kafka.to.bq.table`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
@@ -25,8 +25,8 @@ $ python main.py --template KAFKATOBQ --help
 
 usage: main.py --template KAFKATOBQ [-h] \
     --kafka.to.bq.checkpoint.location KAFKA.BIGQUERY.CHEKPOINT.LOCATION \
-    --kafka.bootstrap.servers KAFKA.BOOTSTRAP.SERVERS \
-    --kafka.bq.topic KAFKA.BIGQUERY.TOOPIC \
+    --kafka.to.bootstrap.servers KAFKA.BOOTSTRAP.SERVERS \
+    --kafka.to.bq.topic KAFKA.BIGQUERY.TOOPIC \
     --kafka.to.bq.starting.offset {earliest, laterst, json_ strig} \
     --kafka.to.bq.dataset KAFKA.BQ.DATASET \
     --kafka.to.bq.table KAFKA.BQ.TABLE.NAME \
@@ -52,8 +52,8 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 --- --template=KAFKATOBQ \
   --log-level=<'ERROR'|'INFO'>
   --kafka.to.bq.checkpoint.location="<gcs checkpoint storage location>" \
-   --kafka.bootstrap.servers="<list of kafka connections>" \
-   --kafka.bq.topic="<integration topics to subscribe>" \
+   --kafka.to.bootstrap.servers="<list of kafka connections>" \
+   --kafka.to.bq.topic="<integration topics to subscribe>" \
    --kafka.to.bq.starting.offset="<earliest|latest|json_offset>" \
    --kafka.to.bq.dataset="<bigquery_dataset_name>" \
    --kafka.to.bq.table="<bigquery_table_name>" \
