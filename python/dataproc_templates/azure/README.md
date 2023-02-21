@@ -1,4 +1,4 @@
-# GCS To BigQuery
+# Azure To BigQuery
 
 Template for reading files from Azure Blob Storage and writing them to a BigQuery table. It supports reading JSON, CSV, Parquet, Avro and Delta.IO formats.
 
