@@ -18,6 +18,7 @@ import argparse
 import pprint
 
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import StructType
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -60,7 +61,6 @@ class S3ToBigQueryTemplate(BaseTemplate):
             f'--{constants.S3_BQ_INPUT_FORMAT}',
             dest=constants.S3_BQ_INPUT_FORMAT,
             required=True,
-            default=constants.FORMAT_CSV,
             help='Input file format in Amazon S3 bucket (one of : avro, parquet, csv, json)',
             choices=[
                 constants.FORMAT_AVRO,
@@ -134,19 +134,15 @@ class S3ToBigQueryTemplate(BaseTemplate):
         )
 
         # Set configuration to connect to Amazon S3
-        spark._jsc.hadoopConfiguration().set(
-            constants.AWS_S3ENDPOINT, constants.S3_BQ_ENDPOINT_VALUE
-        )
-        spark._jsc.hadoopConfiguration().set(
-            constants.AWS_S3ACCESSKEY, access_key
-        )
-        spark._jsc.hadoopConfiguration().set(
-            constants.AWS_S3SECRETKEY, secret_key
-        )
-        
+        spark._jsc.hadoopConfiguration() \
+            .set(constants.AWS_S3ENDPOINT, constants.S3_BQ_ENDPOINT_VALUE)
+        spark._jsc.hadoopConfiguration() \
+            .set(constants.AWS_S3ACCESSKEY, access_key)
+        spark._jsc.hadoopConfiguration() \
+            .set(constants.AWS_S3SECRETKEY, secret_key)
 
        # Read
-        input_data: DataFrame
+        input_data: DataFrame = spark.createDataFrame([], StructType([]))
 
         if input_file_format == constants.FORMAT_PRQT:
             input_data = spark.read \
