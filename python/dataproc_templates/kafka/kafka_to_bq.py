@@ -93,7 +93,6 @@ class KafkaToBigQueryTemplate(BaseTemplate):
         bq_temp_bucket: str = args[constants.KAFKA_BQ_TEMP_BUCKET_NAME]
         timeout: int = int(args[constants.KAFKA_BQ_TERMINATION_TIMEOUT])
         offset:str = args[constants.KAFKA_BQ_STARTING_OFFSET]
-        project_id: str = os.environ['GCP_PROJECT']
 
     
         df = spark.readStream.format(constants.KAFKA_INPUT_FORMAT) \
@@ -110,7 +109,7 @@ class KafkaToBigQueryTemplate(BaseTemplate):
         .writeStream \
         .format(constants.FORMAT_BIGQUERY) \
         .option('checkpointLocation',checkpoint_location) \
-        .option('table',project_id+':'+big_query_dataset+'.'+big_query_table) \
+        .option('table',big_query_dataset+'.'+big_query_table) \
         .option('temporaryGcsBucket', bq_temp_bucket) \
         .start() 
         
