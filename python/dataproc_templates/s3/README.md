@@ -70,8 +70,8 @@ export JARS=gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar
 ./bin/start.sh \
 -- --template=S3TOBIGQUERY \
     --s3.bq.input.location="s3a://dataproctemplates-bucket/cities.csv" \
-    --s3.bq.access.key="AKIA44YSHKFTR6OB3PQR" \
-    --s3.bq.secret.key="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" \
+    --s3.bq.access.key="SomeAccessKey6789PQR" \
+    --s3.bq.secret.key="SomeSecretKey123XYZ" \
     --s3.bq.input.format="csv" \
     --s3.bq.output.dataset.name="dataproc_templates" \
     --s3.bq.output.table.name="s3_to_bq" \
