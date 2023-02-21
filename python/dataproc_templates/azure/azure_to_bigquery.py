@@ -91,7 +91,7 @@ class AzureBlobToBigQueryTemplate(BaseTemplate):
         )
         parser.add_argument(
             f'--{constants.AZ_STORAGE_ACCOUNT}',
-            dest=constants.Z_STORAGE_ACCOUNT,
+            dest=constants.AZ_STORAGE_ACCOUNT,
             required=True,
             help='Azure Storage Account'
         )
