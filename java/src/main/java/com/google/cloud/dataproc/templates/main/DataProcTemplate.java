@@ -20,7 +20,6 @@ import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
 import com.google.cloud.dataproc.templates.databases.CassandraToBQ;
 import com.google.cloud.dataproc.templates.databases.CassandraToGCS;
-import com.google.cloud.dataproc.templates.databases.MongoToGCS;
 import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
@@ -66,7 +65,6 @@ public class DataProcTemplate {
 
   static final Map<TemplateName, Function<String[], BaseTemplate>> TEMPLATE_FACTORIES =
       ImmutableMap.<TemplateName, Function<String[], BaseTemplate>>builder()
-          .put(TemplateName.MONGOTOGCS, (args) -> new MongoToGCS())
           .put(TemplateName.WORDCOUNT, (args) -> new WordCount())
           .put(TemplateName.HIVETOGCS, (args) -> new HiveToGCS())
           .put(TemplateName.HIVETOBIGQUERY, (args) -> new HiveToBigQuery())

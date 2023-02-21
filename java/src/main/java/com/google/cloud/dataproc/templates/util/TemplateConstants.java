@@ -399,13 +399,4 @@ public interface TemplateConstants {
   String SNOWFLAKE_GCS_OUTPUT_FORMAT = "snowflake.gcs.output.format";
   String SNOWFLAKE_GCS_OUTPUT_MODE = "snowflake.gcs.output.mode";
   String SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN = "snowflake.gcs.output.partitionColumn";
-
-  /** MongoToGCS properties */
-  String MONGO_GCS_OUTPUT_LOCATION = "mongo.gcs.output.location";
-
-  String MONGO_GCS_OUTPUT_FORMAT = "mongo.gcs.output.format";
-  String MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode";
-  String MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri";
-  String MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database";
-  String MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection";
 }
