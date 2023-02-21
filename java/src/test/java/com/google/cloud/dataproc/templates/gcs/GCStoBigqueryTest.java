@@ -47,6 +47,7 @@ public class GCStoBigqueryTest {
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     Properties props = PropertyUtil.getProperties();
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     props.setProperty(GCS_BQ_INPUT_LOCATION, "gs://test-bucket");
     props.setProperty(GCS_OUTPUT_DATASET_NAME, "bigqueryDataset");
     props.setProperty(GCS_OUTPUT_TABLE_NAME, "bigqueryTable");
@@ -74,6 +75,10 @@ public class GCStoBigqueryTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-        GCS_BQ_INPUT_LOCATION, GCS_OUTPUT_DATASET_NAME, GCS_OUTPUT_TABLE_NAME, GCS_BQ_INPUT_FORMAT);
+        PROJECT_ID_PROP,
+        GCS_BQ_INPUT_LOCATION,
+        GCS_OUTPUT_DATASET_NAME,
+        GCS_OUTPUT_TABLE_NAME,
+        GCS_BQ_INPUT_FORMAT);
   }
 }

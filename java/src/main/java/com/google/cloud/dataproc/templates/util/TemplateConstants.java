@@ -19,6 +19,7 @@ public interface TemplateConstants {
 
   String DEFAULT_PROPERTY_FILE = "template.properties";
   String PROJECT_ID_PROP = "project.id";
+  String SPARK_LOG_LEVEL = "log.level";
   String BIGTABLE_INSTANCE_ID_PROP = "project.id";
   String BIGTABLE_OUTPUT_TABLE_NAME_PROP = "bigtable.output.table.name";
   String SPANNER_GCS_INPUT_SPANNER_INSTANCE_ID = "spanner.gcs.input.spanner.id";
@@ -94,6 +95,7 @@ public interface TemplateConstants {
   String JDBC_TO_BQ_JDBC_URL = "jdbctobq.jdbc.url";
   String JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME = "jdbctobq.jdbc.driver.class.name";
   String JDBC_TO_BQ_JDBC_FETCH_SIZE = "jdbctobq.jdbc.fetchsize";
+  String JDBC_TO_BQ_JDBC_SESSION_INIT_STATEMENT = "jdbctobq.jdbc.sessioninitstatement";
   String JDBC_TO_BQ_TEMP_GCS_BUCKET = "jdbctobq.temp.gcs.bucket";
   String JDBC_TO_BQ_SQL = "jdbctobq.sql";
   String JDBC_TO_BQ_SQL_PARTITION_COLUMN = "jdbctobq.sql.partitionColumn";
@@ -111,6 +113,7 @@ public interface TemplateConstants {
   String JDBC_TO_GCS_JDBC_URL = "jdbctogcs.jdbc.url";
   String JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME = "jdbctogcs.jdbc.driver.class.name";
   String JDBC_TO_GCS_JDBC_FETCH_SIZE = "jdbctogcs.jdbc.fetchsize";
+  String JDBC_TO_GCS_JDBC_SESSION_INIT_STATEMENT = "jdbctogcs.jdbc.sessioninitstatement";
   String JDBC_TO_GCS_WRITE_MODE = "jdbctogcs.write.mode";
   String JDBC_TO_GCS_SQL = "jdbctogcs.sql";
   String JDBC_TO_GCS_SQL_FILE = "jdbctogcs.sql.file";
@@ -127,6 +130,7 @@ public interface TemplateConstants {
 
   String JDBC_TO_SPANNER_JDBC_DRIVER_CLASS_NAME = "jdbctospanner.jdbc.driver.class.name";
   String JDBC_TO_SPANNER_JDBC_FETCH_SIZE = "jdbctospanner.jdbc.fetchsize";
+  String JDBC_TO_SPANNER_JDBC_SESSION_INIT_STATEMENT = "jdbctospanner.jdbc.sessioninitstatement";
   String JDBC_TO_SPANNER_SQL = "jdbctospanner.sql";
   String JDBC_TO_SPANNER_SQL_FILE = "jdbctospanner.sql.file";
   String JDBC_TO_SPANNER_SQL_PARTITION_COLUMN = "jdbctospanner.sql.partitionColumn";
@@ -221,6 +225,15 @@ public interface TemplateConstants {
   String GCS_GCS_OUTPUT_PARTITION_COLUMN = "gcs.gcs.output.partition.col";
   String GCS_GCS_TEMP_TABLE = "gcs.gcs.temp.table";
   String GCS_GCS_TEMP_QUERY = "gcs.gcs.temp.query";
+
+  /** GCS to JDBC properties */
+  String GCS_JDBC_AVRO_FORMAT = "avro";
+
+  String GCS_JDBC_CSV_FORMAT = "csv";
+  String GCS_JDBC_CSV_HEADER = "header";
+  String GCS_JDBC_CSV_INFER_SCHEMA = "inferSchema";
+  String GCS_JDBC_ORC_FORMAT = "orc";
+  String GCS_JDBC_PRQT_FORMAT = "parquet";
 
   /** S3 to Bigquery properties */
   String S3_BQ_INPUT_LOCATION = "s3.bq.input.location";
@@ -319,6 +332,17 @@ public interface TemplateConstants {
   String SPARK_READ_FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery";
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
   String INTERMEDIATE_FORMAT_ORC = "orc";
+
+  /** Kafka To PubSub properties */
+  String KAFKA_PUBSUB_CHECKPOINT_LOCATION = "kafka.pubsub.checkpoint.location";
+
+  String KAFKA_PUBSUB_BOOTSTRAP_SERVERS = "kafka.pubsub.bootstrap.servers";
+  String KAFKA_PUBSUB_INPUT_TOPIC = "kafka.pubsub.input.topic";
+  String KAFKA_PUBSUB_OUTPUT_PROJECT_ID = "kafka.pubsub.output.projectId";
+  String KAFKA_PUBSUB_OUTPUT_TOPIC = "kafka.pubsub.output.topic";
+  String KAFKA_PUBSUB_STARTING_OFFSET = "kafka.pubsub.starting.offset";
+  String KAFKA_PUBSUB_AWAIT_TERMINATION_TIMEOUT = "kafka.pubsub.await.termination.timeout";
+
   String SPARK_SAVE_MODE_OVERWRITE = "overwrite";
   String BQ_TABLE_NAME_FORMAT = "%s.%s.%s";
 

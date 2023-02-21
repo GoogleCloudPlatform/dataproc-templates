@@ -144,6 +144,7 @@ bin/start.sh \
 --templateProperty kafka.gcs.output.location=<gcs path> \
 --templateProperty kafka.bootstrap.servers=<kafka broker list> \
 --templateProperty kafka.topic=<kafka topic name> \
+--templateProperty kafka.message.format=<kafka message format> 
 ```
 
 
@@ -162,8 +163,78 @@ bin/start.sh \
 --templateProperty kafka.bootstrap.servers=102.1.1.20:9092 \
 --templateProperty kafka.topic=events-topic \
 --templateProperty kafka.starting.offset=latest \
+--templateProperty kafka.message.format=json \
 --templateProperty kafka.schema.url=$GCS_SCHEMA_FILE \
 --templateProperty kafka.gcs.await.termination.timeout.ms=1200000 \
 --templateProperty kafka.gcs.output.location=$GCS_OUTPUT_PATH \
 --templateProperty kafka.gcs.output.format=parquet
+```
+
+## 3. Kafka To PubSub
+
+General Execution:
+
+```
+export GCP_PROJECT=<gcp-project-id>
+export REGION=<gcp-project-region>
+export GCS_STAGING_LOCATION=<gcs-bucket-staging-folder-path>
+export SUBNET=<gcp-project-dataproc-clusters-subnet>
+
+bin/start.sh \
+-- \
+--template KAFKATOPUBSUB \
+--templateProperty project.id=$GCP_PROJECT \
+--templateProperty kafka.pubsub.checkpoint.location=<gcs-bucket-location-maintains-checkpoint> \
+--templateProperty kafka.pubsub.bootstrap.servers=<kafka-broker-list> \
+--templateProperty kafka.pubsub.input.topic=<kafka-topic> \
+--templateProperty kafka.pubsub.output.topic=<pubsub-topic> \
+--templateProperty kafka.pubsub.output.projectId=<pubsub-project-id> \
+--templateProperty kafka.pubsub.starting.offset=<starting-offset-value> \
+--templateProperty kafka.pubsub.await.termination.timeout=<stream-await-termination-timeout>
+```
+
+### Configurable Parameters
+Following properties are avaialble in commandline or [template.properties](../../../../../../../resources/template.properties) file:
+
+```
+# Kafka to PubSub
+
+# Kafka bootstrap servers
+kafka.pubsub.bootstrap.servers=
+
+# Kafka topics
+kafka.pubsub.input.topic=
+
+# PubSub topic
+kafka.pubsub.output.topic=
+
+# GCS location for maintaining checkpoint
+kafka.pubsub.checkpoint.location=
+
+# Offset to start reading from. Accepted values: "earliest", "latest" (streaming only), or json string """ {"topicA":{"0":23,"1":-1},"topicB":{"0":-2}} """
+kafka.pubsub.starting.offset=
+
+# Waits for specified time in ms before termination of stream
+kafka.pubsub.await.termination.timeout=
+```
+
+
+### Example submission
+```
+export GCP_PROJECT=my-gcp-project
+export REGION=us-west1
+export SUBNET=test-subnet
+export GCS_STAGING_LOCATION=gs://templates-demo-kafkatobq
+
+bin/start.sh \
+-- \
+--template KAFKATOPUBSUB \
+--templateProperty project.id=$GCP_PROJECT \
+--templateProperty kafka.pubsub.checkpoint.location=gs://templates-demo-kafkatopubsub/checkpoint \
+--templateProperty kafka.pubsub.bootstrap.servers=102.1.1.20:9092 \
+--templateProperty kafka.pubsub.input.topic=msg-events \
+--templateProperty kafka.pubsub.output.topic=ps-msg-events \
+--templateProperty kafka.pubsub.output.projectId=$GCP_PROJECT \
+--templateProperty kafka.pubsub.starting.offset=earliest \
+--templateProperty kafka.pubsub.await.termination.timeout=120000
 ```
