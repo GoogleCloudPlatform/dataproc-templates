@@ -2,7 +2,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
-
+import os
 
 
 from pyspark.sql import SparkSession, DataFrame
@@ -79,6 +79,11 @@ class KafkaToBigQueryTemplate(BaseTemplate):
 
         logger: Logger = self.get_logger(spark=spark)
 
+        logger.info(
+            "Starting Kafka to Bigquery Pyspark job with parameters:\n"
+            f"{pprint.pformat(args)}"
+        )
+
         #arguments
         bootstrap_server_list: str = args[constants.KAFKA_BOOTSTRAP_SERVERS]
         checkpoint_location: str = args[constants.KAFKA_BQ_CHECKPOINT_LOCATION]
@@ -88,8 +93,9 @@ class KafkaToBigQueryTemplate(BaseTemplate):
         bq_temp_bucket: str = args[constants.KAFKA_BQ_TEMP_BUCKET_NAME]
         timeout: int = int(args[constants.KAFKA_BQ_TERMINATION_TIMEOUT])
         offset:str = args[constants.KAFKA_BQ_STARTING_OFFSET]
-        
+        project_id: str = os.environ['GCP_PROJECT']
 
+    
         df = spark.readStream.format(constants.KAFKA_INPUT_FORMAT) \
                   .option('kafka.bootstrap.servers', bootstrap_server_list) \
                   .option('subscribe', kafka_topics) \
@@ -98,24 +104,17 @@ class KafkaToBigQueryTemplate(BaseTemplate):
         
         df = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
-        print(df)
-        logger.info(
-            "Starting Kafka to Bigquery Pyspark job with parameters:\n"
-            f"{pprint.pformat(args)}"
-        )
 
         # Write
-        
-        q = df \
+        output = df \
         .writeStream \
-        .format("com.google.cloud.spark.bigquery") \
+        .format(constants.FORMAT_BIGQUERY) \
         .option('checkpointLocation',checkpoint_location) \
         .option('table',project_id+':'+big_query_dataset+'.'+big_query_table) \
-        .option('header',True) \
         .option('temporaryGcsBucket', bq_temp_bucket) \
         .start() 
         
-        q.awaitTermination(timeout)
+        output.awaitTermination(timeout)
 
 
 
