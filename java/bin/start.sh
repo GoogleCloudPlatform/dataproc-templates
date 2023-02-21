@@ -64,6 +64,7 @@ if [ -z "$SKIP_BUILD" ]; then
 
 fi
 
+OPT_SPARK_VERSION="--version=1.0.29"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
 OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
@@ -119,6 +120,7 @@ if [ "${JOB_TYPE}" == "CLUSTER" ]; then
   check_required_envvar CLUSTER
   command=$(cat << EOF
   gcloud dataproc jobs submit spark \
+      ${OPT_SPARK_VERSION} \
       ${OPT_PROJECT} \
       ${OPT_REGION} \
       ${OPT_CLUSTER} \
@@ -131,6 +133,7 @@ elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
   echo "JOB_TYPE is SERVERLESS, so will submit on serverless spark"
   command=$(cat << EOF
   gcloud beta dataproc batches submit spark \
+      ${OPT_SPARK_VERSION} \
       ${OPT_PROJECT} \
       ${OPT_REGION} \
       ${OPT_JARS} \
