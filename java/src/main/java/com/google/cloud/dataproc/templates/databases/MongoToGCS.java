@@ -55,25 +55,12 @@ public class MongoToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    SparkSession spark = null;
 
-    if (StringUtils.isAllBlank(inputCollection)
-        || StringUtils.isAllBlank(outputFileFormat)
-        || StringUtils.isAllBlank(outputFileLocation)
-        || StringUtils.isAllBlank(inputUri)
-        || StringUtils.isAllBlank(inputDatabase)) {
-      LOGGER.error(
-          "{},{},{},{},{} are required parameter. ",
-          MONGO_GCS_INPUT_COLLECTION,
-          MONGO_GCS_OUTPUT_FORMAT,
-          MONGO_GCS_OUTPUT_LOCATION,
-          MONGO_GCS_INPUT_URI,
-          MONGO_GCS_INPUT_DATABASE);
-      throw new IllegalArgumentException(
-          "Required parameters for Mongo to GCS not passed. "
-              + "Set mandatory parameter for Mongo to GCS template "
-              + "in resources/conf/template.properties file.");
-    }
+    validateInput();
+
+    // Initialize Spark Session
+
+    SparkSession spark = null;
     spark = SparkSession.builder().appName("Mongo To GCS").getOrCreate();
 
     // Set log level
@@ -94,5 +81,23 @@ public class MongoToGCS implements BaseTemplate {
   }
 
   @Override
-  public void validateInput() throws Exception {}
+  public void validateInput() {
+    if (StringUtils.isAllBlank(inputCollection)
+        || StringUtils.isAllBlank(outputFileFormat)
+        || StringUtils.isAllBlank(outputFileLocation)
+        || StringUtils.isAllBlank(inputUri)
+        || StringUtils.isAllBlank(inputDatabase)) {
+      LOGGER.error(
+          "{},{},{},{},{} are required parameter. ",
+          MONGO_GCS_INPUT_COLLECTION,
+          MONGO_GCS_OUTPUT_FORMAT,
+          MONGO_GCS_OUTPUT_LOCATION,
+          MONGO_GCS_INPUT_URI,
+          MONGO_GCS_INPUT_DATABASE);
+      throw new IllegalArgumentException(
+          "Required parameters for Mongo to GCS not passed. "
+              + "Set mandatory parameter for Mongo to GCS template "
+              + "in resources/conf/template.properties file.");
+    }
+  }
 }
