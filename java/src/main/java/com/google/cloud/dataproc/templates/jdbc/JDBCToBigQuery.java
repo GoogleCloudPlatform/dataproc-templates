@@ -36,6 +36,7 @@ public class JDBCToBigQuery implements BaseTemplate {
   private String jdbcURL;
   private String jdbcDriverClassName;
   private String jdbcFetchSize;
+  private String jdbcSessionInitStatement;
   private String temporaryGcsBucket;
   // Default as ErrorIfExists
   private String bqWriteMode = "ErrorIfExists";
@@ -47,6 +48,7 @@ public class JDBCToBigQuery implements BaseTemplate {
   private String concatedPartitionProps;
   private String tempTable;
   private String tempQuery;
+  private final String sparkLogLevel;
 
   public JDBCToBigQuery() {
 
@@ -56,6 +58,7 @@ public class JDBCToBigQuery implements BaseTemplate {
     jdbcURL = getProperties().getProperty(JDBC_TO_BQ_JDBC_URL);
     jdbcDriverClassName = getProperties().getProperty(JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME);
     jdbcFetchSize = getProperties().getProperty(JDBC_TO_BQ_JDBC_FETCH_SIZE);
+    jdbcSessionInitStatement = getProperties().getProperty(JDBC_TO_BQ_JDBC_SESSION_INIT_STATEMENT);
     jdbcSQL =
         getSQL(
             getProperties().getProperty(JDBC_TO_BQ_JDBC_URL),
@@ -68,6 +71,7 @@ public class JDBCToBigQuery implements BaseTemplate {
         jdbcSQLPartitionColumn + jdbcSQLLowerBound + jdbcSQLUpperBound + jdbcSQLNumPartitions;
     tempTable = getProperties().getProperty(JDBC_BQ_TEMP_TABLE);
     tempQuery = getProperties().getProperty(JDBC_BQ_TEMP_QUERY);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   public String getSQL(String jdbcURL, String sqlQuery) {
@@ -91,6 +95,9 @@ public class JDBCToBigQuery implements BaseTemplate {
             .config("temporaryGcsBucket", temporaryGcsBucket)
             .enableHiveSupport()
             .getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     HashMap<String, String> jdbcProperties = new HashMap<>();
     jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
@@ -168,6 +175,8 @@ public class JDBCToBigQuery implements BaseTemplate {
         jdbcSQL,
         JDBC_TO_BQ_JDBC_FETCH_SIZE,
         jdbcFetchSize,
+        JDBC_TO_BQ_JDBC_SESSION_INIT_STATEMENT,
+        jdbcSessionInitStatement,
         JDBC_TO_BQ_SQL_PARTITION_COLUMN,
         jdbcSQLPartitionColumn,
         JDBC_TO_BQ_SQL_UPPER_BOUND,
@@ -201,6 +210,10 @@ public class JDBCToBigQuery implements BaseTemplate {
 
     if (StringUtils.isNotBlank(jdbcFetchSize)) {
       jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), jdbcFetchSize);
+    }
+
+    if (StringUtils.isNotBlank(jdbcSessionInitStatement)) {
+      jdbcProperties.put(JDBCOptions.JDBC_SESSION_INIT_STATEMENT(), jdbcSessionInitStatement);
     }
 
     /** Read Input data from JDBC table */

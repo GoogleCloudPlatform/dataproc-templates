@@ -13,3 +13,4 @@
 # limitations under the License.
 
 from .cassandra_to_bigquery import CassandraToBQTemplate
+from .cassandra_to_gcs import CassandraToGCSTemplate

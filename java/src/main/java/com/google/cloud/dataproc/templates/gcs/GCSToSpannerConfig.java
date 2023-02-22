@@ -16,6 +16,7 @@
 package com.google.cloud.dataproc.templates.gcs;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -69,7 +70,7 @@ public class GCSToSpannerConfig {
 
   @JsonProperty(value = GCS_SPANNER_OUTPUT_SAVE_MODE)
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
-  private String saveModeString = "ErrorIfExists";
+  private String saveModeString;
 
   @JsonProperty(value = GCS_SPANNER_OUTPUT_PRIMARY_KEY)
   @NotEmpty
@@ -77,7 +78,11 @@ public class GCSToSpannerConfig {
 
   @JsonProperty(value = GCS_SPANNER_OUTPUT_BATCH_INSERT_SIZE)
   @Min(value = 1)
-  private long batchInsertSize = 1000;
+  private long batchInsertSize;
+
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
 
   public String getInputLocation() {
     return inputLocation;
@@ -118,6 +123,10 @@ public class GCSToSpannerConfig {
 
   public long getBatchInsertSize() {
     return batchInsertSize;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   @Override

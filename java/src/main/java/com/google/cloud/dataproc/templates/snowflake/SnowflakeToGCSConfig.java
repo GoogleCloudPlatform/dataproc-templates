@@ -44,11 +44,9 @@ public class SnowflakeToGCSConfig {
   private String sfPassword;
 
   @JsonProperty(value = SNOWFLAKE_GCS_SFDATABASE)
-  @NotEmpty
   private String sfDatabase;
 
   @JsonProperty(value = SNOWFLAKE_GCS_SFSCHEMA)
-  @NotEmpty
   private String sfSchema;
 
   @JsonProperty(value = SNOWFLAKE_GCS_SFWAREHOUSE)
@@ -81,6 +79,10 @@ public class SnowflakeToGCSConfig {
 
   @JsonProperty(value = SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN)
   private String gcsPartitionColumn;
+
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
 
   public String getSfUrl() {
     return this.sfUrl;
@@ -134,12 +136,32 @@ public class SnowflakeToGCSConfig {
     return this.gcsPartitionColumn;
   }
 
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
+  }
+
   @AssertTrue(
       message =
-          "Required parameters for SnowflakeToGCS not passed. Template property should be provided for either the input table or an equivalent query, but not both. Refer to snowflake/README.md for more instructions.")
-  private boolean isPropertyValid() {
-    return (StringUtils.isBlank(sfTable) || StringUtils.isBlank(sfQuery))
-        && (StringUtils.isNotBlank(sfTable) || StringUtils.isNotBlank(sfQuery));
+          "Required parameters for SnowflakeToGCS not passed. "
+              + "Template property should be provided for EITHER the input database, schema, table OR an equivalent query to read data from Snowflake. "
+              + "Refer to snowflake/README.md for more instructions.")
+  private boolean isPropertiesNotSet() {
+    return (StringUtils.isNotBlank(sfQuery)
+        || (StringUtils.isNotBlank(sfDatabase)
+            && StringUtils.isNotBlank(sfSchema)
+            && StringUtils.isNotBlank(sfTable)));
+  }
+
+  @AssertTrue(
+      message =
+          "Required parameters for SnowflakeToGCS not passed. "
+              + "Template property cannot be provided for BOTH the input database, schema, table AND an equivalent query. "
+              + "Refer to snowflake/README.md for more instructions.")
+  private boolean isPropertiesBothSet() {
+    return (StringUtils.isBlank(sfQuery)
+        || (StringUtils.isBlank(sfDatabase)
+            && StringUtils.isBlank(sfSchema)
+            && StringUtils.isBlank(sfTable)));
   }
 
   @Override

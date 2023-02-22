@@ -15,7 +15,6 @@
  */
 package com.google.cloud.dataproc.templates.word;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.WORD_COUNT_INPUT_FORMAT_PROP;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.WORD_COUNT_INPUT_PATH_PROP;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.WORD_COUNT_OUTPUT_PATH_PROP;
 
@@ -36,7 +35,6 @@ public class WordCount implements BaseTemplate {
   public void runTemplate() {
     String inputPath = getProperties().getProperty(WORD_COUNT_INPUT_PATH_PROP);
     String outputPath = getProperties().getProperty(WORD_COUNT_OUTPUT_PATH_PROP);
-    String format = getProperties().getProperty(WORD_COUNT_INPUT_FORMAT_PROP, "text");
 
     validateInput();
 
@@ -50,7 +48,6 @@ public class WordCount implements BaseTemplate {
         words
             .mapToPair((String word) -> new Tuple2<>(word, 1))
             .reduceByKey((Integer count1, Integer count2) -> count1 + count2);
-    wordCounts.saveAsTextFile(outputPath);
     wordCounts.saveAsTextFile(outputPath);
   }
 
