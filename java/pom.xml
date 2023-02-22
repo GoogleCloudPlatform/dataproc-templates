@@ -147,7 +147,7 @@
     </dependency>
     <dependency>
       <groupId>org.mongodb.spark</groupId>
-      <artifactId>mongo-spark-connector_2.12</artifactId>
+      <artifactId>mongo-spark-connector_${scala.binary.version}</artifactId>
       <version>10.1.1</version>
     </dependency>
     <dependency>
