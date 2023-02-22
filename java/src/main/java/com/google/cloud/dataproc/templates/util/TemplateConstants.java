@@ -405,6 +405,7 @@ public interface TemplateConstants {
 
   String MONGO_GCS_OUTPUT_FORMAT = "mongo.gcs.output.format";
   String MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode";
+  String MONGO_GCS_OUTPUT_MODE_DEFAULT = "append";
   String MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri";
   String MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database";
   String MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection";

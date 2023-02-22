@@ -234,3 +234,5 @@ export REGION=us-central1
     --templateProperty mongo.gcs.output.location=gs://outputBucket \
     --templateProperty mongo.gcs.output.mode=overwrite
 ```
+
+Note-: ```mongo.gcs.output.mode=<append|overwrite|ignore|errorifexists>``` is used to specify the mode for output in GCS. It has a default value of ```append``` if nothing is passed.
