@@ -123,36 +123,85 @@ Template for exporting a Cassandra table to GCS
 ```
 $ python main.py --template CASSANDRATOGCS --help
 
-usage: main.py --template CASSANDRATOGCS [-h] \
-	--cassandratogcs.input.host CASSANDRATOGCS.INPUT.HOST \
-	--cassandratogcs.output.format CASSANDRATOGCS.OUTPUT.FORMAT \
-	--cassandratogcs.output.path CASSANDRATOGCS.OUTPUT.PATH \
-	--cassandratogcs.temp.gcs.location TEMPORARY.GCS.STAGING.LOCATION \
-    --cassandratogcs.output.savemode {overwrite,append,ignore,errorifexists}
+usage: main.py [-h]
+               --cassandratogcs.input.host CASSANDRATOGCS.INPUT.HOST
+               --cassandratogcs.output.format {avro,parquet,csv,json}
+               --cassandratogcs.output.path CASSANDRATOGCS.OUTPUT.PATH
+               [--cassandratogcs.output.savemode {overwrite,append,ignore,errorifexists}]
+               [--cassandratogcs.input.catalog.name CASSANDRATOGCS.INPUT.CATALOG.NAME]
+               [--cassandratogcs.input.query CASSANDRATOGCS.INPUT.QUERY]
+               [--cassandratogcs.input.keyspace CASSANDRATOGCS.INPUT.KEYSPACE]
+               [--cassandratogcs.input.table CASSANDRATOGCS.INPUT.TABLE]
+               [--cassandratogcs.output.chartoescapequoteescaping CASSANDRATOGCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING]
+               [--cassandratogcs.output.compression CASSANDRATOGCS.OUTPUT.COMPRESSION]
+               [--cassandratogcs.output.dateformat CASSANDRATOGCS.OUTPUT.DATEFORMAT]
+               [--cassandratogcs.output.emptyvalue CASSANDRATOGCS.OUTPUT.EMPTYVALUE]
+               [--cassandratogcs.output.encoding CASSANDRATOGCS.OUTPUT.ENCODING]
+               [--cassandratogcs.output.escape CASSANDRATOGCS.OUTPUT.ESCAPE]
+               [--cassandratogcs.output.escapequotes CASSANDRATOGCS.OUTPUT.ESCAPEQUOTES]
+               [--cassandratogcs.output.header CASSANDRATOGCS.OUTPUT.HEADER]
+               [--cassandratogcs.output.ignoreleadingwhitespace CASSANDRATOGCS.OUTPUT.IGNORELEADINGWHITESPACE]
+               [--cassandratogcs.output.ignoretrailingwhitespace CASSANDRATOGCS.OUTPUT.IGNORETRAILINGWHITESPACE]
+               [--cassandratogcs.output.linesep CASSANDRATOGCS.OUTPUT.LINESEP]
+               [--cassandratogcs.output.nullvalue CASSANDRATOGCS.OUTPUT.NULLVALUE]
+               [--cassandratogcs.output.quote CASSANDRATOGCS.OUTPUT.QUOTE]
+               [--cassandratogcs.output.quoteall CASSANDRATOGCS.OUTPUT.QUOTEALL]
+               [--cassandratogcs.output.sep CASSANDRATOGCS.OUTPUT.SEP]
+               [--cassandratogcs.output.timestampformat CASSANDRATOGCS.OUTPUT.TIMESTAMPFORMAT]
+               [--cassandratogcs.output.timestampntzformat CASSANDRATOGCS.OUTPUT.TIMESTAMPNTZFORMAT]
 
-optional arguments:
-    -h, --help            show this help message and exit
-    --cassandratogcs.input.query   Input query for customised migration
-    --cassandratogcs.input.catalog.name   Cassandra connection name
-    --cassandratogcs.input.keyspace CASSANDRATOGCS.INPUT.KEYSPACE \
-    --cassandratogcs.input.table CASSANDRATOGCS.INPUT.TABLE \
-    --cassandratogcs.output.chartoescapequoteescaping CASSANDRATOGCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING \
-    --cassandratogcs.output.compression CASSANDRATOGCS.OUTPUT.COMPRESSION \
-    --cassandratogcs.output.dateformat CASSANDRATOGCS.OUTPUT.DATEFORMAT \
-    --cassandratogcs.output.emptyvalue CASSANDRATOGCS.OUTPUT.EMPTYVALUE \
-    --cassandratogcs.output.encoding CASSANDRATOGCS.OUTPUT.ENCODING \
-    --cassandratogcs.output.escape CASSANDRATOGCS.OUTPUT.ESCAPE \
-    --cassandratogcs.output.escapequotes CASSANDRATOGCS.OUTPUT.ESCAPEQUOTES \
-    --cassandratogcs.output.header CASSANDRATOGCS.OUTPUT.HEADER \
-    --cassandratogcs.output.ignoreleadingwhitespace CASSANDRATOGCS.OUTPUT.IGNORELEADINGWHITESPACE \
-    --cassandratogcs.output.ignoretrailingwhitespace CASSANDRATOGCS.OUTPUT.IGNORETRAILINGWHITESPACE \
-    --cassandratogcs.output.linesep CASSANDRATOGCS.OUTPUT.LINESEP \
-    --cassandratogcs.output.nullvalue CASSANDRATOGCS.OUTPUT.NULLVALUE \
-    --cassandratogcs.output.quote CASSANDRATOGCS.OUTPUT.QUOTE \
-    --cassandratogcs.output.quoteall CASSANDRATOGCS.OUTPUT.QUOTEALL \
-    --cassandratogcs.output.sep CASSANDRATOGCS.OUTPUT.SEP \
-    --cassandratogcs.output.timestampformat CASSANDRATOGCS.OUTPUT.TIMESTAMPFORMAT \
-    --cassandratogcs.output.timestampntzformat CASSANDRATOGCS.OUTPUT.TIMESTAMPNTZFORMAT
+options:
+  -h, --help            show this help message and exit
+  --cassandratogcs.input.host CASSANDRATOGCS.INPUT.HOST
+                        CASSANDRA Cloud Storage Input Host IP
+  --cassandratogcs.output.format {avro,parquet,csv,json}
+                        Output file format (one of: avro,parquet,csv,json)
+  --cassandratogcs.output.path CASSANDRATOGCS.OUTPUT.PATH
+                        Cloud Storage location for output files
+  --cassandratogcs.output.savemode {overwrite,append,ignore,errorifexists}
+                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+  --cassandratogcs.input.catalog.name CASSANDRATOGCS.INPUT.CATALOG.NAME
+                        To provide a name for connection between Cassandra and GCS
+  --cassandratogcs.input.query CASSANDRATOGCS.INPUT.QUERY
+                        Optional query for selective exports
+  --cassandratogcs.input.keyspace CASSANDRATOGCS.INPUT.KEYSPACE
+                        CASSANDRA Cloud Storage Input Keyspace
+  --cassandratogcs.input.table CASSANDRATOGCS.INPUT.TABLE
+                        CASSANDRA Cloud Storage Input Table
+  --cassandratogcs.output.chartoescapequoteescaping CASSANDRATOGCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING
+                        Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
+                        different, \0 otherwise
+  --cassandratogcs.output.compression CASSANDRATOGCS.OUTPUT.COMPRESSION
+  --cassandratogcs.output.dateformat CASSANDRATOGCS.OUTPUT.DATEFORMAT
+                        Sets the string that indicates a date format. This applies to date type
+  --cassandratogcs.output.emptyvalue CASSANDRATOGCS.OUTPUT.EMPTYVALUE
+                        Sets the string representation of an empty value
+  --cassandratogcs.output.encoding CASSANDRATOGCS.OUTPUT.ENCODING
+                        Decodes the CSV files by the given encoding type
+  --cassandratogcs.output.escape CASSANDRATOGCS.OUTPUT.ESCAPE
+                        Sets a single character used for escaping quotes inside an already quoted value
+  --cassandratogcs.output.escapequotes CASSANDRATOGCS.OUTPUT.ESCAPEQUOTES
+                        A flag indicating whether values containing quotes should always be enclosed in quotes. Default is to escape all values containing a quote character
+  --cassandratogcs.output.header CASSANDRATOGCS.OUTPUT.HEADER
+                        Uses the first line of CSV file as names of columns. Defaults to True
+  --cassandratogcs.output.ignoreleadingwhitespace CASSANDRATOGCS.OUTPUT.IGNORELEADINGWHITESPACE
+                        A flag indicating whether or not leading whitespaces from values being read/written should be skipped
+  --cassandratogcs.output.ignoretrailingwhitespace CASSANDRATOGCS.OUTPUT.IGNORETRAILINGWHITESPACE
+                        A flag indicating whether or not trailing whitespaces from values being read/written should be skipped
+  --cassandratogcs.output.linesep CASSANDRATOGCS.OUTPUT.LINESEP
+                        Defines the line separator that should be used for parsing. Defaults to \r, \r\n and \n for reading and \n for writing
+  --cassandratogcs.output.nullvalue CASSANDRATOGCS.OUTPUT.NULLVALUE
+                        Sets the string representation of a null value
+  --cassandratogcs.output.quote CASSANDRATOGCS.OUTPUT.QUOTE
+                        Sets a single character used for escaping quoted values where the separator can be part of the value. For reading, if you would like to turn off quotations, you
+                        need to set not null but an empty string
+  --cassandratogcs.output.quoteall CASSANDRATOGCS.OUTPUT.QUOTEALL
+  --cassandratogcs.output.sep CASSANDRATOGCS.OUTPUT.SEP
+                        Sets a separator for each field and value. This separator can be one or more characters
+  --cassandratogcs.output.timestampformat CASSANDRATOGCS.OUTPUT.TIMESTAMPFORMAT
+                        Sets the string that indicates a timestamp with timezone format
+  --cassandratogcs.output.timestampntzformat CASSANDRATOGCS.OUTPUT.TIMESTAMPNTZFORMAT
+                        Sets the string that indicates a timestamp without timezone format
 ```
 
 ## Required JAR files
