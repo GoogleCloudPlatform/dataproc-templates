@@ -15,9 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.databases;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.CASSANDRA_TO_BQ_BIGQUERY_LOCATION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.CASSANDRA_TO_BQ_INPUT_HOST;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.CASSANDRA_TO_BQ_TEMP_LOCATION;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.datastax.spark.connector.CassandraSparkExtensions;
 import com.google.cloud.dataproc.templates.BaseTemplate;
