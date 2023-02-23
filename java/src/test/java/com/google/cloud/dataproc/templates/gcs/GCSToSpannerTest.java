@@ -15,14 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_INPUT_FORMAT;
-import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_INPUT_LOCATION;
-import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_DATABASE;
-import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_INSTANCE;
-import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_PRIMARY_KEY;
-import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_SAVE_MODE;
-import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_TABLE;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
