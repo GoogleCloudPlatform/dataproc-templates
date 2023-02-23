@@ -69,12 +69,63 @@ snowflake.to.gcs.output.location
 snowflake.to.gcs.output.format
 Note: If not specified explicitly through execution command, the default value is csv.
 
-# Optional property: GCS ouput write mode. Accepted values: Overwrite, ErrorIfExists, Append or Ignore
+# Optional Parameter: GCS ouput write mode. Accepted values: Overwrite, ErrorIfExists, Append or Ignore
 snowflake.to.gcs.output.mode
 Note: If not specified explicitly through execution command, the default value is Append.
 
-# Optional property: GCS output data partiton by column name
+# Optional Parameter: GCS output data partiton by column name
 snowflake.to.gcs.partition.column
+
+# Optional Parameter: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
+snowflake.to.gcs.output.chartoescapequoteescaping
+
+# Optional Parameter: None
+snowflake.to.gcs.output.compression
+
+# Optional Parameter: Sets the string that indicates a date format. This applies to date type
+snowflake.to.gcs.output.dateformat
+
+# Optional Parameter: Sets the string representation of an empty value
+snowflake.to.gcs.output.emptyvalue
+
+# Optional Parameter: Decodes the CSV files by the given encoding type
+snowflake.to.gcs.output.encoding
+
+# Optional Parameter: Sets a single character used for escaping quotes inside an already quoted value
+snowflake.to.gcs.output.escape
+
+# Optional Parameter: A flag indicating whether values containing quotes should always be enclosed in quotes. Default is to escape all values containing a quote character
+snowflake.to.gcs.output.escapequotes
+
+# Optional Parameter: Uses the first line of CSV file as names of columns. Defaults to True
+snowflake.to.gcs.output.header
+
+# Optional Parameter: A flag indicating whether or not leading whitespaces from values being read/written should be skipped
+snowflake.to.gcs.output.ignoreleadingwhitespace
+
+# Optional Parameter: A flag indicating whether or not trailing whitespaces from values being read/written should be skipped
+snowflake.to.gcs.output.ignoretrailingwhitespace
+
+# Optional Parameter: Defines the line separator that should be used for parsing. Defaults to \r, \r\n and \n for reading and \n for writing
+snowflake.to.gcs.output.linesep
+
+# Optional Parameter: Sets the string representation of a null value
+snowflake.to.gcs.output.nullvalue
+
+# Optional Parameter: Sets a single character used for escaping quoted values where the separator can be part of the value. For reading, if you would like to turn off quotations, you need to set not null but an empty string
+snowflake.to.gcs.output.quote
+
+# Optional Parameter: None
+snowflake.to.gcs.output.quoteall
+
+# Optional Parameter: Sets a separator for each field and value. This separator can be one or more characters
+snowflake.to.gcs.output.sep
+
+# Optional Parameter: Sets the string that indicates a timestamp with timezone format
+snowflake.to.gcs.output.timestampformat
+
+# Optional Parameter: Sets the string that indicates a timestamp without timezone format
+snowflake.to.gcs.output.timestampntzformat
 ```
 **Note:** Make sure that either `snowflake.to.gcs.sf.query` OR `snowflake.to.gcs.sf.database`, `snowflake.to.gcs.sf.schema` and `snowflake.to.gcs.sf.table` are provided.
 
@@ -136,5 +187,5 @@ bin/start.sh \
 --snowflake.to.gcs.sf.autopushdown="off" \
 --snowflake.to.gcs.output.location="gs://test-bucket/snowflake" \
 --snowflake.to.gcs.output.format="avro" \
---snowflake.to.gcs.partition.column="CC_CALL_CENTER_SK" 
+--snowflake.to.gcs.partition.column="CC_CALL_CENTER_SK"
 ```
