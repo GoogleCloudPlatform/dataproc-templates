@@ -15,8 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,16 +29,6 @@ import java.util.Properties;
 import org.apache.spark.sql.SaveMode;
 
 public class GCSToSpannerConfig {
-
-  public static final String GCS_SPANNER_INPUT_FORMAT = "gcs.spanner.input.format";
-  public static final String GCS_SPANNER_INPUT_LOCATION = "gcs.spanner.input.location";
-  public static final String GCS_SPANNER_OUTPUT_INSTANCE = "gcs.spanner.output.instance";
-  public static final String GCS_SPANNER_OUTPUT_DATABASE = "gcs.spanner.output.database";
-  public static final String GCS_SPANNER_OUTPUT_TABLE = "gcs.spanner.output.table";
-  public static final String GCS_SPANNER_OUTPUT_SAVE_MODE = "gcs.spanner.output.saveMode";
-  public static final String GCS_SPANNER_OUTPUT_PRIMARY_KEY = "gcs.spanner.output.primaryKey";
-  public static final String GCS_SPANNER_OUTPUT_BATCH_INSERT_SIZE =
-      "gcs.spanner.output.batchInsertSize";
   static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
