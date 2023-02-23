@@ -4,7 +4,7 @@ Template for exporting a Cassandra table to Bigquery
 
 
 ## Arguments
-* `cassandratobq.input.host`: Cassandra Host IP 
+* `cassandratobq.input.host`: Cassandra Host IP
 * `cassandratobq.bigquery.location`: Dataset and Table name
 * `cassandratobq.temp.gcs.location`: Temp GCS location for staging
 #### Optional Arguments
@@ -26,12 +26,12 @@ usage: main.py --template CASSANDRATOBQ [-h] \
 	--cassandratobq.temp.gcs.location TEMPORARY.GCS.STAGING.LOCATION \
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --cassandratobq.input.keyspace CASSANDRA.INPUT.KEYSPACE \
-  --cassandratobq.input.table CASSANDRA.INPUT.TABLE \
-  --cassandratobq.output.mode {overwrite,append,ignore,errorifexists} \
-  --cassandratobq.input.query CASSANDRA.INPUT.QUERY \
-  --cassandratobq.input.catalog.name CASSANDRA.INPUT.CATALOG.NAME
+    -h, --help            show this help message and exit
+    --cassandratobq.input.keyspace CASSANDRA.INPUT.KEYSPACE \
+    --cassandratobq.input.table CASSANDRA.INPUT.TABLE \
+    --cassandratobq.output.mode {overwrite,append,ignore,errorifexists} \
+    --cassandratobq.input.query CASSANDRA.INPUT.QUERY \
+    --cassandratobq.input.catalog.name CASSANDRA.INPUT.CATALOG.NAME
 ```
 
 **Note:** Make sure that either ```cassandratobq.input.query``` or both ```cassandratobq.input.keyspace``` and ```cassandratobq.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
@@ -92,13 +92,30 @@ Template for exporting a Cassandra table to GCS
 ## Arguments
 * `cassandratogcs.input.keyspace`: Input keyspace name for cassandra (not required when query is present)
 * `cassandratogcs.input.table`: Input table name of cassandra (not required when query is present)
-* `cassandratogcs.input.host`: Cassandra Host IP 
-* `cassandratogcs.output.format` : Output File Format
+* `cassandratogcs.input.host`: Cassandra Host IP
+* `cassandratogcs.output.format`: Output File Format
 * `cassandratogcs.output.path`: GCS Bucket Path
 * `cassandratogcs.output.savemode`: Output mode of Cassandra to GCS
 #### Optional Arguments
-* `cassandratobq.input.query` : Customised query for selective migration
+* `cassandratobq.input.query`: Customised query for selective migration
 * `cassandratogcs.input.catalog.name`: Connection name, defaults to casscon
+* `cassandratogcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
+* `cassandratogcs.output.compression`: Compression codec to use when saving to file. This can be one of the known case-insensitive short names (none, bzip2, gzip, lz4, snappy and deflate)
+* `cassandratogcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type
+* `cassandratogcs.output.emptyvalue`: Sets the string representation of an empty value
+* `cassandratogcs.output.encoding`: Specifies encoding (charset) of saved CSV files
+* `cassandratogcs.output.escape`: Sets a single character used for escaping quotes inside an already quoted value
+* `cassandratogcs.output.escapequotes`: A flag indicating whether values containing quotes should always be enclosed in quotes. Default is to escape all values containing a quote character
+* `cassandratogcs.output.header`: Writes the names of columns as the first line. Defaults to True
+* `cassandratogcs.output.ignoreleadingwhitespace`: A flag indicating whether or not leading whitespaces from values being read/written should be skipped
+* `cassandratogcs.output.ignoretrailingwhitespace`: A flag indicating whether or not trailing whitespaces from values being read/written should be skipped
+* `cassandratogcs.output.linesep`: Defines the line separator that should be used for parsing. Defaults to \r, \r\n and \n for reading and \n for writing
+* `cassandratogcs.output.nullvalue`: Sets the string representation of a null value
+* `cassandratogcs.output.quote`: Sets a single character used for escaping quoted values where the separator can be part of the value. For writing, if an empty string is set, it uses u0000 (null character)
+* `cassandratogcs.output.quoteall`: A flag indicating whether all values should always be enclosed in quotes. Default is to only escape values containing a quote character
+* `cassandratogcs.output.sep`: Sets a separator for each field and value. This separator can be one or more characters
+* `cassandratogcs.output.timestampformat`: Sets the string that indicates a timestamp with timezone format
+* `cassandratogcs.output.timestampntzformat`: Sets the string that indicates a timestamp without timezone format
 
 
 ## Usage
@@ -114,15 +131,28 @@ usage: main.py --template CASSANDRATOGCS [-h] \
     --cassandratogcs.output.savemode {overwrite,append,ignore,errorifexists}
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --cassandratogcs.input.query   Input query for customised migration
-                       
-  --cassandratogcs.input.catalog.name   Cassandra connection name
-
-  --cassandratogcs.input.keyspace CASSANDRATOGCS.INPUT.KEYSPACE \
-
-  --cassandratogcs.input.table CASSANDRATOGCS.INPUT.TABLE \
-                        
+    -h, --help            show this help message and exit
+    --cassandratogcs.input.query   Input query for customised migration
+    --cassandratogcs.input.catalog.name   Cassandra connection name
+    --cassandratogcs.input.keyspace CASSANDRATOGCS.INPUT.KEYSPACE \
+    --cassandratogcs.input.table CASSANDRATOGCS.INPUT.TABLE \
+    --cassandratogcs.output.chartoescapequoteescaping CASSANDRATOGCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING \
+    --cassandratogcs.output.compression CASSANDRATOGCS.OUTPUT.COMPRESSION \
+    --cassandratogcs.output.dateformat CASSANDRATOGCS.OUTPUT.DATEFORMAT \
+    --cassandratogcs.output.emptyvalue CASSANDRATOGCS.OUTPUT.EMPTYVALUE \
+    --cassandratogcs.output.encoding CASSANDRATOGCS.OUTPUT.ENCODING \
+    --cassandratogcs.output.escape CASSANDRATOGCS.OUTPUT.ESCAPE \
+    --cassandratogcs.output.escapequotes CASSANDRATOGCS.OUTPUT.ESCAPEQUOTES \
+    --cassandratogcs.output.header CASSANDRATOGCS.OUTPUT.HEADER \
+    --cassandratogcs.output.ignoreleadingwhitespace CASSANDRATOGCS.OUTPUT.IGNORELEADINGWHITESPACE \
+    --cassandratogcs.output.ignoretrailingwhitespace CASSANDRATOGCS.OUTPUT.IGNORETRAILINGWHITESPACE \
+    --cassandratogcs.output.linesep CASSANDRATOGCS.OUTPUT.LINESEP \
+    --cassandratogcs.output.nullvalue CASSANDRATOGCS.OUTPUT.NULLVALUE \
+    --cassandratogcs.output.quote CASSANDRATOGCS.OUTPUT.QUOTE \
+    --cassandratogcs.output.quoteall CASSANDRATOGCS.OUTPUT.QUOTEALL \
+    --cassandratogcs.output.sep CASSANDRATOGCS.OUTPUT.SEP \
+    --cassandratogcs.output.timestampformat CASSANDRATOGCS.OUTPUT.TIMESTAMPFORMAT \
+    --cassandratogcs.output.timestampntzformat CASSANDRATOGCS.OUTPUT.TIMESTAMPNTZFORMAT
 ```
 
 ## Required JAR files
@@ -158,7 +188,7 @@ One can add additional property to submit query (If query is provided, don't pro
 --cassandratogcs.input.catalog.name=<catalog-name>
 --cassandratogcs.input.query="select * from <catalog-name>.<keyspace-name>.<table-name>"
 ```
-Note-: ```cassandratogcs.input.catalog.name=<catalog-name>``` is used to provide a name to the connection with Cassandra. This name is used for querying purpose and has a default value of ```casscon``` if nothing is passed. 
+Note-: ```cassandratogcs.input.catalog.name=<catalog-name>``` is used to provide a name to the connection with Cassandra. This name is used for querying purpose and has a default value of ```casscon``` if nothing is passed.
 To query using default catalog name -:
 ```
 --templateProperty cassandratogcs.input.query="select * from casscon.<keyspace-name>.<table-name>"
@@ -182,6 +212,8 @@ export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,g
 --cassandratogcs.output.path=bucketname \
 --cassandratogcs.output.savemode=overwrite \
 --cassandratogcs.input.query="select emp_id from casscon.tk1.emp"
+--cassandratogcs.output.header=false \
+--cassandratogcs.output.timestampntzformat="yyyy-MM-dd HH:mm:ss"
 ```
 
 **Note:** Make sure that either ```cassandratogcs.input.query``` or both ```cassandratogcs.input.keyspace``` and ```cassandratogcs.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
