@@ -141,16 +141,6 @@
       <version>3.1.0</version>
     </dependency>
     <dependency>
-      <groupId>org.mongodb</groupId>
-      <artifactId>mongo-java-driver</artifactId>
-      <version>3.12.12</version>
-    </dependency>
-    <dependency>
-      <groupId>org.mongodb.spark</groupId>
-      <artifactId>mongo-spark-connector_${scala.binary.version}</artifactId>
-      <version>10.1.1</version>
-    </dependency>
-    <dependency>
       <groupId>com.github.jnr</groupId>
       <artifactId>jnr-posix</artifactId>
       <version>3.0.61</version>
