@@ -270,3 +270,15 @@ CASSANDRA_TO_GCS_QUERY = "cassandratogcs.input.query"
 # Hive DDL Extractor Util
 HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"
 HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH = "hive.ddl.extractor.output.path"
+
+KAFKA_INPUT_FORMAT='kafka'
+
+#Kafka To GCS
+KAFKA_GCS_BOOTSTRAP_SERVERS='kafka.gcs.bootstrap.servers'
+KAFKA_GCS_OUTPUT_LOCATION='kafka.gcs.output.location.gcs.path'
+KAFKA_TOPIC='kafka.gcs.topic'
+KAFKA_GCS_OUTPUT_FORMAT='kafka.gcs.output.format'
+KAFKA_GCS_OUPUT_MODE='kafka.gcs.output.mode'
+KAFKA_GCS_TERMINATION_TIMEOUT='kafka.gcs.termination.timeout'
+KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
+KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
