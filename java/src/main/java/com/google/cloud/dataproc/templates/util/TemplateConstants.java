@@ -277,6 +277,7 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_FORMAT_JSON = "json";
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
+  String BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode";
 
   /** RedShift to GCS properties */
   String REDSHIFT_AWS_INPUT_URL = "redshift.aws.input.url";
