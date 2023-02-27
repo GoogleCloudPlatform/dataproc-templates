@@ -281,3 +281,5 @@ KAFKA_BQ_TABLE_NAME='kafka.to.bq.table'
 KAFKA_BQ_TEMP_BUCKET_NAME='kafka.to.bq.temp.bucket.name'
 KAFKA_BQ_TERMINATION_TIMEOUT='kafka.to.bq.termination.timeout'
 KAFKA_INPUT_FORMAT='kafka'
+KAFKA_BQ_OUTPUT_MODE='kafka.to.bq.output.mode'
+

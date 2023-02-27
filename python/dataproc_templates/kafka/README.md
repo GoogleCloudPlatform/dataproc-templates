@@ -14,9 +14,10 @@ It uses the
 * `kafka.to.bq.topic`: Topic names for respective kafka server
 * `kafka.to.bq.starting.offset`:  Offset to start reading from. Accepted values: "earliest", "latest" (streaming only), or json string """ {"topicA":{"0":23,"1":-1},"topicB":{"0":-2}} """
 * `kafka.to.bq.dataset`: Temporary bucket for the Spark BigQuery connector
-* `kafka.to.bq.table`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+* `kafka.to.bq.table`:  name of the bigquery table (destination)
+* `kafka.to.bq.output.mode`:  Output mode of the table (append, overwrite, update, complete)
 * `kafka.to.bq.temp.bucket.name`: Name of bucket for temporary storage files (not location).
-* `kafka.to.bq.termination.timeout`: **(in seconds)** Waits for specified time in ms before termination of stream 
+* `kafka.to.bq.termination.timeout`: **(in seconds)** Waits for specified time in sec before termination of stream 
 
 ## Usage
 
@@ -30,6 +31,7 @@ usage: main.py --template KAFKATOBQ [-h] \
     --kafka.to.bq.starting.offset KAFKA.BIGUERY.STARTING.OFFSET \
     --kafka.to.bq.dataset KAFKA.BQ.DATASET \
     --kafka.to.bq.table KAFKA.BQ.TABLE.NAME \
+    --kafka.to.bq.output.mode KAFKA.BQ.OUTPUT.MODE \
     --kafka.to.bq.temp.bucket.name KAFKA.BIGQUERY.TEMP.BUCKET.NAME
 
 ```
@@ -57,6 +59,7 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
    --kafka.to.bq.dataset="<bigquery_dataset_name>" \
    --kafka.to.bq.table="<bigquery_table_name>" \
    --kafka.to.bq.temp.bucket.name="<bucket name for staging files>" \
+   --kafka.to.bq.output.mode=<append|overwrite|update> \
    --kafka.to.bq.termination.timeout="time in seconds"
 ```
 

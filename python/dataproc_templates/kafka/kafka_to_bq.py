@@ -43,7 +43,7 @@ class KafkaToBigQueryTemplate(BaseTemplate):
             f'--{constants.KAFKA_BQ_STARTING_OFFSET}',
             dest=constants.KAFKA_BQ_STARTING_OFFSET,
             required=True,
-            help='Starting offset value (earliest, latest)'
+            help='Offset to start reading from. Accepted values: "earliest", "latest","{json string}"}'
         )
         parser.add_argument(
             f'--{constants.KAFKA_BQ_DATASET}',
@@ -56,6 +56,12 @@ class KafkaToBigQueryTemplate(BaseTemplate):
             dest=constants.KAFKA_BQ_TABLE_NAME,
             required=True,
             help="Bigquery Table Name"
+        )
+        parser.add_argument(
+            f'--{constants.KAFKA_BQ_OUTPUT_MODE}',
+            dest=constants.KAFKA_BQ_OUTPUT_MODE,
+            required=True,
+            help="Bigquery Table Output Mode (append , complete, update)"
         )
         parser.add_argument(
             f'--{constants.KAFKA_BQ_TEMP_BUCKET_NAME}',
@@ -93,6 +99,7 @@ class KafkaToBigQueryTemplate(BaseTemplate):
         bq_temp_bucket: str = args[constants.KAFKA_BQ_TEMP_BUCKET_NAME]
         timeout: int = int(args[constants.KAFKA_BQ_TERMINATION_TIMEOUT])
         offset:str = args[constants.KAFKA_BQ_STARTING_OFFSET]
+        output_mode = args[constants.KAFKA_BQ_OUTPUT_MODE]
 
     
         df = spark.readStream.format(constants.KAFKA_INPUT_FORMAT) \
@@ -108,6 +115,7 @@ class KafkaToBigQueryTemplate(BaseTemplate):
         output = df \
         .writeStream \
         .format(constants.FORMAT_BIGQUERY) \
+        .outputMode(output_mode) \
         .option('checkpointLocation',checkpoint_location) \
         .option('table',big_query_dataset+'.'+big_query_table) \
         .option('temporaryGcsBucket', bq_temp_bucket) \
