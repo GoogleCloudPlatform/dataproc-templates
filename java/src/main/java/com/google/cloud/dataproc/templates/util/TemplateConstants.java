@@ -258,6 +258,8 @@ public interface TemplateConstants {
   String S3_BQ_AVRO_FORMAT = "avro";
   String S3_BQ_PRQT_FORMAT = "parquet";
   String S3_BQ_JSON_FORMAT = "json";
+  String S3_BQ_OUTPUT_MODE = "s3.bq.output.mode";
+
   /** Cassandra to BQ properties */
   String CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace";
 
