@@ -205,6 +205,7 @@ public interface TemplateConstants {
   String GCS_BQ_TEMP_QUERY = "gcs.bigquery.temp.query";
   String GCS_BQ_OUTPUT = "table";
   String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
+  String GCS_BQ_OUTPUT_MODE = "gcs.bigquery.output.mode";
 
   /** GCS to BigTable properties */
   String GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location";
