@@ -205,6 +205,7 @@ public interface TemplateConstants {
   String GCS_BQ_TEMP_QUERY = "gcs.bigquery.temp.query";
   String GCS_BQ_OUTPUT = "table";
   String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
+  String GCS_BQ_OUTPUT_MODE = "gcs.bigquery.output.mode";
 
   /** GCS to BigTable properties */
   String GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location";
@@ -257,6 +258,8 @@ public interface TemplateConstants {
   String S3_BQ_AVRO_FORMAT = "avro";
   String S3_BQ_PRQT_FORMAT = "parquet";
   String S3_BQ_JSON_FORMAT = "json";
+  String S3_BQ_OUTPUT_MODE = "s3.bq.output.mode";
+
   /** Cassandra to BQ properties */
   String CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace";
 
@@ -277,6 +280,7 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_FORMAT_JSON = "json";
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
+  String BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode";
 
   /** RedShift to GCS properties */
   String REDSHIFT_AWS_INPUT_URL = "redshift.aws.input.url";
