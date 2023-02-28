@@ -45,7 +45,6 @@ public class SpannerToGCS implements BaseTemplate {
 
   public static SpannerToGCS of(String... args) {
     SpannerToGCSConfig config = SpannerToGCSConfig.fromProperties(PropertyUtil.getProperties());
-    ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
     return new SpannerToGCS(config);
   }
@@ -92,5 +91,7 @@ public class SpannerToGCS implements BaseTemplate {
     spark.stop();
   }
 
-  public void validateInput() {}
+  public void validateInput() {
+    ValidationUtil.validateOrThrow(config);
+  }
 }
