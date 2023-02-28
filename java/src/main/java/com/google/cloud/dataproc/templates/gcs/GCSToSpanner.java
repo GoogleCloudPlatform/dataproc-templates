@@ -15,13 +15,10 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
-
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -43,7 +40,6 @@ public class GCSToSpanner implements BaseTemplate {
 
   public static GCSToSpanner of(String... args) {
     GCSToSpannerConfig config = GCSToSpannerConfig.fromProperties(PropertyUtil.getProperties());
-    ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
     return new GCSToSpanner(config);
   }
@@ -86,26 +82,6 @@ public class GCSToSpanner implements BaseTemplate {
   }
 
   public void validateInput() {
-    if (StringUtils.isAllBlank(config.getInputFormat())
-        || StringUtils.isAllBlank(config.getInputLocation())
-        || StringUtils.isAllBlank(config.getInstance())
-        || StringUtils.isAllBlank(config.getDatabase())
-        || StringUtils.isAllBlank(config.getTable())
-        || StringUtils.isAllBlank(config.getSaveModeString())
-        || StringUtils.isAllBlank(config.getPrimaryKey())) {
-      LOGGER.error(
-          "{},{},{},{},{},{},{} are required parameter. ",
-          GCS_SPANNER_INPUT_FORMAT,
-          GCS_SPANNER_INPUT_LOCATION,
-          GCS_SPANNER_OUTPUT_INSTANCE,
-          GCS_SPANNER_OUTPUT_DATABASE,
-          GCS_SPANNER_OUTPUT_TABLE,
-          GCS_SPANNER_OUTPUT_SAVE_MODE,
-          GCS_SPANNER_OUTPUT_PRIMARY_KEY);
-      throw new IllegalArgumentException(
-          "Required parameters for Cassandra to BigQuery not passed. "
-              + "Set mandatory parameter for Cassandra to BigQuery template "
-              + "in resources/conf/template.properties file.");
-    }
+    ValidationUtil.validateOrThrow(config);
   }
 }
