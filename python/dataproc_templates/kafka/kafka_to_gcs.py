@@ -50,13 +50,13 @@ class KafkaToGCSTemplate(BaseTemplate):
             f'--{constants.KAFKA_STARTING_OFFSET}',
             dest=constants.KAFKA_STARTING_OFFSET,
             required=True,
-            help='Starting offset value (earliest, latest)'
+            help='Starting offset value (earliest, latest, json_string)'
         )
         parser.add_argument(
             f'--{constants.KAFKA_GCS_OUTPUT_FORMAT}',
             dest=constants.KAFKA_GCS_OUTPUT_FORMAT,
             required=True,
-            help='Ouput format of the data (json , csv, avro)'
+            help='Ouput format of the data (json , csv, avro, parquet)'
         )
         parser.add_argument(
             f'--{constants.KAFKA_GCS_OUPUT_MODE}',
