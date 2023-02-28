@@ -39,7 +39,6 @@ public class CassandraToBQ implements BaseTemplate {
 
   public static CassandraToBQ of(String... args) {
     CassandraToBqConfig config = CassandraToBqConfig.fromProperties(PropertyUtil.getProperties());
-    ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
     return new CassandraToBQ(config);
   }
@@ -83,23 +82,6 @@ public class CassandraToBQ implements BaseTemplate {
   }
 
   public void validateInput() {
-    if (StringUtils.isAllBlank(config.getHost())
-        || StringUtils.isAllBlank(config.getBqLocation())
-        || StringUtils.isAllBlank(config.getTemplocation())) {
-      LOGGER.error(
-          "{},{},{} are required parameter. ",
-          CASSANDRA_TO_BQ_INPUT_HOST,
-          CASSANDRA_TO_BQ_BIGQUERY_LOCATION,
-          CASSANDRA_TO_BQ_TEMP_LOCATION);
-      throw new IllegalArgumentException(
-          "Required parameters for Cassandra to BigQuery not passed. "
-              + "Set mandatory parameter for Cassandra to BigQuery template "
-              + "in resources/conf/template.properties file.");
-    }
-    if (StringUtils.isAllBlank(config.getQuery())
-        && (StringUtils.isAllBlank(config.getKeyspace())
-            && StringUtils.isAllBlank(config.getInputTable()))) {
-      LOGGER.error("Either query or both keyspace and table are required parameters");
-    }
+    ValidationUtil.validateOrThrow(config);
   }
 }
