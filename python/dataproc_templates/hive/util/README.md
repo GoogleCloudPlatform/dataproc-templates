@@ -13,25 +13,26 @@ It queries Hive Metastore via thrift to get DDLs for each table in the database,
 ## Optional Arguments
 
 * `hive.ddl.consider.spark.tables`: Flag to extract DDL of Spark tables 
-* `hive.ddl.translation.disposition`: Flag to remove location parameter from HIVE DDL to make DDL compatible with BQ Translation API
+* `hive.ddl.translation.disposition`: Flag to remove location parameter from HIVE DDL to make DDL compatible with BigQuery SQL translator (the translated query will be a native BQ table and not an external one
 
 ## Usage
 
 ```
 $ python main.py --template HIVEDDLEXTRACTOR --help
 
-usage: main.py --template HIVEDDLEXTRACTOR [-h] \
-    --hive.ddl.extractor.input.database HIVE.DDL.EXTRACTOR.INPUT.DATABASE \
-    --hive.ddl.extractor.output.path HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH
+usage: main.py [-h] --hive.ddl.extractor.input.database HIVE.DDL.EXTRACTOR.INPUT.DATABASE --hive.ddl.extractor.output.path HIVE.DDL.EXTRACTOR.OUTPUT.PATH
+               [--hive.ddl.consider.spark.tables HIVE.DDL.CONSIDER.SPARK.TABLES] [--hive.ddl.translation.disposition HIVE.DDL.TRANSLATION.DISPOSITION]
 
 optional arguments:
   -h, --help            show this help message and exit
   --hive.ddl.extractor.input.database HIVE.DDL.EXTRACTOR.INPUT.DATABASE
-                        Hive database for importing DDLs to GCS
-  --hive.ddl.extractor.output.path HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH
-                        GCS directory path e.g gs://bucket-name/path/to/directory
-  --hive.ddl.extractor.input.database HIVE_DDL_CONSIDER_SPARK_TABLES
-                        True / False
+                        Hive database for importing data to BigQuery
+  --hive.ddl.extractor.output.path HIVE.DDL.EXTRACTOR.OUTPUT.PATH
+                        GCS output path
+  --hive.ddl.consider.spark.tables HIVE.DDL.CONSIDER.SPARK.TABLES
+                        Flag to extract DDL of Spark tables
+  --hive.ddl.translation.disposition HIVE.DDL.TRANSLATION.DISPOSITION
+                        Remove location parameter from HIVE DDL if set to TRUE, to be compatible with BigQuery SQL translator (the translated query will be a native BQ table and not an external one.
 ```
 
 ## Example submission
@@ -46,5 +47,6 @@ export SUBNET=<subnet>
     -- --template=HIVEDDLEXTRACTOR \
     --hive.ddl.extractor.input.database="<database>" \
     --hive.ddl.extractor.output.path="<gs://bucket-name/path/to/directory>"
-    --hive.ddl.extractor.input.database=True
+    --hive.ddl.consider.spark.tables=false \
+    --hive.ddl.translation.disposition=false
 ```
