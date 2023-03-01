@@ -25,6 +25,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_LD_TEMP_BUCKET_NAME;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_OUTPUT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_OUTPUT_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_OUTPUT_MODE;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_PRQT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_TEMP_BUCKET;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_TEMP_QUERY;
@@ -61,6 +62,8 @@ public class GCStoBigquery implements BaseTemplate {
 
   private final String sparkLogLevel;
 
+  private final String outputMode;
+
   public GCStoBigquery() {
 
     projectID = getProperties().getProperty(PROJECT_ID_PROP);
@@ -72,6 +75,7 @@ public class GCStoBigquery implements BaseTemplate {
     bqTempTable = getProperties().getProperty(GCS_BQ_TEMP_TABLE);
     bqTempQuery = getProperties().getProperty(GCS_BQ_TEMP_QUERY);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
+    outputMode = getProperties().getProperty(GCS_BQ_OUTPUT_MODE);
   }
 
   @Override
@@ -121,7 +125,7 @@ public class GCStoBigquery implements BaseTemplate {
           .option(GCS_BQ_CSV_HEADER, true)
           .option(GCS_BQ_OUTPUT, bigQueryDataset + "." + bigQueryTable)
           .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
-          .mode(SaveMode.Append)
+          .mode(SaveMode.valueOf(outputMode))
           .save();
 
     } catch (Throwable th) {
