@@ -65,10 +65,7 @@ public class SpannerToGCSTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-
-    SpannerToGCSConfig config = SpannerToGCSConfig.fromProperties(PropertyUtil.getProperties());
-    SpannerToGCS spannerToGCS = new SpannerToGCS(config);
-    ValidationException exception = assertThrows(ValidationException.class, spannerToGCS::runTemplate);
+    ValidationException exception = assertThrows(ValidationException.class, SpannerToGCS::of);
   }
 
   static Stream<String> propertyKeys() {
