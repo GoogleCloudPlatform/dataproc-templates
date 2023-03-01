@@ -45,13 +45,14 @@ public class SpannerToGCS implements BaseTemplate {
 
   public static SpannerToGCS of(String... args) {
     SpannerToGCSConfig config = SpannerToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    SpannerToGCS spannerToGCS = new SpannerToGCS(config);
+    spannerToGCS.validateInput();
     LOGGER.info("Config loaded\n{}", config);
-    return new SpannerToGCS(config);
+    return spannerToGCS;
   }
 
   @Override
   public void runTemplate() {
-    validateInput();
     JdbcDialects.registerDialect(new SpannerJdbcDialect());
 
     SparkSession spark = SparkSession.builder().appName("DatabaseToGCS Dataproc job").getOrCreate();
