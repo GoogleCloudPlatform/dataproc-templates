@@ -40,6 +40,7 @@ public class S3ToBigQuery implements BaseTemplate {
   private String bqTempBucket;
   private String inputFileFormat;
   private final String sparkLogLevel;
+  private final String outputMode;
 
   public S3ToBigQuery() {
 
@@ -52,6 +53,7 @@ public class S3ToBigQuery implements BaseTemplate {
     bqTempBucket = getProperties().getProperty(S3_BQ_LD_TEMP_BUCKET_NAME);
     inputFileFormat = getProperties().getProperty(S3_BQ_INPUT_FORMAT);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
+    outputMode = getProperties().getProperty(S3_BQ_OUTPUT_MODE);
   }
 
   @Override
@@ -111,7 +113,7 @@ public class S3ToBigQuery implements BaseTemplate {
           .option(S3_BQ_HEADER, true)
           .option(S3_BQ_OUTPUT, bigQueryDataset + "." + bigQueryTable)
           .option(S3_BQ_TEMP_BUCKET, bqTempBucket)
-          .mode(SaveMode.Append)
+          .mode(SaveMode.valueOf(outputMode))
           .save();
 
     } catch (Throwable th) {
