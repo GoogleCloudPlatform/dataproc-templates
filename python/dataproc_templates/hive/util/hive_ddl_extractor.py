@@ -15,7 +15,6 @@
 # limitations under the License.
 #
 
-
 import argparse
 import pprint
 from logging import Logger
@@ -61,7 +60,7 @@ class HiveDDLExtractorTemplate(BaseTemplate):
             dest=constants.HIVE_DDL_TRANSLATION_DISPOSITION,
             required=False,
             default=False,
-            help='Remove location parameter from HIVE DDL if set to TRUE'
+            help='Remove location parameter from HIVE DDL if set to TRUE, to be compatible with BigQuery SQL translator'
         )
 
         known_args: argparse.Namespace
@@ -88,16 +87,19 @@ class HiveDDLExtractorTemplate(BaseTemplate):
                 f"{pprint.pformat(args)}"
             )
 
-        def get_ddl(hive_database, table_name, spark_tbls_opt, remove_location_flag):
+        def get_ddl(hive_database, table_name):
+            spark_tbls_opt = "" if str(spark_tbls_flag).upper() == "TRUE" else "AS SERDE"
             ddl_str = spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name} {spark_tbls_opt}").rdd.map(lambda x: x[0]).collect()[0]
-            ddl = (ddl_str if str(remove_location_flag).upper() != "TRUE" else ddl_str.split("\nLOCATION '")[0].split("\nUSING ")[0])+";"
-            return ddl
+            ddl_str = ddl_str + ";" if str(remove_location_flag).upper() != "TRUE" else ddl_str.split("\nLOCATION '")[0].split("\nUSING ")[0]+";"
+            return ddl_str
 
-        output_path = gcs_output_path+"/"+hive_database
-        spark_tbls_opt = "" if str(spark_tbls_flag).upper() == "TRUE" else "AS SERDE"
+        ct = datetime.now().strftime("%m-%d-%Y %H.%M.%S")
+        output_path = gcs_output_path+"/"+hive_database+"/"+str(ct)
+
         tables_names = spark.sql(f"SHOW TABLES IN {hive_database}").select("tableName")
         tables_name_list = tables_names.rdd.map(lambda x: x[0]).collect()
-        tables_ddls = [ get_ddl(hive_database, table_name, spark_tbls_opt, remove_location_flag) for table_name in tables_name_list ]
+        tables_ddls = [get_ddl(hive_database, table_name) for table_name in tables_name_list]
+
         ddls_rdd = spark.sparkContext.parallelize(tables_ddls)
         ddls_rdd.coalesce(1).saveAsTextFile(output_path)
 
