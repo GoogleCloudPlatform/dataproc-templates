@@ -18,7 +18,6 @@ import argparse
 import pprint
 
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import StructType
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
@@ -142,17 +141,24 @@ class S3ToBigQueryTemplate(BaseTemplate):
             .set(constants.AWS_S3SECRETKEY, secret_key)
 
         # Read
-        properties = {}
-        if input_file_format == constants.FORMAT_CSV:
-            properties = {
-                constants.HEADER: True,
-                constants.INFER_SCHEMA: True
-            }
+        input_data: DataFrame
 
-        input_data: DataFrame = spark.read \
-            .format(input_file_format) \
-            .options(**properties) \
-            .load(input_file_location)
+        if input_file_format == constants.FORMAT_PRQT:
+            input_data = spark.read \
+                .parquet(input_file_location)
+        elif input_file_format == constants.FORMAT_AVRO:
+            input_data = spark.read \
+                .format(constants.FORMAT_AVRO_EXTD) \
+                .load(input_file_location)
+        elif input_file_format == constants.FORMAT_CSV:
+            input_data = spark.read \
+                .format(constants.FORMAT_CSV) \
+                .option(constants.HEADER, True) \
+                .option(constants.INFER_SCHEMA, True) \
+                .load(input_file_location)
+        elif input_file_format == constants.FORMAT_JSON:
+            input_data = spark.read \
+                .json(input_file_location)
 
         # Write
         input_data.write \

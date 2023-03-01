@@ -74,22 +74,12 @@ class TestS3ToBigQueryTemplate:
             .set(constants.AWS_S3ENDPOINT, constants.S3_BQ_ENDPOINT_VALUE)
 
         mock_spark_session.read \
-            .format() \
-            .options() \
-            .load \
+            .parquet \
             .return_value = mock_spark_session.dataframe.DataFrame
         s3_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
         mock_spark_session.read \
-            .format \
-            .assert_called_with(constants.FORMAT_PRQT)
-        mock_spark_session.read \
-            .format() \
-            .options \
-            .assert_called_with()
-        mock_spark_session.read \
-            .format() \
-            .options() \
-            .load \
+            .parquet \
             .assert_called_with("s3a://bucket/file")
 
         mock_spark_session.dataframe.DataFrame.write \
@@ -136,20 +126,15 @@ class TestS3ToBigQueryTemplate:
 
         mock_spark_session.read \
             .format() \
-            .options() \
             .load \
             .return_value = mock_spark_session.dataframe.DataFrame
         s3_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
         mock_spark_session.read \
             .format \
-            .assert_called_with(constants.FORMAT_AVRO)
+            .assert_called_with(constants.FORMAT_AVRO_EXTD)
         mock_spark_session.read \
             .format() \
-            .options \
-            .assert_called_with()
-        mock_spark_session.read \
-            .format() \
-            .options() \
             .load \
             .assert_called_with("s3a://bucket/file")
 
@@ -197,20 +182,28 @@ class TestS3ToBigQueryTemplate:
 
         mock_spark_session.read \
             .format() \
-            .options() \
+            .option() \
+            .option() \
             .load \
             .return_value = mock_spark_session.dataframe.DataFrame
         s3_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
         mock_spark_session.read \
             .format \
             .assert_called_with(constants.FORMAT_CSV)
         mock_spark_session.read \
             .format() \
-            .options \
-            .assert_called_with(header=True, inferSchema=True)
+            .option \
+            .assert_called_with('header',True)
         mock_spark_session.read \
             .format() \
-            .options() \
+            .option() \
+            .option \
+            .assert_called_with('inferSchema',True)
+        mock_spark_session.read \
+            .format() \
+            .option() \
+            .option() \
             .load \
             .assert_called_with("s3a://bucket/file")
 
@@ -257,22 +250,12 @@ class TestS3ToBigQueryTemplate:
             .set(constants.AWS_S3ENDPOINT, constants.S3_BQ_ENDPOINT_VALUE)
 
         mock_spark_session.read \
-            .format() \
-            .options() \
-            .load \
+            .json \
             .return_value = mock_spark_session.dataframe.DataFrame
         s3_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
         mock_spark_session.read \
-            .format \
-            .assert_called_with(constants.FORMAT_JSON)
-        mock_spark_session.read \
-            .format() \
-            .options \
-            .assert_called_with()
-        mock_spark_session.read \
-            .format() \
-            .options() \
-            .load \
+            .json \
             .assert_called_with("s3a://bucket/file")
 
         mock_spark_session.dataframe.DataFrame.write \
@@ -317,22 +300,12 @@ class TestS3ToBigQueryTemplate:
             .set(constants.AWS_S3ENDPOINT, constants.S3_BQ_ENDPOINT_VALUE)
 
         mock_spark_session.read \
-            .format() \
-            .options() \
-            .load \
+            .json \
             .return_value = mock_spark_session.dataframe.DataFrame
         s3_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
         mock_spark_session.read \
-            .format \
-            .assert_called_with(constants.FORMAT_JSON)
-        mock_spark_session.read \
-            .format() \
-            .options \
-            .assert_called_with()
-        mock_spark_session.read \
-            .format() \
-            .options() \
-            .load \
+            .json \
             .assert_called_with("s3a://bucket/file")
 
         mock_spark_session.dataframe.DataFrame.write \
