@@ -20,6 +20,7 @@ import pyspark
 from dataproc_templates.hive.util.hive_ddl_extractor import \
     HiveDDLExtractorTemplate
 from datetime import datetime
+from google.cloud import storage
 
 class TestHiveDDLExtractorTemplate:
     """
@@ -50,5 +51,4 @@ class TestHiveDDLExtractorTemplate:
         hive_ddl_extractor_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.sql.assert_called_once_with("SHOW TABLES IN database")
         mock_spark_session.sparkContext.parallelize.assert_called_once_with([])
-        ct = datetime.now().strftime("%m-%d-%Y %H.%M.%S")
-        mock_spark_session.rdd.RDD.coalesce().saveAsTextFile.assert_called_once_with("gs://bucket/path/database/{ct}".format(ct=ct))
+        mock_spark_session.rdd.RDD.coalesce().saveAsTextFile.assert_called_once_with("gs://bucket/path/database")
