@@ -127,9 +127,11 @@ class S3ToBigQueryTemplate(BaseTemplate):
         bq_temp_bucket: str = args[constants.S3_BQ_LD_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.S3_BQ_OUTPUT_MODE]
 
+        ignore_keys = {constants.S3_BQ_ACCESS_KEY, constants.S3_BQ_SECRET_KEY}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting Amazon S3 to Bigquery spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Set configuration to connect to Amazon S3
