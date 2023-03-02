@@ -10,7 +10,7 @@ It uses the
 ## Arguments
 
 * `kafka.to.bq.checkpoint.location`: Cloud Storage location for storing checkpoints during transfer (format: `gs://bucket/...`)
-* `kafka.to.bootstrap.servers`: List of kafka bootstrap servers (format: *'[x1.x2.x3.x4:port1,y1.y2.y3.y4:port2]')*
+* `kafka.to.bq.bootstrap.servers`: List of kafka bootstrap servers (format: *'[x1.x2.x3.x4:port1,y1.y2.y3.y4:port2]')*
 * `kafka.to.bq.topic`: Topic names for respective kafka server
 * `kafka.to.bq.starting.offset`:  Offset to start reading from. Accepted values: "earliest", "latest" (streaming only), or json string """ {"topicA":{"0":23,"1":-1},"topicB":{"0":-2}} """
 * `kafka.to.bq.dataset`: Temporary bucket for the Spark BigQuery connector
@@ -26,7 +26,7 @@ $ python main.py --template KAFKATOBQ --help
 
 usage: main.py --template KAFKATOBQ [-h] \
     --kafka.to.bq.checkpoint.location KAFKA.BIGQUERY.CHEKPOINT.LOCATION \
-    --kafka.to.bootstrap.servers KAFKA.BOOTSTRAP.SERVERS \
+    --kafka.to.bq.bootstrap.servers KAFKA.BOOTSTRAP.SERVERS \
     --kafka.to.bq.topic KAFKA.BIGQUERY.TOPIC \
     --kafka.to.bq.starting.offset KAFKA.BIGUERY.STARTING.OFFSET \
     --kafka.to.bq.dataset KAFKA.BQ.DATASET \
@@ -53,7 +53,7 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 -./bin/start.sh \
 -- --template=KAFKATOBQ \
   --kafka.to.bq.checkpoint.location="<gcs checkpoint storage location>" \
-   --kafka.to.bootstrap.servers="<list of kafka connections>" \
+   --kafka.to.bq.bootstrap.servers="<list of kafka connections>" \
    --kafka.to.bq.topic="<integration topics to subscribe>" \
    --kafka.to.bq.starting.offset="<earliest|latest|json_offset>" \
    --kafka.to.bq.dataset="<bigquery_dataset_name>" \

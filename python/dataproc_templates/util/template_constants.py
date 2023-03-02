@@ -273,7 +273,7 @@ HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH = "hive.ddl.extractor.output.path"
 
 #Kafka To Bq
 KAFKA_BQ_CHECKPOINT_LOCATION='kafka.to.bq.checkpoint.location'
-KAFKA_BOOTSTRAP_SERVERS='kafka.to.bootstrap.servers'
+KAFKA_BOOTSTRAP_SERVERS='kafka.to.bq.bootstrap.servers'
 KAFKA_BQ_TOPIC='kafka.to.bq.topic'
 KAFKA_BQ_STARTING_OFFSET='kafka.to.bq.starting.offset'
 KAFKA_BQ_DATASET='kafka.to.bq.dataset'
