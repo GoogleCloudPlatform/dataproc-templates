@@ -40,6 +40,7 @@ from dataproc_templates.cassandra.cassandra_to_bigquery import CassandraToBQTemp
 from dataproc_templates.hive.util.hive_ddl_extractor import HiveDDLExtractorTemplate
 from dataproc_templates.s3.s3_to_bigquery import S3ToBigQueryTemplate
 from dataproc_templates.cassandra.cassandra_to_gcs import CassandraToGCSTemplate
+from dataproc_templates.pubsublite.pubsublite_to_bigquery import PubsubliteToBQTemplate
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
 
@@ -65,7 +66,8 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.CASSANDRATOBQ: CassandraToBQTemplate,
     TemplateName.CASSANDRATOGCS: CassandraToGCSTemplate,
     TemplateName.HIVEDDLEXTRACTOR: HiveDDLExtractorTemplate,
-    TemplateName.S3TOBIGQUERY: S3ToBigQueryTemplate
+    TemplateName.S3TOBIGQUERY: S3ToBigQueryTemplate,
+    TemplateName.PUBSUBLITETOBQ: PubsubliteToBQTemplate
 
 }
 
