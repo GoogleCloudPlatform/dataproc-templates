@@ -62,6 +62,7 @@ REDSHIFT_TEMPDIR = "tempdir"
 REDSHIFT_IAMROLE = "aws_iam_role"
 AWS_S3ACCESSKEY = "fs.s3a.access.key"
 AWS_S3SECRETKEY = "fs.s3a.secret.key"
+AWS_S3ENDPOINT = "fs.s3a.endpoint"
 SQL_EXTENSION= "spark.sql.extensions"
 CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
 CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
@@ -274,6 +275,7 @@ HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH = "hive.ddl.extractor.output.path"
 HIVE_DDL_CONSIDER_SPARK_TABLES = "hive.ddl.consider.spark.tables"
 HIVE_DDL_TRANSLATION_DISPOSITION = "hive.ddl.translation.disposition"
 
+<<<<<<< HEAD
 # Pubsublite to BQ
 PUBSUBLITE_TO_BQ_INPUT_TOPIC = "pubsublite.to.bq.input.topic"
 PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION = "pubsublite.to.bq.input.subscription"
@@ -287,3 +289,15 @@ PUBSUBLITE_TO_BQ_OUTPUT_TABLE = "pubsublite.to.bq.output.table"
 PUBSUBLITE_TO_BQ_BATCH_SIZE = "pubsublite.to.bq.batch.size"
 PUBSUBLITE_TO_BQ_TEMPORARY_BUCKET = "pubsublite.to.bq.bucket.name"
 PUBSUBLITE_CHECKPOINT_LOCATION = "pubsublite.to.bq.checkpoint.location"
+=======
+# AWS S3 To BigQuery
+S3_BQ_INPUT_LOCATION = "s3.bq.input.location"
+S3_BQ_INPUT_FORMAT = "s3.bq.input.format"
+S3_BQ_ACCESS_KEY = "s3.bq.access.key"
+S3_BQ_SECRET_KEY = "s3.bq.secret.key"
+S3_BQ_OUTPUT_DATASET_NAME = "s3.bq.output.dataset.name"
+S3_BQ_OUTPUT_TABLE_NAME = "s3.bq.output.table.name"
+S3_BQ_TEMP_BUCKET_NAME = "s3.bq.temp.bucket.name"
+S3_BQ_OUTPUT_MODE = "s3.bq.output.mode"
+S3_BQ_ENDPOINT_VALUE = "s3.amazonaws.com"
+>>>>>>> main
