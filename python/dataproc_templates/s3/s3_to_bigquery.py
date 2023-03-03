@@ -84,8 +84,8 @@ class S3ToBigQueryTemplate(BaseTemplate):
         )
 
         parser.add_argument(
-            f'--{constants.S3_BQ_LD_TEMP_BUCKET_NAME}',
-            dest=constants.S3_BQ_LD_TEMP_BUCKET_NAME,
+            f'--{constants.S3_BQ_TEMP_BUCKET_NAME}',
+            dest=constants.S3_BQ_TEMP_BUCKET_NAME,
             required=True,
             help='Pre existing GCS bucket name where temporary files are staged'
         )
@@ -124,7 +124,7 @@ class S3ToBigQueryTemplate(BaseTemplate):
         input_file_format: str = args[constants.S3_BQ_INPUT_FORMAT]
         bq_dataset: str = args[constants.S3_BQ_OUTPUT_DATASET_NAME]
         bq_table: str = args[constants.S3_BQ_OUTPUT_TABLE_NAME]
-        bq_temp_bucket: str = args[constants.S3_BQ_LD_TEMP_BUCKET_NAME]
+        bq_temp_bucket: str = args[constants.S3_BQ_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.S3_BQ_OUTPUT_MODE]
 
         ignore_keys = {constants.S3_BQ_ACCESS_KEY, constants.S3_BQ_SECRET_KEY}

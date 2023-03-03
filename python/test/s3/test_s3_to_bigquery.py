@@ -37,7 +37,7 @@ class TestS3ToBigQueryTemplate:
              "--s3.bq.input.format=csv",
              "--s3.bq.output.dataset.name=xyz",
              "--s3.bq.output.table.name=lmn",
-             "--s3.bq.ld.temp.bucket.name=test",
+             "--s3.bq.temp.bucket.name=test",
              "--s3.bq.output.mode=append"
              ])
 
@@ -47,7 +47,7 @@ class TestS3ToBigQueryTemplate:
         assert parsed_args["s3.bq.input.format"] == "csv"
         assert parsed_args["s3.bq.output.dataset.name"] == "xyz"
         assert parsed_args["s3.bq.output.table.name"] == "lmn"
-        assert parsed_args["s3.bq.ld.temp.bucket.name"] == "test"
+        assert parsed_args["s3.bq.temp.bucket.name"] == "test"
         assert parsed_args["s3.bq.output.mode"] == "append"
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
@@ -63,7 +63,7 @@ class TestS3ToBigQueryTemplate:
              "--s3.bq.input.format=parquet",
              "--s3.bq.output.dataset.name=xyz",
              "--s3.bq.output.table.name=lmn",
-             "--s3.bq.ld.temp.bucket.name=test",
+             "--s3.bq.temp.bucket.name=test",
              "--s3.bq.output.mode=append"
              ])
         mock_spark_session._jsc.hadoopConfiguration() \
@@ -114,7 +114,7 @@ class TestS3ToBigQueryTemplate:
              "--s3.bq.input.format=avro",
              "--s3.bq.output.dataset.name=xyz",
              "--s3.bq.output.table.name=lmn",
-             "--s3.bq.ld.temp.bucket.name=test",
+             "--s3.bq.temp.bucket.name=test",
              "--s3.bq.output.mode=overwrite"
              ])
         mock_spark_session._jsc.hadoopConfiguration() \
@@ -170,7 +170,7 @@ class TestS3ToBigQueryTemplate:
              "--s3.bq.input.format=csv",
              "--s3.bq.output.dataset.name=xyz",
              "--s3.bq.output.table.name=lmn",
-             "--s3.bq.ld.temp.bucket.name=test",
+             "--s3.bq.temp.bucket.name=test",
              "--s3.bq.output.mode=ignore"
              ])
         mock_spark_session._jsc.hadoopConfiguration() \
@@ -239,7 +239,7 @@ class TestS3ToBigQueryTemplate:
              "--s3.bq.input.format=json",
              "--s3.bq.output.dataset.name=xyz",
              "--s3.bq.output.table.name=lmn",
-             "--s3.bq.ld.temp.bucket.name=test",
+             "--s3.bq.temp.bucket.name=test",
              "--s3.bq.output.mode=errorifexists"
              ])
         mock_spark_session._jsc.hadoopConfiguration() \
@@ -290,7 +290,7 @@ class TestS3ToBigQueryTemplate:
              "--s3.bq.input.format=json",
              "--s3.bq.output.dataset.name=xyz",
              "--s3.bq.output.table.name=lmn",
-             "--s3.bq.ld.temp.bucket.name=test"
+             "--s3.bq.temp.bucket.name=test"
              ])
         mock_spark_session._jsc.hadoopConfiguration() \
             .set(constants.AWS_S3ACCESSKEY, "SomeAccessKey")

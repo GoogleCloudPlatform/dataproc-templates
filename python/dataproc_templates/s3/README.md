@@ -12,7 +12,7 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `s3.bq.input.format` : Input file format in Amazon S3 bucket (one of : avro, parquet, csv, json)
 * `s3.bq.output.dataset.name` : BigQuery dataset for the output table
 * `s3.bq.output.table.name` : BigQuery output table name
-* `s3.bq.ld.temp.bucket.name` : Pre existing GCS bucket name where temporary files are staged
+* `s3.bq.temp.bucket.name` : Pre existing GCS bucket name where temporary files are staged
 * `s3.bq.output.mode` : (Optional) Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 
 ## Usage
@@ -27,7 +27,7 @@ usage: main.py --template S3TOBIGQUERY [-h] \
     --s3.bq.input.format {avro, parquet, csv, json} \
     --s3.bq.output.dataset.name S3.BQ.OUTPUT.DATASET.NAME \
     --s3.bq.output.table.name S3.BQ.OUTPUT.TABLE.NAME \
-    --s3.bq.ld.temp.bucket.name S3.BQ.LD.TEMP.BUCKET.NAME
+    --s3.bq.temp.bucket.name S3.BQ.TEMP.BUCKET.NAME
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -56,7 +56,7 @@ export JARS=gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar
     --s3.bq.output.dataset.name="<bq-dataset-name>" \
     --s3.bq.output.table.name="<bq-table-name>" \
     --s3.bq.output.mode="<overwrite,append,ignore,errorifexists>" \
-    --s3.bq.ld.temp.bucket.name="<temp-gcs-bucket-name>"
+    --s3.bq.temp.bucket.name="<temp-gcs-bucket-name>"
 ```
 
 ## Example submission
@@ -76,5 +76,5 @@ export JARS=gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar
     --s3.bq.output.dataset.name="dataproc_templates" \
     --s3.bq.output.table.name="s3_to_bq" \
     --s3.bq.output.mode="overwrite" \
-    --s3.bq.ld.temp.bucket.name="temp-bucket-for-files"
+    --s3.bq.temp.bucket.name="temp-bucket-for-files"
 ```
