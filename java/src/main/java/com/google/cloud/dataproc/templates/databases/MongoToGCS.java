@@ -21,7 +21,6 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_G
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_OUTPUT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_OUTPUT_LOCATION;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_OUTPUT_MODE;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_OUTPUT_MODE_DEFAULT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
@@ -48,7 +47,7 @@ public class MongoToGCS implements BaseTemplate {
     inputCollection = getProperties().getProperty(MONGO_GCS_INPUT_COLLECTION);
     outputFileFormat = getProperties().getProperty(MONGO_GCS_OUTPUT_FORMAT);
     outputFileLocation = getProperties().getProperty(MONGO_GCS_OUTPUT_LOCATION);
-    outputMode = getProperties().getProperty(MONGO_GCS_OUTPUT_MODE, MONGO_GCS_OUTPUT_MODE_DEFAULT);
+    outputMode = getProperties().getProperty(MONGO_GCS_OUTPUT_MODE);
     inputUri = getProperties().getProperty(MONGO_GCS_INPUT_URI);
     inputDatabase = getProperties().getProperty(MONGO_GCS_INPUT_DATABASE);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
