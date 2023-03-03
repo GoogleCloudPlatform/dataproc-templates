@@ -1,6 +1,6 @@
 Template for reading files from Cloud Pub/sub Lite and writing them to a BigQuery table.
 
-It uses the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifact/com.google.cloud/pubsublite-spark-sql-streaming/1.0.0) to read the streaming data from Pubsublite and [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
+It uses the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifact/com.google.cloud/pubsublite-spark-sql-streaming/1.0.0) to read the streaming data from Pubsublite and [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery
 
 ## Arguments
 
