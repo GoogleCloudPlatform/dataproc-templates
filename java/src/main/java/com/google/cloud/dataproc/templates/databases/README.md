@@ -180,3 +180,59 @@ There are two optional properties as well with "Redshift to GCS" Template. Pleas
 These properties are responsible for applying some spark sql transformations while loading data into GCS.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
+## Executing Mongo to GCS template
+
+Template for exporting a MongoDB Collection to files in Google Cloud Storage. It supports writing JSON, CSV, Parquet and Avro formats.
+
+General Execution:
+
+```
+export GCP_PROJECT=<gcp-project-id>
+export SUBNET=<dataproc-serverless-subnet>
+export GCS_STAGING_LOCATION=<gcs-staging-location>
+export REGION=<gcp-region>
+	
+./bin/start.sh \
+-- --template=MONGOTOGCS \
+    --templateProperty mongo.gcs.input.uri=<mongo-uri> \
+    --templateProperty mongo.gcs.input.database=<input-database> \
+    --templateProperty mongo.gcs.input.collection=<input-collection> \
+    --templateProperty mongo.gcs.output.format=<avro|parquet|csv|json> \
+    --templateProperty mongo.gcs.output.location=<gcs-output-location> \
+    --templateProperty mongo.gcs.output.mode=<append|overwrite|ignore|errorifexists>
+```
+
+Required JAR files:
+
+This template requires the [MongoDB Spark Connector](https://www.mongodb.com/products/spark-connector) and [MongoDB Java Driver](https://jar-download.com/?search_box=mongo-java-driver) to be available in the Dataproc cluster.
+
+
+Arguments:
+
+* `templateProperty mongo.gcs.input.uri`: MongoDB Connection String as an Input URI (format: `mongodb://host_name:port_no`)
+* `templateProperty mongo.gcs.input.database`: MongoDB Database Name (format: Database_name)
+* `templateProperty mongo.gcs.input.collection`: MongoDB Input Collection Name (format: Collection_name)
+* `templateProperty mongo.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json)
+* `templateProperty mongo.gcs.output.location`: GCS Location to put Output Files (format: `gs://BUCKET/...`)
+* `templateProperty mongo.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+
+Example Submission:
+
+```
+export GCP_PROJECT=my-project
+export JARS="gs://spark-lib/mongodb/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/mongodb/mongo-java-driver-3.9.1.jar"
+export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
+export GCS_STAGING_LOCATION=gs://staging
+export REGION=us-central1
+	
+./bin/start.sh \
+-- --template=MONGOTOGCS \
+    --templateProperty mongo.gcs.input.uri=mongodb://10.0.0.57:27017 \
+    --templateProperty mongo.gcs.input.database=demo \
+    --templateProperty mongo.gcs.input.collection=analysis \
+    --templateProperty mongo.gcs.output.format=csv \
+    --templateProperty mongo.gcs.output.location=gs://outputBucket \
+    --templateProperty mongo.gcs.output.mode=overwrite
+```
+
+Note-: ```mongo.gcs.output.mode=<append|overwrite|ignore|errorifexists>``` is used to specify the mode for output in GCS. It has a default value of ```append``` if nothing is passed.
