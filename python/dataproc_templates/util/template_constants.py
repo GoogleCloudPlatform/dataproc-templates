@@ -66,6 +66,7 @@ AWS_S3ENDPOINT = "fs.s3a.endpoint"
 SQL_EXTENSION= "spark.sql.extensions"
 CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
 CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
+FORMAT_PUBSUBLITE = "pubsublite"
 
 
 # Output mode
@@ -284,3 +285,17 @@ S3_BQ_OUTPUT_TABLE_NAME = "s3.bq.output.table.name"
 S3_BQ_TEMP_BUCKET_NAME = "s3.bq.temp.bucket.name"
 S3_BQ_OUTPUT_MODE = "s3.bq.output.mode"
 S3_BQ_ENDPOINT_VALUE = "s3.amazonaws.com"
+
+# Pubsublite to BQ
+PUBSUBLITE_TO_BQ_INPUT_TOPIC = "pubsublite.to.bq.input.topic"
+PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION = "pubsublite.to.bq.input.subscription"
+PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_MS = "pubsublite.to.bq.input.timeout.ms"
+PUBSUBLITE_TO_BQ_STREAMING_DURATION_SECONDS = "pubsublite.to.bq.streaming.duration.seconds"
+PUBSUBLITE_TO_BQ_WRITE_MODE = "pubsublite.to.bq.write.mode"
+PUBSUBLITE_TO_BQ_TOTAL_RECEIVERS = "pubsublite.to.bq.total.receivers"
+PUBSUBLITE_TO_BQ_PROJECT_ID = "pubsublite.to.bq.project.id"
+PUBSUBLITE_TO_BQ_OUTPUT_DATASET = "pubsublite.to.bq.output.dataset"
+PUBSUBLITE_TO_BQ_OUTPUT_TABLE = "pubsublite.to.bq.output.table"
+PUBSUBLITE_TO_BQ_BATCH_SIZE = "pubsublite.to.bq.batch.size"
+PUBSUBLITE_TO_BQ_TEMPORARY_BUCKET = "pubsublite.to.bq.bucket.name"
+PUBSUBLITE_CHECKPOINT_LOCATION = "pubsublite.to.bq.checkpoint.location"
