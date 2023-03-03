@@ -1,6 +1,6 @@
 Template for reading files from Cloud Pub/sub Lite and writing them to a BigQuery table.
 
-It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
+It uses the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifact/com.google.cloud/pubsublite-spark-sql-streaming/1.0.0) to read the streaming data from Pubsublite and [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery
 
 ## Arguments
 
@@ -14,7 +14,6 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 
 ```
 $ python main.py --template PUBSUBLITETOBQ --help
-
 usage: main.py --template PUBSUBTOBQ [-h] \
     --pubsublite.to.bq.input.subscription PUBSUBLITE.BIGQUERY.INPUT.SUBSCRIPTION \
     --pubsublite.to.bq.project.id PUBSUBLITE.BIGQUERY.OUTPUT>PROJECT.ID \
@@ -27,7 +26,7 @@ usage: main.py --template PUBSUBTOBQ [-h] \
 
 ## Required JAR files
 
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
+This template requires the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifact/com.google.cloud/pubsublite-spark-sql-streaming/1.0.0) to read the streaming data from Pubsublite and [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
 
 ## Example submission
 
@@ -36,7 +35,6 @@ export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-name> 
 export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-LATEST-with-dependencies.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
-
 ./bin/start.sh \
 -- --template=PUBSUBLITETOBQ \
 --pubsublite.to.bq.input.subscription=<pubsublite input subscription> \
