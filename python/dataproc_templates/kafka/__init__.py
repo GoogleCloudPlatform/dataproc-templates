@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+from .kafka_to_gcs import KafkaToGCSTemplate
 from .kafka_to_bq import KafkaToBigQueryTemplate

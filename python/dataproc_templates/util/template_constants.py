@@ -298,3 +298,15 @@ KAFKA_BQ_TEMP_BUCKET_NAME='kafka.to.bq.temp.bucket.name'
 KAFKA_BQ_TERMINATION_TIMEOUT='kafka.to.bq.termination.timeout'
 KAFKA_INPUT_FORMAT='kafka'
 KAFKA_BQ_OUTPUT_MODE='kafka.to.bq.output.mode'
+
+KAFKA_INPUT_FORMAT='kafka'
+
+#Kafka To GCS
+KAFKA_GCS_BOOTSTRAP_SERVERS='kafka.gcs.bootstrap.servers'
+KAFKA_GCS_OUTPUT_LOCATION='kafka.gcs.output.location.gcs.path'
+KAFKA_TOPIC='kafka.gcs.topic'
+KAFKA_GCS_OUTPUT_FORMAT='kafka.gcs.output.format'
+KAFKA_GCS_OUPUT_MODE='kafka.gcs.output.mode'
+KAFKA_GCS_TERMINATION_TIMEOUT='kafka.gcs.termination.timeout'
+KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
+KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
