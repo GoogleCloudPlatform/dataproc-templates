@@ -271,6 +271,7 @@ CASSANDRA_TO_GCS_QUERY = "cassandratogcs.input.query"
 # Hive DDL Extractor Util
 HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"
 HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH = "hive.ddl.extractor.output.path"
+
 HIVE_DDL_CONSIDER_SPARK_TABLES = "hive.ddl.consider.spark.tables"
 HIVE_DDL_TRANSLATION_DISPOSITION = "hive.ddl.translation.disposition"
 
@@ -284,3 +285,16 @@ S3_BQ_OUTPUT_TABLE_NAME = "s3.bq.output.table.name"
 S3_BQ_TEMP_BUCKET_NAME = "s3.bq.temp.bucket.name"
 S3_BQ_OUTPUT_MODE = "s3.bq.output.mode"
 S3_BQ_ENDPOINT_VALUE = "s3.amazonaws.com"
+
+
+#Kafka To Bq
+KAFKA_BQ_CHECKPOINT_LOCATION='kafka.to.bq.checkpoint.location'
+KAFKA_BOOTSTRAP_SERVERS='kafka.to.bq.bootstrap.servers'
+KAFKA_BQ_TOPIC='kafka.to.bq.topic'
+KAFKA_BQ_STARTING_OFFSET='kafka.to.bq.starting.offset'
+KAFKA_BQ_DATASET='kafka.to.bq.dataset'
+KAFKA_BQ_TABLE_NAME='kafka.to.bq.table'
+KAFKA_BQ_TEMP_BUCKET_NAME='kafka.to.bq.temp.bucket.name'
+KAFKA_BQ_TERMINATION_TIMEOUT='kafka.to.bq.termination.timeout'
+KAFKA_INPUT_FORMAT='kafka'
+KAFKA_BQ_OUTPUT_MODE='kafka.to.bq.output.mode'
