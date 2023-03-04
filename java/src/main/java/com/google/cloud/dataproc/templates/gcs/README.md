@@ -15,6 +15,7 @@ bin/start.sh \
 --templateProperty gcs.bigquery.input.format=<csv|parquet|avro|orc> \
 --templateProperty gcs.bigquery.output.dataset=<datasetId> \
 --templateProperty gcs.bigquery.output.table=<tableName> \
+--templateProperty gcs.bigquery.output.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
 --templateProperty gcs.bigquery.temp.bucket.name=<bigquery temp bucket name>
 ```
 
