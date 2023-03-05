@@ -42,8 +42,11 @@ class TemplateName(Enum):
     CASSANDRATOBQ= "CASSANDRATOBQ"
     CASSANDRATOGCS = "CASSANDRATOGCS"
     HIVEDDLEXTRACTOR = "HIVEDDLEXTRACTOR"
+    KAFKATOGCS="KAFKATOGCS"
+    KAFKATOBQ="KAFKATOBQ"
     S3TOBIGQUERY = "S3TOBIGQUERY"
     PUBSUBLITETOBQ = "PUBSUBLITETOBQ"
+
 
     @classmethod
     def from_string(cls, template_name: str) -> TemplateName:
