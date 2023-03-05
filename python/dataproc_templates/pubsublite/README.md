@@ -16,7 +16,8 @@ It uses the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifa
 $ python main.py --template PUBSUBLITETOBQ --help
 usage: main.py --template PUBSUBTOBQ [-h] \
     --pubsublite.to.bq.input.subscription PUBSUBLITE.BIGQUERY.INPUT.SUBSCRIPTION \
-    --pubsublite.to.bq.project.id PUBSUBLITE.BIGQUERY.OUTPUT>PROJECT.ID \
+    --pubsublite.to.bq.project.id PUBSUBLITE.BIGQUERY.OUTPUT.PROJECT.ID \
+    --pubsublite.to.bq.region PUBSUBLITE.BIGQUERY.REGION
     --pubsublite.to.bq.output.dataset PUBSUBLITE.BIGQUERY.OUTPUT.DATASET \
     --pubsublite.to.bq.output.table PUBSUBLITE.BIGQUERY.OUTPUT.TABLE \
     --pubsublite.to.bq.bucket.name PUBSUBLITE.BIGQUERY.BUCKET.NAME \
@@ -39,6 +40,7 @@ export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-LATEST-wit
 -- --template=PUBSUBLITETOBQ \
 --pubsublite.to.bq.input.subscription=<pubsublite input subscription> \
 --pubsublite.to.bq.project.id=<BQ project ID> \
+--pubsublite.to.bq.region=<GCP region> \
 --pubsublite.to.bq.output.dataset=<BQ dataset name> \
 --pubsublite.to.bq.output.table=<BQ table name> \
 --pubsublite.to.bq.write.mode=<Output write mode> \
@@ -53,9 +55,9 @@ Following properties are available in commandline or [template.constants](../uti
 
 ```
 ## Project that contains the input Pub/Sub subscription to be read
-pubsubliteinput.project.id=<pubsub project id>
-## PubSub subscription name
-pubsubliteinput.subscription=<pubsub subscription>
+pubsubliteinput.project.id=<pubsublite project id>
+## PubSublite subscription name
+pubsubliteinput.subscription=<pubsublite subscription>
 ## Stream timeout, for how long the subscription will be read
 pubsublitetimeout.ms=60000
 ## Streaming duration, how often wil writes to BQ be triggered
@@ -63,7 +65,9 @@ pubsublitestreaming.duration.seconds=15
 ## Number of streams that will read from Pub/Sub subscription in parallel
 pubsublitetotal.receivers=5
 ## Project that contains the output table
-pubsublitebq.output.project.id=<pubsub to bq output project id>
+pubsublitebq.output.project.id=<pubsublite to bq output project id>
+## GCP Region for Pubsublite
+pubsublite.to.bq.region=<pubsublite region for GCP>
 ## BigQuery output dataset
 pubsublitebq.output.dataset=<bq output dataset>
 ## BigQuery output table

@@ -91,6 +91,12 @@ class PubsubliteToBQTemplate(BaseTemplate):
             help='BQ Project ID'
         )
         parser.add_argument(
+            f'--{constants.PUBSUBLITE_TO_BQ_REGION}',
+            dest=constants.PUBSUBLITE_TO_BQ_REGION,
+            required=True,
+            help='Pubsublite GCP region'
+        )
+        parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_BQ_OUTPUT_DATASET}',
             dest=constants.PUBSUBLITE_TO_BQ_OUTPUT_DATASET,
             required=True,
@@ -133,6 +139,8 @@ class PubsubliteToBQTemplate(BaseTemplate):
 
         # Arguments
         input_subscription: str = args[constants.PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION]
+        input_project_id: str = args[constants.PUBSUBLITE_TO_BQ_PROJECT_ID]
+        region: str = args[constants.PUBSUBLITE_TO_BQ_REGION]
         output_project_id: str = args[constants.PUBSUBLITE_TO_BQ_PROJECT_ID]
         output_dataset: str = args[constants.PUBSUBLITE_TO_BQ_OUTPUT_DATASET]
         output_table: str = args[constants.PUBSUBLITE_TO_BQ_OUTPUT_TABLE]
@@ -154,7 +162,7 @@ class PubsubliteToBQTemplate(BaseTemplate):
         # Read
         input_data=(spark.readStream \
             .format(constants.FORMAT_PUBSUBLITE) \
-            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription",f"projects/617357862702/locations/us-west1/subscriptions/{input_subscription}",) \
+            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription",f"projects/{input_project_id}/locations/{region}/subscriptions/{input_subscription}",) \
             .load())
         
         input_data.withColumn("data", input_data.data.cast(StringType()))
