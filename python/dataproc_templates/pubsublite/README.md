@@ -17,7 +17,6 @@ $ python main.py --template PUBSUBLITETOBQ --help
 usage: main.py --template PUBSUBTOBQ [-h] \
     --pubsublite.to.bq.input.subscription PUBSUBLITE.BIGQUERY.INPUT.SUBSCRIPTION \
     --pubsublite.to.bq.project.id PUBSUBLITE.BIGQUERY.OUTPUT.PROJECT.ID \
-    --pubsublite.to.bq.region PUBSUBLITE.BIGQUERY.REGION
     --pubsublite.to.bq.output.dataset PUBSUBLITE.BIGQUERY.OUTPUT.DATASET \
     --pubsublite.to.bq.output.table PUBSUBLITE.BIGQUERY.OUTPUT.TABLE \
     --pubsublite.to.bq.bucket.name PUBSUBLITE.BIGQUERY.BUCKET.NAME \
@@ -40,7 +39,6 @@ export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-LATEST-wit
 -- --template=PUBSUBLITETOBQ \
 --pubsublite.to.bq.input.subscription=<pubsublite input subscription> \
 --pubsublite.to.bq.project.id=<BQ project ID> \
---pubsublite.to.bq.region=<GCP region> \
 --pubsublite.to.bq.output.dataset=<BQ dataset name> \
 --pubsublite.to.bq.output.table=<BQ table name> \
 --pubsublite.to.bq.write.mode=<Output write mode> \
@@ -66,8 +64,6 @@ pubsublitestreaming.duration.seconds=15
 pubsublitetotal.receivers=5
 ## Project that contains the output table
 pubsublitebq.output.project.id=<pubsublite to bq output project id>
-## GCP Region for Pubsublite
-pubsublite.to.bq.region=<pubsublite region for GCP>
 ## BigQuery output dataset
 pubsublitebq.output.dataset=<bq output dataset>
 ## BigQuery output table

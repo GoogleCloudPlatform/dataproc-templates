@@ -16,6 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
+import os
 
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 from pyspark.sql.types import StringType
@@ -91,12 +92,6 @@ class PubsubliteToBQTemplate(BaseTemplate):
             help='BQ Project ID'
         )
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_TO_BQ_REGION}',
-            dest=constants.PUBSUBLITE_TO_BQ_REGION,
-            required=True,
-            help='Pubsublite GCP region'
-        )
-        parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_BQ_OUTPUT_DATASET}',
             dest=constants.PUBSUBLITE_TO_BQ_OUTPUT_DATASET,
             required=True,
@@ -140,12 +135,13 @@ class PubsubliteToBQTemplate(BaseTemplate):
         # Arguments
         input_subscription: str = args[constants.PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION]
         input_project_id: str = args[constants.PUBSUBLITE_TO_BQ_PROJECT_ID]
-        region: str = args[constants.PUBSUBLITE_TO_BQ_REGION]
         output_project_id: str = args[constants.PUBSUBLITE_TO_BQ_PROJECT_ID]
         output_dataset: str = args[constants.PUBSUBLITE_TO_BQ_OUTPUT_DATASET]
         output_table: str = args[constants.PUBSUBLITE_TO_BQ_OUTPUT_TABLE]
         pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_CHECKPOINT_LOCATION]
         bq_temp_bucket: str = args[constants.PUBSUBLITE_TO_BQ_TEMPORARY_BUCKET]
+        # If a key is not present, attempting to access it will raise a KeyError. To avoid this using the default region as 'us-west1'
+        region: str = os.environ.get('KEY_THAT_MIGHT_EXIST', 'us-west1')
 
         logger.info(
             "Starting Pubsublite to Bigquery spark job with parameters:\n"

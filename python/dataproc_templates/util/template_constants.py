@@ -295,7 +295,6 @@ PUBSUBLITE_TO_BQ_STREAMING_DURATION_SECONDS = "pubsublite.to.bq.streaming.durati
 PUBSUBLITE_TO_BQ_WRITE_MODE = "pubsublite.to.bq.write.mode"
 PUBSUBLITE_TO_BQ_TOTAL_RECEIVERS = "pubsublite.to.bq.total.receivers"
 PUBSUBLITE_TO_BQ_PROJECT_ID = "pubsublite.to.bq.project.id"
-PUBSUBLITE_TO_BQ_REGION = "pubsublite.to.bq.region"
 PUBSUBLITE_TO_BQ_OUTPUT_DATASET = "pubsublite.to.bq.output.dataset"
 PUBSUBLITE_TO_BQ_OUTPUT_TABLE = "pubsublite.to.bq.output.table"
 PUBSUBLITE_TO_BQ_BATCH_SIZE = "pubsublite.to.bq.batch.size"
