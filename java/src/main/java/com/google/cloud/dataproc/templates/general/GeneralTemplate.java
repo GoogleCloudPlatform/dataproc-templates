@@ -66,13 +66,14 @@ public class GeneralTemplate implements BaseTemplate {
    */
   @Override
   public void runTemplate() {
-    validateInput();
     try (SparkSession spark = SparkSession.builder().appName("Generic Template").getOrCreate()) {
       this.run(spark);
     }
   }
 
-  public void validateInput() {}
+  public void validateInput() {
+    ValidationUtil.validateOrThrow(config);
+  }
 
   public static GeneralTemplate of(String... args) {
     CommandLine cmd = parseArguments(args);
@@ -84,9 +85,10 @@ public class GeneralTemplate implements BaseTemplate {
     } catch (IOException e) {
       throw new IllegalArgumentException("Could not load config yaml", e);
     }
+    GeneralTemplate generalTemplate = new GeneralTemplate(config);
+    generalTemplate.validateInput();
     LOGGER.info("Config loaded\n{}", config);
-    ValidationUtil.validateOrThrow(config);
-    return new GeneralTemplate(config);
+    return generalTemplate;
   }
 
   /**
