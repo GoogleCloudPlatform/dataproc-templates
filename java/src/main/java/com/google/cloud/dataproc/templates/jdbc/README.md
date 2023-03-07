@@ -361,7 +361,7 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 * `jdbctojdbc.output.create_table.option`: This option allows setting of database-specific table and partition options when creating a output table
 * `jdbctojdbc.output.mode`: Output write mode. One of: append, overwrite, ignore, errorifexists. Defaults to append
 * `jdbctojdbc.sessioninitstatement`: After each database session is opened to the remote DB and before starting to read data, this option executes a custom SQL statement (or a PL/SQL block). Use this to implement session initialization code
-* `jdbctojdbc.output.primary.key`: Specify primary key column for output table
+* `jdbctojdbc.output.primary.key`: Specify primary key column for output table. Column mentioned should **not** contain duplicate values, otherwise an error will be thrown
 * `jdbctojdbc.output.batch.size`: JDBC output batch size. Default set to 1000
 
 ## General Execution
