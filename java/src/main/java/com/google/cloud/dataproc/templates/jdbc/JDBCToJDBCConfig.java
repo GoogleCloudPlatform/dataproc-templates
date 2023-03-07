@@ -101,6 +101,9 @@ public class JDBCToJDBCConfig {
   @Min(value = 1)
   private String jdbcOutputBatchSize;
 
+  @JsonProperty(value = JDBCTOJDBC_OUTPUT_BATCH_SIZE)
+  private String jdbcSessionInitStatement;
+
   @JsonProperty(value = JDBCTOJDBC_OUTPUT_PRIMARY_KEY)
   private String jdbcOutputPrimaryKey;
 
@@ -193,6 +196,10 @@ public class JDBCToJDBCConfig {
     return jdbcOutputBatchSize;
   }
 
+  public String getJdbcSessionInitStatement() {
+    return jdbcSessionInitStatement;
+  }
+
   public String getJdbcOutputPrimaryKey() {
     return jdbcOutputPrimaryKey;
   }
@@ -231,6 +238,10 @@ public class JDBCToJDBCConfig {
       jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), jdbcInputFetchSize);
     }
 
+    if (StringUtils.isNotBlank(jdbcSessionInitStatement)) {
+      jdbcProperties.put(JDBCOptions.JDBC_SESSION_INIT_STATEMENT(), jdbcSessionInitStatement);
+    }
+
     return jdbcProperties;
   }
 
@@ -251,6 +262,7 @@ public class JDBCToJDBCConfig {
         .add("jdbcOutputCreateTableOption", jdbcOutputCreateTableOption)
         .add("jdbcOutputMode", jdbcOutputMode)
         .add("jdbcOutputBatchSize", jdbcOutputBatchSize)
+        .add("jdbcSessionInitStatement", jdbcSessionInitStatement)
         .add("jdbcOutputPrimaryKey", jdbcOutputPrimaryKey)
         .add("jdbcTempView", jdbcTempView)
         .add("jdbcSQLQuery", jdbcSQLQuery)

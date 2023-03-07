@@ -429,6 +429,7 @@ public interface TemplateConstants {
   String JDBCTOJDBC_OUTPUT_CREATE_TABLE_OPTION = "jdbctojdbc.output.create.table.option";
   String JDBCTOJDBC_OUTPUT_MODE = "jdbctojdbc.output.mode";
   String JDBCTOJDBC_OUTPUT_BATCH_SIZE = "jdbctojdbc.output.batch.size";
+  String JDBCTOJDBC_SESSION_INIT_STATEMENT = "jdbctojdbc.sessioninitstatement";
   String JDBCTOJDBC_OUTPUT_PRIMARY_KEY = "jdbctojdbc.output.primary.key";
   String JDBCTOJDBC_TEMP_VIEW_NAME = "jdbctojdbc.temp.view.name";
   String JDBCTOJDBC_SQL_QUERY = "jdbctojdbc.sql.query";
