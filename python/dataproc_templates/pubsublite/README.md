@@ -4,29 +4,30 @@ It uses the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifa
 
 ## Arguments
 
-* `pubsublite.to.bq.input.subscription`: Cloud Storage location of the input files (format: `gs://bucket/...`)
+* `pubsublite.to.bq.input.subscription`: Pubsublite input subscription name
 * `pubsublite.to.bq.write.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `pubsublite.to.bq.output.dataset`: BigQuery output dataset name
 * `pubsublite.to.bq.output.table`: BigQuery output table name
-* `pubsublite.to.bq.bucket.name`: Temporary bucket for the Spark BigQuery connector
+* `pubsublite.to.bq.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
 
 ## Usage
 
 ```
 $ python main.py --template PUBSUBLITETOBQ --help
-usage: main.py --template PUBSUBTOBQ [-h] \
+usage: main.py --template PUBSUBLITETOBQ [-h] \
     --pubsublite.to.bq.input.subscription PUBSUBLITE.BIGQUERY.INPUT.SUBSCRIPTION \
     --pubsublite.to.bq.project.id PUBSUBLITE.BIGQUERY.OUTPUT.PROJECT.ID \
     --pubsublite.to.bq.output.dataset PUBSUBLITE.BIGQUERY.OUTPUT.DATASET \
     --pubsublite.to.bq.output.table PUBSUBLITE.BIGQUERY.OUTPUT.TABLE \
-    --pubsublite.to.bq.bucket.name PUBSUBLITE.BIGQUERY.BUCKET.NAME \
+    --pubsublite.to.bq.temp.bucket.name PUBSUBLITE.BIGQUERY.TEMP.BUCKET.NAME \
     [--pubsublite.to.bq.write.mode {overwrite,append,ignore,errorifexists}] \
     --pubsublite.to.bq.checkpoint.location PUBSUBLITE.BIGQUERY.CHECKPOINT.LOCATION
 ```
 
 ## Required JAR files
 
-This template requires the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifact/com.google.cloud/pubsublite-spark-sql-streaming/1.0.0) to read the streaming data from Pubsublite and [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
+* [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifact/com.google.cloud/pubsublite-spark-sql-streaming/1.0.0) 
+* [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example)
 
 ## Example submission
 
@@ -42,7 +43,7 @@ export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-LATEST-wit
 --pubsublite.to.bq.output.dataset=<BQ dataset name> \
 --pubsublite.to.bq.output.table=<BQ table name> \
 --pubsublite.to.bq.write.mode=<Output write mode> \
---pubsublite.to.bq.bucket.name=<bucket name> \
+--pubsublite.to.bq.temp.bucket.name=<temp bucket name> \
 --pubsublite.to.bq.checkpoint.location=<checkpoint folder location>
 ```
 
@@ -60,14 +61,10 @@ pubsubliteinput.subscription=<pubsublite subscription>
 pubsublitetimeout.ms=60000
 ## Streaming duration, how often wil writes to BQ be triggered
 pubsublitestreaming.duration.seconds=15
-## Number of streams that will read from Pub/Sub subscription in parallel
-pubsublitetotal.receivers=5
 ## Project that contains the output table
 pubsublitebq.output.project.id=<pubsublite to bq output project id>
 ## BigQuery output dataset
 pubsublitebq.output.dataset=<bq output dataset>
 ## BigQuery output table
 pubsublitebq.output.table=<bq output table>
-## Number of records to be written per message to BigQuery
-pubsublitebq.batch.size=1000
 ```
