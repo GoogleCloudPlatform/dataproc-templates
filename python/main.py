@@ -42,6 +42,7 @@ from dataproc_templates.kafka.kafka_to_gcs import KafkaToGCSTemplate
 from dataproc_templates.kafka.kafka_to_bq import KafkaToBigQueryTemplate
 from dataproc_templates.s3.s3_to_bigquery import S3ToBigQueryTemplate
 from dataproc_templates.cassandra.cassandra_to_gcs import CassandraToGCSTemplate
+from dataproc_templates.pubsublite.pubsublite_to_gcs import PubsubliteToGCSTemplate
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
 
@@ -69,7 +70,8 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.HIVEDDLEXTRACTOR: HiveDDLExtractorTemplate,
     TemplateName.KAFKATOGCS: KafkaToGCSTemplate,
     TemplateName.KAFKATOBQ: KafkaToBigQueryTemplate,
-    TemplateName.S3TOBIGQUERY: S3ToBigQueryTemplate
+    TemplateName.S3TOBIGQUERY: S3ToBigQueryTemplate,
+    TemplateName.PUBSUBLITETOGCS: PubsubliteToGCSTemplate
 
 }
 
