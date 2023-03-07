@@ -287,6 +287,30 @@ S3_BQ_TEMP_BUCKET_NAME = "s3.bq.temp.bucket.name"
 S3_BQ_OUTPUT_MODE = "s3.bq.output.mode"
 S3_BQ_ENDPOINT_VALUE = "s3.amazonaws.com"
 
+#Kafka To Bq
+KAFKA_BQ_CHECKPOINT_LOCATION='kafka.to.bq.checkpoint.location'
+KAFKA_BOOTSTRAP_SERVERS='kafka.to.bq.bootstrap.servers'
+KAFKA_BQ_TOPIC='kafka.to.bq.topic'
+KAFKA_BQ_STARTING_OFFSET='kafka.to.bq.starting.offset'
+KAFKA_BQ_DATASET='kafka.to.bq.dataset'
+KAFKA_BQ_TABLE_NAME='kafka.to.bq.table'
+KAFKA_BQ_TEMP_BUCKET_NAME='kafka.to.bq.temp.bucket.name'
+KAFKA_BQ_TERMINATION_TIMEOUT='kafka.to.bq.termination.timeout'
+KAFKA_INPUT_FORMAT='kafka'
+KAFKA_BQ_OUTPUT_MODE='kafka.to.bq.output.mode'
+
+KAFKA_INPUT_FORMAT='kafka'
+
+#Kafka To GCS
+KAFKA_GCS_BOOTSTRAP_SERVERS='kafka.gcs.bootstrap.servers'
+KAFKA_GCS_OUTPUT_LOCATION='kafka.gcs.output.location.gcs.path'
+KAFKA_TOPIC='kafka.gcs.topic'
+KAFKA_GCS_OUTPUT_FORMAT='kafka.gcs.output.format'
+KAFKA_GCS_OUPUT_MODE='kafka.gcs.output.mode'
+KAFKA_GCS_TERMINATION_TIMEOUT='kafka.gcs.termination.timeout'
+KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
+KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
+
 # Pubsublite to BQ
 PUBSUBLITE_TO_BQ_INPUT_TOPIC = "pubsublite.to.bq.input.topic"
 PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION = "pubsublite.to.bq.input.subscription"
