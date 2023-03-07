@@ -120,7 +120,6 @@ class PubsubliteToBQTemplate(BaseTemplate):
 
         # Arguments
         input_subscription: str = args[constants.PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION]
-        input_project_id: str = args[constants.PUBSUBLITE_TO_BQ_PROJECT_ID]
         output_project_id: str = args[constants.PUBSUBLITE_TO_BQ_PROJECT_ID]
         output_dataset: str = args[constants.PUBSUBLITE_TO_BQ_OUTPUT_DATASET]
         output_table: str = args[constants.PUBSUBLITE_TO_BQ_OUTPUT_TABLE]
@@ -144,7 +143,7 @@ class PubsubliteToBQTemplate(BaseTemplate):
         # Read
         input_data=(spark.readStream \
             .format(constants.FORMAT_PUBSUBLITE) \
-            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription",f"projects/{input_project_id}/locations/{region}/subscriptions/{input_subscription}",) \
+            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription", input_subscription,) \
             .load())
         
         input_data.withColumn("data", input_data.data.cast(StringType()))
