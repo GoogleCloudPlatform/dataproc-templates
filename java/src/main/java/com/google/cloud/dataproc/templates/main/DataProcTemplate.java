@@ -31,6 +31,7 @@ import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToBigQuery;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
+import com.google.cloud.dataproc.templates.jdbc.JDBCToJDBC;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToSpanner;
 import com.google.cloud.dataproc.templates.kafka.KafkaToBQ;
 import com.google.cloud.dataproc.templates.kafka.KafkaToGCS;
@@ -94,6 +95,7 @@ public class DataProcTemplate {
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
           .put(TemplateName.SNOWFLAKETOGCS, SnowflakeToGCS::of)
+          .put(TemplateName.JDBCTOJDBC, JDBCToJDBC::of)
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";

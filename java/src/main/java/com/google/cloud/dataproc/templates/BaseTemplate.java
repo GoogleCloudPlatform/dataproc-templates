@@ -52,7 +52,8 @@ public interface BaseTemplate {
     SNOWFLAKETOGCS,
     JDBCTOSPANNER,
     PUBSUBTOBIGTABLE,
-    GCSTOBIGTABLE
+    GCSTOBIGTABLE,
+    JDBCTOJDBC
   }
 
   default Properties getProperties() {
