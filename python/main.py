@@ -67,6 +67,8 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.REDSHIFTTOGCS: RedshiftToGCSTemplate,
     TemplateName.CASSANDRATOBQ: CassandraToBQTemplate,
     TemplateName.CASSANDRATOGCS: CassandraToGCSTemplate,
+    TemplateName.KAFKATOGCS: KafkaToGCSTemplate,
+    TemplateName.KAFKATOBQ: KafkaToBigQueryTemplate,
     TemplateName.HIVEDDLEXTRACTOR: HiveDDLExtractorTemplate,
     TemplateName.S3TOBIGQUERY: S3ToBigQueryTemplate,
     TemplateName.PUBSUBLITETOBQ: PubsubliteToBQTemplate
