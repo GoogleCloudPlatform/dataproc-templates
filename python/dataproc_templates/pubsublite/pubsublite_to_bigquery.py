@@ -78,13 +78,6 @@ class PubsubliteToBQTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
-        # parser.add_argument(
-        #     f'--{constants.PUBSUBLITE_TO_BQ_TOTAL_RECEIVERS}',
-        #     dest=constants.PUBSUBLITE_TO_BQ_TOTAL_RECEIVERS,
-        #     required=False,
-        #     default=5,
-        #     help='PUBSUBLITE_TO_BQ_TOTAL_RECEIVERS'
-        # )
         parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_BQ_PROJECT_ID}',
             dest=constants.PUBSUBLITE_TO_BQ_PROJECT_ID,
@@ -103,13 +96,6 @@ class PubsubliteToBQTemplate(BaseTemplate):
             required=True,
             help='BigQuery output table'
         )
-        # parser.add_argument(
-        #     f'--{constants.PUBSUBLITE_TO_BQ_BATCH_SIZE}',
-        #     dest=constants.PUBSUBLITE_TO_BQ_BATCH_SIZE,
-        #     required=False,
-        #     default=1000,
-        #     help='Number of records to be written per message to BigQuery'
-        # )
         parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_BQ_TEMPORARY_BUCKET}',
             dest=constants.PUBSUBLITE_TO_BQ_TEMPORARY_BUCKET,
