@@ -58,7 +58,7 @@ pubsubliteinput.project.id=<pubsublite project id>
 ## PubSublite subscription name
 pubsubliteinput.subscription=<pubsublite subscription (Format: projects/{input_project_id}/locations/{region}/subscriptions/{input_subscription_name})>
 ## Stream timeout, for how long the subscription will be read
-pubsublitetimeout.ms=60000
+pubsublitetimeout.ms=120000
 ## Streaming duration, how often wil writes to BQ be triggered
 pubsublitestreaming.duration.seconds=15
 ## Project that contains the output table

@@ -51,7 +51,7 @@ class PubsubliteToBQTemplate(BaseTemplate):
             f'--{constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_MS}',
             dest=constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_MS,
             required=False,
-            default=60000,
+            default=120000,
             help='Stream timeout, for how long the subscription will be read'
         )
         parser.add_argument(
@@ -125,8 +125,7 @@ class PubsubliteToBQTemplate(BaseTemplate):
         output_table: str = args[constants.PUBSUBLITE_TO_BQ_OUTPUT_TABLE]
         pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_CHECKPOINT_LOCATION]
         bq_temp_bucket: str = args[constants.PUBSUBLITE_TO_BQ_TEMPORARY_BUCKET]
-        # If a key is not present, attempting to access it will raise a KeyError. To avoid this using the default region as 'us-west1'
-        region: str = os.environ.get('KEY_THAT_MIGHT_EXIST', 'us-west1')
+        timeout_ms: int = args[constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_MS]
 
         logger.info(
             "Starting Pubsublite to Bigquery spark job with parameters:\n"
@@ -157,6 +156,6 @@ class PubsubliteToBQTemplate(BaseTemplate):
             .trigger(processingTime="1 second") \
             .start())
 
-        # Wait 120 seconds (must be >= 60 seconds) to start receiving messages.
-        query.awaitTermination(120)
+        # Wait timeout_ms/1000 seconds (must be >= 60 seconds) to start receiving messages.
+        query.awaitTermination(timeout_ms/1000)
         query.stop()
