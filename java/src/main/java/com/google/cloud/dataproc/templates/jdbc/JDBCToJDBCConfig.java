@@ -15,6 +15,26 @@
  */
 package com.google.cloud.dataproc.templates.jdbc;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_INPUT_DRIVER;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_INPUT_FETCHSIZE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_INPUT_LOWERBOUND;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_INPUT_PARTITIONCOLUMN;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_INPUT_TABLE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_INPUT_UPPERBOUND;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_INPUT_URL;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_NUMPARTITIONS;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_OUTPUT_BATCH_SIZE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_OUTPUT_CREATE_TABLE_OPTION;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_OUTPUT_DRIVER;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_OUTPUT_MODE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_OUTPUT_PRIMARY_KEY;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_OUTPUT_TABLE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_OUTPUT_URL;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_SESSION_INIT_STATEMENT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_SQL_QUERY;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBCTOJDBC_TEMP_VIEW_NAME;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,8 +47,6 @@ import java.util.HashMap;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
-
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 public class JDBCToJDBCConfig {
   static final ObjectMapper mapper =
