@@ -360,6 +360,7 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 * `jdbctojdbc.input.fetchsize`: Determines how many rows to fetch per round trip
 * `jdbctojdbc.output.create_table.option`: This option allows setting of database-specific table and partition options when creating a output table
 * `jdbctojdbc.output.mode`: Output write mode. One of: append, overwrite, ignore, errorifexists. Defaults to append
+* `jdbctojdbc.sessioninitstatement`: After each database session is opened to the remote DB and before starting to read data, this option executes a custom SQL statement (or a PL/SQL block). Use this to implement session initialization code
 * `jdbctojdbc.output.primary.key`: Specify primary key column for output table
 * `jdbctojdbc.output.batch.size`: JDBC output batch size. Default set to 1000
 
@@ -388,7 +389,9 @@ bin/start.sh \
 --templateProperty jdbctojdbc.input.upperbound=<optional-partition-end-value> \
 --templateProperty jdbctojdbc.numpartitions=<optional-partition-number> \
 --templateProperty jdbctojdbc.output.create.table.option=<optional-output-table-properties> \
---templateProperty jdbctojdbc.output.primary.key=<optional-output-table-primary-key-column-name> 
+--templateProperty jdbctojdbc.output.primary.key=<optional-output-table-primary-key-column-name> \
+--templateProperty jdbctojdbc.sessioninitstatement=<optional-session-init-statement> \
+
 ```
 
 ## Note:
@@ -418,6 +421,10 @@ bin/start.sh \
   com.microsoft.sqlserver.jdbc.SQLServerException: Cannot define PRIMARY KEY constraint on nullable column in table
   ```
 
+* `jdbctojdbc.sessioninitstatement` is a custom SQL statement to execute in each reader database session, for example:
+  ```
+  jdbctojdbc.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOJDBC'); END;"
+  ```
 
 * There are two optional properties as well with "JDBC to JDBC" Template. Please find below the details :-
 
