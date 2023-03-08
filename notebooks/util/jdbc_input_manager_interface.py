@@ -93,7 +93,7 @@ class JDBCInputManagerInterface(AbstractClass):
 
     def _get_table_count(self, table: str, sa_connection=None) -> Optional[int]:
         """Return row count for a table."""
-        sql = self._get_count_sql(self._schema, table)
+        sql = self._get_count_sql(table)
         if sa_connection:
             row = sa_connection.execute(sql).fetchone()
         else:
