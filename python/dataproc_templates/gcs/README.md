@@ -5,13 +5,13 @@ Template for reading files from Cloud Storage and writing them to a BigQuery tab
 It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
 
 ## Arguments
-
 * `gcs.bigquery.input.location`: Cloud Storage location of the input files (format: `gs://bucket/...`)
 * `gcs.bigquery.output.dataset`: BigQuery dataset for the output table
 * `gcs.bigquery.output.table`: BigQuery output table name
 * `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json)
 * `gcs.bigquery.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
 * `gcs.bigquery.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+#### Optional Arguments
 * `gcs.bigquery.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `gcs.bigquery.input.columnnameofcorruptrecord`: Allows renaming the new field having malformed string created by PERMISSIVE mode
 * `gcs.bigquery.input.comment`: Sets a single character used for skipping lines beginning with this character. By default it is disabled
@@ -85,7 +85,7 @@ usage: main.py [-h]
 options:
   -h, --help            show this help message and exit
   --gcs.bigquery.input.location GCS.BIGQUERY.INPUT.LOCATION
-                        GCS location of the input files
+                        Cloud Storage location of the input files
   --gcs.bigquery.output.dataset GCS.BIGQUERY.OUTPUT.DATASET
                         BigQuery dataset for the output table
   --gcs.bigquery.output.table GCS.BIGQUERY.OUTPUT.TABLE
@@ -253,10 +253,10 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
       - Download it using ``` wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar```
 
 ## Arguments
-
 * `gcs.bigquery.input.location`: Cloud Storage location of the input files (format: `gs://<bucket>/...`)
 * `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json)
 * `gcs.bigtable.hbase.catalog.json`: HBase catalog inline json
+#### Optional Arguments
 * `gcs.bigtable.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `gcs.bigtable.input.columnnameofcorruptrecord`: Allows renaming the new field having malformed string created by PERMISSIVE mode
 * `gcs.bigtable.input.comment`: Sets a single character used for skipping lines beginning with this character. By default it is disabled
@@ -327,7 +327,7 @@ usage: main.py [-h]
 options:
   -h, --help            show this help message and exit
   --gcs.bigtable.input.location GCS.BIGTABLE.INPUT.LOCATION
-                        GCS location of the input files
+                        Cloud Storage location of the input files
   --gcs.bigtable.input.format {avro,parquet,csv,json}
                         Input file format (one of: avro,parquet,csv,json)
   --gcs.bigtable.input.chartoescapequoteescaping GCS.BIGTABLE.INPUT.CHARTOESCAPEQUOTEESCAPING
@@ -429,7 +429,6 @@ export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-
 Template for reading files from Cloud Storage and writing them to a JDBC table. It supports reading JSON, CSV, Parquet and Avro formats.
 
 ## Arguments
-
 * `gcs.jdbc.input.format`: Input file format (one of: avro,parquet,csv,json)
 * `gcs.jdbc.input.location`: Cloud Storage location of the input files (format: `gs://BUCKET/...`)
 * `gcs.jdbc.output.table`: JDBC output table name
@@ -437,6 +436,7 @@ Template for reading files from Cloud Storage and writing them to a JDBC table. 
 * `gcs.jdbc.output.driver`: JDBC output driver name
 * `gcs.jdbc.batch.size`: JDBC output batch size
 * `gcs.jdbc.output.url`: JDBC output URL
+#### Optional Arguments
 * `gcs.jdbc.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `gcs.jdbc.input.columnnameofcorruptrecord`: Allows renaming the new field having malformed string created by PERMISSIVE mode
 * `gcs.jdbc.input.comment`: Sets a single character used for skipping lines beginning with this character. By default it is disabled
@@ -625,13 +625,13 @@ export JARS=<gcs-bucket-location-containing-jar-file>
 Template for reading files from Cloud Storage and writing them to a MongoDB Collection. It supports reading JSON, CSV, Parquet and Avro formats.
 
 ## Arguments
-
 * `gcs.mongo.input.format`: Input file format (one of: avro,parquet,csv,json)
 * `gcs.mongo.input.location`: Cloud Storage location of the input files (format: `gs://BUCKET/...`)
 * `gcs.mongo.output.uri`: MongoDB Output URI for connection
 * `gcs.mongo.output.database`: MongoDB Output Database Name
 * `gcs.mongo.output.collection`: MongoDB Output Collection Name
 * `gcs.mongo.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+#### Optional Arguments
 * `gcs.mongo.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `gcs.mongo.input.columnnameofcorruptrecord`: Allows renaming the new field having malformed string created by PERMISSIVE mode
 * `gcs.mongo.input.comment`: Sets a single character used for skipping lines beginning with this character. By default it is disabled
@@ -706,7 +706,7 @@ usage: main.py [-h]
 options:
   -h, --help            show this help message and exit
   --gcs.mongo.input.location GCS.MONGO.INPUT.LOCATION
-                        GCS location of the input files
+                        Cloud Storage location of the input files
   --gcs.mongo.input.format {avro,parquet,csv,json}
                         Input file format (one of: avro,parquet,csv,json)
   --gcs.mongo.input.chartoescapequoteescaping GCS.MONGO.INPUT.CHARTOESCAPEQUOTEESCAPING
@@ -822,7 +822,6 @@ Template for reading TEXT files from Cloud Storage and writing them to a BigQuer
 It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
 
 ## Arguments
-
 * `text.bigquery.input.location`: Cloud Storage location of the input text files (format: `gs://BUCKET/...`)
 * `text.bigquery.output.dataset`: BigQuery dataset for the output table
 * `text.bigquery.output.table`: BigQuery output table name
@@ -830,6 +829,7 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `text.bigquery.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `text.bigquery.input.compression`: Input file compression format (one of: gzip,bzip4,lz4,deflate,none)
 * `text.bigquery.input.delimiter`: Input file delimiter
+#### Optional Arguments
 * `text.bigquery.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `text.bigquery.input.columnnameofcorruptrecord`: Allows renaming the new field having malformed string created by PERMISSIVE mode
 * `text.bigquery.input.comment`: Sets a single character used for skipping lines beginning with this character. By default it is disabled
@@ -905,7 +905,7 @@ usage: main.py [-h]
 options:
   -h, --help            show this help message and exit
   --text.bigquery.input.location TEXT.BIGQUERY.INPUT.LOCATION
-                        GCS location of the input text files
+                        Cloud Storage location of the input text files
   --text.bigquery.input.chartoescapequoteescaping TEXT.BIGQUERY.INPUT.CHARTOESCAPEQUOTEESCAPING
                         Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
                         different, \0 otherwise
@@ -1007,7 +1007,6 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 Template for reading files from Cloud Storage, applying data transformations using Spark SQL and then writing the tranformed data back to Cloud Storage. It supports reading and writing JSON, CSV, Parquet and Avro formats.
 
 ## Arguments
-
 * `gcs.to.gcs.input.location`: Cloud Storage location of the input files (format: `gs://BUCKET/...`)
 * `gcs.to.gcs.input.format`: Input file format (one of: avro,parquet,csv,json)
 * `gcs.to.gcs.temp.view.name`: Temp view name for creating a spark sql view on source data.
@@ -1018,6 +1017,7 @@ Template for reading files from Cloud Storage, applying data transformations usi
 * `gcs.to.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `gcs.to.gcs.output.partition.column`: Partition column name to partition the final output in destination bucket'
 * `gcs.to.gcs.output.location`: destination Cloud Storage location
+#### Optional Arguments
 * `gcs.to.gcs.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `gcs.to.gcs.input.columnnameofcorruptrecord`: Allows renaming the new field having malformed string created by PERMISSIVE mode
 * `gcs.to.gcs.input.comment`: Sets a single character used for skipping lines beginning with this character. By default it is disabled

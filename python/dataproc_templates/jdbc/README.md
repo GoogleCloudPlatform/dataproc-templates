@@ -315,7 +315,6 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 Template for reading data from JDBC table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
 
 ## Arguments
-
 * `jdbctogcs.input.url`: JDBC input URL
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
@@ -330,6 +329,7 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 * `jdbctogcs.input.sessioninitstatement` (Optional): Custom SQL statement to execute in each reader database session
 * `jdbctogcs.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 * `jdbctogcs.output.partitioncolumn` (Optional): Output partition column name
+#### Optional Arguments
 * `jdbctogcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `jdbctogcs.output.compression`: None
 * `jdbctogcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type

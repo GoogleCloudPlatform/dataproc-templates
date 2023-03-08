@@ -41,7 +41,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
             f'--{constants.GCS_BQ_INPUT_LOCATION}',
             dest=constants.GCS_BQ_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input files'
+            help='Cloud Storage location of the input files'
         )
         parser.add_argument(
             f'--{constants.GCS_BQ_OUTPUT_DATASET}',

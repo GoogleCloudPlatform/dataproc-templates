@@ -41,7 +41,7 @@ class TextToBigQueryTemplate(BaseTemplate):
             f'--{constants.TEXT_BQ_INPUT_LOCATION}',
             dest=constants.TEXT_BQ_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input text files'
+            help='Cloud Storage location of the input text files'
         )
         add_spark_options(parser, constants.TEXT_BQ_INPUT_SPARK_OPTIONS)
         parser.add_argument(

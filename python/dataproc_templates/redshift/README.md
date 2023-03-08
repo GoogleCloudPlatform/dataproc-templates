@@ -68,7 +68,6 @@ redshifttogcs.input.table="employees"
 ```
 
 ## Arguments
-
 * `redshifttogcs.input.url`: Redshift JDBC input URL
 * `redshifttogcs.s3.tempdir`: S3 temporary bucket location
 * `redshifttogcs.input.table`: Redshift input table name
@@ -79,6 +78,7 @@ redshifttogcs.input.table="employees"
 * `redshifttogcs.s3.secretkey` : AWS Secret Key for S3 Access
 * `redshifttogcs.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 * `redshifttogcs.output.partitioncolumn` (Optional): Output partition column name
+#### Optional Arguments
 * `redshifttogcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `redshifttogcs.output.compression`: None
 * `redshifttogcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type
