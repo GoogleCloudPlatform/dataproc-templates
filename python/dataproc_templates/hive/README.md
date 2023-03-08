@@ -82,13 +82,13 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 Template for reading data from Hive and writing to a Cloud Storage location. It supports reading from Hive table.
 
 ## Arguments
-
 * `spark.hadoop.hive.metastore.uris`: Hive metastore URI
 * `hive.gcs.input.database`: Hive database for input table
 * `hive.gcs.input.table`: Hive input table name
-* `hive.gcs.output.location`: GCS location for output files (format: `gs://BUCKET/...`)
+* `hive.gcs.output.location`: Cloud Storage location for output files (format: `gs://BUCKET/...`)
 * `hive.gcs.output.format`: Output file format (one of: avro,parquet,csv,json) (Defaults to parquet)
 * `hive.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+#### Optional Arguments
 * `hive.gcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `hive.gcs.output.compression`: Compression codec to use when saving to file. This can be one of the known case-insensitive short names (none, bzip2, gzip, lz4, snappy and deflate)
 * `hive.gcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type
@@ -145,7 +145,7 @@ options:
   --hive.gcs.input.table HIVE.GCS.INPUT.TABLE
                         Hive table for exporting data to GCS
   --hive.gcs.output.location HIVE.GCS.OUTPUT.LOCATION
-                        GCS location for output files
+                        Cloud Storage location for output files
   --hive.gcs.output.format {avro,parquet,csv,json}
                         Output file format (one of: avro,parquet,csv,json) (Defaults to parquet)
   --hive.gcs.output.mode {overwrite,append,ignore,errorifexists}

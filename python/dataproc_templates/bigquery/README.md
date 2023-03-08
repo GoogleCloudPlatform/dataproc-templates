@@ -5,11 +5,11 @@ Template for exporting a BigQuery table to files in Google Cloud Storage. It sup
 It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for reading from BigQuery.
 
 ## Arguments
-
 * `bigquery.gcs.input.table`: BigQuery Input table name (format: `project:dataset.table`)
 * `bigquery.gcs.output.format`: Output file format (one of: avro,parquet,csv,json)
-* `bigquery.gcs.output.location`: GCS location for output files (format: `gs://BUCKET/...`)
+* `bigquery.gcs.output.location`: Cloud Storage location for output files (format: `gs://BUCKET/...`)
 * `bigquery.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+#### Optional Arguments
 * `bigquery.gcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `bigquery.gcs.output.compression`: None
 * `bigquery.gcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type

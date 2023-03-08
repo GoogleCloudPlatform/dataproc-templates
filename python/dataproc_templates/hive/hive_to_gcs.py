@@ -54,7 +54,7 @@ class HiveToGCSTemplate(BaseTemplate):
             f'--{constants.HIVE_GCS_OUTPUT_LOCATION}',
             dest=constants.HIVE_GCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS location for output files'
+            help='Cloud Storage location for output files'
         )
         parser.add_argument(
             f'--{constants.HIVE_GCS_OUTPUT_FORMAT}',
