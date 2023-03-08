@@ -12,16 +12,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 from textwrap import dedent
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, TYPE_CHECKING
 
 from util.jdbc_input_manager_interface import (
     JDBCInputManagerInterface,
+    JDBCInputManagerException,
     SPARK_PARTITION_COLUMN,
     SPARK_NUM_PARTITIONS,
     SPARK_LOWER_BOUND,
     SPARK_UPPER_BOUND,
 )
+
+if TYPE_CHECKING:
+    import sqlalchemy
 
 
 class OracleInputManager(JDBCInputManagerInterface):
@@ -44,7 +49,8 @@ class OracleInputManager(JDBCInputManagerInterface):
                 rows = conn.execute(sql).fetchall()
             return schema, [_[0] for _ in rows]
 
-    def _define_read_partitioning(self, table: str, row_count_threshold: int, sa_connection) -> Optional[list]:
+    def _define_read_partitioning(self, table: str, row_count_threshold: int,
+                                  sa_connection: "sqlalchemy.engine.base.Connection") -> str:
         """Return a dictionary defining how to partition the Spark SQL extraction."""
         # TODO In the future we may want to support checking DBA_SEGMENTS
         row_count = self._get_table_count(table, sa_connection=sa_connection)
@@ -54,7 +60,7 @@ class OracleInputManager(JDBCInputManagerInterface):
             # TODO Add support for UKs alongside PKs.
             if self.get_primary_keys().get(table):
                 column = self.get_primary_keys().get(table)
-                column_datatype = self._get_column_data_type(self._schema, table, column)
+                column_datatype = self._get_column_data_type(table, column)
                 if column_datatype == 'NUMBER':
                     lowerbound = sa_connection.execute(self._get_min_sql(table, column)).fetchone()
                     upperbound = sa_connection.execute(self._get_max_sql(table, column)).fetchone()
@@ -75,7 +81,8 @@ class OracleInputManager(JDBCInputManagerInterface):
         ch = ch or '"'
         return f'{ch}{identifier}{ch}'
 
-    def _get_column_data_type(self, schema: str, table: str, column: str, sa_connection=None) -> str:
+    def _get_column_data_type(self, table: str, column: str,
+                              sa_connection: "Optional[sqlalchemy.engine.base.Connection]" = None) -> str:
         sql = dedent("""
         SELECT data_type
         FROM   all_tab_columns
@@ -84,15 +91,11 @@ class OracleInputManager(JDBCInputManagerInterface):
         AND    column_name = :col
         """)
         if sa_connection:
-            row = sa_connection.execute(sql, own=schema, tab=table, col=column).fetchone()
+            row = sa_connection.execute(sql, own=self._schema, tab=table, col=column).fetchone()
         else:
             with self._alchemy_db.connect() as conn:
-                row = conn.execute(sql, own=schema, tab=table, col=column).fetchone()
-        if row:
-            # TODO we need to strip out any scale from TIMESTAMP types.
-            return row[0]
-        else:
-            return row
+                row = conn.execute(sql, own=self._schema, tab=table, col=column).fetchone()
+        return self._normalise_oracle_data_type(row[0]) if row else row
 
     def _get_primary_keys(self) -> dict:
         """
@@ -120,12 +123,22 @@ class OracleInputManager(JDBCInputManagerInterface):
                     pk_dict[table] = row[0]
             return pk_dict
 
-    def _normalise_schema_filter(self, schema_filter: str, sa_connection) -> str:
+    def _normalise_oracle_data_type(self, data_type: str) -> str:
+        """Oracle TIMESTAMP types are polluted with scale, this method strips that noise away."""
+        if data_type.startswith('TIMESTAMP') or data_type.startswith('INTERVAL DAY'):
+            return re.sub(r'\([0-9]\)', r'', data_type)
+        else:
+            return data_type
+
+    def _normalise_schema_filter(self, schema_filter: str,
+                                 sa_connection: "sqlalchemy.engine.base.Connection") -> str:
         """Return schema_filter normalised to the correct case, or sets to connected user if blank."""
         if schema_filter:
             # Assuming there will not be multiple schemas of the same name in different case.
             sql = 'SELECT username FROM all_users WHERE UPPER(username) = UPPER(:b1) ORDER BY username'
             row = sa_connection.execute(sql, b1=schema_filter).fetchone()
+            if not row:
+                raise JDBCInputManagerException(f'Schema filter does not match any Oracle schemas: {schema_filter}')
         else:
             sql = 'SELECT USER FROM dual'
             row = sa_connection.execute(sql).fetchone()

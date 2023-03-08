@@ -27,6 +27,10 @@ SPARK_LOWER_BOUND = 'lowerBound'
 SPARK_UPPER_BOUND = 'upperBound'
 
 
+class JDBCInputManagerException(Exception):
+    pass
+
+
 class JDBCInputManagerInterface(AbstractClass):
     """Defines common code across each engine and enforces methods each engine should provide."""
 
@@ -43,7 +47,8 @@ class JDBCInputManagerInterface(AbstractClass):
         """Engine specific code to return a tuple containing schema and list of table names based on an optional schema filter."""
 
     @abstractmethod
-    def _define_read_partitioning(self, table: str, row_count_threshold: int, sa_connection) -> str:
+    def _define_read_partitioning(self, table: str, row_count_threshold: int,
+                                  sa_connection: "sqlalchemy.engine.base.Connection") -> str:
         """Return a dictionary defining how to partition the Spark SQL extraction."""
 
     @abstractmethod
@@ -51,7 +56,8 @@ class JDBCInputManagerInterface(AbstractClass):
         """Enclose an identifier in the standard way for the SQL engine or override ch for any enclosure character."""
 
     @abstractmethod
-    def _get_column_data_type(self, schema: str, table: str, column: str, sa_connection=None) -> str:
+    def _get_column_data_type(self, table: str, column: str,
+                              sa_connection: "Optional[sqlalchemy.engine.base.Connection]" = None) -> str:
         """Return base data type for a column without any scale/precision/length annotation."""
 
     @abstractmethod
@@ -62,7 +68,7 @@ class JDBCInputManagerInterface(AbstractClass):
         """
 
     @abstractmethod
-    def _normalise_schema_filter(self, schema_filter: str, sa_connection) -> str:
+    def _normalise_schema_filter(self, schema_filter: str, sa_connection: "sqlalchemy.engine.base.Connection") -> str:
         """Return schema_filter normalised to the correct case."""
 
     @abstractmethod
@@ -91,7 +97,8 @@ class JDBCInputManagerInterface(AbstractClass):
             self._qualified_name(self._schema, table, enclosed=True)
         )
 
-    def _get_table_count(self, table: str, sa_connection=None) -> Optional[int]:
+    def _get_table_count(self, table: str,
+                         sa_connection: "Optional[sqlalchemy.engine.base.Connection]" = None) -> Optional[int]:
         """Return row count for a table."""
         sql = self._get_count_sql(table)
         if sa_connection:
@@ -116,7 +123,7 @@ class JDBCInputManagerInterface(AbstractClass):
         Return a list of (schema, table_name) tuples based on an optional schema filter.
         If schema_filter is not provided then the connected user is used for the schema.
         """
-        self._schema, self._table_list = self._build_table_list(schema_filter)
+        self._schema, self._table_list = self._build_table_list(schema_filter=schema_filter)
         return self._table_list
 
     def define_read_partitioning(self, row_count_threshold: int) -> dict:
@@ -152,9 +159,10 @@ class JDBCInputManagerInterface(AbstractClass):
             self._pk_dict = self._get_primary_keys()
         return self._pk_dict
 
-    def normalise_schema_filter(self, schema_filter: Optional[str]) -> str:
-        """Return schema_filter normalised to the correct case."""
-        return self._normalise_schema_filter(schema_filter)
+    def normalise_schema(self, schema_filter: str) -> str:
+        with self._alchemy_db.connect() as conn:
+            self._schema = self._normalise_schema_filter(schema_filter, conn)
+            return self._schema
 
     def qualified_name(self, schema: str, table: str, enclosed=False) -> str:
         return self._qualified_name(schema, table, enclosed=enclosed)

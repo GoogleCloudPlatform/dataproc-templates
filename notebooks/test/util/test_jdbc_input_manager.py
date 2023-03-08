@@ -74,6 +74,18 @@ def test__get_min_sql():
     assert isinstance(mgr._get_min_sql('TABLE', 'COLUMN'), str)
 
 
+def test__normalise_oracle_data_type():
+    mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
+    for oracle_type, normalised_type in [
+        ('DATE', 'DATE'),
+        ('TIMESTAMP(0)', 'TIMESTAMP'),
+        ('TIMESTAMP(3) WITH TIME ZONE', 'TIMESTAMP WITH TIME ZONE'),
+        ('TIMESTAMP(6) WITH LOCAL TIME ZONE', 'TIMESTAMP WITH LOCAL TIME ZONE'),
+        ('INTERVAL DAY(5) TO SECOND(1)', 'INTERVAL DAY TO SECOND'),
+    ]:
+        assert mgr._normalise_oracle_data_type(oracle_type) == normalised_type
+
+
 def test__read_partitioning_num_partitions():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
     # Numeric ranges
