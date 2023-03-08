@@ -113,8 +113,7 @@ class TestGCSToBigQueryTemplate:
              "--gcs.bigquery.output.dataset=dataset",
              "--gcs.bigquery.output.table=table",
              "--gcs.bigquery.temp.bucket.name=bucket"])
-        mock_spark_session.read.format().options(
-        ).load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read.format.assert_called_with(
@@ -125,6 +124,7 @@ class TestGCSToBigQueryTemplate:
         })
         mock_spark_session.read.format().options(
         ).load.assert_called_once_with("gs://test")
+
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(
