@@ -37,10 +37,10 @@ class OracleInputManager(JDBCInputManagerInterface):
             schema = self._normalise_schema_filter(schema_filter, conn)
             not_like_filter = "table_name NOT LIKE 'DR$SUP_TEXT_IDX%'"
             if schema_filter:
-                sql = f'SELECT owner, table_name FROM all_tables WHERE owner = :own AND {not_like_filter}'
+                sql = f'SELECT table_name FROM all_tables WHERE owner = :own AND {not_like_filter}'
                 rows = conn.execute(sql, own=schema).fetchall()
             else:
-                sql = f'SELECT USER, table_name FROM user_tables WHERE {not_like_filter}'
+                sql = f'SELECT table_name FROM user_tables WHERE {not_like_filter}'
                 rows = conn.execute(sql).fetchall()
             return schema, rows
 
