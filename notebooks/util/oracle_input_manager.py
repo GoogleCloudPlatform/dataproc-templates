@@ -23,6 +23,7 @@ from util.jdbc_input_manager_interface import (
     SPARK_NUM_PARTITIONS,
     SPARK_LOWER_BOUND,
     SPARK_UPPER_BOUND,
+    PARTITION_COMMENT,
 )
 
 if TYPE_CHECKING:
@@ -73,6 +74,7 @@ class OracleInputManager(JDBCInputManagerInterface):
                              SPARK_NUM_PARTITIONS: num_partitions,
                              SPARK_LOWER_BOUND: lowerbound,
                              SPARK_UPPER_BOUND: upperbound,
+                             PARTITION_COMMENT: f'Partitioning by {column_datatype} primary key column'
                         }
         return None
 

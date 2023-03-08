@@ -17,6 +17,8 @@ from decimal import Decimal
 import math
 from typing import List, Optional, Tuple, Union, TYPE_CHECKING
 
+import pandas as pd
+
 if TYPE_CHECKING:
     import sqlalchemy
 
@@ -25,6 +27,7 @@ SPARK_PARTITION_COLUMN = 'partitionColumn'
 SPARK_NUM_PARTITIONS = 'numPartitions'
 SPARK_LOWER_BOUND = 'lowerBound'
 SPARK_UPPER_BOUND = 'upperBound'
+PARTITION_COMMENT = 'comment'
 
 
 class JDBCInputManagerException(Exception):
@@ -166,6 +169,21 @@ class JDBCInputManagerInterface(AbstractClass):
 
     def qualified_name(self, schema: str, table: str, enclosed=False) -> str:
         return self._qualified_name(schema, table, enclosed=enclosed)
+
+    def read_partitioning_df(self, read_partition_info: dict) -> pd.DataFrame:
+        """Return a Pandas dataframe to allow tidy display of read partitioning information"""
+        def get_read_partition_info(table, info_key):
+            return read_partition_info.get(table, {}).get(info_key)
+
+        report_dict = {
+            'table': self.get_table_list(),
+            'partition_column': [get_read_partition_info(_, SPARK_PARTITION_COLUMN) for _ in self.get_table_list()],
+            'num_partitions': [get_read_partition_info(_, SPARK_NUM_PARTITIONS) for _ in self.get_table_list()],
+            'lower_bound': [get_read_partition_info(_, SPARK_LOWER_BOUND) for _ in self.get_table_list()],
+            'upper_bound': [get_read_partition_info(_, SPARK_UPPER_BOUND) for _ in self.get_table_list()],
+            'comment': [get_read_partition_info(_, PARTITION_COMMENT) or 'Serial read' for _ in self.get_table_list()],
+        }
+        return pd.DataFrame(report_dict)
 
     def set_table_list(self, table_list: list) -> None:
         self._table_list = table_list

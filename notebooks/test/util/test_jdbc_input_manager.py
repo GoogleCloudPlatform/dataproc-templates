@@ -17,6 +17,8 @@ from decimal import Decimal
 import pytest
 from unittest import mock
 
+import pandas as pd
+
 from util.jdbc_input_manager import JDBCInputManager
 from util.oracle_input_manager import OracleInputManager
 
@@ -57,6 +59,28 @@ def test_get_table_list_with_counts():
     table_list = ['table1', 'table2']
     mgr.set_table_list(table_list)
     assert mgr.get_table_list_with_counts() == [42, 42]
+
+
+def test_read_partitioning_df():
+    mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
+    table_list = ['table1', 'table2', 'table3']
+    mgr.set_table_list(table_list)
+    read_partitioning_dict = {
+        'table2': {'partitionColumn': 'ID', 'numPartitions': 15, 'lowerBound': 1, 'upperBound': 444}
+    }
+
+    df = mgr.read_partitioning_df(read_partitioning_dict)
+
+    assert isinstance(df, pd.DataFrame)
+    assert len(df['table']) == 3
+    assert 'table1' in list(df['table'])
+    assert 'table2' in list(df['table'])
+    assert 'table3' in list(df['table'])
+    table2_row = list(df['table']).index('table2')
+    assert list(df['partition_column'])[table2_row] == 'ID'
+    assert list(df['num_partitions'])[table2_row] == 15
+    assert list(df['lower_bound'])[table2_row] == 1
+    assert list(df['upper_bound'])[table2_row] == 444
 
 
 def test__get_count_sql():
