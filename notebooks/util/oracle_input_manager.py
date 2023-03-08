@@ -42,7 +42,7 @@ class OracleInputManager(JDBCInputManagerInterface):
             else:
                 sql = f'SELECT table_name FROM user_tables WHERE {not_like_filter}'
                 rows = conn.execute(sql).fetchall()
-            return schema, rows
+            return schema, [_[0] for _ in rows]
 
     def _define_read_partitioning(self, table: str, row_count_threshold: int, sa_connection) -> Optional[list]:
         """Return a dictionary defining how to partition the Spark SQL extraction."""
