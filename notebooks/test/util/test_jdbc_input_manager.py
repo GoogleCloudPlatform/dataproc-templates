@@ -38,21 +38,6 @@ def test__enclose_identifier():
     assert mgr._enclose_identifier('A', '"') == '"A"'
 
 
-def test_normalise_schema_filter():
-    mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
-    mgr._normalise_schema_filter = mock.MagicMock(return_value=['Schema1', 'SCHEMA2'])
-
-    # Test with CSV input
-    assert isinstance(mgr.normalise_schema_filter('schema1,schema2'), list)
-    assert isinstance(mgr.normalise_schema_filter('schema1,schema2')[0], str)
-    assert mgr.normalise_schema_filter('schema1,schema2') == ['Schema1', 'SCHEMA2']
-
-    # Test with List[str] input
-    assert isinstance(mgr.normalise_schema_filter(['schema1', 'schema2']), list)
-    assert isinstance(mgr.normalise_schema_filter(['schema1', 'schema2'])[0], str)
-    assert mgr.normalise_schema_filter('schema1,schema2') == ['Schema1', 'SCHEMA2']
-
-
 def test_oracle_qualified_name():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
     assert mgr._qualified_name('SCHEMA1', 'TABLE1', enclosed=False) == 'SCHEMA1.TABLE1'
@@ -61,34 +46,32 @@ def test_oracle_qualified_name():
 
 def test_table_list():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
-    table_list = [('schema1', 'table1'), ('SCHEMA2', 'TABLE2')]
+    table_list = ['table1', 'TABLE2']
     mgr.set_table_list(table_list)
     assert mgr.get_table_list() == table_list
-
-    assert mgr.get_qualified_table_list() == ['schema1.table1', 'SCHEMA2.TABLE2']
 
 
 def test_get_table_list_with_counts():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
     mgr._get_table_count = mock.MagicMock(return_value=42)
-    table_list = [('schema1', 'table1'), ('schema2', 'table2')]
+    table_list = ['table1', 'table2']
     mgr.set_table_list(table_list)
     assert mgr.get_table_list_with_counts() == [42, 42]
 
 
 def test__get_count_sql():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
-    assert isinstance(mgr._get_count_sql('SCHEMA', 'TABLE'), str)
+    assert isinstance(mgr._get_count_sql('TABLE'), str)
 
 
 def test__get_max_sql():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
-    assert isinstance(mgr._get_max_sql('SCHEMA', 'TABLE', 'COLUMN'), str)
+    assert isinstance(mgr._get_max_sql('TABLE', 'COLUMN'), str)
 
 
 def test__get_min_sql():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
-    assert isinstance(mgr._get_min_sql('SCHEMA', 'TABLE', 'COLUMN'), str)
+    assert isinstance(mgr._get_min_sql('TABLE', 'COLUMN'), str)
 
 
 def test__read_partitioning_num_partitions():

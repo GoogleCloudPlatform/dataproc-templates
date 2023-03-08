@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from textwrap import dedent
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple
 
 from util.jdbc_input_manager_interface import (
     JDBCInputManagerInterface,
@@ -28,41 +28,36 @@ class OracleInputManager(JDBCInputManagerInterface):
 
     # Private methods
 
-    def _build_table_list(self, schema_filter: Optional[Union[list, str]] = None) -> List[tuple]:
+    def _build_table_list(self, schema_filter: Optional[str] = None) -> Tuple[str, List[str]]:
         """
-        Return a list of (schema, table_name) tuples based on an optional schema filter.
-        If schema_filter is not provided then the corrected user is used for the schema.
+        Return a tuple containing schema and list of table names based on an optional schema filter.
+        If schema_filter is not provided then the connected user is used for the schema.
         """
-        if schema_filter:
-            if isinstance(schema_filter, str):
-                schema_filter = [schema_filter]
-
         with self._alchemy_db.connect() as conn:
+            schema = self._normalise_schema_filter(schema_filter, conn)
             not_like_filter = "table_name NOT LIKE 'DR$SUP_TEXT_IDX%'"
-            schema_filter_dict = {}
             if schema_filter:
-                schema_filter_dict = {f's{i}': _ for i, _ in enumerate(schema_filter)}
-                schema_filter_str = ','.join([f':{_}' for _ in schema_filter_dict.keys()])
-                sql = f'SELECT owner, table_name FROM all_tables WHERE owner IN ({schema_filter_str}) AND {not_like_filter}'
+                sql = f'SELECT owner, table_name FROM all_tables WHERE owner = :own AND {not_like_filter}'
+                rows = conn.execute(sql, own=schema).fetchall()
             else:
                 sql = f'SELECT USER, table_name FROM user_tables WHERE {not_like_filter}'
-            return conn.execute(sql, **schema_filter_dict).fetchall()
+                rows = conn.execute(sql).fetchall()
+            return schema, rows
 
-    def _define_read_partitioning(self, schema: str, table: str, row_count_threshold: int, sa_connection) -> Optional[list]:
+    def _define_read_partitioning(self, table: str, row_count_threshold: int, sa_connection) -> Optional[list]:
         """Return a dictionary defining how to partition the Spark SQL extraction."""
         # TODO In the future we may want to support checking DBA_SEGMENTS
-        row_count = self._get_table_count(schema, table, sa_connection=sa_connection)
+        row_count = self._get_table_count(table, sa_connection=sa_connection)
         if row_count > int(row_count_threshold):
             # The table has enough rows to merit partitioning Spark SQL read.
-            qualified_name = self._qualified_name(schema, table, enclosed=False)
             # TODO Prioritise partition keys over primary keys in the future.
             # TODO Add support for UKs alongside PKs.
-            if self.get_primary_keys().get(qualified_name):
-                column = self.get_primary_keys().get(qualified_name)
-                column_datatype = self._get_column_data_type(schema, table, column)
+            if self.get_primary_keys().get(table):
+                column = self.get_primary_keys().get(table)
+                column_datatype = self._get_column_data_type(self._schema, table, column)
                 if column_datatype == 'NUMBER':
-                    lowerbound = sa_connection.execute(self._get_min_sql(schema, table, column)).fetchone()
-                    upperbound = sa_connection.execute(self._get_max_sql(schema, table, column)).fetchone()
+                    lowerbound = sa_connection.execute(self._get_min_sql(table, column)).fetchone()
+                    upperbound = sa_connection.execute(self._get_max_sql(table, column)).fetchone()
                     if lowerbound and upperbound:
                         lowerbound = lowerbound[0]
                         upperbound = upperbound[0]
@@ -102,9 +97,9 @@ class OracleInputManager(JDBCInputManagerInterface):
     def _get_primary_keys(self) -> dict:
         """
         Return a dict of primary key information.
-        The dict is keyed on the qualified table name (e.g. 'schema.table_name') and maps to the column name.
+        The dict is keyed on the table name and maps to the column name.
         """
-        pk_dict = {_: None for _ in self.get_qualified_table_list()}
+        pk_dict = {_: None for _ in self._table_list}
         sql = dedent("""
         SELECT cols.column_name
         FROM   all_constraints cons
@@ -119,26 +114,22 @@ class OracleInputManager(JDBCInputManagerInterface):
         AND    cols.table_name = cons.table_name
         """)
         with self._alchemy_db.connect() as conn:
-            for schema, table in self._table_list:
-                row = conn.execute(sql, own=schema, tab=table).fetchone()
+            for table in self._table_list:
+                row = conn.execute(sql, own=self._schema, tab=table).fetchone()
                 if row:
-                    pk_dict[self._qualified_name(schema, table)] = row[0]
+                    pk_dict[table] = row[0]
             return pk_dict
 
-    def _normalise_schema_filter(self, schema_filter: List[str]) -> List[str]:
-        """Return schema_filter normalised to the correct case."""
-        if not schema_filter:
-            return schema_filter
-        bind_values = {f'b{i}': _.lower() for i, _ in enumerate(schema_filter)}
-        bind_tokens = ','.join([f':{_}' for _ in bind_values.keys()])
-        sql = dedent(f"""
-        SELECT username
-        FROM   all_users
-        WHERE  LOWER(user_name) IN ({bind_tokens})
-        """)
-        with self._alchemy_db.connect() as conn:
-            rows = conn.execute(sql, **bind_values).fetchall()
-            return [_[0] for _ in rows]
+    def _normalise_schema_filter(self, schema_filter: str, sa_connection) -> str:
+        """Return schema_filter normalised to the correct case, or sets to connected user if blank."""
+        if schema_filter:
+            # Assuming there will not be multiple schemas of the same name in different case.
+            sql = 'SELECT username FROM all_users WHERE UPPER(username) = UPPER(:b1) ORDER BY username'
+            row = sa_connection.execute(sql, b1=schema_filter).fetchone()
+        else:
+            sql = 'SELECT USER FROM dual'
+            row = sa_connection.execute(sql).fetchone()
+        return row[0] if row else row
 
     def _qualified_name(self, schema: str, table: str, enclosed=False) -> str:
         if enclosed:
