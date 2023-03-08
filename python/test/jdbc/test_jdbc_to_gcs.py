@@ -170,8 +170,8 @@ class TestJDBCToGCSTemplate:
         })
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
-        mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.CSV_HEADER, True)
-        mock_spark_session.dataframe.DataFrame.write.mode().option().csv.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.mode().options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
+        mock_spark_session.dataframe.DataFrame.write.mode().options().csv.assert_called_once_with("gs://test")
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args5(self, mock_spark_session):
@@ -234,8 +234,8 @@ class TestJDBCToGCSTemplate:
         })
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
-        mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.CSV_HEADER, True)
-        mock_spark_session.dataframe.DataFrame.write.mode().option().csv.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.mode().options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
+        mock_spark_session.dataframe.DataFrame.write.mode().options().csv.assert_called_once_with("gs://test")
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args7(self, mock_spark_session):
@@ -266,5 +266,5 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.mode().partitionBy.assert_called_once_with("column")
-        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option.assert_called_once_with(constants.CSV_HEADER, True)
-        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option().csv.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
+        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().options().csv.assert_called_once_with("gs://test")

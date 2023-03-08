@@ -46,7 +46,7 @@ class TestGCSToGCSTemplate:
         assert parsed_args["gcs.to.gcs.output.mode"] == "overwrite"
         assert parsed_args["gcs.to.gcs.output.partition.column"] == "column"
         assert parsed_args["gcs.to.gcs.output.location"] == "gs://output"
-    
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_parquet(self, mock_spark_session):
         """Tests GCSToBigqueryTemplate runs with parquet format"""
@@ -61,7 +61,7 @@ class TestGCSToGCSTemplate:
              "--gcs.to.gcs.output.mode=overwrite",
              "--gcs.to.gcs.output.partition.column=column",
              "--gcs.to.gcs.output.location=gs://output"])
-        
+
         mock_spark_session.read.parquet.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
@@ -77,7 +77,7 @@ class TestGCSToGCSTemplate:
             .mode() \
             .partitionBy() \
             .parquet.assert_called_once_with("gs://output")
-            
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_csv(self, mock_spark_session):
         """Tests GCSToBigqueryTemplate runs with parquet format"""
@@ -92,26 +92,22 @@ class TestGCSToGCSTemplate:
              "--gcs.to.gcs.output.mode=overwrite",
              "--gcs.to.gcs.output.partition.column=column",
              "--gcs.to.gcs.output.location=gs://output"])
-        
+
         mock_spark_session.read.csv.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read.format.assert_called_once_with(constants.FORMAT_CSV)
         mock_spark_session.read.format() \
-            .option.assert_called_once_with(constants.CSV_HEADER, True)
+            .options.assert_called_once_with(**{constants.CSV_HEADER: 'true',
+                                                constants.CSV_INFER_SCHEMA: 'true'})
         mock_spark_session.read.format() \
-            .option() \
-            .option.assert_called_once_with(constants.CSV_INFER_SCHEMA, True)
-        mock_spark_session.read.format() \
-            .option() \
-            .option() \
+            .options() \
             .load.assert_called_once_with("gs://input")
         mock_spark_session.read.format() \
-            .option() \
-            .option() \
+            .options() \
             .load() \
             .createOrReplaceTempView.assert_called_once_with("temp")
-            
+
         mock_spark_session.sql.assert_called_once_with("select * from temp")
         mock_spark_session.sql().write \
             .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
@@ -121,14 +117,14 @@ class TestGCSToGCSTemplate:
         mock_spark_session.sql().write \
             .mode() \
             .partitionBy() \
-            .option.assert_called_once_with(constants.CSV_HEADER, True)
-            
+            .options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
+
         mock_spark_session.sql().write \
             .mode() \
             .partitionBy() \
-            .option() \
+            .options() \
             .csv.assert_called_once_with("gs://output")
-            
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_avro(self, mock_spark_session):
         """Tests GCSToBigqueryTemplate runs with parquet format"""
@@ -143,7 +139,7 @@ class TestGCSToGCSTemplate:
              "--gcs.to.gcs.output.mode=overwrite",
              "--gcs.to.gcs.output.partition.column=column",
              "--gcs.to.gcs.output.location=gs://output"])
-        
+
         mock_spark_session.read.csv.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
@@ -154,7 +150,7 @@ class TestGCSToGCSTemplate:
         mock_spark_session.read.format() \
             .load() \
             .createOrReplaceTempView.assert_called_once_with("temp")
-            
+
         mock_spark_session.sql.assert_called_once_with("select * from temp")
         mock_spark_session.sql().write \
             .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
@@ -165,7 +161,7 @@ class TestGCSToGCSTemplate:
             .mode() \
             .partitionBy() \
             .format.assert_called_once_with(constants.FORMAT_AVRO)
-            
+
         mock_spark_session.sql().write \
             .mode() \
             .partitionBy() \
@@ -186,7 +182,7 @@ class TestGCSToGCSTemplate:
              "--gcs.to.gcs.output.mode=overwrite",
              "--gcs.to.gcs.output.partition.column=column",
              "--gcs.to.gcs.output.location=gs://output"])
-        
+
         mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
@@ -202,4 +198,4 @@ class TestGCSToGCSTemplate:
             .mode() \
             .partitionBy() \
             .json.assert_called_once_with("gs://output")
-        
+
