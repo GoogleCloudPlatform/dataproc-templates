@@ -45,7 +45,6 @@ import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.TemplateUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
 import com.google.common.collect.ImmutableMap;
-
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -150,7 +149,8 @@ public class DataProcTemplate {
     }
   }
 
-  public static void main(String... args) throws StreamingQueryException, TimeoutException, SQLException {
+  public static void main(String... args)
+      throws StreamingQueryException, TimeoutException, SQLException {
     BaseTemplate template = createTemplateAndRegisterProperties(args);
     runSparkJob(template);
   }
@@ -202,7 +202,8 @@ public class DataProcTemplate {
    *
    * @param template the template to run.
    */
-  static void runSparkJob(BaseTemplate template) throws StreamingQueryException, TimeoutException, SQLException {
+  static void runSparkJob(BaseTemplate template)
+      throws StreamingQueryException, TimeoutException, SQLException {
     LOGGER.debug("Start runSparkJob");
     template.runTemplate();
     LOGGER.debug("End runSparkJob");
