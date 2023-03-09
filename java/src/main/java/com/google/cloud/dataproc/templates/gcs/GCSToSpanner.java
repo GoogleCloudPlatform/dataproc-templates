@@ -41,12 +41,13 @@ public class GCSToSpanner implements BaseTemplate {
   public static GCSToSpanner of(String... args) {
     GCSToSpannerConfig config = GCSToSpannerConfig.fromProperties(PropertyUtil.getProperties());
     LOGGER.info("Config loaded\n{}", config);
-    return new GCSToSpanner(config);
+    GCSToSpanner gcsToSpanner = new GCSToSpanner(config);
+    gcsToSpanner.validateInput();
+    return gcsToSpanner;
   }
 
   @Override
   public void runTemplate() {
-    validateInput();
     try (SparkSession spark = SparkSession.builder().appName("GCS to Spanner").getOrCreate()) {
       // Set log level
       spark.sparkContext().setLogLevel(config.getSparkLogLevel());
