@@ -54,16 +54,15 @@ public class JDBCToJDBC implements BaseTemplate {
   }
 
   @Override
-  public void runTemplate() {
-    try (SparkSession spark = SparkSession.builder().appName("JDBC to JDBC").getOrCreate()) {
-      // Set log level
-      spark.sparkContext().setLogLevel(config.getSparkLogLevel());
-      Dataset<Row> inputData = load(spark);
-      write(inputData);
+  public void runTemplate() throws SQLException {
+    SparkSession spark = SparkSession.builder().appName("JDBC to JDBC").getOrCreate();
+    // Set log level
+    spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+    Dataset<Row> inputData = load(spark);
+    write(inputData);
 
-      if (StringUtils.isNotBlank(config.getJdbcOutputPrimaryKey())) {
-        addPrimaryKeyColumn();
-      }
+    if (StringUtils.isNotBlank(config.getJdbcOutputPrimaryKey())) {
+      addPrimaryKeyColumn();
     }
   }
 
@@ -106,20 +105,16 @@ public class JDBCToJDBC implements BaseTemplate {
     }
   }
 
-  public void addPrimaryKeyColumn() {
-    try {
-      Connection connection = DriverManager.getConnection(config.getJdbcOutputURL());
-      Statement statement = connection.createStatement();
+  public void addPrimaryKeyColumn() throws SQLException {
+    Connection connection = DriverManager.getConnection(config.getJdbcOutputURL());
+    Statement statement = connection.createStatement();
 
-      statement.executeUpdate(
-          String.format(
-              "ALTER TABLE %s ADD PRIMARY KEY (%s)",
-              config.getJdbcOutputTable(), config.getJdbcOutputPrimaryKey()));
+    statement.executeUpdate(
+        String.format(
+            "ALTER TABLE %s ADD PRIMARY KEY (%s)",
+            config.getJdbcOutputTable(), config.getJdbcOutputPrimaryKey()));
 
-      statement.close();
-      connection.close();
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+    statement.close();
+    connection.close();
   }
 }
