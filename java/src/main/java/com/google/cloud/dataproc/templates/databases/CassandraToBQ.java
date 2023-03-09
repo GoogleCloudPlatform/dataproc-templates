@@ -40,12 +40,13 @@ public class CassandraToBQ implements BaseTemplate {
   public static CassandraToBQ of(String... args) {
     CassandraToBqConfig config = CassandraToBqConfig.fromProperties(PropertyUtil.getProperties());
     LOGGER.info("Config loaded\n{}", config);
-    return new CassandraToBQ(config);
+    CassandraToBQ cassandraToBQ = new CassandraToBQ(config);
+    cassandraToBQ.validateInput();
+    return cassandraToBQ;
   }
 
   @Override
   public void runTemplate() throws StreamingQueryException, TimeoutException {
-    validateInput();
     Dataset dataset;
     SparkSession spark =
         SparkSession.builder()
