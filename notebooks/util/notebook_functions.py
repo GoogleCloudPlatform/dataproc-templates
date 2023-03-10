@@ -19,5 +19,5 @@ def split_list(l: list, split_size: int) -> List[list]:
     """Split list l into sublists of max size split_size."""
     return_list = []
     for i in range(0, len(l), split_size):
-        return_list.append(l[i:i + split_size])
+        return_list.append(l[i : i + split_size])
     return return_list

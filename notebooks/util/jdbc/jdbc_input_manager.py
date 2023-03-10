@@ -31,4 +31,4 @@ class JDBCInputManager:
         if db_type == DB_TYPE_ORACLE:
             return OracleInputManager(alchemy_db)
         else:
-            raise NotImplementedError(f'Unsupported SQL engine type: {db_type}')
+            raise NotImplementedError(f"Unsupported SQL engine type: {db_type}")

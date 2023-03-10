@@ -18,23 +18,34 @@ from util.notebook_functions import split_list
 def test_split_list():
     for input_list, split_size, expected_outcome in [
         (
-            [1, 2, 3, 4, 5, 6], 3, [[1, 2, 3], [4, 5, 6]],
+            [1, 2, 3, 4, 5, 6],
+            3,
+            [[1, 2, 3], [4, 5, 6]],
         ),
         (
-            ['tab1', 'tab2', 'tab3', 'tab4', 'tab5', 'tab6'], 3,
-            [['tab1', 'tab2', 'tab3'], ['tab4', 'tab5', 'tab6']],
+            ["tab1", "tab2", "tab3", "tab4", "tab5", "tab6"],
+            3,
+            [["tab1", "tab2", "tab3"], ["tab4", "tab5", "tab6"]],
         ),
         (
-            [1, 2, 3, 4, 5, 6], 2, [[1, 2], [3, 4], [5, 6]],
+            [1, 2, 3, 4, 5, 6],
+            2,
+            [[1, 2], [3, 4], [5, 6]],
         ),
         (
-            [1, 2, 3, 4, 5, 6], 7, [[1, 2, 3, 4, 5, 6]],
+            [1, 2, 3, 4, 5, 6],
+            7,
+            [[1, 2, 3, 4, 5, 6]],
         ),
         (
-            [1], 7, [[1]],
+            [1],
+            7,
+            [[1]],
         ),
         (
-            [], 7, [],
+            [],
+            7,
+            [],
         ),
     ]:
         outcome = split_list(input_list, split_size)
