@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import sqlalchemy
 
-from util.oracle_input_manager import OracleInputManager
+from util.jdbc.engines.oracle_input_manager import OracleInputManager
 
 
 DB_TYPE_ORACLE = "oracle"

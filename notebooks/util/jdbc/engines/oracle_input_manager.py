@@ -16,7 +16,7 @@ import re
 from textwrap import dedent
 from typing import List, Optional, Tuple, TYPE_CHECKING
 
-from util.jdbc_input_manager_interface import (
+from util.jdbc.jdbc_input_manager_interface import (
     JDBCInputManagerInterface,
     JDBCInputManagerException,
     SPARK_PARTITION_COLUMN,
@@ -34,9 +34,13 @@ class OracleInputManager(JDBCInputManagerInterface):
 
     # Private methods
 
-    def _build_table_list(self, schema_filter: Optional[str] = None) -> Tuple[str, List[str]]:
+    def _build_table_list(
+        self,
+        schema_filter: Optional[str] = None,
+        table_filter: Optional[List[str]] = None
+    ) -> Tuple[str, List[str]]:
         """
-        Return a tuple containing schema and list of table names based on an optional schema filter.
+        Return a tuple containing schema and list of table names based on optional schema/table filters.
         If schema_filter is not provided then the connected user is used for the schema.
         """
         with self._alchemy_db.connect() as conn:
@@ -48,7 +52,7 @@ class OracleInputManager(JDBCInputManagerInterface):
             else:
                 sql = f'SELECT table_name FROM user_tables WHERE {not_like_filter}'
                 rows = conn.execute(sql).fetchall()
-            return schema, [_[0] for _ in rows]
+            return schema, self._filter_table_list(rows, table_filter)
 
     def _define_read_partitioning(self, table: str, row_count_threshold: int,
                                   sa_connection: "sqlalchemy.engine.base.Connection") -> str:
@@ -60,7 +64,9 @@ class OracleInputManager(JDBCInputManagerInterface):
             # TODO Prioritise partition keys over primary keys in the future.
             # TODO Add support for UKs alongside PKs.
             if self.get_primary_keys().get(table):
-                column = self.get_primary_keys().get(table)
+                # This code takes the first column from the PK, this could be flawed
+                # if the primary key is composite and the first column is not distinct.
+                column = self.get_primary_keys().get(table)[0]
                 column_datatype = self._get_column_data_type(table, column)
                 if column_datatype == 'NUMBER':
                     lowerbound = sa_connection.execute(self._get_min_sql(table, column)).fetchone()
@@ -102,7 +108,7 @@ class OracleInputManager(JDBCInputManagerInterface):
     def _get_primary_keys(self) -> dict:
         """
         Return a dict of primary key information.
-        The dict is keyed on the table name and maps to the column name.
+        The dict is keyed on table name and maps to a list of column names.
         """
         pk_dict = {_: None for _ in self._table_list}
         sql = dedent("""
@@ -113,16 +119,16 @@ class OracleInputManager(JDBCInputManagerInterface):
         AND    cons.table_name = :tab
         AND    cons.constraint_type = 'P'
         AND    cons.status = 'ENABLED'
-        AND    cols.position = 1
         AND    cols.constraint_name = cons.constraint_name
         AND    cols.owner = cons.owner
         AND    cols.table_name = cons.table_name
+        ORDER BY cols.position
         """)
         with self._alchemy_db.connect() as conn:
             for table in self._table_list:
-                row = conn.execute(sql, own=self._schema, tab=table).fetchone()
-                if row:
-                    pk_dict[table] = row[0]
+                rows = conn.execute(sql, own=self._schema, tab=table).fetchall()
+                if rows:
+                    pk_dict[table] = [_[0] for _ in rows]
             return pk_dict
 
     def _normalise_oracle_data_type(self, data_type: str) -> str:

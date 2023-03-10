@@ -15,7 +15,7 @@
 from abc import ABC as AbstractClass, abstractmethod
 from decimal import Decimal
 import math
-from typing import List, Optional, Tuple, Union, TYPE_CHECKING
+from typing import List, Optional, Tuple, TYPE_CHECKING
 
 import pandas as pd
 
@@ -46,8 +46,12 @@ class JDBCInputManagerInterface(AbstractClass):
     # Abstract methods
 
     @abstractmethod
-    def _build_table_list(self, schema_filter: Optional[str] = None) -> Tuple[str, List[str]]:
-        """Engine specific code to return a tuple containing schema and list of table names based on an optional schema filter."""
+    def _build_table_list(
+        self,
+        schema_filter: Optional[str] = None,
+        table_filter: Optional[List[str]] = None
+    ) -> Tuple[str, List[str]]:
+        """Engine specific code to return a tuple containing schema and list of table names based on optional schema/table filters."""
 
     @abstractmethod
     def _define_read_partitioning(self, table: str, row_count_threshold: int,
@@ -67,7 +71,7 @@ class JDBCInputManagerInterface(AbstractClass):
     def _get_primary_keys(self) -> dict:
         """
         Return a dict of primary key information.
-        The dict is keyed on table name and maps to the column name.
+        The dict is keyed on table name and maps to a list of column names.
         """
 
     @abstractmethod
@@ -79,6 +83,17 @@ class JDBCInputManagerInterface(AbstractClass):
         """Return a qualified name for a table suitable for the SQL engine."""
 
     # Private methods
+
+    def _filter_table_list(self, table_list: List[str], table_filter: List[str]):
+        """Returns table_list filtered for entries (case-insensitive) in table_filter."""
+        def table_name(s):
+            """Cater for passing of row returned from SQL which will have the table_name in a list/tuple."""
+            return s[0] if isinstance(s, (list, tuple)) else s
+
+        if not table_filter:
+            return table_list
+        table_filter_upper = [_.upper() for _ in table_filter or []]
+        return [table_name(_) for _ in table_list if table_name(_).upper() in table_filter_upper]
 
     def _get_count_sql(self, table: str) -> str:
         # This SQL should be simple enough to work on all engines but may need refactoring in the future.
@@ -121,12 +136,16 @@ class JDBCInputManagerInterface(AbstractClass):
 
     # Public methods
 
-    def build_table_list(self, schema_filter: Optional[list] = None) -> List[tuple]:
+    def build_table_list(
+        self,
+        schema_filter: Optional[list] = None,
+        table_filter: Optional[List[str]] = None
+    ) -> List[str]:
         """
         Return a list of (schema, table_name) tuples based on an optional schema filter.
         If schema_filter is not provided then the connected user is used for the schema.
         """
-        self._schema, self._table_list = self._build_table_list(schema_filter=schema_filter)
+        self._schema, self._table_list = self._build_table_list(schema_filter=schema_filter, table_filter=table_filter)
         return self._table_list
 
     def define_read_partitioning(self, row_count_threshold: int) -> dict:

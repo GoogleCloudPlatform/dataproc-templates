@@ -19,8 +19,8 @@ from unittest import mock
 
 import pandas as pd
 
-from util.jdbc_input_manager import JDBCInputManager
-from util.oracle_input_manager import OracleInputManager
+from util.jdbc.jdbc_input_manager import JDBCInputManager
+from util.jdbc.engines.oracle_input_manager import OracleInputManager
 
 
 ALCHEMY_DB = mock.MagicMock()
@@ -38,6 +38,14 @@ def test__enclose_identifier():
     assert mgr._enclose_identifier('a') == '"a"'
     assert mgr._enclose_identifier('a', '"') == '"a"'
     assert mgr._enclose_identifier('A', '"') == '"A"'
+
+
+def test__filter_table_list():
+    mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
+    table_list = ['table1', 'TABLE2', 'Table3']
+    assert mgr._filter_table_list(table_list, ['TABLE1', 'table2', 'table4']) == ['table1', 'TABLE2']
+    assert mgr._filter_table_list(table_list, None) == table_list
+    assert mgr._filter_table_list(table_list, []) == table_list
 
 
 def test_oracle_qualified_name():
