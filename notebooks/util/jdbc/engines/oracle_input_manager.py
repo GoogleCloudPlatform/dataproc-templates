@@ -51,7 +51,8 @@ class OracleInputManager(JDBCInputManagerInterface):
             else:
                 sql = f"SELECT table_name FROM user_tables WHERE {not_like_filter}"
                 rows = conn.execute(sql).fetchall()
-            return schema, self._filter_table_list(rows, table_filter)
+            tables = [_[0] for _ in rows] if rows else rows
+            return schema, self._filter_table_list(tables, table_filter)
 
     def _define_read_partitioning(
         self,
