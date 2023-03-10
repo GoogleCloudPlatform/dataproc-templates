@@ -49,6 +49,9 @@ def test__filter_table_list():
     ]
     assert mgr._filter_table_list(table_list, None) == table_list
     assert mgr._filter_table_list(table_list, []) == table_list
+    # table_list can be list of tuples if fed directly from SQL output.
+    assert mgr._filter_table_list([(_, ) for _ in table_list], ["TABLE1"]) == ["table1"]
+    assert mgr._filter_table_list([(_, ) for _ in table_list], []) == table_list
 
 
 def test_oracle_qualified_name():

@@ -101,14 +101,15 @@ class JDBCInputManagerInterface(AbstractClass):
             """Cater for passing of row returned from SQL which will have the table_name in a list/tuple."""
             return s[0] if isinstance(s, (list, tuple)) else s
 
-        if not table_filter:
-            return table_list
-        table_filter_upper = [_.upper() for _ in table_filter or []]
-        return [
-            table_name(_)
-            for _ in table_list
-            if table_name(_).upper() in table_filter_upper
-        ]
+        if table_filter:
+            table_filter_upper = [_.upper() for _ in table_filter or []]
+            return [
+                table_name(_)
+                for _ in table_list
+                if table_name(_).upper() in table_filter_upper
+            ]
+        else:
+            return [table_name(_) for _ in table_list]
 
     def _get_count_sql(self, table: str) -> str:
         # This SQL should be simple enough to work on all engines but may need refactoring in the future.
