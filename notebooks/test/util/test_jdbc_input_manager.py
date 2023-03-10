@@ -20,6 +20,7 @@ from unittest import mock
 import pandas as pd
 
 from util.jdbc.jdbc_input_manager import JDBCInputManager
+from util.jdbc.jdbc_input_manager_interface import JDBCInputManagerException
 from util.jdbc.engines.oracle_input_manager import OracleInputManager
 
 
@@ -50,8 +51,8 @@ def test__filter_table_list():
     assert mgr._filter_table_list(table_list, None) == table_list
     assert mgr._filter_table_list(table_list, []) == table_list
     # table_list can be list of tuples if fed directly from SQL output.
-    assert mgr._filter_table_list([(_, ) for _ in table_list], ["TABLE1"]) == ["table1"]
-    assert mgr._filter_table_list([(_, ) for _ in table_list], []) == table_list
+    assert mgr._filter_table_list([(_,) for _ in table_list], ["TABLE1"]) == ["table1"]
+    assert mgr._filter_table_list([(_,) for _ in table_list], []) == table_list
 
 
 def test_oracle_qualified_name():
@@ -135,6 +136,7 @@ def test__read_partitioning_num_partitions():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
     # Numeric ranges
     for lowerbound, upperbound, stride, expected_partitions in [
+        [1, 1, 10, 1],
         [1, 100, 10, 10],
         [float(1), float(100), float(10), 10],
         [Decimal(1), Decimal(100), Decimal(10), 10],
@@ -153,11 +155,14 @@ def test__read_partitioning_num_partitions():
             == expected_partitions
         )
 
-    # Datetime ranges are currently unsupported
+    # Unsupported boundary inputs
     for lowerbound, upperbound, stride, expected_partitions in [
-        [datetime(2020, 1, 1), datetime(2020, 1, 20), 2, 10],
+        # Datetime ranges are currently unsupported
+        [datetime(2020, 1, 1), datetime(2020, 1, 20), 2, None],
+        # Upperbound < lowerbound
+        [100, 1, 10, None],
     ]:
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(JDBCInputManagerException):
             assert (
                 mgr._read_partitioning_num_partitions(lowerbound, upperbound, stride)
                 == expected_partitions

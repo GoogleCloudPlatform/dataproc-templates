@@ -151,9 +151,15 @@ class JDBCInputManagerInterface(AbstractClass):
         if isinstance(lowerbound, (int, float, Decimal)) and isinstance(
             upperbound, (int, float, Decimal)
         ):
+            if upperbound == lowerbound:
+                return 1
+            elif upperbound < lowerbound:
+                raise JDBCInputManagerException(
+                    f"Unsupported partition boundary values: {type(lowerbound)} > {type(upperbound)}"
+                )
             return math.ceil(float(upperbound - lowerbound) / float(stride))
         else:
-            raise NotImplementedError(
+            raise JDBCInputManagerException(
                 f"Unsupported partition boundary values: {type(lowerbound)}/{type(upperbound)}"
             )
 
