@@ -412,4 +412,14 @@ public interface TemplateConstants {
   String MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri";
   String MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database";
   String MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection";
+
+  /** TextToBigquery properties */
+  String TEXT_BIGQUERY_INPUT_LOCATION = "text.bigquery.input.location";
+
+  String TEXT_BIGQUERY_INPUT_COMPRESSION = "text.bigquery.input.compression";
+  String TEXT_BIGQUERY_INPUT_DELIMITER = "text.bigquery.input.delimiter";
+  String TEXT_BIGQUERY_OUTPUT_DATASET = "text.bigquery.output.dataset";
+  String TEXT_BIGQUERY_OUTPUT_TABLE = "text.bigquery.output.table";
+  String TEXT_BIGQUERY_OUTPUT_MODE = "text.bigquery.output.mode";
+  String TEXT_BIGQUERY_TEMP_BUCKET = "text.bigquery.temp.bucket";
 }
