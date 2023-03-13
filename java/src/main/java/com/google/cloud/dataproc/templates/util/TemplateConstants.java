@@ -422,4 +422,6 @@ public interface TemplateConstants {
   String TEXT_BIGQUERY_OUTPUT_TABLE = "text.bigquery.output.table";
   String TEXT_BIGQUERY_OUTPUT_MODE = "text.bigquery.output.mode";
   String TEXT_BIGQUERY_TEMP_BUCKET = "text.bigquery.temp.bucket";
+  String TEXT_BIGQUERY_TEMP_TABLE = "text.bigquery.temp.table";
+  String TEXT_BIGQUERY_TEMP_QUERY = "text.bigquery.temp.query";
 }

@@ -35,6 +35,8 @@ public class TextToBigquery implements BaseTemplate {
   private String outputTable;
   private String outputMode;
   private String bqTempBucket;
+  private String bqTempTable;
+  private String bqTempQuery;
   private final String sparkLogLevel;
 
   public TextToBigquery() {
@@ -47,6 +49,8 @@ public class TextToBigquery implements BaseTemplate {
     outputTable = getProperties().getProperty(TEXT_BIGQUERY_OUTPUT_TABLE);
     outputMode = getProperties().getProperty(TEXT_BIGQUERY_OUTPUT_MODE);
     bqTempBucket = getProperties().getProperty(TEXT_BIGQUERY_TEMP_BUCKET);
+    bqTempTable = getProperties().getProperty(TEXT_BIGQUERY_TEMP_TABLE);
+    bqTempQuery = getProperties().getProperty(TEXT_BIGQUERY_TEMP_QUERY);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
@@ -71,6 +75,11 @@ public class TextToBigquery implements BaseTemplate {
             .option("compression", inputCompression)
             .option("delimiter", inputDelimiter)
             .csv(inputLocation);
+
+    if (bqTempTable != null && bqTempQuery != null) {
+      inputData.createOrReplaceGlobalTempView(bqTempTable);
+      inputData = spark.sql(bqTempQuery);
+    }
 
     inputData
         .write()
