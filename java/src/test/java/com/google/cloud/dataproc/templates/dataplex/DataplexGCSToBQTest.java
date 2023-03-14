@@ -51,11 +51,11 @@ public class DataplexGCSToBQTest {
     props.setProperty(DATAPLEX_GCS_BQ_TARGET_DATASET, "dataplex_gcs_to_bq");
     props.setProperty(
         DATAPLEX_GCS_BQ_TARGET_ENTITY,
-        "projects/yadavaja-sandbox/locations/us-west1/lakes/dataproc-templates-test-lake/zones/dataplex-gcs-to-bq/entities/dataplex_gcs_to_bq");
+        "projects/your-project-id/locations/your-gcp-location/lakes/your-test-lake/zones/your-zone/entities/your-entity");
     dataplexGCStoBQTest =
         new DataplexGCStoBQ(
             null,
-            "projects/yadavaja-sandbox/locations/us-west1/lakes/dataproc-templates-test-lake/zones/dataplex-gcs-to-bq/entities/dataplex_gcs",
+            "projects/your-project-id/locations/your-gcp-location/lakes/your-test-lake/zones/your-zone/entities/your-entity",
             null,
             null,
             "destination_table");
