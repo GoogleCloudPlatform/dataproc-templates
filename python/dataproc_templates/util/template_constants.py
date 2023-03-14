@@ -101,6 +101,7 @@ OPTION_DEFAULT = "default"
 OPTION_HELP = "help"
 OPTION_READ_HELP = "read_help"
 OPTION_WRITE_HELP = "write_help"
+
 # At the moment this is just a map of CSV related options but it will be expanded as required for other uses.
 SPARK_OPTIONS = {
     CSV_CHARTOESCAPEQUOTEESCAPING:
@@ -195,58 +196,64 @@ SPARK_OPTIONS = {
 }
 
 # Helper functions for applying SPARK_OPTIONS to templates
-def get_template_input_spark_options(prefix):
-    return {
-        prefix + CSV_CHARTOESCAPEQUOTEESCAPING.lower(): CSV_CHARTOESCAPEQUOTEESCAPING,
-        prefix + CSV_COLUMNNAMEOFCORRUPTRECORD.lower(): CSV_COLUMNNAMEOFCORRUPTRECORD,
-        prefix + CSV_COMMENT.lower(): CSV_COMMENT,
-        prefix + CSV_DATEFORMAT.lower(): CSV_DATEFORMAT,
-        prefix + CSV_EMPTYVALUE.lower(): CSV_EMPTYVALUE,
-        prefix + CSV_ENCODING.lower(): CSV_ENCODING,
-        prefix + CSV_ENFORCESCHEMA.lower(): CSV_ENFORCESCHEMA,
-        prefix + CSV_ESCAPE.lower(): CSV_ESCAPE,
-        prefix + CSV_HEADER.lower(): CSV_HEADER,
-        prefix + CSV_IGNORELEADINGWHITESPACE.lower(): CSV_IGNORELEADINGWHITESPACE,
-        prefix + CSV_IGNORETRAILINGWHITESPACE.lower(): CSV_IGNORETRAILINGWHITESPACE,
-        prefix + CSV_INFER_SCHEMA.lower(): CSV_INFER_SCHEMA,
-        prefix + CSV_LINESEP.lower(): CSV_LINESEP,
-        prefix + CSV_LOCALE.lower(): CSV_LOCALE,
-        prefix + CSV_MAXCHARSPERCOLUMN.lower(): CSV_MAXCHARSPERCOLUMN,
-        prefix + CSV_MAXCOLUMNS.lower(): CSV_MAXCOLUMNS,
-        prefix + CSV_MODE.lower(): CSV_MODE,
-        prefix + CSV_MULTILINE.lower(): CSV_MULTILINE,
-        prefix + CSV_NANVALUE.lower(): CSV_NANVALUE,
-        prefix + CSV_NULLVALUE.lower(): CSV_NULLVALUE,
-        prefix + CSV_NEGATIVEINF.lower(): CSV_NEGATIVEINF,
-        prefix + CSV_POSITIVEINF.lower(): CSV_POSITIVEINF,
-        prefix + CSV_QUOTE.lower(): CSV_QUOTE,
-        prefix + CSV_SAMPLINGRATIO.lower(): CSV_SAMPLINGRATIO,
-        prefix + CSV_SEP.lower(): CSV_SEP,
-        prefix + CSV_TIMESTAMPFORMAT.lower(): CSV_TIMESTAMPFORMAT,
-        prefix + CSV_TIMESTAMPNTZFORMAT.lower(): CSV_TIMESTAMPNTZFORMAT,
-        prefix + CSV_UNESCAPEDQUOTEHANDLING.lower(): CSV_UNESCAPEDQUOTEHANDLING,
-    }
+def get_csv_input_spark_options(prefix):
 
-def get_template_output_spark_options(prefix):
-    return {
-        prefix + CSV_CHARTOESCAPEQUOTEESCAPING.lower(): CSV_CHARTOESCAPEQUOTEESCAPING,
-        prefix + CSV_COMPRESSION.lower(): CSV_COMPRESSION,
-        prefix + CSV_DATEFORMAT.lower(): CSV_DATEFORMAT,
-        prefix + CSV_EMPTYVALUE.lower(): CSV_EMPTYVALUE,
-        prefix + CSV_ENCODING.lower(): CSV_ENCODING,
-        prefix + CSV_ESCAPE.lower(): CSV_ESCAPE,
-        prefix + CSV_ESCAPEQUOTES.lower(): CSV_ESCAPEQUOTES,
-        prefix + CSV_HEADER.lower(): CSV_HEADER,
-        prefix + CSV_IGNORELEADINGWHITESPACE.lower(): CSV_IGNORELEADINGWHITESPACE,
-        prefix + CSV_IGNORETRAILINGWHITESPACE.lower(): CSV_IGNORETRAILINGWHITESPACE,
-        prefix + CSV_LINESEP.lower(): CSV_LINESEP,
-        prefix + CSV_NULLVALUE.lower(): CSV_NULLVALUE,
-        prefix + CSV_QUOTE.lower(): CSV_QUOTE,
-        prefix + CSV_QUOTEALL.lower(): CSV_QUOTEALL,
-        prefix + CSV_SEP.lower(): CSV_SEP,
-        prefix + CSV_TIMESTAMPFORMAT.lower(): CSV_TIMESTAMPFORMAT,
-        prefix + CSV_TIMESTAMPNTZFORMAT.lower(): CSV_TIMESTAMPNTZFORMAT,
+    spark_options = {
+        CSV_CHARTOESCAPEQUOTEESCAPING.lower(): CSV_CHARTOESCAPEQUOTEESCAPING,
+        CSV_COLUMNNAMEOFCORRUPTRECORD.lower(): CSV_COLUMNNAMEOFCORRUPTRECORD,
+        CSV_COMMENT.lower(): CSV_COMMENT,
+        CSV_DATEFORMAT.lower(): CSV_DATEFORMAT,
+        CSV_EMPTYVALUE.lower(): CSV_EMPTYVALUE,
+        CSV_ENCODING.lower(): CSV_ENCODING,
+        CSV_ENFORCESCHEMA.lower(): CSV_ENFORCESCHEMA,
+        CSV_ESCAPE.lower(): CSV_ESCAPE,
+        CSV_HEADER.lower(): CSV_HEADER,
+        CSV_IGNORELEADINGWHITESPACE.lower(): CSV_IGNORELEADINGWHITESPACE,
+        CSV_IGNORETRAILINGWHITESPACE.lower(): CSV_IGNORETRAILINGWHITESPACE,
+        CSV_INFER_SCHEMA.lower(): CSV_INFER_SCHEMA,
+        CSV_LINESEP.lower(): CSV_LINESEP,
+        CSV_LOCALE.lower(): CSV_LOCALE,
+        CSV_MAXCHARSPERCOLUMN.lower(): CSV_MAXCHARSPERCOLUMN,
+        CSV_MAXCOLUMNS.lower(): CSV_MAXCOLUMNS,
+        CSV_MODE.lower(): CSV_MODE,
+        CSV_MULTILINE.lower(): CSV_MULTILINE,
+        CSV_NANVALUE.lower(): CSV_NANVALUE,
+        CSV_NULLVALUE.lower(): CSV_NULLVALUE,
+        CSV_NEGATIVEINF.lower(): CSV_NEGATIVEINF,
+        CSV_POSITIVEINF.lower(): CSV_POSITIVEINF,
+        CSV_QUOTE.lower(): CSV_QUOTE,
+        CSV_SAMPLINGRATIO.lower(): CSV_SAMPLINGRATIO,
+        CSV_SEP.lower(): CSV_SEP,
+        CSV_TIMESTAMPFORMAT.lower(): CSV_TIMESTAMPFORMAT,
+        CSV_TIMESTAMPNTZFORMAT.lower(): CSV_TIMESTAMPNTZFORMAT,
+        CSV_UNESCAPEDQUOTEHANDLING.lower(): CSV_UNESCAPEDQUOTEHANDLING,
     }
+    spark_options = { prefix + str(key): val for key, val in spark_options.items() }
+    return spark_options
+
+def get_csv_output_spark_options(prefix):
+
+    spark_options = {
+        CSV_CHARTOESCAPEQUOTEESCAPING.lower(): CSV_CHARTOESCAPEQUOTEESCAPING,
+        CSV_COMPRESSION.lower(): CSV_COMPRESSION,
+        CSV_DATEFORMAT.lower(): CSV_DATEFORMAT,
+        CSV_EMPTYVALUE.lower(): CSV_EMPTYVALUE,
+        CSV_ENCODING.lower(): CSV_ENCODING,
+        CSV_ESCAPE.lower(): CSV_ESCAPE,
+        CSV_ESCAPEQUOTES.lower(): CSV_ESCAPEQUOTES,
+        CSV_HEADER.lower(): CSV_HEADER,
+        CSV_IGNORELEADINGWHITESPACE.lower(): CSV_IGNORELEADINGWHITESPACE,
+        CSV_IGNORETRAILINGWHITESPACE.lower(): CSV_IGNORETRAILINGWHITESPACE,
+        CSV_LINESEP.lower(): CSV_LINESEP,
+        CSV_NULLVALUE.lower(): CSV_NULLVALUE,
+        CSV_QUOTE.lower(): CSV_QUOTE,
+        CSV_QUOTEALL.lower(): CSV_QUOTEALL,
+        CSV_SEP.lower(): CSV_SEP,
+        CSV_TIMESTAMPFORMAT.lower(): CSV_TIMESTAMPFORMAT,
+        CSV_TIMESTAMPNTZFORMAT.lower(): CSV_TIMESTAMPNTZFORMAT
+    }
+    spark_options = { prefix + str(key): val for key, val in spark_options.items() }
+    return spark_options
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -262,8 +269,6 @@ GCS_BQ_OUTPUT_TABLE = "gcs.bigquery.output.table"
 GCS_BQ_OUTPUT_MODE = "gcs.bigquery.output.mode"
 GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name"
-# Template options linked to Spark Dataframe option names.
-GCS_BQ_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.bigquery.input.")
 
 # GCS to JDBC
 GCS_JDBC_INPUT_LOCATION = "gcs.jdbc.input.location"
@@ -274,8 +279,6 @@ GCS_JDBC_OUTPUT_URL = "gcs.jdbc.output.url"
 GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver"
 GCS_JDBC_BATCH_SIZE = "gcs.jdbc.batch.size"
 GCS_JDBC_NUMPARTITIONS = "gcs.jdbc.numpartitions"
-# Template options linked to Spark Dataframe option names.
-GCS_JDBC_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.jdbc.input.")
 
 #GCS to Mongo
 GCS_MONGO_INPUT_LOCATION = "gcs.mongo.input.location"
@@ -285,8 +288,6 @@ GCS_MONGO_OUTPUT_DATABASE = "gcs.mongo.output.database"
 GCS_MONGO_OUTPUT_COLLECTION = "gcs.mongo.output.collection"
 GCS_MONGO_OUTPUT_MODE = "gcs.mongo.output.mode"
 GCS_MONGO_BATCH_SIZE = "gcs.mongo.batch.size"
-# Template options linked to Spark Dataframe option names.
-GCS_MONGO_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.mongo.input.")
 
 # Mongo to GCS
 MONGO_GCS_OUTPUT_LOCATION = "mongo.gcs.output.location"
@@ -295,7 +296,6 @@ MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode"
 MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri"
 MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database"
 MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection"
-MONGO_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("mongo.gcs.output.")
 
 #Cassandra to BQ
 CASSANDRA_TO_BQ_INPUT_TABLE = "cassandratobq.input.table"
@@ -311,15 +311,12 @@ CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace"
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
 GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format"
 GCS_BT_HBASE_CATALOG_JSON = "gcs.bigtable.hbase.catalog.json"
-# Template options linked to Spark Dataframe option names.
-GCS_BT_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.bigtable.input.")
 
 # BigQuery to GCS
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
 BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format"
 BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode"
 BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location"
-BQ_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("bigquery.gcs.output.")
 
 # GCS To GCS with transformations
 GCS_TO_GCS_INPUT_LOCATION = "gcs.to.gcs.input.location"
@@ -330,9 +327,6 @@ GCS_TO_GCS_OUTPUT_FORMAT = "gcs.to.gcs.output.format"
 GCS_TO_GCS_OUTPUT_MODE = "gcs.to.gcs.output.mode"
 GCS_TO_GCS_OUTPUT_PARTITION_COLUMN = "gcs.to.gcs.output.partition.column"
 GCS_TO_GCS_OUTPUT_LOCATION = "gcs.to.gcs.output.location"
-# Template options linked to Spark Dataframe option names.
-GCS_TO_GCS_INPUT_SPARK_OPTIONS = get_template_input_spark_options("gcs.to.gcs.input.")
-GCS_TO_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("gcs.to.gcs.output.")
 
 # Hive to BigQuery
 HIVE_BQ_OUTPUT_MODE = "hive.bigquery.output.mode"
@@ -352,7 +346,6 @@ HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
 HIVE_GCS_OUTPUT_MODE = "hive.gcs.output.mode"
 HIVE_GCS_TEMP_VIEW_NAME = "hive.gcs.temp.view.name"
 HIVE_GCS_SQL_QUERY = "hive.gcs.sql.query"
-HIVE_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("hive.gcs.output.")
 
 # Text to BigQuery
 TEXT_INPUT_COMPRESSION = "text.bigquery.input.compression"
@@ -363,15 +356,12 @@ TEXT_BQ_OUTPUT_TABLE = "text.bigquery.output.table"
 TEXT_BQ_OUTPUT_MODE = "text.bigquery.output.mode"
 TEXT_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 TEXT_BQ_LD_TEMP_BUCKET_NAME = "text.bigquery.temp.bucket.name"
-# Template options linked to Spark Dataframe option names.
-TEXT_BQ_INPUT_SPARK_OPTIONS = get_template_input_spark_options("text.bigquery.input.")
 
 # Hbase to GCS
 HBASE_GCS_OUTPUT_LOCATION = "hbase.gcs.output.location"
 HBASE_GCS_OUTPUT_FORMAT = "hbase.gcs.output.format"
 HBASE_GCS_OUTPUT_MODE = "hbase.gcs.output.mode"
 HBASE_GCS_CATALOG_JSON = "hbase.gcs.catalog.json"
-HBASE_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("hbase.gcs.output.")
 
 # JDBC to JDBC
 JDBCTOJDBC_INPUT_URL = "jdbctojdbc.input.url"
@@ -409,7 +399,6 @@ JDBCTOGCS_OUTPUT_MODE = "jdbctogcs.output.mode"
 JDBCTOGCS_OUTPUT_PARTITIONCOLUMN = "jdbctogcs.output.partitioncolumn"
 JDBCTOGCS_TEMP_VIEW_NAME = "jdbctogcs.temp.view.name"
 JDBCTOGCS_TEMP_SQL_QUERY = "jdbctogcs.temp.sql.query"
-JDBCTOGCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("jdbctogcs.output.")
 
 # JDBC to BigQuery
 JDBC_BQ_INPUT_URL = "jdbc.bigquery.input.url"
@@ -439,7 +428,6 @@ REDSHIFTTOGCS_OUTPUT_LOCATION = "redshifttogcs.output.location"
 REDSHIFTTOGCS_OUTPUT_FORMAT = "redshifttogcs.output.format"
 REDSHIFTTOGCS_OUTPUT_MODE = "redshifttogcs.output.mode"
 REDSHIFTTOGCS_OUTPUT_PARTITIONCOLUMN = "redshifttogcs.output.partitioncolumn"
-REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("redshifttogcs.output.")
 
 # Snowflake To GCS
 SNOWFLAKE_TO_GCS_SF_URL = "snowflake.to.gcs.sf.url"
@@ -455,7 +443,6 @@ SNOWFLAKE_TO_GCS_OUTPUT_LOCATION = "snowflake.to.gcs.output.location"
 SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
 SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
 SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
-SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("snowflake.to.gcs.output.")
 
 # Cassandra To GCS
 CASSANDRA_TO_GCS_INPUT_KEYSPACE = "cassandratogcs.input.keyspace"
@@ -466,7 +453,6 @@ CASSANDRA_TO_GCS_OUTPUT_PATH = "cassandratogcs.output.path"
 CASSANDRA_TO_GCS_OUTPUT_SAVEMODE = "cassandratogcs.output.savemode"
 CASSANDRA_TO_GCS_CATALOG = "cassandratogcs.input.catalog.name"
 CASSANDRA_TO_GCS_QUERY = "cassandratogcs.input.query"
-CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS = get_template_output_spark_options("cassandratogcs.output.")
 
 # Hive DDL Extractor Util
 HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"

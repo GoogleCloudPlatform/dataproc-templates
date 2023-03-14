@@ -111,14 +111,3 @@ def add_spark_options(parser: argparse.ArgumentParser, template_to_spark_option_
             default=constants.SPARK_OPTIONS[spark_option_name].get(constants.OPTION_DEFAULT, ""),
             help=help_text
         )
-
-
-def spark_options_from_template_args(arg_dict: dict, arg_to_option_map: dict) -> dict:
-    """
-    Accepts an argument dict and converts any template arguments that translate to Spark options to the correct Spark name.
-    Only options with a Truthy value are included.
-    """
-    if not arg_dict:
-        return arg_dict
-
-    return {arg_to_option_map[k]: v for k, v in arg_dict.items() if k in arg_to_option_map and v}

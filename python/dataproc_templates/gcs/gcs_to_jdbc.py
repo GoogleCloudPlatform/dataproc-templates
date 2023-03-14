@@ -21,8 +21,8 @@ from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
-from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
 
 
 __all__ = ['GCSToJDBCTemplate']
@@ -114,8 +114,8 @@ class GCSToJDBCTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.GCS_JDBC_INPUT_LOCATION]
-        input_file_format: str = args[constants.GCS_JDBC_INPUT_FORMAT]
+        input_location: str = args[constants.GCS_JDBC_INPUT_LOCATION]
+        input_format: str = args[constants.GCS_JDBC_INPUT_FORMAT]
         jdbc_url: str = args[constants.GCS_JDBC_OUTPUT_URL]
         jdbc_table: str = args[constants.GCS_JDBC_OUTPUT_TABLE]
         output_mode: str = args[constants.GCS_JDBC_OUTPUT_MODE]
@@ -129,16 +129,13 @@ class GCSToJDBCTemplate(BaseTemplate):
         )
 
         # Read
-        spark_read_options = spark_options_from_template_args(args, constants.GCS_JDBC_INPUT_SPARK_OPTIONS)
-        input_data = ingest_dataframe_from_cloud_storage(
-            spark, input_file_format, input_file_location, spark_read_options
-        )
+        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, input_format, "gcs.jdbc.input.")
 
         # Write
         if not jdbc_numpartitions:
             jdbc_numpartitions = input_data.rdd.getNumPartitions()
 
-        # TODO Convert this call to a function in dataproc_templates.util.dataframe_writer
+        # TODO Convert this call to a function in dataproc_templates.util.dataframe_writer_wrappers
         input_data.write \
             .format(constants.FORMAT_JDBC) \
             .option(constants.JDBC_URL, jdbc_url) \

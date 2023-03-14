@@ -21,22 +21,27 @@ import dataproc_templates.util.template_constants as constants
 
 def persist_dataframe_to_cloud_storage(
     input_dataframe: DataFrame,
-    file_format: str,
-    file_location: str,
-    spark_options: dict,
+    args: dict,
+    output_location: str,
+    output_format: str,
+    prefix: str
 ) -> DataFrame:
     """Persist input_dataframe object with methods and options applied for writing to Cloud Storage."""
-    if file_format == constants.FORMAT_PRQT:
+
+    csv_output_constant_options: dict = constants.get_csv_output_spark_options(prefix)
+    spark_options = {csv_output_constant_options[k]: v for k, v in args.items() if k in csv_output_constant_options and v}
+
+    if output_format == constants.FORMAT_PRQT:
         input_dataframe \
-            .parquet(file_location)
-    elif file_format == constants.FORMAT_AVRO:
+            .parquet(output_location)
+    elif output_format == constants.FORMAT_AVRO:
         input_dataframe \
             .format(constants.FORMAT_AVRO) \
-            .save(file_location)
-    elif file_format == constants.FORMAT_CSV:
+            .save(output_location)
+    elif output_format == constants.FORMAT_CSV:
         input_dataframe \
             .options(**spark_options) \
-            .csv(file_location)
-    elif file_format == constants.FORMAT_JSON:
+            .csv(output_location)
+    elif output_format == constants.FORMAT_JSON:
         input_dataframe \
-            .json(file_location)
+            .json(output_location)

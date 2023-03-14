@@ -21,8 +21,8 @@ import sys
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
-from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_writer import persist_dataframe_to_cloud_storage
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_writer_wrappers import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
 
 
@@ -250,24 +250,23 @@ class SnowflakeToGCSTemplate(BaseTemplate):
 
     def write_data(self, logger: Logger, args: Dict[str, Any], input_data: DataFrame) -> None:
 
-        gcs_output_format: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_FORMAT]
-        gcs_output_location: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_LOCATION]
-        gcs_output_mode: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_MODE]
-        gcs_partition_col: str = args[constants.SNOWFLAKE_TO_GCS_PARTITION_COLUMN]
+        output_format: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_FORMAT]
+        output_location: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_LOCATION]
+        output_mode: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_MODE]
+        partition_col: str = args[constants.SNOWFLAKE_TO_GCS_PARTITION_COLUMN]
 
         # Write
         logger.info(
             "Starting process of writing data to Cloud Storage \n"
         )
 
-        if gcs_partition_col:
-            writer: DataFrameWriter = input_data.write.mode(gcs_output_mode) \
-                .partitionBy(gcs_partition_col)
+        if partition_col:
+            writer: DataFrameWriter = input_data.write.mode(output_mode) \
+                .partitionBy(partition_col)
         else:
-            writer: DataFrameWriter = input_data.write.mode(gcs_output_mode)
+            writer: DataFrameWriter = input_data.write.mode(output_mode)
 
-        spark_write_options = spark_options_from_template_args(args, constants.SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS)
-        persist_dataframe_to_cloud_storage(writer, gcs_output_format, gcs_output_location, spark_write_options)
+        persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "snowflake.gcs.output.")
 
         logger.info(
             "Data from source has been loaded to Cloud Storage successfully"

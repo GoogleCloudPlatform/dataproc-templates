@@ -20,8 +20,8 @@ import pprint
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
-from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_writer import persist_dataframe_to_cloud_storage
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_writer_wrappers import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
 
 
@@ -109,6 +109,4 @@ class HbaseToGCSTemplate(BaseTemplate):
 
         # Write
         writer: DataFrameWriter = input_data.write.mode(output_mode)
-
-        spark_write_options = spark_options_from_template_args(args, constants.HBASE_GCS_OUTPUT_SPARK_OPTIONS)
-        persist_dataframe_to_cloud_storage(writer, output_format, output_location, spark_write_options)
+        persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "hbase.gcs.output.")

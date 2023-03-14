@@ -22,9 +22,9 @@ from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
-from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
-from dataproc_templates.util.dataframe_writer import persist_dataframe_to_cloud_storage
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
+from dataproc_templates.util.dataframe_writer_wrappers import persist_dataframe_to_cloud_storage
 
 
 __all__ = ['GCSToGCSTemplate']
@@ -139,14 +139,14 @@ class GCSToGCSTemplate(BaseTemplate):
 
         logger: Logger = self.get_logger(spark=spark)
         # Arguments
-        gcs_input_location: str = args[constants.GCS_TO_GCS_INPUT_LOCATION]
-        gcs_input_format: str = args[constants.GCS_TO_GCS_INPUT_FORMAT]
+        input_location: str = args[constants.GCS_TO_GCS_INPUT_LOCATION]
+        input_format: str = args[constants.GCS_TO_GCS_INPUT_FORMAT]
         gcs_temp_view: str = args[constants.GCS_TO_GCS_TEMP_VIEW_NAME]
         sql_query: str = args[constants.GCS_TO_GCS_SQL_QUERY]
         output_partition_column: str = args[constants.GCS_TO_GCS_OUTPUT_PARTITION_COLUMN]
-        gcs_output_mode: str = args[constants.GCS_TO_GCS_OUTPUT_MODE]
-        gcs_output_format: str = args[constants.GCS_TO_GCS_OUTPUT_FORMAT]
-        gcs_output_location: str = args[constants.GCS_TO_GCS_OUTPUT_LOCATION]
+        output_mode: str = args[constants.GCS_TO_GCS_OUTPUT_MODE]
+        output_format: str = args[constants.GCS_TO_GCS_OUTPUT_FORMAT]
+        output_location: str = args[constants.GCS_TO_GCS_OUTPUT_LOCATION]
 
         logger.info(
             "Starting Cloud Storage to Cloud Storage with tranformations Spark job with parameters:\n"
@@ -154,11 +154,7 @@ class GCSToGCSTemplate(BaseTemplate):
         )
 
         # Read
-        spark_read_options = spark_options_from_template_args(args, constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS)
-        input_data = ingest_dataframe_from_cloud_storage(
-            spark, gcs_input_format, gcs_input_location, spark_read_options,
-            avro_format_override=constants.FORMAT_AVRO
-        )
+        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, input_format, "gcs.gcs.input.", avro_format_override=constants.FORMAT_AVRO)
 
         if sql_query:
             # Create temp view on source data
@@ -170,9 +166,9 @@ class GCSToGCSTemplate(BaseTemplate):
 
         # Write
         if output_partition_column:
-            writer: DataFrameWriter = output_data.write.mode(gcs_output_mode).partitionBy(output_partition_column)
+            writer: DataFrameWriter = output_data.write.mode(output_mode).partitionBy(output_partition_column)
         else:
-            writer: DataFrameWriter = output_data.write.mode(gcs_output_mode)
+            writer: DataFrameWriter = output_data.write.mode(output_mode)
 
-        spark_write_options = spark_options_from_template_args(args, constants.GCS_TO_GCS_OUTPUT_SPARK_OPTIONS)
-        persist_dataframe_to_cloud_storage(writer, gcs_output_format, gcs_output_location, spark_write_options)
+        writer: DataFrameWriter = input_data.write.mode(output_mode)
+        persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "gcs.gcs.output.")

@@ -20,8 +20,8 @@ from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
-from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
 
 
 __all__ = ['GCSToMONGOTemplate']
@@ -108,8 +108,8 @@ class GCSToMONGOTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.GCS_MONGO_INPUT_LOCATION]
-        input_file_format: str = args[constants.GCS_MONGO_INPUT_FORMAT]
+        input_location: str = args[constants.GCS_MONGO_INPUT_LOCATION]
+        input_format: str = args[constants.GCS_MONGO_INPUT_FORMAT]
         output_uri:str = args[constants.GCS_MONGO_OUTPUT_URI]
         output_database:str = args[constants.GCS_MONGO_OUTPUT_DATABASE]
         output_collection:str = args[constants.GCS_MONGO_OUTPUT_COLLECTION]
@@ -122,10 +122,7 @@ class GCSToMONGOTemplate(BaseTemplate):
         )
 
         # Read
-        spark_read_options = spark_options_from_template_args(args, constants.GCS_MONGO_INPUT_SPARK_OPTIONS)
-        input_data = ingest_dataframe_from_cloud_storage(
-            spark, input_file_format, input_file_location, spark_read_options
-        )
+        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, input_format, "gcs.mongo.input.")
 
         # Write
         input_data.write.format(constants.FORMAT_MONGO)\
