@@ -104,7 +104,7 @@ class HiveToGCSTemplate(BaseTemplate):
             default="",
             help='SQL query for data transformation. This must use the temp view name as the table to query from.'
         )
-        add_spark_options(parser, constants.HIVE_GCS_OUTPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_output_spark_options("hive.gcs.output."))
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -143,7 +143,6 @@ class HiveToGCSTemplate(BaseTemplate):
             output_data = spark.sql(sql_query)
         else:
             output_data = input_data
-
 
         writer: DataFrameWriter = output_data.write.mode(output_mode)
         persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "hive.gcs.output.")

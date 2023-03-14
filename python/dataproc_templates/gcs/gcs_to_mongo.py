@@ -54,7 +54,7 @@ class GCSToMONGOTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
-        add_spark_options(parser, constants.GCS_MONGO_INPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_input_spark_options("gcs.mongo.input."))
         parser.add_argument(
             f'--{constants.GCS_MONGO_OUTPUT_URI}',
             dest=constants.GCS_MONGO_OUTPUT_URI,

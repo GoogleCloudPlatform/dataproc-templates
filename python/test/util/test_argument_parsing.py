@@ -21,7 +21,7 @@ import pytest
 
 from dataproc_templates import TemplateName
 from dataproc_templates.util.argument_parsing import (
-    add_spark_options, get_template_name, get_log_level, spark_options_from_template_args
+    add_spark_options, get_template_name, get_log_level
 )
 import dataproc_templates.util.template_constants as constants
 
@@ -65,22 +65,22 @@ def test_get_invalid_log_level():
 def test_add_spark_options():
     for option_set, set_name, option_prefix in [
         # Read options
-        (constants.GCS_JDBC_INPUT_SPARK_OPTIONS, 'GCS_JDBC_INPUT_SPARK_OPTIONS', 'gcs.jdbc.input'),
-        (constants.GCS_BQ_INPUT_SPARK_OPTIONS, 'GCS_BQ_INPUT_SPARK_OPTIONS', 'gcs.bigquery.input'),
-        (constants.GCS_BT_INPUT_SPARK_OPTIONS, 'GCS_BT_INPUT_SPARK_OPTIONS', 'gcs.bigtable.input'),
-        (constants.GCS_MONGO_INPUT_SPARK_OPTIONS, 'GCS_MONGO_INPUT_SPARK_OPTIONS', 'gcs.mongo.input'),
-        (constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS, 'GCS_TO_GCS_INPUT_SPARK_OPTIONS', 'gcs.to.gcs.input'),
-        (constants.TEXT_BQ_INPUT_SPARK_OPTIONS, 'TEXT_BQ_INPUT_SPARK_OPTIONS', 'text.bigquery.input'),
+        (constants.get_csv_input_spark_options('gcs.jdbc.input.'), 'GCS_JDBC_INPUT_SPARK_OPTIONS', 'gcs.jdbc.input'),
+        (constants.get_csv_input_spark_options('gcs.bigquery.input.'), 'GCS_BQ_INPUT_SPARK_OPTIONS', 'gcs.bigquery.input'),
+        (constants.get_csv_input_spark_options('gcs.bigtable.input.'), 'GCS_BT_INPUT_SPARK_OPTIONS', 'gcs.bigtable.input'),
+        (constants.get_csv_input_spark_options('gcs.mongo.input.'), 'GCS_MONGO_INPUT_SPARK_OPTIONS', 'gcs.mongo.input'),
+        (constants.get_csv_input_spark_options('gcs.to.gcs.input.'), 'GCS_TO_GCS_INPUT_SPARK_OPTIONS', 'gcs.to.gcs.input'),
+        (constants.get_csv_input_spark_options('text.bigquery.input.'), 'TEXT_BQ_INPUT_SPARK_OPTIONS', 'text.bigquery.input'),
         # Write options
-        (constants.BQ_GCS_OUTPUT_SPARK_OPTIONS, 'BQ_GCS_OUTPUT_SPARK_OPTIONS', 'bigquery.gcs.output'),
-        (constants.CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS, 'CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS', 'cassandratogcs.output'),
-        (constants.GCS_TO_GCS_OUTPUT_SPARK_OPTIONS, 'GCS_TO_GCS_OUTPUT_SPARK_OPTIONS', 'gcs.to.gcs.output'),
-        (constants.HBASE_GCS_OUTPUT_SPARK_OPTIONS, 'HBASE_GCS_OUTPUT_SPARK_OPTIONS', 'hbase.gcs.output'),
-        (constants.HIVE_GCS_OUTPUT_SPARK_OPTIONS, 'HIVE_GCS_OUTPUT_SPARK_OPTIONS', 'hive.gcs.output'),
-        (constants.JDBCTOGCS_OUTPUT_SPARK_OPTIONS, 'JDBCTOGCS_OUTPUT_SPARK_OPTIONS', 'jdbctogcs.output'),
-        (constants.MONGO_GCS_OUTPUT_SPARK_OPTIONS, 'MONGO_GCS_OUTPUT_SPARK_OPTIONS', 'mongo.gcs.output'),
-        (constants.REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS, 'REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS', 'redshifttogcs.output'),
-        (constants.SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS, 'SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS', 'snowflake.to.gcs.output'),
+        (constants.get_csv_output_spark_options('bigquery.gcs.output.'), 'BQ_GCS_OUTPUT_SPARK_OPTIONS', 'bigquery.gcs.output'),
+        (constants.get_csv_output_spark_options('cassandratogcs.output.'),  'CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS', 'cassandratogcs.output'),
+        (constants.get_csv_output_spark_options('gcs.to.gcs.output.'),  'GCS_TO_GCS_OUTPUT_SPARK_OPTIONS', 'gcs.to.gcs.output'),
+        (constants.get_csv_output_spark_options('hbase.gcs.output.'),  'HBASE_GCS_OUTPUT_SPARK_OPTIONS', 'hbase.gcs.output'),
+        (constants.get_csv_output_spark_options('hive.gcs.output.'),  'HIVE_GCS_OUTPUT_SPARK_OPTIONS', 'hive.gcs.output'),
+        (constants.get_csv_output_spark_options('jdbctogcs.output.'),  'JDBCTOGCS_OUTPUT_SPARK_OPTIONS', 'jdbctogcs.output'),
+        (constants.get_csv_output_spark_options('mongo.gcs.output.'),  'MONGO_GCS_OUTPUT_SPARK_OPTIONS', 'mongo.gcs.output'),
+        (constants.get_csv_output_spark_options('redshifttogcs.output.'),  'REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS', 'redshifttogcs.output'),
+        (constants.get_csv_output_spark_options('snowflake.to.gcs.output.'),  'SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS', 'snowflake.to.gcs.output'),
     ]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
         add_spark_options(parser, option_set)
@@ -95,29 +95,3 @@ def test_add_spark_options():
                     or constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_READ_HELP)
                     or constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_WRITE_HELP)), \
                 f'Attribute {spark_option} has no help text in SPARK_OPTIONS'
-
-
-def test_spark_options_from_template_args():
-    input_args = {
-        'template.arg1': 1,
-        'template.arg2': 2,
-        'template.arg3': 3,
-        'template.arg4': None,
-    }
-    option_map = {
-        'template.arg1': 'real.arg1',
-        'template.arg2': 'real.arg2',
-        'template.arg3': 'real.arg3',
-    }
-    assert spark_options_from_template_args(
-            input_args,
-            {'template.arg2': 'real.arg2'}
-        ) == {'real.arg2': 2}
-    assert spark_options_from_template_args(
-            input_args,
-            {'template.arg1': 'real.arg1',
-             'template.arg3': 'real.arg3',
-             'template.arg4': 'real.arg4'}
-        ) == {'real.arg1': 1,
-              'real.arg3': 3}
-    assert spark_options_from_template_args({}, option_map) == {}

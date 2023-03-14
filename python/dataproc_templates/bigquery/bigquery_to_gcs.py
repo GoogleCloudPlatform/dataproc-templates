@@ -78,7 +78,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
-        add_spark_options(parser, constants.BQ_GCS_OUTPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_output_spark_options("bigquery.gcs.output."))
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)

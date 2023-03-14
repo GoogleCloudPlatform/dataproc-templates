@@ -55,7 +55,7 @@ class GCSToBigTableTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
-        add_spark_options(parser, constants.GCS_BT_INPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_input_spark_options("gcs.bigtable.input."))
         parser.add_argument(
             f'--{constants.GCS_BT_HBASE_CATALOG_JSON}',
             dest=constants.GCS_BT_HBASE_CATALOG_JSON,

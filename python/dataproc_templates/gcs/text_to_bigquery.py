@@ -20,8 +20,8 @@ import pprint
 from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
-from dataproc_templates.util.argument_parsing import add_spark_options, spark_options_from_template_args
-from dataproc_templates.util.dataframe_reader import ingest_dataframe_from_cloud_storage
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
 import dataproc_templates.util.template_constants as constants
 
 
@@ -43,7 +43,7 @@ class TextToBigQueryTemplate(BaseTemplate):
             required=True,
             help='Cloud Storage location of the input text files'
         )
-        add_spark_options(parser, constants.TEXT_BQ_INPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_input_spark_options("text.bigquery.input."))
         parser.add_argument(
             f'--{constants.TEXT_BQ_OUTPUT_DATASET}',
             dest=constants.TEXT_BQ_OUTPUT_DATASET,
@@ -113,7 +113,7 @@ class TextToBigQueryTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.TEXT_BQ_INPUT_LOCATION]
+        input_location: str = args[constants.TEXT_BQ_INPUT_LOCATION]
         big_query_dataset: str = args[constants.TEXT_BQ_OUTPUT_DATASET]
         big_query_table: str = args[constants.TEXT_BQ_OUTPUT_TABLE]
         bq_temp_bucket: str = args[constants.TEXT_BQ_LD_TEMP_BUCKET_NAME]
@@ -127,12 +127,9 @@ class TextToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        spark_read_options = spark_options_from_template_args(args, constants.TEXT_BQ_INPUT_SPARK_OPTIONS)
-        spark_read_options.update({constants.INPUT_COMPRESSION: input_file_codec_format,
-                                   constants.INPUT_DELIMITER: input_delimiter})
-        input_data = ingest_dataframe_from_cloud_storage(
-            spark, constants.FORMAT_CSV, input_file_location, spark_read_options
-        )
+        args.update({constants.INPUT_COMPRESSION: input_file_codec_format,
+                     constants.INPUT_DELIMITER: input_delimiter})
+        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, constants.FORMAT_CSV, "gcs.gcs.input.")
 
         # Write
         input_data.write \

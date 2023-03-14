@@ -58,8 +58,8 @@ class GCSToGCSTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
-        add_spark_options(parser, constants.GCS_TO_GCS_INPUT_SPARK_OPTIONS)
-        add_spark_options(parser, constants.GCS_TO_GCS_OUTPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_input_spark_options("gcs.gcs.input."))
+        add_spark_options(parser, constants.get_csv_output_spark_options("gcs.gcs.output."))
         parser.add_argument(
             f'--{constants.GCS_TO_GCS_TEMP_VIEW_NAME}',
             dest=constants.GCS_TO_GCS_TEMP_VIEW_NAME,
@@ -170,5 +170,4 @@ class GCSToGCSTemplate(BaseTemplate):
         else:
             writer: DataFrameWriter = output_data.write.mode(output_mode)
 
-        writer: DataFrameWriter = input_data.write.mode(output_mode)
         persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "gcs.gcs.output.")

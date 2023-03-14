@@ -55,7 +55,7 @@ class GCSToJDBCTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
-        add_spark_options(parser, constants.GCS_JDBC_INPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_input_spark_options("gcs.jdbc.input."))
         parser.add_argument(
             f'--{constants.GCS_JDBC_OUTPUT_TABLE}',
             dest=constants.GCS_JDBC_OUTPUT_TABLE,

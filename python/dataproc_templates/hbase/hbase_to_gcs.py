@@ -78,7 +78,7 @@ class HbaseToGCSTemplate(BaseTemplate):
             required=True,
             help='Hbase catalog JSON'
         )
-        add_spark_options(parser, constants.HBASE_GCS_OUTPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_output_spark_options("hbase.gcs.output."))
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)

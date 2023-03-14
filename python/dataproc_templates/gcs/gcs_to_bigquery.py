@@ -68,7 +68,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 constants.FORMAT_DELTA
             ]
         )
-        add_spark_options(parser, constants.GCS_BQ_INPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_input_spark_options("gcs.bigquery.input."))
         parser.add_argument(
             f'--{constants.GCS_BQ_LD_TEMP_BUCKET_NAME}',
             dest=constants.GCS_BQ_LD_TEMP_BUCKET_NAME,

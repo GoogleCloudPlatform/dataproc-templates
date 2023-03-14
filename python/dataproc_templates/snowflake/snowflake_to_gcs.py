@@ -158,7 +158,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             default="",
             help='Column name to partition data by, in Cloud Storage bucket'
         )
-        add_spark_options(parser, constants.SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_output_spark_options("snowflake.gcs.output."))
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)

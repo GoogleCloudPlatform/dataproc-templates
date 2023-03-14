@@ -160,7 +160,7 @@ class JDBCToGCSTemplate(BaseTemplate):
             default="",
             help='SQL query for data transformation. This must use the temp view name as the table to query from.'
         )
-        add_spark_options(parser, constants.JDBCTOGCS_OUTPUT_SPARK_OPTIONS)
+        add_spark_options(parser, constants.get_csv_output_spark_options("jdbc.gcs.output."))
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
