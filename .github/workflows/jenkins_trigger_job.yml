@@ -6,10 +6,9 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: trigger single Job
-      uses: appleboy/jenkins-action@master
-      with:
-        url: "https://dataproctemplatesci.com"
-        user: "admin"
-        token: ${{ secrets.JENKINS_API_TOKEN }}
-        job: "dataproc-templates-build/job/integration-tests-python"
+    - name: trigger Python Integeration Job
+      id: step_one
+      run: |
+        echo "Running Curl command"
+        curl -I -u admin:yadavaja-sandbox https://dataproctemplatesci.com/job/dataproc-templates-build/job/integration-tests-python/buildWithParameters?token=GITHUB_TOKEN&branchName=origin/main
+        echo "Post Curl trigger"
