@@ -34,6 +34,7 @@ FORMAT_PRQT = "parquet"
 FORMAT_AVRO_EXTD = "com.databricks.spark.avro"
 FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery"
 FORMAT_JDBC = "jdbc"
+FORMAT_PUBSUBLITE="pubsublite"
 FORMAT_REDSHIFT = "io.github.spark_redshift_community.spark.redshift"
 JDBC_URL = "url"
 JDBC_TABLE = "dbtable"
@@ -310,3 +311,11 @@ KAFKA_GCS_OUPUT_MODE='kafka.gcs.output.mode'
 KAFKA_GCS_TERMINATION_TIMEOUT='kafka.gcs.termination.timeout'
 KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
 KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
+
+# Pub/Sub Lite to Bigtable
+PUBSUBLITE_BIGTABLE_INPUT_SUBSCRIPTION='pubsublite.bigtable.input.subscription'
+PUBSUBLITE_BIGTABLE_TIMEOUT='pubsublite.bigtable.timeout'
+PUBSUBLITE_BIGTABLE_TRIGGER='pubsublite.bigtable.trigger'
+PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE='pubsublite.bigtable.output.instance'
+PUBSUBLITE_BIGTABLE_OUTPUT_TABLE='pubsublite.bigtable.output.table'
+PUBSUBLITE_BIGTABLE_OUTPUT_COLUMN_FAMILY='pubsublite.bigtable.output.column.family'
