@@ -79,7 +79,8 @@ class JDBCInputManagerInterface(AbstractClass):
     def _get_primary_keys(self) -> dict:
         """
         Return a dict of primary key information.
-        The dict is keyed on table name and maps to a list of column names.
+        The dict is keyed on the qualified table name (e.g. 'schema.table_name') and
+        maps to a list of primary key column names.
         """
 
     @abstractmethod
@@ -208,7 +209,8 @@ class JDBCInputManagerInterface(AbstractClass):
     def get_primary_keys(self) -> dict:
         """
         Return a dict of primary key information.
-        The dict is keyed on the qualified table name (e.g. 'schema.table_name') and maps to the column name.
+        The dict is keyed on the qualified table name (e.g. 'schema.table_name') and
+        maps to a list of primary key column names.
         """
         if not self._pk_dict:
             self._pk_dict = self._get_primary_keys()

@@ -63,35 +63,37 @@ class OracleInputManager(JDBCInputManagerInterface):
         """Return a dictionary defining how to partition the Spark SQL extraction."""
         # TODO In the future we may want to support checking DBA_SEGMENTS
         row_count = self._get_table_count(table, sa_connection=sa_connection)
-        if row_count > int(row_count_threshold):
-            # The table has enough rows to merit partitioning Spark SQL read.
-            # TODO Prioritise partition keys over primary keys in the future.
-            # TODO Add support for UKs alongside PKs.
-            if self.get_primary_keys().get(table):
-                # This code takes the first column from the PK, this could be flawed
-                # if the primary key is composite and the first column is not distinct.
-                column = self.get_primary_keys().get(table)[0]
-                column_datatype = self._get_column_data_type(table, column)
-                if column_datatype == "NUMBER":
-                    lowerbound = sa_connection.execute(
-                        self._get_min_sql(table, column)
-                    ).fetchone()
-                    upperbound = sa_connection.execute(
-                        self._get_max_sql(table, column)
-                    ).fetchone()
-                    if lowerbound and upperbound:
-                        lowerbound = lowerbound[0]
-                        upperbound = upperbound[0]
-                        num_partitions = self._read_partitioning_num_partitions(
-                            lowerbound, upperbound, row_count_threshold
-                        )
-                        return {
-                            SPARK_PARTITION_COLUMN: column,
-                            SPARK_NUM_PARTITIONS: num_partitions,
-                            SPARK_LOWER_BOUND: lowerbound,
-                            SPARK_UPPER_BOUND: upperbound,
-                            PARTITION_COMMENT: f"Partitioning by {column_datatype} primary key column",
-                        }
+        if row_count < int(row_count_threshold):
+            # The table does not have enough rows to merit partitioning Spark SQL read.
+            return None
+
+        # TODO Prioritise partition keys over primary keys in the future.
+        # TODO Add support for UKs alongside PKs.
+        if self.get_primary_keys().get(table):
+            # This code takes the first column from the PK, this could be flawed
+            # if the primary key is composite and the first column is not distinct.
+            column = self.get_primary_keys().get(table)[0]
+            column_datatype = self._get_column_data_type(table, column)
+            if column_datatype == "NUMBER":
+                lowerbound = sa_connection.execute(
+                    self._get_min_sql(table, column)
+                ).fetchone()
+                upperbound = sa_connection.execute(
+                    self._get_max_sql(table, column)
+                ).fetchone()
+                if lowerbound and upperbound:
+                    lowerbound = lowerbound[0]
+                    upperbound = upperbound[0]
+                    num_partitions = self._read_partitioning_num_partitions(
+                        lowerbound, upperbound, row_count_threshold
+                    )
+                    return {
+                        SPARK_PARTITION_COLUMN: column,
+                        SPARK_NUM_PARTITIONS: num_partitions,
+                        SPARK_LOWER_BOUND: lowerbound,
+                        SPARK_UPPER_BOUND: upperbound,
+                        PARTITION_COMMENT: f"Partitioning by {column_datatype} primary key column",
+                    }
         return None
 
     def _enclose_identifier(self, identifier, ch: Optional[str] = None):
