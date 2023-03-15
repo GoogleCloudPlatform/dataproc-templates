@@ -105,7 +105,7 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 
 
 bin/start.sh \
--- --template PUBSUBTOTABLE \
+-- --template PUBSUBTOBIGTABLE \
 --templateProperty pubsub.input.project.id=<pubsub project id> \
 --templateProperty pubsub.input.subscription=<pubsub subscription> \
 --templateProperty pubsub.bigtable.output.instance.id=<bigtable instance id> \
