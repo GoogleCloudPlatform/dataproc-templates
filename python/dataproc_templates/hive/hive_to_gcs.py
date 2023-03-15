@@ -163,7 +163,7 @@ class HiveToGCSTemplate(BaseTemplate):
                 )
 
         # Write
-        writer: DataFrameWriter = output_data.write.mode(output_mode) 
+        writer: DataFrameWriter = output_data.write.mode(output_mode)
         if not sql_query.strip() and partition_cols:
             writer = writer.partitionBy(partition_cols)
 
