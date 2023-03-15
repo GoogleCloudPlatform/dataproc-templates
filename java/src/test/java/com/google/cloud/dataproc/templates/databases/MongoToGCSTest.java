@@ -75,8 +75,8 @@ public class MongoToGCSTest {
         assertThrows(IllegalArgumentException.class, () -> MONGOToGCSTestObj.runTemplate());
     assertEquals(
         "Required parameters for Mongo to GCS not passed. "
-        + "Set mandatory parameter for Mongo to GCS template "
-        + "in resources/conf/template.properties file.",
+            + "Set mandatory parameter for Mongo to GCS template "
+            + "in resources/conf/template.properties file.",
         exception.getMessage());
   }
 
