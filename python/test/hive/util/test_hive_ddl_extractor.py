@@ -20,7 +20,6 @@ import pyspark
 from dataproc_templates.hive.util.hive_ddl_extractor import \
     HiveDDLExtractorTemplate
 from datetime import datetime
-from google.cloud import storage
 
 class TestHiveDDLExtractorTemplate:
     """
