@@ -70,10 +70,10 @@ public class TextToBigquery implements BaseTemplate {
     inputData =
         spark
             .read()
-            .option("header", true)
-            .option("inferSchema", true)
-            .option("compression", inputCompression)
-            .option("delimiter", inputDelimiter)
+            .option(TEXT_BIGQUERY_HEADER_OPTION, true)
+            .option(TEXT_BIGQUERY_INFERSCHEMA_OPTION, true)
+            .option(TEXT_BIGQUERY_COMPRESSION_OPTION, inputCompression)
+            .option(TEXT_BIGQUERY_DELIMITER_OPTION, inputDelimiter)
             .csv(inputLocation);
 
     if (bqTempTable != null && bqTempQuery != null) {
@@ -83,8 +83,7 @@ public class TextToBigquery implements BaseTemplate {
 
     inputData
         .write()
-        .format("com.google.cloud.spark.bigquery")
-        .option(GCS_BQ_CSV_HEADER, true)
+        .format(SPARK_READ_FORMAT_BIGQUERY)
         .option(GCS_BQ_OUTPUT, outputDataset + "." + outputTable)
         .option(GCS_BQ_TEMP_BUCKET, bqTempBucket)
         .mode(SaveMode.valueOf(outputMode))
@@ -119,7 +118,7 @@ public class TextToBigquery implements BaseTemplate {
     }
 
     LOGGER.info(
-        "Starting GCS to GCS spark job with following parameters:"
+        "Starting Text To Bigquery spark job with following parameters:"
             + "1. {}:{}"
             + "2. {}:{}"
             + "3. {}:{}"
