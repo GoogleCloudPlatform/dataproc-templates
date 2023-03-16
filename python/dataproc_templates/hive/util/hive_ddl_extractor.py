@@ -93,8 +93,7 @@ class HiveDDLExtractorTemplate(BaseTemplate):
             ddl_str = ddl_str + ";" if str(remove_location_flag).upper() != "TRUE" else ddl_str.split("\nLOCATION '")[0].split("\nUSING ")[0]+";"
             return ddl_str
 
-        ct = datetime.now().strftime("%m-%d-%Y %H.%M.%S")
-        output_path = gcs_output_path+"/"+hive_database+"/"+str(ct)
+        output_path = gcs_output_path+"/"+hive_database
 
         tables_names = spark.sql(f"SHOW TABLES IN {hive_database}").select("tableName")
         tables_name_list = tables_names.rdd.map(lambda x: x[0]).collect()
