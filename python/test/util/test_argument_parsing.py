@@ -21,7 +21,9 @@ import pytest
 
 from dataproc_templates import TemplateName
 from dataproc_templates.util.argument_parsing import (
-    add_spark_options, get_template_name, get_log_level
+    add_spark_options,
+    get_template_name,
+    get_log_level,
 )
 import dataproc_templates.util.template_constants as constants
 
@@ -32,7 +34,7 @@ def test_get_valid_template_names():
 
     for template_name in template_names:
         parsed_template_name: TemplateName = get_template_name(
-            args=["--template",  template_name]
+            args=["--template", template_name]
         )
         assert template_name == parsed_template_name.value
 
@@ -46,12 +48,19 @@ def test_get_invalid_template_name():
 
 def test_get_valid_log_level():
     """Tests valid log levels"""
-    log_levels: List[str] = ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"]
+    log_levels: List[str] = [
+        "ALL",
+        "DEBUG",
+        "ERROR",
+        "FATAL",
+        "INFO",
+        "OFF",
+        "TRACE",
+        "WARN",
+    ]
 
     for log_level in log_levels:
-        parsed_log_level: str = get_log_level(
-            args=["--log_level",  log_level]
-        )
+        parsed_log_level: str = get_log_level(args=["--log_level", log_level])
         assert log_level == parsed_log_level
 
 
@@ -63,35 +72,79 @@ def test_get_invalid_log_level():
 
 
 def test_add_spark_options():
-    for option_set, set_name, option_prefix in [
+    for option_set, option_prefix in [
         # Read options
-        (constants.get_csv_input_spark_options('gcs.jdbc.input.'), 'GCS_JDBC_INPUT_SPARK_OPTIONS', 'gcs.jdbc.input'),
-        (constants.get_csv_input_spark_options('gcs.bigquery.input.'), 'GCS_BQ_INPUT_SPARK_OPTIONS', 'gcs.bigquery.input'),
-        (constants.get_csv_input_spark_options('gcs.bigtable.input.'), 'GCS_BT_INPUT_SPARK_OPTIONS', 'gcs.bigtable.input'),
-        (constants.get_csv_input_spark_options('gcs.mongo.input.'), 'GCS_MONGO_INPUT_SPARK_OPTIONS', 'gcs.mongo.input'),
-        (constants.get_csv_input_spark_options('gcs.to.gcs.input.'), 'GCS_TO_GCS_INPUT_SPARK_OPTIONS', 'gcs.to.gcs.input'),
-        (constants.get_csv_input_spark_options('text.bigquery.input.'), 'TEXT_BQ_INPUT_SPARK_OPTIONS', 'text.bigquery.input'),
+        (constants.get_csv_input_spark_options("gcs.jdbc.input."), "gcs.jdbc.input"),
+        (
+            constants.get_csv_input_spark_options("gcs.bigquery.input."),
+            "gcs.bigquery.input",
+        ),
+        (
+            constants.get_csv_input_spark_options("gcs.bigtable.input."),
+            "gcs.bigtable.input",
+        ),
+        (constants.get_csv_input_spark_options("gcs.mongo.input."), "gcs.mongo.input"),
+        (
+            constants.get_csv_input_spark_options("gcs.to.gcs.input."),
+            "gcs.to.gcs.input",
+        ),
+        (
+            constants.get_csv_input_spark_options("text.bigquery.input."),
+            "text.bigquery.input",
+        ),
         # Write options
-        (constants.get_csv_output_spark_options('bigquery.gcs.output.'), 'BQ_GCS_OUTPUT_SPARK_OPTIONS', 'bigquery.gcs.output'),
-        (constants.get_csv_output_spark_options('cassandratogcs.output.'),  'CASSANDRA_TO_GCS_OUTPUT_SPARK_OPTIONS', 'cassandratogcs.output'),
-        (constants.get_csv_output_spark_options('gcs.to.gcs.output.'),  'GCS_TO_GCS_OUTPUT_SPARK_OPTIONS', 'gcs.to.gcs.output'),
-        (constants.get_csv_output_spark_options('hbase.gcs.output.'),  'HBASE_GCS_OUTPUT_SPARK_OPTIONS', 'hbase.gcs.output'),
-        (constants.get_csv_output_spark_options('hive.gcs.output.'),  'HIVE_GCS_OUTPUT_SPARK_OPTIONS', 'hive.gcs.output'),
-        (constants.get_csv_output_spark_options('jdbctogcs.output.'),  'JDBCTOGCS_OUTPUT_SPARK_OPTIONS', 'jdbctogcs.output'),
-        (constants.get_csv_output_spark_options('mongo.gcs.output.'),  'MONGO_GCS_OUTPUT_SPARK_OPTIONS', 'mongo.gcs.output'),
-        (constants.get_csv_output_spark_options('redshifttogcs.output.'),  'REDSHIFTTOGCS_OUTPUT_SPARK_OPTIONS', 'redshifttogcs.output'),
-        (constants.get_csv_output_spark_options('snowflake.to.gcs.output.'),  'SNOWFLAKE_TO_GCS_OUTPUT_SPARK_OPTIONS', 'snowflake.to.gcs.output'),
+        (
+            constants.get_csv_output_spark_options("bigquery.gcs.output."),
+            "bigquery.gcs.output",
+        ),
+        (
+            constants.get_csv_output_spark_options("cassandratogcs.output."),
+            "cassandratogcs.output",
+        ),
+        (
+            constants.get_csv_output_spark_options("gcs.to.gcs.output."),
+            "gcs.to.gcs.output",
+        ),
+        (
+            constants.get_csv_output_spark_options("hbase.gcs.output."),
+            "hbase.gcs.output",
+        ),
+        (constants.get_csv_output_spark_options("hive.gcs.output."), "hive.gcs.output"),
+        (
+            constants.get_csv_output_spark_options("jdbctogcs.output."),
+            "jdbctogcs.output",
+        ),
+        (
+            constants.get_csv_output_spark_options("mongo.gcs.output."),
+            "mongo.gcs.output",
+        ),
+        (
+            constants.get_csv_output_spark_options("redshifttogcs.output."),
+            "redshifttogcs.output",
+        ),
+        (
+            constants.get_csv_output_spark_options("snowflake.to.gcs.output."),
+            "snowflake.to.gcs.output",
+        ),
     ]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
         add_spark_options(parser, option_set)
         known_args, _ = parser.parse_known_args()
         for k in option_set:
-            assert k.startswith(option_prefix), f'Attribute {k} does not start with {option_prefix}'
-            assert hasattr(known_args, k), f'Attribute {k} missing from {set_name} args'
-            assert option_set[k] in constants.SPARK_OPTIONS, \
-                f'Attribute {k} maps to invalid Spark option {option_set[k]}'
+            assert k.startswith(
+                option_prefix
+            ), f"Attribute {k} does not start with {option_prefix}"
+            assert hasattr(
+                known_args, k
+            ), f"Attribute {k} missing from {option_prefix} args"
+            assert (
+                option_set[k] in constants.SPARK_OPTIONS
+            ), f"Attribute {k} maps to invalid Spark option {option_set[k]}"
             spark_option = option_set[k]
-            assert (constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_HELP)
-                    or constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_READ_HELP)
-                    or constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_WRITE_HELP)), \
-                f'Attribute {spark_option} has no help text in SPARK_OPTIONS'
+            assert (
+                constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_HELP)
+                or constants.SPARK_OPTIONS[spark_option].get(constants.OPTION_READ_HELP)
+                or constants.SPARK_OPTIONS[spark_option].get(
+                    constants.OPTION_WRITE_HELP
+                )
+            ), f"Attribute {spark_option} has no help text in SPARK_OPTIONS"

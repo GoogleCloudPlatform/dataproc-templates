@@ -197,62 +197,60 @@ SPARK_OPTIONS = {
 
 # Helper functions for applying SPARK_OPTIONS to templates
 def get_csv_input_spark_options(prefix):
-
-    spark_options = {
-        CSV_CHARTOESCAPEQUOTEESCAPING.lower(): CSV_CHARTOESCAPEQUOTEESCAPING,
-        CSV_COLUMNNAMEOFCORRUPTRECORD.lower(): CSV_COLUMNNAMEOFCORRUPTRECORD,
-        CSV_COMMENT.lower(): CSV_COMMENT,
-        CSV_DATEFORMAT.lower(): CSV_DATEFORMAT,
-        CSV_EMPTYVALUE.lower(): CSV_EMPTYVALUE,
-        CSV_ENCODING.lower(): CSV_ENCODING,
-        CSV_ENFORCESCHEMA.lower(): CSV_ENFORCESCHEMA,
-        CSV_ESCAPE.lower(): CSV_ESCAPE,
-        CSV_HEADER.lower(): CSV_HEADER,
-        CSV_IGNORELEADINGWHITESPACE.lower(): CSV_IGNORELEADINGWHITESPACE,
-        CSV_IGNORETRAILINGWHITESPACE.lower(): CSV_IGNORETRAILINGWHITESPACE,
-        CSV_INFER_SCHEMA.lower(): CSV_INFER_SCHEMA,
-        CSV_LINESEP.lower(): CSV_LINESEP,
-        CSV_LOCALE.lower(): CSV_LOCALE,
-        CSV_MAXCHARSPERCOLUMN.lower(): CSV_MAXCHARSPERCOLUMN,
-        CSV_MAXCOLUMNS.lower(): CSV_MAXCOLUMNS,
-        CSV_MODE.lower(): CSV_MODE,
-        CSV_MULTILINE.lower(): CSV_MULTILINE,
-        CSV_NANVALUE.lower(): CSV_NANVALUE,
-        CSV_NULLVALUE.lower(): CSV_NULLVALUE,
-        CSV_NEGATIVEINF.lower(): CSV_NEGATIVEINF,
-        CSV_POSITIVEINF.lower(): CSV_POSITIVEINF,
-        CSV_QUOTE.lower(): CSV_QUOTE,
-        CSV_SAMPLINGRATIO.lower(): CSV_SAMPLINGRATIO,
-        CSV_SEP.lower(): CSV_SEP,
-        CSV_TIMESTAMPFORMAT.lower(): CSV_TIMESTAMPFORMAT,
-        CSV_TIMESTAMPNTZFORMAT.lower(): CSV_TIMESTAMPNTZFORMAT,
-        CSV_UNESCAPEDQUOTEHANDLING.lower(): CSV_UNESCAPEDQUOTEHANDLING,
-    }
-    spark_options = { prefix + str(key): val for key, val in spark_options.items() }
+    input_options = [
+        CSV_CHARTOESCAPEQUOTEESCAPING,
+        CSV_COLUMNNAMEOFCORRUPTRECORD,
+        CSV_COMMENT,
+        CSV_DATEFORMAT,
+        CSV_EMPTYVALUE,
+        CSV_ENCODING,
+        CSV_ENFORCESCHEMA,
+        CSV_ESCAPE,
+        CSV_HEADER,
+        CSV_IGNORELEADINGWHITESPACE,
+        CSV_IGNORETRAILINGWHITESPACE,
+        CSV_INFER_SCHEMA,
+        CSV_LINESEP,
+        CSV_LOCALE,
+        CSV_MAXCHARSPERCOLUMN,
+        CSV_MAXCOLUMNS,
+        CSV_MODE,
+        CSV_MULTILINE,
+        CSV_NANVALUE,
+        CSV_NULLVALUE,
+        CSV_NEGATIVEINF,
+        CSV_POSITIVEINF,
+        CSV_QUOTE,
+        CSV_SAMPLINGRATIO,
+        CSV_SEP,
+        CSV_TIMESTAMPFORMAT,
+        CSV_TIMESTAMPNTZFORMAT,
+        CSV_UNESCAPEDQUOTEHANDLING,
+    ]
+    spark_options = {(prefix + _).lower(): _ for _ in input_options}
     return spark_options
 
 def get_csv_output_spark_options(prefix):
-
-    spark_options = {
-        CSV_CHARTOESCAPEQUOTEESCAPING.lower(): CSV_CHARTOESCAPEQUOTEESCAPING,
-        CSV_COMPRESSION.lower(): CSV_COMPRESSION,
-        CSV_DATEFORMAT.lower(): CSV_DATEFORMAT,
-        CSV_EMPTYVALUE.lower(): CSV_EMPTYVALUE,
-        CSV_ENCODING.lower(): CSV_ENCODING,
-        CSV_ESCAPE.lower(): CSV_ESCAPE,
-        CSV_ESCAPEQUOTES.lower(): CSV_ESCAPEQUOTES,
-        CSV_HEADER.lower(): CSV_HEADER,
-        CSV_IGNORELEADINGWHITESPACE.lower(): CSV_IGNORELEADINGWHITESPACE,
-        CSV_IGNORETRAILINGWHITESPACE.lower(): CSV_IGNORETRAILINGWHITESPACE,
-        CSV_LINESEP.lower(): CSV_LINESEP,
-        CSV_NULLVALUE.lower(): CSV_NULLVALUE,
-        CSV_QUOTE.lower(): CSV_QUOTE,
-        CSV_QUOTEALL.lower(): CSV_QUOTEALL,
-        CSV_SEP.lower(): CSV_SEP,
-        CSV_TIMESTAMPFORMAT.lower(): CSV_TIMESTAMPFORMAT,
-        CSV_TIMESTAMPNTZFORMAT.lower(): CSV_TIMESTAMPNTZFORMAT
+    output_options = {
+        CSV_CHARTOESCAPEQUOTEESCAPING,
+        CSV_COMPRESSION,
+        CSV_DATEFORMAT,
+        CSV_EMPTYVALUE,
+        CSV_ENCODING,
+        CSV_ESCAPE,
+        CSV_ESCAPEQUOTES,
+        CSV_HEADER,
+        CSV_IGNORELEADINGWHITESPACE,
+        CSV_IGNORETRAILINGWHITESPACE,
+        CSV_LINESEP,
+        CSV_NULLVALUE,
+        CSV_QUOTE,
+        CSV_QUOTEALL,
+        CSV_SEP,
+        CSV_TIMESTAMPFORMAT,
+        CSV_TIMESTAMPNTZFORMAT,
     }
-    spark_options = { prefix + str(key): val for key, val in spark_options.items() }
+    spark_options = {(prefix + _).lower(): _ for _ in output_options}
     return spark_options
 
 # Output mode

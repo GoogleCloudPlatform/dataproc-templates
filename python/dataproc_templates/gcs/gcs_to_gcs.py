@@ -154,7 +154,14 @@ class GCSToGCSTemplate(BaseTemplate):
         )
 
         # Read
-        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, input_format, "gcs.gcs.input.", avro_format_override=constants.FORMAT_AVRO)
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark,
+            args,
+            input_location,
+            input_format,
+            "gcs.gcs.input.",
+            avro_format_override=constants.FORMAT_AVRO
+        )
 
         if sql_query:
             # Create temp view on source data
