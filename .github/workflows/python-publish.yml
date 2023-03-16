@@ -32,8 +32,8 @@ jobs:
         run: |
           cd python
           python -m build
-      - name: Publish distribution to PyPI
+      - name: Publish distribution to Test PyPI
         run: |
           cd python
           pip install twine
-          twine upload --username __token__ --password "${{secrets.PYPI_TOKEN}}" dist/*
+          twine upload --repository testpypi --username __token__ --password "${{secrets.TEST_PYPI_TOKEN}}" dist/*

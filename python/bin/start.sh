@@ -36,12 +36,7 @@ if [ -z "$SKIP_BUILD" ]; then
     python3 ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
 fi
 
-if [ $4 = "--template=HBASETOGCS" ] || [ $4 = "--template=GCSTOBIGTABLE" ]; then
-  OPT_SPARK_VERSION="--version=1.0.29"
-else
-  OPT_SPARK_VERSION="--version=1.1"
-fi
-
+OPT_SPARK_VERSION="--version=1.0.29"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
 OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
@@ -67,9 +62,6 @@ if [ -n "${FILES}" ]; then
 fi
 if [ -n "${PY_FILES}" ]; then
   OPT_PY_FILES="${OPT_PY_FILES},${PY_FILES}"
-fi
-if [ -n "${SPARK_PROPERTIES}" ]; then
-  OPT_PROPERTIES="--properties=${SPARK_PROPERTIES}"
 fi
 #if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
 if [ -n "${CATALOG}" ]; then
@@ -99,6 +91,7 @@ if [ -n "${HBASE_SITE_PATH}" ]; then
     docker push "${IMAGE}"
   fi
 fi
+
 
 command=$(cat << EOF
 gcloud beta dataproc batches submit pyspark \
