@@ -66,7 +66,7 @@ class PubsubliteToGCSTemplate(BaseTemplate):
             f'--{constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT}',
             dest=constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT,
             required=False,
-            default=constants.FORMAT_CSV
+            default=constants.FORMAT_CSV,
             help=(
                 'Output Format to GCS '
                 '(one of: json, csv, avro, parquet) '
