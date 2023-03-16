@@ -71,7 +71,7 @@ class TestTextToBigQueryTemplate:
             constants.CSV_HEADER: 'false',
             constants.CSV_INFER_SCHEMA: 'true',
             constants.INPUT_COMPRESSION: constants.COMPRESSION_BZIP2,
-            constants.INPUT_DELIMITER: "|",
+            constants.CSV_SEP: "|",
         })
         mock_spark_session.read.format().options().load.assert_called_once_with("gs://test")
 
@@ -112,7 +112,7 @@ class TestTextToBigQueryTemplate:
             constants.CSV_HEADER: 'false',
             constants.CSV_INFER_SCHEMA: 'true',
             constants.INPUT_COMPRESSION: constants.COMPRESSION_LZ4,
-            constants.INPUT_DELIMITER: "|",
+            constants.CSV_SEP: "|",
             constants.CSV_COMMENT: "#",
             constants.CSV_TIMESTAMPNTZFORMAT: "yyyy-MM-dd'T'HH:mm:ss",
         })
@@ -155,7 +155,7 @@ class TestTextToBigQueryTemplate:
             constants.CSV_INFER_SCHEMA: 'true',
             constants.CSV_MODE: 'FAILFAST',
             constants.INPUT_COMPRESSION: constants.COMPRESSION_DEFLATE,
-            constants.INPUT_DELIMITER: "|",
+            constants.CSV_SEP: "|",
         })
         mock_spark_session.read.format().options().load.assert_called_once_with("gs://test")
 
@@ -185,7 +185,8 @@ class TestTextToBigQueryTemplate:
              "--text.bigquery.temp.bucket.name=bucket",
              "--text.bigquery.output.mode=ignore",
              "--text.bigquery.input.delimiter=|"])
-        mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
+        mock_spark_session.read.format().options(
+        ).load.return_value = mock_spark_session.dataframe.DataFrame
         text_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read.format.assert_called_with(
@@ -196,7 +197,7 @@ class TestTextToBigQueryTemplate:
             constants.CSV_MAXCOLUMNS: '100',
             constants.CSV_MAXCHARSPERCOLUMN: '64',
             constants.INPUT_COMPRESSION: constants.COMPRESSION_GZIP,
-            constants.INPUT_DELIMITER: "|",
+            constants.CSV_SEP: "|",
         })
         mock_spark_session.read.format().options().load.assert_called_once_with("gs://test")
 

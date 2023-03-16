@@ -25,13 +25,18 @@ def ingest_dataframe_from_cloud_storage(
     input_location: str,
     input_format: str,
     prefix: str,
-    avro_format_override: Optional[str] = None
+    avro_format_override: Optional[str] = None,
+    spark_option_overrides: Optional[dict] = None,
 ) -> DataFrame:
     """Return a Dataframe reader object with methods and options applied for reading from Cloud Storage."""
     input_data: DataFrame
 
     csv_input_constant_options: dict = constants.get_csv_input_spark_options(prefix)
-    spark_options = {csv_input_constant_options[k]: v for k, v in args.items() if k in csv_input_constant_options and v}
+    spark_options = {csv_input_constant_options[k]: v
+                     for k, v in args.items()
+                     if k in csv_input_constant_options and v}
+    if spark_option_overrides:
+        spark_options.update(spark_option_overrides)
 
     if input_format == constants.FORMAT_PRQT:
         input_data = spark.read \

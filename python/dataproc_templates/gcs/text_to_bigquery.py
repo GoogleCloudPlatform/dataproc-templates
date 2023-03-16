@@ -127,9 +127,21 @@ class TextToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        args.update({constants.INPUT_COMPRESSION: input_file_codec_format,
-                     constants.INPUT_DELIMITER: input_delimiter})
-        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, constants.FORMAT_CSV, "gcs.gcs.input.")
+        spark_option_overrides = {}
+        if input_delimiter:
+            # TEXT_INPUT_DELIMITER is a duplicate of text.bigquery.input.sep,
+            # we maintain it for backward compatibility.
+            spark_option_overrides[constants.CSV_SEP] = input_delimiter
+        if input_file_codec_format:
+            spark_option_overrides[constants.INPUT_COMPRESSION] = input_file_codec_format
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark,
+            args,
+            input_location,
+            constants.FORMAT_CSV,
+            "text.bigquery.input.",
+            spark_option_overrides=spark_option_overrides,
+        )
 
         # Write
         input_data.write \

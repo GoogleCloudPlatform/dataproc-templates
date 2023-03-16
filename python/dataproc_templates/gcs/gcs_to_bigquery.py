@@ -116,7 +116,9 @@ class GCSToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, input_format, "gcs.bigquery.input.")
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, args, input_location, input_format, "gcs.bigquery.input."
+        )
 
         # Write
         input_data.write \

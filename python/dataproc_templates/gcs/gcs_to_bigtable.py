@@ -83,7 +83,9 @@ class GCSToBigTableTemplate(BaseTemplate):
         )
 
         # Read
-        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, input_format, "gcs.bigtable.input.")
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, args, input_location, input_format, "gcs.bigtable.input."
+        )
 
         # Write
         input_data.write \
