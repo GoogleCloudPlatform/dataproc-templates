@@ -2,7 +2,7 @@
 
 # Dataproc Templates (Python - PySpark)
 * [BigQueryToGCS](/python/dataproc_templates/bigquery#bigquery-to-gcs) (blogpost [link](https://medium.com/google-cloud/moving-data-from-bigquery-to-gcs-using-gcp-dataproc-serverless-and-pyspark-f6481b86bcd1))
-* [CassandraToBigquery](/python/dataproc_templates/cassandra/README.md)
+* [CassandraToBigquery](/python/dataproc_templates/cassandra#cassandra-to-bigquery)
 * [CassandraToGCS](/python/dataproc_templates/cassandra/README.md)
 * [GCSToBigQuery](/python/dataproc_templates/gcs#gcs-to-bigquery) (blogpost [link](https://medium.com/@ppaglilla/getting-started-with-dataproc-serverless-pyspark-templates-e32278a6a06e))
 * [GCSToBigTable](/python/dataproc_templates/gcs#gcs-to-bigtable) (blogpost [link](https://medium.com/google-cloud/pyspark-load-data-from-gcs-to-bigtable-using-gcp-dataproc-serverless-c373430fe157))
