@@ -272,9 +272,6 @@ CASSANDRA_TO_GCS_QUERY = "cassandratogcs.input.query"
 HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"
 HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH = "hive.ddl.extractor.output.path"
 
-HIVE_DDL_CONSIDER_SPARK_TABLES = "hive.ddl.consider.spark.tables"
-HIVE_DDL_TRANSLATION_DISPOSITION = "hive.ddl.translation.disposition"
-
 # AWS S3 To BigQuery
 S3_BQ_INPUT_LOCATION = "s3.bq.input.location"
 S3_BQ_INPUT_FORMAT = "s3.bq.input.format"
