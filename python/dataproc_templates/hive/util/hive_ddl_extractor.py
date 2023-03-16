@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+
 import argparse
 import pprint
 from logging import Logger
@@ -46,23 +47,7 @@ class HiveDDLExtractorTemplate(BaseTemplate):
             required=True,
             help='GCS output path'
         )
-
-        parser.add_argument(
-            f'--{constants.HIVE_DDL_CONSIDER_SPARK_TABLES}',
-            dest=constants.HIVE_DDL_CONSIDER_SPARK_TABLES,
-            required=False,
-            default=False,
-            help='Flag to extract DDL of Spark tables'
-        )
-
-        parser.add_argument(
-            f'--{constants.HIVE_DDL_TRANSLATION_DISPOSITION}',
-            dest=constants.HIVE_DDL_TRANSLATION_DISPOSITION,
-            required=False,
-            default=False,
-            help='Remove location parameter from HIVE DDL if set to TRUE, to be compatible with BigQuery SQL translator'
-        )
-
+       
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
@@ -79,26 +64,22 @@ class HiveDDLExtractorTemplate(BaseTemplate):
 
         hive_database: str = args[constants.HIVE_DDL_EXTRACTOR_INPUT_DATABASE]
         gcs_output_path: str = args[constants.HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH]
-        spark_tbls_flag: bool = args[constants.HIVE_DDL_CONSIDER_SPARK_TABLES]
-        remove_location_flag: bool = args[constants.HIVE_DDL_TRANSLATION_DISPOSITION]
 
         logger.info(
-            "Starting Hive DDL Extraction job with parameters:\n"
-            f"{pprint.pformat(args)}"
-        )
-
+                "Starting Hive DDL Extraction job with parameters:\n"
+                f"{pprint.pformat(args)}"
+            )
+        
+               
         def get_ddl(hive_database, table_name):
-            spark_tbls_opt = "" if str(spark_tbls_flag).upper() == "TRUE" else "AS SERDE"
-            ddl_str = spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name} {spark_tbls_opt}").rdd.map(lambda x: x[0]).collect()[0]
-            ddl_str = ddl_str + ";" if str(remove_location_flag).upper() != "TRUE" else ddl_str.split("\nLOCATION '")[0].split("\nUSING ")[0]+";"
-            return ddl_str
+            return spark.sql(f"SHOW CREATE TABLE {hive_database}.{table_name} AS SERDE").rdd.map(lambda x: x[0] + ";").collect()[0]
 
         ct = datetime.now().strftime("%m-%d-%Y %H.%M.%S")
         output_path = gcs_output_path+"/"+hive_database+"/"+str(ct)
 
         tables_names = spark.sql(f"SHOW TABLES IN {hive_database}").select("tableName")
         tables_name_list = tables_names.rdd.map(lambda x: x[0]).collect()
-        tables_ddls = [get_ddl(hive_database, table_name) for table_name in tables_name_list]
+        tables_ddls = [ get_ddl(hive_database, table_name) for table_name in tables_name_list ]
 
         ddls_rdd = spark.sparkContext.parallelize(tables_ddls)
         ddls_rdd.coalesce(1).saveAsTextFile(output_path)
