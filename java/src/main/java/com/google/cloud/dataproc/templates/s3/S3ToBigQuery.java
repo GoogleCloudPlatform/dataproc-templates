@@ -111,7 +111,6 @@ public class S3ToBigQuery implements BaseTemplate {
         .option(S3_BQ_TEMP_BUCKET, bqTempBucket)
         .mode(SaveMode.valueOf(outputMode))
         .save();
-
   }
 
   public void validateInput() {
