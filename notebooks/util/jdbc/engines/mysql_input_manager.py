@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     import sqlalchemy
 
 
-class OracleInputManager(JDBCInputManagerInterface):
+class MySQLInputManager(JDBCInputManagerInterface):
     # Private methods
 
     def _build_table_list(
@@ -39,18 +39,13 @@ class OracleInputManager(JDBCInputManagerInterface):
         table_filter: Optional[List[str]] = None,
     ) -> Tuple[str, List[str]]:
         """
-        Return a tuple containing schema and list of table names based on optional schema/table filters.
-        If schema_filter is not provided then the connected user is used for the schema.
+        Return a tuple containing schema and list of table names based on optional table filter.
+        schema_filter is unused because it is derived from connected database in MySQL.
         """
         with self._alchemy_db.connect() as conn:
             schema = self._normalise_schema_filter(schema_filter, conn)
-            not_like_filter = "table_name NOT LIKE 'DR$SUP_TEXT_IDX%'"
-            if schema_filter:
-                sql = f"SELECT table_name FROM all_tables WHERE owner = :own AND {not_like_filter}"
-                rows = conn.execute(sql, own=schema).fetchall()
-            else:
-                sql = f"SELECT table_name FROM user_tables WHERE {not_like_filter}"
-                rows = conn.execute(sql).fetchall()
+            sql = f"show tables;"
+            rows = conn.execute(sql).fetchall()
             tables = [_[0] for _ in rows] if rows else rows
             return schema, self._filter_table_list(tables, table_filter)
 
@@ -61,19 +56,20 @@ class OracleInputManager(JDBCInputManagerInterface):
         sa_connection: "sqlalchemy.engine.base.Connection",
     ) -> str:
         """Return a dictionary defining how to partition the Spark SQL extraction."""
-        # TODO In the future we may want to support checking DBA_SEGMENTS
-        row_count = self._get_table_count(table, sa_connection=sa_connection)
+        row_count = self._get_table_count_from_stats(table, sa_connection=sa_connection)
+        if not row_count:
+            # In case this is a new table with no stats, do a full count
+            row_count = self._get_table_count(table, sa_connection=sa_connection)
+
         if row_count < int(row_count_threshold):
             # The table does not have enough rows to merit partitioning Spark SQL read.
             return None
 
-        # TODO Prioritise partition keys over primary keys in the future.
-        # TODO Add support for UKs alongside PKs.
         pk_cols = self.get_primary_keys().get(table)
         if pk_cols and len(pk_cols) == 1:
             column = pk_cols[0]
             column_datatype = self._get_column_data_type(table, column)
-            if column_datatype == "NUMBER":
+            if column_datatype in ("int", "bigint", "mediumint"):
                 lowerbound = sa_connection.execute(
                     self._get_min_sql(table, column)
                 ).fetchone()
@@ -93,11 +89,10 @@ class OracleInputManager(JDBCInputManagerInterface):
                         SPARK_UPPER_BOUND: upperbound,
                         PARTITION_COMMENT: f"Partitioning by {column_datatype} primary key column",
                     }
-        return None
 
     def _enclose_identifier(self, identifier, ch: Optional[str] = None):
         """Enclose an identifier in the standard way for the SQL engine."""
-        ch = ch or '"'
+        ch = ch or "`"
         return f"{ch}{identifier}{ch}"
 
     def _get_column_data_type(
@@ -106,25 +101,24 @@ class OracleInputManager(JDBCInputManagerInterface):
         column: str,
         sa_connection: "Optional[sqlalchemy.engine.base.Connection]" = None,
     ) -> str:
+        # TODO Does MySQL support parameterised queries?
         sql = dedent(
             """
         SELECT data_type
-        FROM   all_tab_columns
-        WHERE  owner = :own
-        AND    table_name = :tab
-        AND    column_name = :col
-        """
+        FROM information_schema.columns
+        WHERE table_schema = '{}'
+        AND table_name = '{}'
+        AND column_name = '{}'
+        """.format(
+                self._schema, table, column
+            )
         )
         if sa_connection:
-            row = sa_connection.execute(
-                sql, own=self._schema, tab=table, col=column
-            ).fetchone()
+            row = sa_connection.execute(sql).fetchone()
         else:
             with self._alchemy_db.connect() as conn:
-                row = conn.execute(
-                    sql, own=self._schema, tab=table, col=column
-                ).fetchone()
-        return self._normalise_oracle_data_type(row[0]) if row else row
+                row = conn.execute(sql).fetchone()
+        return row[0] if row else row
 
     def _get_primary_keys(self) -> dict:
         """
@@ -132,26 +126,12 @@ class OracleInputManager(JDBCInputManagerInterface):
         The dict is keyed on table name and maps to a list of column names.
         """
         pk_dict = {_: None for _ in self._table_list}
-        sql = dedent(
-            """
-        SELECT cols.column_name
-        FROM   all_constraints cons
-        ,      all_cons_columns cols
-        WHERE  cons.owner = :own
-        AND    cons.table_name = :tab
-        AND    cons.constraint_type = 'P'
-        AND    cons.status = 'ENABLED'
-        AND    cols.constraint_name = cons.constraint_name
-        AND    cols.owner = cons.owner
-        AND    cols.table_name = cons.table_name
-        ORDER BY cols.position
-        """
-        )
         with self._alchemy_db.connect() as conn:
             for table in self._table_list:
+                sql = "SHOW KEYS FROM {} WHERE Key_name = 'PRIMARY'".format(table)
                 rows = conn.execute(sql, own=self._schema, tab=table).fetchall()
                 if rows:
-                    pk_dict[table] = [_[0] for _ in rows]
+                    pk_dict[table] = [_[4] for _ in rows]
             return pk_dict
 
     def _get_table_count_from_stats(
@@ -162,11 +142,13 @@ class OracleInputManager(JDBCInputManagerInterface):
         """Return table count from stats gathering rather than running count(*)."""
         sql = dedent(
             """
-            SELECT num_rows
-            FROM all_tables
-            WHERE owner = :own
-            AND table_name = :tab
-            """
+            SELECT table_rows
+            FROM information_schema.tables
+            WHERE table_schema = '{}'
+            AND table_name = '{}'
+            """.format(
+                self._schema, table
+            )
         )
         if sa_connection:
             row = sa_connection.execute(sql, own=self._schema, tab=table).fetchone()
@@ -175,28 +157,14 @@ class OracleInputManager(JDBCInputManagerInterface):
                 row = conn.execute(sql, own=self._schema, tab=table).fetchone()
         return row[0] if row else row
 
-    def _normalise_oracle_data_type(self, data_type: str) -> str:
-        """Oracle TIMESTAMP types are polluted with scale, this method strips that noise away."""
-        if data_type.startswith("TIMESTAMP") or data_type.startswith("INTERVAL DAY"):
-            return re.sub(r"\([0-9]\)", r"", data_type)
-        else:
-            return data_type
-
     def _normalise_schema_filter(
         self, schema_filter: str, sa_connection: "sqlalchemy.engine.base.Connection"
     ) -> str:
-        """Return schema_filter normalised to the correct case, or sets to connected user if blank."""
-        if schema_filter:
-            # Assuming there will not be multiple schemas of the same name in different case.
-            sql = "SELECT username FROM all_users WHERE UPPER(username) = UPPER(:b1) ORDER BY username"
-            row = sa_connection.execute(sql, b1=schema_filter).fetchone()
-            if not row:
-                raise JDBCInputManagerException(
-                    f"Schema filter does not match any Oracle schemas: {schema_filter}"
-                )
-        else:
-            sql = "SELECT USER FROM dual"
-            row = sa_connection.execute(sql).fetchone()
+        """Not used for MySQL."""
+        sql = "SELECT DATABASE()"
+        row = sa_connection.execute(sql).fetchone()
+        if row and schema_filter and schema_filter.upper() != row[0].upper():
+            raise JDBCInputManagerException(
+                f"Schema filter does not match connected database: {schema_filter} != {row[0]}"
+            )
         return row[0] if row else row
-
-    # Public methods

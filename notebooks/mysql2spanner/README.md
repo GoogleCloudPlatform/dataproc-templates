@@ -42,7 +42,7 @@ Below configurations are required before proceeding further.
 * `MYSQL_USERNAME` : MYSQL username
 * `MYSQL_PASSWORD` : MYSQL password
 * `MYSQL_DATABASE` : name of database that you want to migrate
-* `MYSQLTABLE_LIST` : list of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : [] 
+* `MYSQL_TABLE_LIST` : list of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : [] 
 * `MYSQL_OUTPUT_GCS_LOCATION` : gcs location where mysql output will be writtes eg :"gs://bucket/[folder]"
 * `MYSQL_OUTPUT_GCS_MODE` : output mode for MYSQL data one of (overwrite|append)
 * `MYSQL_OUTPUT_GCS_FORMAT` : output file formate for MYSQL data one of (avro|parquet|orc)

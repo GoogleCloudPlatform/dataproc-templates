@@ -20,7 +20,10 @@ from unittest import mock
 import pandas as pd
 
 from util.jdbc.jdbc_input_manager import JDBCInputManager
-from util.jdbc.jdbc_input_manager_interface import JDBCInputManagerException
+from util.jdbc.jdbc_input_manager_interface import (
+    JDBCInputManagerException,
+    JDBCInputManagerInterface,
+)
 from util.jdbc.engines.oracle_input_manager import OracleInputManager
 
 
@@ -28,17 +31,25 @@ ALCHEMY_DB = mock.MagicMock()
 
 
 def test_input_manager_init():
-    for db_type in ["oracle"]:
+    for db_type in ["oracle", "mysql"]:
         mgr = JDBCInputManager.create(db_type, ALCHEMY_DB)
-        assert isinstance(mgr, OracleInputManager)
+        assert isinstance(mgr, JDBCInputManagerInterface)
 
 
-def test__enclose_identifier():
+def test_oracle_enclose_identifier():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
     assert mgr._enclose_identifier("a", "'") == "'a'"
     assert mgr._enclose_identifier("a") == '"a"'
     assert mgr._enclose_identifier("a", '"') == '"a"'
     assert mgr._enclose_identifier("A", '"') == '"A"'
+
+
+def test_mysql_enclose_identifier():
+    mgr = JDBCInputManager.create("mysql", ALCHEMY_DB)
+    assert mgr._enclose_identifier("a", "'") == "'a'"
+    assert mgr._enclose_identifier("a") == "`a`"
+    assert mgr._enclose_identifier("a", "`") == "`a`"
+    assert mgr._enclose_identifier("A", "`") == "`A`"
 
 
 def test__filter_table_list():
@@ -57,9 +68,17 @@ def test__filter_table_list():
 
 def test_oracle_qualified_name():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
-    assert mgr._qualified_name("SCHEMA1", "TABLE1", enclosed=False) == "SCHEMA1.TABLE1"
+    assert mgr.qualified_name("SCHEMA1", "TABLE1", enclosed=False) == "SCHEMA1.TABLE1"
     assert (
-        mgr._qualified_name("SCHEMA1", "TABLE1", enclosed=True) == '"SCHEMA1"."TABLE1"'
+        mgr.qualified_name("SCHEMA1", "TABLE1", enclosed=True) == '"SCHEMA1"."TABLE1"'
+    )
+
+
+def test_mysql_qualified_name():
+    mgr = JDBCInputManager.create("mysql", ALCHEMY_DB)
+    assert mgr.qualified_name("SCHEMA1", "TABLE1", enclosed=False) == "SCHEMA1.TABLE1"
+    assert (
+        mgr.qualified_name("SCHEMA1", "TABLE1", enclosed=True) == "`SCHEMA1`.`TABLE1`"
     )
 
 

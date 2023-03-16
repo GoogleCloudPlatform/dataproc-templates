@@ -84,14 +84,18 @@ class JDBCInputManagerInterface(AbstractClass):
         """
 
     @abstractmethod
+    def _get_table_count_from_stats(
+        self,
+        table: str,
+        sa_connection: "Optional[sqlalchemy.engine.base.Connection]" = None,
+    ) -> Optional[int]:
+        """Return table count from stats gathering rather than running count(*)."""
+
+    @abstractmethod
     def _normalise_schema_filter(
         self, schema_filter: str, sa_connection: "sqlalchemy.engine.base.Connection"
     ) -> str:
         """Return schema_filter normalised to the correct case."""
-
-    @abstractmethod
-    def _qualified_name(self, schema: str, table: str, enclosed=False) -> str:
-        """Return a qualified name for a table suitable for the SQL engine."""
 
     # Private methods
 
@@ -115,21 +119,21 @@ class JDBCInputManagerInterface(AbstractClass):
     def _get_count_sql(self, table: str) -> str:
         # This SQL should be simple enough to work on all engines but may need refactoring in the future.
         return "SELECT COUNT(*) FROM {}".format(
-            self._qualified_name(self._schema, table, enclosed=True)
+            self.qualified_name(self._schema, table, enclosed=True)
         )
 
     def _get_max_sql(self, table: str, column: str) -> str:
         # This SQL should be simple enough to work on all engines but may need refactoring in the future.
         return "SELECT MAX({0}) FROM {1} WHERE {0} IS NOT NULL".format(
             self._enclose_identifier(column),
-            self._qualified_name(self._schema, table, enclosed=True),
+            self.qualified_name(self._schema, table, enclosed=True),
         )
 
     def _get_min_sql(self, table: str, column: str) -> str:
         # This SQL should be simple enough to work on all engines but may need refactoring in the future.
         return "SELECT MIN({0}) FROM {1} WHERE {0} IS NOT NULL".format(
             self._enclose_identifier(column),
-            self._qualified_name(self._schema, table, enclosed=True),
+            self.qualified_name(self._schema, table, enclosed=True),
         )
 
     def _get_table_count(
@@ -222,7 +226,12 @@ class JDBCInputManagerInterface(AbstractClass):
             return self._schema
 
     def qualified_name(self, schema: str, table: str, enclosed=False) -> str:
-        return self._qualified_name(schema, table, enclosed=enclosed)
+        if enclosed:
+            return (
+                self._enclose_identifier(schema) + "." + self._enclose_identifier(table)
+            )
+        else:
+            return schema + "." + table
 
     def read_partitioning_df(self, read_partition_info: dict) -> pd.DataFrame:
         """Return a Pandas dataframe to allow tidy display of read partitioning information"""

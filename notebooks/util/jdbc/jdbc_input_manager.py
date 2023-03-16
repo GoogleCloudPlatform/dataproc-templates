@@ -18,10 +18,12 @@ if TYPE_CHECKING:
     import sqlalchemy
 
 from util.jdbc.engines.oracle_input_manager import OracleInputManager
+from util.jdbc.engines.mysql_input_manager import MySQLInputManager
 
 
 DB_TYPE_ORACLE = "oracle"
 DB_TYPE_MSSQL = "mssql"
+DB_TYPE_MYSQL = "mysql"
 
 
 class JDBCInputManager:
@@ -30,5 +32,7 @@ class JDBCInputManager:
         assert db_type
         if db_type == DB_TYPE_ORACLE:
             return OracleInputManager(alchemy_db)
+        elif db_type == DB_TYPE_MYSQL:
+            return MySQLInputManager(alchemy_db)
         else:
             raise NotImplementedError(f"Unsupported SQL engine type: {db_type}")
