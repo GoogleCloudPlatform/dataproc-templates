@@ -16,7 +16,7 @@
 * [JDBCToGCS](/python/dataproc_templates/jdbc#2-jdbc-to-gcs) (blogpost [link](https://medium.com/google-cloud/importing-data-from-databases-into-gcs-via-jdbc-using-dataproc-serverless-f330cb0160f0))
 * [JDBCToJDBC](/python/dataproc_templates/jdbc#1-jdbc-to-jdbc) (blogpost [link](https://medium.com/google-cloud/migrating-data-from-one-databases-into-another-via-jdbc-using-dataproc-serverless-c5336c409b18))
 * [KafkaToGCS](/python/dataproc_templates/kafka/#kafka-to-gcs)
-* [KafkaToBigQuery](/python/dataproc_templates/kafka/#kafka-to-bq)
+* [KafkaToBigQuery](/python/dataproc_templates/kafka/#kafka-to-bigquery)
 * [MongoToGCS](/python/dataproc_templates/mongo#mongo-to-gcs)(blogpost [link](https://medium.com/google-cloud/exporting-data-from-mongodb-to-gcs-buckets-using-dataproc-serverless-64830fb15b51))
 * [RedshiftToGCS](/python/dataproc_templates/redshift#redshift-to-gcs)(blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
 * [S3ToBigQuery](/python/dataproc_templates/s3/s3#amazon-s3-to-bigquery)
