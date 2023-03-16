@@ -57,6 +57,10 @@ public class CassandraToBQ implements BaseTemplate {
                 "spark.sql.catalog." + config.getCatalog() + ".spark.cassandra.connection.host",
                 config.getHost())
             .getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+
     if (StringUtils.isAllBlank(config.getQuery())) {
       dataset =
           spark.sql(

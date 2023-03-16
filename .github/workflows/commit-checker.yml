@@ -1,0 +1,25 @@
+name: "Commit Message Check"
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+  pull_request_target:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+jobs:
+  check-commit-message:
+    name: Check Commit Message
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Conventional commit standard type
+        uses: gsactions/commit-message-checker@v2
+        with:
+          pattern: '^(\bfeat!|\bfix|\bfixes|\bFix|\bfeat|\bbuild|\bchore|\bci|\bdocs|\brefactor|\bperf|\btest|\bchore\(main\)):.*$'
+          error: "You need at least one of the Conventional commit types(fix:, feat:, feat!:, build:, chore:, ci:, docs:, refactor:, perf:, test:) at the start of commit message. To understand which commit prefix type to use, read more here: https://github.com/GoogleCloudPlatform/dataproc-templates/blob/main/docs/commit-checker-release-automation.md"

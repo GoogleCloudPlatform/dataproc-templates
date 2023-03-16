@@ -37,8 +37,9 @@ from dataproc_templates.jdbc.jdbc_to_bigquery import JDBCToBigQueryTemplate
 from dataproc_templates.snowflake.snowflake_to_gcs import SnowflakeToGCSTemplate
 from dataproc_templates.redshift.redshift_to_gcs import RedshiftToGCSTemplate
 from dataproc_templates.cassandra.cassandra_to_bigquery import CassandraToBQTemplate
-from dataproc_templates.azure.azure_blob_to_bigquery import AzureBlobToBigQueryTemplate
-
+from dataproc_templates.hive.util.hive_ddl_extractor import HiveDDLExtractorTemplate
+from dataproc_templates.cassandra.cassandra_to_gcs import CassandraToGCSTemplate
+from dataproc_templates.azure.azure_to_bigquery import AzureBlobToBigQueryTemplate
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
 
@@ -63,6 +64,10 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.REDSHIFTTOGCS: RedshiftToGCSTemplate,
     TemplateName.CASSANDRATOBQ: CassandraToBQTemplate,
     TemplateName.AZUREBLOBTOBQ: AzureBlobToBigQueryTemplate
+    TemplateName.CASSANDRATOGCS: CassandraToGCSTemplate,
+    TemplateName.HIVEDDLEXTRACTOR: HiveDDLExtractorTemplate,
+    TemplateName.AZURETOBQ: AzureBlobToBigQueryTemplate
+
 
 }
 

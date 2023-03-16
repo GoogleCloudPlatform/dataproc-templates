@@ -49,6 +49,7 @@ public class KafkaToGCS implements BaseTemplate {
   private String kafkaStartingOffsets;
   private String kafkaOutputMode;
   private Long kafkaAwaitTerminationTimeout;
+  private final String sparkLogLevel;
 
   public KafkaToGCS() {
 
@@ -63,6 +64,7 @@ public class KafkaToGCS implements BaseTemplate {
     kafkaOutputMode = getProperties().getProperty(KAFKA_GCS_OUTPUT_MODE);
     kafkaAwaitTerminationTimeout =
         Long.valueOf(getProperties().getProperty(KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT));
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -71,6 +73,9 @@ public class KafkaToGCS implements BaseTemplate {
 
     // Initialize Spark session
     SparkSession spark = SparkSession.builder().appName("Spark KafkaToGCS Job").getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     KafkaReader reader = new KafkaReader();
 
@@ -96,12 +101,14 @@ public class KafkaToGCS implements BaseTemplate {
   public void validateInput() {
     if (StringUtils.isAllBlank(gcsOutputLocation)
         || StringUtils.isAllBlank(kafkaBootstrapServers)
-        || StringUtils.isAllBlank(kafkaTopic)) {
+        || StringUtils.isAllBlank(kafkaTopic)
+        || StringUtils.isAllBlank(kafkaMessageFormat)) {
       LOGGER.error(
-          "{},{},{} is required parameter. ",
+          "{},{},{},{} is required parameter. ",
           KAFKA_GCS_OUTPUT_LOCATION,
           KAFKA_BOOTSTRAP_SERVERS,
-          KAFKA_TOPIC);
+          KAFKA_TOPIC,
+          KAFKA_MESSAGE_FORMAT);
       throw new IllegalArgumentException(
           "Required parameters for KafkaToGCS not passed. "
               + "Set mandatory parameter for KafkaToGCS template "

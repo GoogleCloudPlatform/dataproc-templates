@@ -71,6 +71,9 @@ public class JDBCToSpannerConfig {
   @JsonProperty(value = JDBC_TO_SPANNER_JDBC_FETCH_SIZE)
   private String jdbcFetchSize;
 
+  @JsonProperty(value = JDBC_TO_SPANNER_JDBC_SESSION_INIT_STATEMENT)
+  private String jdbcSessionInitStatement;
+
   @JsonProperty(value = JDBC_TO_SPANNER_TEMP_TABLE)
   private String tempTable;
 
@@ -91,7 +94,7 @@ public class JDBCToSpannerConfig {
 
   @JsonProperty(value = JDBC_TO_SPANNER_OUTPUT_SAVE_MODE)
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
-  private String saveModeString = "ErrorIfExists";
+  private String saveModeString;
 
   @JsonProperty(value = JDBC_TO_SPANNER_OUTPUT_PRIMARY_KEY)
   @NotEmpty
@@ -99,7 +102,11 @@ public class JDBCToSpannerConfig {
 
   @JsonProperty(value = JDBC_TO_SPANNER_OUTPUT_BATCH_INSERT_SIZE)
   @Min(value = 1)
-  private long batchInsertSize = 1000;
+  private long batchInsertSize;
+
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
 
   @AssertTrue(
       message =
@@ -163,6 +170,10 @@ public class JDBCToSpannerConfig {
     return jdbcFetchSize;
   }
 
+  public String getJdbcSessionInitStatement() {
+    return jdbcSessionInitStatement;
+  }
+
   public String getTempTable() {
     return tempTable;
   }
@@ -198,6 +209,10 @@ public class JDBCToSpannerConfig {
 
   public long getBatchInsertSize() {
     return batchInsertSize;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   public String getSQL() {

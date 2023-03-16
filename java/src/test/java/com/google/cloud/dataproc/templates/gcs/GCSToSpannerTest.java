@@ -22,6 +22,7 @@ import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPA
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_PRIMARY_KEY;
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_SAVE_MODE;
 import static com.google.cloud.dataproc.templates.gcs.GCSToSpannerConfig.GCS_SPANNER_OUTPUT_TABLE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -45,6 +46,7 @@ class GCSToSpannerTest {
 
   @BeforeEach
   void setUp() {
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_INPUT_FORMAT, "avro");
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_INPUT_LOCATION, "avro");
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_PRIMARY_KEY, "idcol1,idcol2");
@@ -90,6 +92,7 @@ class GCSToSpannerTest {
 
   static Stream<String> requiredPropertyKeys() {
     return Stream.of(
+        PROJECT_ID_PROP,
         GCS_SPANNER_INPUT_LOCATION,
         GCS_SPANNER_OUTPUT_INSTANCE,
         GCS_SPANNER_OUTPUT_DATABASE,

@@ -32,7 +32,6 @@ public class HiveToGCS implements BaseTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HiveToGCS.class);
   private String outputPath;
-  private String warehouseLocation;
   private String hiveInputTable;
   private String hiveInputDb;
   private String outputFormat;
@@ -40,6 +39,7 @@ public class HiveToGCS implements BaseTemplate {
   private String gcsSaveMode;
   private String tempTable;
   private String tempQuery;
+  private final String sparkLogLevel;
 
   /**
    * Spark job to move data from Hive table to GCS bucket. For detailed list of properties refer
@@ -50,7 +50,6 @@ public class HiveToGCS implements BaseTemplate {
    */
   public HiveToGCS() {
     outputPath = getProperties().getProperty(HIVE_TO_GCS_OUTPUT_PATH_PROP);
-    warehouseLocation = getProperties().getProperty(HIVE_WAREHOUSE_LOCATION_PROP);
     hiveInputTable = getProperties().getProperty(HIVE_INPUT_TABLE_PROP);
     hiveInputDb = getProperties().getProperty(HIVE_INPUT_TABLE_DATABASE_PROP);
     outputFormat =
@@ -60,6 +59,7 @@ public class HiveToGCS implements BaseTemplate {
     gcsSaveMode = getProperties().getProperty(HIVE_GCS_SAVE_MODE);
     tempTable = getProperties().getProperty(HIVE_GCS_TEMP_TABLE);
     tempQuery = getProperties().getProperty(HIVE_GCS_TEMP_QUERY);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -69,11 +69,10 @@ public class HiveToGCS implements BaseTemplate {
 
     // Confiure spark session to read from hive.
     SparkSession spark =
-        SparkSession.builder()
-            .appName("Spark HiveToGcs Job")
-            .config(HIVE_WAREHOUSE_LOCATION_PROP, warehouseLocation)
-            .enableHiveSupport()
-            .getOrCreate();
+        SparkSession.builder().appName("Spark HiveToGcs Job").enableHiveSupport().getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     // Read source Hive table.
     Dataset<Row> inputData = spark.table(hiveInputDb + "." + hiveInputTable);
@@ -123,12 +122,9 @@ public class HiveToGCS implements BaseTemplate {
         "Starting Hive to GCS spark job with following parameters:"
             + "1. {}:{}"
             + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}",
+            + "3. {}:{}",
         HIVE_TO_GCS_OUTPUT_PATH_PROP,
         outputPath,
-        HIVE_WAREHOUSE_LOCATION_PROP,
-        warehouseLocation,
         HIVE_INPUT_TABLE_PROP,
         hiveInputTable,
         HIVE_INPUT_TABLE_DATABASE_PROP,

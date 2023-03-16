@@ -42,6 +42,8 @@ public class GCStoGCS implements BaseTemplate {
 
   private String tempQuery;
 
+  private final String sparkLogLevel;
+
   public GCStoGCS() {
 
     projectID = getProperties().getProperty(PROJECT_ID_PROP);
@@ -53,6 +55,7 @@ public class GCStoGCS implements BaseTemplate {
     gcsWriteMode = getProperties().getProperty(GCS_GCS_WRITE_MODE);
     tempTable = getProperties().getProperty(GCS_GCS_TEMP_TABLE);
     tempQuery = getProperties().getProperty(GCS_GCS_TEMP_QUERY);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -62,6 +65,9 @@ public class GCStoGCS implements BaseTemplate {
     SparkSession spark = null;
 
     spark = SparkSession.builder().appName("GCS to GCS load").getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     Dataset<Row> inputData = null;
 
