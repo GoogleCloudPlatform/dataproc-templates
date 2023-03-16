@@ -39,7 +39,7 @@ class AzureBlobToBigQueryTemplate(BaseTemplate):
             f'--{constants.AZ_BQ_INPUT_LOCATION}',
             dest=constants.AZ_BQ_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input files'
+            help='Location of the input files'
         )
         parser.add_argument(
             f'--{constants.AZ_BQ_OUTPUT_DATASET}',

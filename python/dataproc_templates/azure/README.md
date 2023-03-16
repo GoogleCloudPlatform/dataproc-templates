@@ -1,4 +1,4 @@
-# Azure To BigQuery
+# Azure Blob To BigQuery
 
 Template for reading files from Azure Blob Storage and writing them to a BigQuery table. It supports reading JSON, CSV, Parquet, Avro and Delta.IO formats.
 
@@ -19,9 +19,9 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 ## Usage
 
 ```
-$ python main.py --template AZURETOBQ --help
+$ python main.py --template AZUREBLOBTOBQ --help
 
-usage: main.py --template AZURETOBQ [-h] \
+usage: main.py --template AZUREBLOBTOBQ [-h] \
     --azure.bigquery.input.location AZURE.BIGQUERY.INPUT.LOCATION \
     --azure.bigquery.output.dataset AZURE.BIGQUERY.OUTPUT.DATASET \
     --azure.bigquery.output.table AZURE.BIGQUERY.OUTPUT.TABLE \
@@ -35,7 +35,7 @@ usage: main.py --template AZURETOBQ [-h] \
 optional arguments:
   -h, --help            show this help message and exit
   --azure.bigquery.input.location AZURE.BIGQUERY.INPUT.LOCATION
-                        AZURE location of the input files
+                        AZURE blob location of the input files
   --azure.bigquery.output.dataset AZURE.BIGQUERY.OUTPUT.DATASET
                         BigQuery dataset for the output table
   --azure.bigquery.output.table AZURE.BIGQUERY.OUTPUT.TABLE
@@ -67,7 +67,7 @@ export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, gs://{jars_bucket}/delta-core_2.12-1.1.0.jar" 
 
 ./bin/start.sh \
--- --template=AZURETOBQ \
+-- --template=AZUREBLOBTOBQ \
     --azure.bigquery.input.format="<json|csv|parquet|avro>" \
     --azure.bigquery.input.location="wasbs://{azure.container.name}@{azure.storage.account}.blob.core.windows.net/{input_location}" \
     --azure.bigquery.output.dataset="<dataset>" \

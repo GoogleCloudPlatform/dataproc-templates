@@ -43,6 +43,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more 
 
 ## Dataproc Templates (Python - PySpark)
 Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for more information
+* [AzureBlobToBigQuery](/python/dataproc_templates/azure#azure-blob-to-bigquery)
 * [BigQueryToGCS](/python/dataproc_templates/bigquery#bigquery-to-gcs) (blogpost [link](https://medium.com/google-cloud/moving-data-from-bigquery-to-gcs-using-gcp-dataproc-serverless-and-pyspark-f6481b86bcd1))
 * [CassandraToBigquery](/python/dataproc_templates/cassandra)
 * [GCSToBigQuery](/python/dataproc_templates/gcs#gcs-to-bigquery) (blogpost [link](https://medium.com/@ppaglilla/getting-started-with-dataproc-serverless-pyspark-templates-e32278a6a06e))
@@ -60,7 +61,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for 
 * [RedshiftToGCS](/python/dataproc_templates/redshift#redshift-to-gcs) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
 * [SnowflakeToGCS](/python/dataproc_templates/snowflake#1-snowflake-to-gcs)
 * [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery) (blogpost [link](https://medium.com/google-cloud/dataproc-serverless-pyspark-template-for-ingesting-compressed-text-files-to-bigquery-c6eab8fb6bc9))
-* [AzureToBigQuery](/python/dataproc_templates/azure#azure-to-bigquery) 
+
 
 ## Dataproc Templates (Notebooks)
 Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more information
