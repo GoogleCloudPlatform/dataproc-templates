@@ -120,7 +120,7 @@ class HiveToGCSTemplate(BaseTemplate):
                 .withColumn('splitted_partitions',explode(split(col("extracted_partitions"),","))) \
                 .withColumn('partition_cols',split(trim(col("splitted_partitions"))," ")) \
                 .selectExpr('regexp_replace(partition_cols[0],"`","") as column_names').collect()
-        partition_cols=[row.column_names for row in partition_col_names]
+        partition_cols=[row.column_names for row in partition_col_names if row.column_names.strip()]
     
         return partition_cols if partition_cols else None
 
