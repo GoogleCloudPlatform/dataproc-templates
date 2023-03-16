@@ -26,7 +26,6 @@ import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.stor
 import com.google.cloud.spark.bigquery.repackaged.org.json.JSONArray;
 import com.google.cloud.spark.bigquery.repackaged.org.json.JSONObject;
 import java.util.Iterator;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -70,50 +69,43 @@ public class PubSubToBQ implements BaseTemplate {
   }
 
   @Override
-  public void runTemplate() {
+  public void runTemplate() throws InterruptedException {
 
     validateInput();
 
-    JavaStreamingContext jsc = null;
+    JavaStreamingContext jsc;
 
-    try {
-      SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigQuery Dataproc Job");
-      jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
+    SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigQuery Dataproc Job");
+    jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
 
-      // Set log level
-      jsc.sparkContext().setLogLevel(sparkLogLevel);
+    // Set log level
+    jsc.sparkContext().setLogLevel(sparkLogLevel);
 
-      JavaDStream<SparkPubsubMessage> stream = null;
-      for (int i = 0; i < totalReceivers; i += 1) {
-        JavaDStream<SparkPubsubMessage> pubSubReciever =
-            PubsubUtils.createStream(
-                jsc,
-                inputProjectID,
-                pubsubInputSubscription,
-                new SparkGCPCredentials.Builder().build(),
-                StorageLevel.MEMORY_AND_DISK_SER());
-        if (stream == null) {
-          stream = pubSubReciever;
-        } else {
-          stream = stream.union(pubSubReciever);
-        }
-      }
-
-      LOGGER.info("Writing data to outputPath: {}", pubSubBQOutputTable);
-      writeToBQ(stream, inputProjectID, pubSubBQOutputDataset, pubSubBQOutputTable, batchSize);
-
-      jsc.start();
-      jsc.awaitTerminationOrTimeout(timeoutMs);
-
-      LOGGER.info("PubSubToBq job completed.");
-      jsc.stop();
-
-    } catch (Throwable th) {
-      LOGGER.error("Exception in PubSubToBQ", th);
-      if (Objects.nonNull(jsc)) {
-        jsc.stop();
+    JavaDStream<SparkPubsubMessage> stream = null;
+    for (int i = 0; i < totalReceivers; i += 1) {
+      JavaDStream<SparkPubsubMessage> pubSubReciever =
+          PubsubUtils.createStream(
+              jsc,
+              inputProjectID,
+              pubsubInputSubscription,
+              new SparkGCPCredentials.Builder().build(),
+              StorageLevel.MEMORY_AND_DISK_SER());
+      if (stream == null) {
+        stream = pubSubReciever;
+      } else {
+        stream = stream.union(pubSubReciever);
       }
     }
+
+    LOGGER.info("Writing data to outputPath: {}", pubSubBQOutputTable);
+    writeToBQ(stream, inputProjectID, pubSubBQOutputDataset, pubSubBQOutputTable, batchSize);
+
+    jsc.start();
+    jsc.awaitTerminationOrTimeout(timeoutMs);
+
+    LOGGER.info("PubSubToBq job completed.");
+    jsc.stop();
+
   }
 
   public static void writeToBQ(
@@ -181,7 +173,7 @@ public class PubSubToBQ implements BaseTemplate {
     }
 
     LOGGER.info(
-        "Starting Hive to GCS spark job with following parameters:"
+        "Starting Pub/Sub to BigQuery spark job with following parameters:"
             + "1. {}:{}"
             + "2. {}:{}"
             + "3. {}:{}"
