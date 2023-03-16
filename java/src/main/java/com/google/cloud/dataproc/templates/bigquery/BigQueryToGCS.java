@@ -22,6 +22,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_FORMAT_JSON;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_FORMAT_PARQUET;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_LOCATION;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_MODE;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_AVRO_EXTD_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_HEADER;
@@ -35,6 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,12 +49,14 @@ public class BigQueryToGCS implements BaseTemplate {
   private final String outputFileFormat;
   private final String outputFileLocation;
   private final String sparkLogLevel;
+  private final String outputMode;
 
   public BigQueryToGCS() {
     inputTableName = getProperties().getProperty(BQ_GCS_INPUT_TABLE_NAME);
     outputFileFormat = getProperties().getProperty(BQ_GCS_OUTPUT_FORMAT);
     outputFileLocation = getProperties().getProperty(BQ_GCS_OUTPUT_LOCATION);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
+    outputMode = getProperties().getProperty(BQ_GCS_OUTPUT_MODE);
   }
 
   @Override
@@ -68,7 +72,7 @@ public class BigQueryToGCS implements BaseTemplate {
       spark.sparkContext().setLogLevel(sparkLogLevel);
 
       Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
-      DataFrameWriter<Row> writer = inputData.write();
+      DataFrameWriter<Row> writer = inputData.write().mode(SaveMode.valueOf(outputMode));
       switch (outputFileFormat) {
         case BQ_GCS_OUTPUT_FORMAT_CSV:
           writer
