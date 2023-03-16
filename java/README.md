@@ -6,7 +6,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  
 
 
 * [BigQueryToGCS](src/main/java/com/google/cloud/dataproc/templates/bigquery#BigQuery-To-GCS)
-* [CassandraToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-bigquery-template)
+* [CassandraToBigQuery](src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-bigquery-template)
 * [CassandraToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-gcs-template)
 * [DataplexGCStoBQ](/java/src/main//java/com/google/cloud/dataproc/templates/dataplex#dataplex-gcs-to-bigquery)(blogpost [link](https://medium.com/google-cloud/using-dataproc-serverless-to-migrate-your-dataplex-gcs-data-to-bigquery-1e47bc8de74c))
 * [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#1-gcs-to-bigquery)(blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-bigquery-via-spark-bq-connector-using-dataproc-serverless-25e29f84888d))
