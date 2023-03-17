@@ -30,15 +30,13 @@ class TestPubsubliteToGCSTemplate:
 
         pubsublite_to_gcs_template = PubsubliteToGCSTemplate()
         parsed_args = pubsublite_to_gcs_template.parse_args(
-            ["--pubsublite.to.gcs.output.project.id=testProject",
-             "--pubsublite.to.gcs.input.subscription=test-sub",
+            ["--pubsublite.to.gcs.input.subscription=test-sub",
              "--pubsublite.to.gcs.write.mode=append",
              "--pubsublite.to.gcs.output.location=gs://test",
              "--pubsublite.to.gcs.checkpoint.location=gs://test-checkpoint",
              "--pubsublite.to.gcs.output.format=csv",
              ])
 
-        assert parsed_args["pubsublite.to.gcs.output.project.id"] == "testProject"
         assert parsed_args["pubsublite.to.gcs.input.subscription"] == "test-sub"
         assert parsed_args["pubsublite.to.gcs.write.mode"] == "append"
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
@@ -50,14 +48,12 @@ class TestPubsubliteToGCSTemplate:
 
         pubsublite_to_gcs_template = PubsubliteToGCSTemplate()
         parsed_args = pubsublite_to_gcs_template.parse_args(
-            ["--pubsublite.to.gcs.output.project.id=testProject",
-             "--pubsublite.to.gcs.input.subscription=test-sub",
+            ["--pubsublite.to.gcs.input.subscription=test-sub",
              "--pubsublite.to.gcs.write.mode=append",
              "--pubsublite.to.gcs.output.location=gs://test",
              "--pubsublite.to.gcs.checkpoint.location=gs://test-checkpoint",
              ])
 
-        assert parsed_args["pubsublite.to.gcs.output.project.id"] == "testProject"
         assert parsed_args["pubsublite.to.gcs.input.subscription"] == "test-sub"
         assert parsed_args["pubsublite.to.gcs.write.mode"] == "append"
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
@@ -69,14 +65,12 @@ class TestPubsubliteToGCSTemplate:
 
         pubsublite_to_gcs_template = PubsubliteToGCSTemplate()
         parsed_args = pubsublite_to_gcs_template.parse_args(
-            ["--pubsublite.to.gcs.output.project.id=testProject",
-             "--pubsublite.to.gcs.input.subscription=test-sub",
+            ["--pubsublite.to.gcs.input.subscription=test-sub",
              "--pubsublite.to.gcs.output.location=gs://test",
              "--pubsublite.to.gcs.checkpoint.location=gs://test-checkpoint",
              "--pubsublite.to.gcs.output.format=csv",
              ])
 
-        assert parsed_args["pubsublite.to.gcs.output.project.id"] == "testProject"
         assert parsed_args["pubsublite.to.gcs.input.subscription"] == "test-sub"
         assert parsed_args["pubsublite.to.gcs.write.mode"] == "append"
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"

@@ -22,12 +22,6 @@ class PubsubliteToGCSTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_TO_GCS_OUTPUT_PROJECT_ID}',
-            dest=constants.PUBSUBLITE_TO_GCS_OUTPUT_PROJECT_ID,
-            required=True,
-            help='GCS Project ID'
-        )
-        parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION}',
             dest=constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION,
             required=True,
@@ -90,7 +84,6 @@ class PubsubliteToGCSTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        output_project_id: str = args[constants.PUBSUBLITE_TO_GCS_OUTPUT_PROJECT_ID]
         input_subscription: str = args[constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION]
         output_location: str = args[constants.PUBSUBLITE_TO_GCS_OUTPUT_LOCATION]
         output_mode: str = args[constants.PUBSUBLITE_TO_GCS_WRITE_MODE]
@@ -101,13 +94,6 @@ class PubsubliteToGCSTemplate(BaseTemplate):
             "Starting Pubsublite to GCS spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
-        # Set configuration to connect to Pubsublite by overwriting the spark session
-        spark = (
-            SparkSession
-                .builder
-                .appName("Pubsublite To GCS Dataproc Job")
-                .master("yarn")
-                .getOrCreate())
 
         # Read
         input_data=(spark.readStream \
