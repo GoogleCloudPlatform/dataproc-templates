@@ -14,13 +14,12 @@
  * limitations under the License.
 """
 
-import dataproc_templates.util.template_constants as constants
+
 import mock
 import pyspark
 from dataproc_templates.hive.util.hive_ddl_extractor import \
     HiveDDLExtractorTemplate
 from datetime import datetime
-from google.cloud import storage
 
 class TestHiveDDLExtractorTemplate:
     """
