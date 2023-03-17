@@ -105,7 +105,6 @@ public class PubSubToBQ implements BaseTemplate {
 
     LOGGER.info("PubSubToBq job completed.");
     jsc.stop();
-
   }
 
   public static void writeToBQ(
