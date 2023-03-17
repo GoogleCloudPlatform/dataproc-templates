@@ -20,6 +20,7 @@ import pyspark
 from dataproc_templates.hive.util.hive_ddl_extractor import \
     HiveDDLExtractorTemplate
 from datetime import datetime
+from google.cloud import storage
 
 class TestHiveDDLExtractorTemplate:
     """
@@ -41,15 +42,14 @@ class TestHiveDDLExtractorTemplate:
     def test_run(self, mock_spark_session):
         """Tests HiveDDLExtractorTemplate runs with append mode"""
 
-
         hive_ddl_extractor_template = HiveDDLExtractorTemplate()
         mock_parsed_args = hive_ddl_extractor_template.parse_args(
             ["--hive.ddl.extractor.input.database=database",
              "--hive.ddl.extractor.output.path=gs://bucket/path"])
-
         mock_spark_session.sql.return_value=mock_spark_session.dataframe.DataFrame
         mock_spark_session.sparkContext.parallelize.return_value=mock_spark_session.rdd.RDD
         hive_ddl_extractor_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.sql.assert_called_once_with("SHOW TABLES IN database")
         mock_spark_session.sparkContext.parallelize.assert_called_once_with([])
-        mock_spark_session.rdd.RDD.coalesce().saveAsTextFile.assert_called_once_with("gs://bucket/path/database")    
+        ct = datetime.now().strftime("%m-%d-%Y %H.%M.%S")
+        mock_spark_session.rdd.RDD.coalesce().saveAsTextFile.assert_called_once_with("gs://bucket/path/database/{ct}".format(ct=ct))
