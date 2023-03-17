@@ -32,6 +32,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md)  
 * [S3ToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/s3#1-s3-to-bigquery)(blogpost [link](https://medium.com/google-cloud/export-data-from-aws-s3-to-bigquery-using-dataproc-serverless-6dc7a9952fc4))
 * [SnowflakeToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/snowflake#1-snowflake-to-gcs)(blogpost [link](https://medium.com/google-cloud/export-snowflake-query-results-to-gcs-using-dataproc-serverless-3d68f5a01ca9))
 * [SpannerToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-spanner-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/cloud-spanner-export-query-results-using-dataproc-serverless-6f2f65b583a4))
+* [TextToBigquery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#6-text-to-bigquery)
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 
 Dataproc Templates (Java - Spark) submit jobs to Dataproc Serverless using [batches submit spark ](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/spark) and to Dataproc Standard using [jobs submit spark](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs/submit/spark) .
