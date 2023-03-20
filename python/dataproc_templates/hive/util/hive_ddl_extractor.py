@@ -24,7 +24,7 @@ from dataproc_templates import BaseTemplate
 from pyspark.sql import SparkSession
 from datetime import datetime
 
-class HiveDDLExtractorTemplate(BaseTemplate): 
+class HiveDDLExtractorTemplate(BaseTemplate):
     """
     Dataproc template implementing exports from Hive to BigQuery
     """
@@ -46,7 +46,7 @@ class HiveDDLExtractorTemplate(BaseTemplate):
             required=True,
             help='GCS output path'
         )
-       
+
         parser.add_argument(
             f'--{constants.HIVE_DDL_CONSIDER_SPARK_TABLES}',
             dest=constants.HIVE_DDL_CONSIDER_SPARK_TABLES,
@@ -83,9 +83,9 @@ class HiveDDLExtractorTemplate(BaseTemplate):
         remove_location_flag: bool = args[constants.HIVE_DDL_TRANSLATION_DISPOSITION]
 
         logger.info(
-                "Starting Hive DDL Extraction job with parameters:\n"
-                f"{pprint.pformat(args)}"
-            )
+            "Starting Hive DDL Extraction job with parameters:\n"
+            f"{pprint.pformat(args)}"
+        )
 
         def get_ddl(hive_database, table_name):
             spark_tbls_opt = "" if str(spark_tbls_flag).upper() == "TRUE" else "AS SERDE"
