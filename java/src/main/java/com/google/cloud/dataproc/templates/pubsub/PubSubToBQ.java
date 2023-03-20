@@ -17,14 +17,15 @@ package com.google.cloud.dataproc.templates.pubsub;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.bigquery.storage.v1.AppendRowsResponse;
+import com.google.cloud.bigquery.storage.v1.BigQueryWriteClient;
+import com.google.cloud.bigquery.storage.v1.CreateWriteStreamRequest;
+import com.google.cloud.bigquery.storage.v1.FinalizeWriteStreamRequest;
+import com.google.cloud.bigquery.storage.v1.JsonStreamWriter;
+import com.google.cloud.bigquery.storage.v1.TableName;
+import com.google.cloud.bigquery.storage.v1.WriteStream;
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import com.google.cloud.spark.bigquery.repackaged.com.google.api.core.ApiFuture;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.*;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.storage.v1beta2.AppendRowsResponse;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.storage.v1beta2.JsonStreamWriter;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.storage.v1beta2.TableName;
-import com.google.cloud.spark.bigquery.repackaged.org.json.JSONArray;
-import com.google.cloud.spark.bigquery.repackaged.org.json.JSONObject;
 import java.util.Iterator;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
@@ -37,6 +38,8 @@ import org.apache.spark.streaming.api.java.JavaStreamingContext;
 import org.apache.spark.streaming.pubsub.PubsubUtils;
 import org.apache.spark.streaming.pubsub.SparkGCPCredentials;
 import org.apache.spark.streaming.pubsub.SparkPubsubMessage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,30 +125,47 @@ public class PubSubToBQ implements BaseTemplate {
                   @Override
                   public void call(Iterator<SparkPubsubMessage> sparkPubsubMessageIterator)
                       throws Exception {
-                    BigQuery bigquery = BigQueryOptions.getDefaultInstance().getService();
-                    Table table = bigquery.getTable(pubSubBQOutputDataset, PubSubBQOutputTable);
-                    TableName parentTable =
-                        TableName.of(outputProjectID, pubSubBQOutputDataset, PubSubBQOutputTable);
-                    Schema schema = table.getDefinition().getSchema();
-                    JsonStreamWriter writer =
-                        JsonStreamWriter.newBuilder(parentTable.toString(), schema).build();
 
-                    JSONArray jsonArr = new JSONArray();
-                    while (sparkPubsubMessageIterator.hasNext()) {
-                      SparkPubsubMessage message = sparkPubsubMessageIterator.next();
-                      JSONObject record = new JSONObject(new String(message.getData()));
-                      jsonArr.put(record);
-                      if (jsonArr.length() == batchSize) {
+                    BigQueryWriteClient bqClient = BigQueryWriteClient.create();
+                    WriteStream stream =
+                        WriteStream.newBuilder().setType(WriteStream.Type.COMMITTED).build();
+                    TableName tableName =
+                        TableName.of(outputProjectID, pubSubBQOutputDataset, PubSubBQOutputTable);
+                    CreateWriteStreamRequest createWriteStreamRequest =
+                        CreateWriteStreamRequest.newBuilder()
+                            .setParent(tableName.toString())
+                            .setWriteStream(stream)
+                            .build();
+                    WriteStream writeStream = bqClient.createWriteStream(createWriteStreamRequest);
+
+                    try (JsonStreamWriter writer =
+                        JsonStreamWriter.newBuilder(
+                                writeStream.getName(), writeStream.getTableSchema())
+                            .build()) {
+
+                      JSONArray jsonArr = new JSONArray();
+                      while (sparkPubsubMessageIterator.hasNext()) {
+                        SparkPubsubMessage message = sparkPubsubMessageIterator.next();
+                        JSONObject record = new JSONObject(new String(message.getData()));
+                        jsonArr.put(record);
+                        if (jsonArr.length() == batchSize) {
+                          ApiFuture<AppendRowsResponse> future = writer.append(jsonArr);
+                          AppendRowsResponse response = future.get();
+                          jsonArr = new JSONArray();
+                        }
+                      }
+                      if (jsonArr.length() > 0) {
                         ApiFuture<AppendRowsResponse> future = writer.append(jsonArr);
                         AppendRowsResponse response = future.get();
-                        jsonArr = new JSONArray();
                       }
+
+                      // Finalize the stream after use.
+                      FinalizeWriteStreamRequest finalizeWriteStreamRequest =
+                          FinalizeWriteStreamRequest.newBuilder()
+                              .setName(writeStream.getName())
+                              .build();
+                      bqClient.finalizeWriteStream(finalizeWriteStreamRequest);
                     }
-                    if (jsonArr.length() > 0) {
-                      ApiFuture<AppendRowsResponse> future = writer.append(jsonArr);
-                      AppendRowsResponse response = future.get();
-                    }
-                    writer.close();
                   }
                 });
           }
@@ -172,7 +192,7 @@ public class PubSubToBQ implements BaseTemplate {
     }
 
     LOGGER.info(
-        "Starting Pub/Sub to BigQuery spark job with following parameters:"
+        "Starting PubSub to BQ spark job with following parameters:"
             + "1. {}:{}"
             + "2. {}:{}"
             + "3. {}:{}"
