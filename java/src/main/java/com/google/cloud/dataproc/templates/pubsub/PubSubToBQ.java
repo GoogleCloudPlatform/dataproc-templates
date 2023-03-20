@@ -106,7 +106,7 @@ public class PubSubToBQ implements BaseTemplate {
     jsc.start();
     jsc.awaitTerminationOrTimeout(timeoutMs);
 
-    LOGGER.info("PubSubToBq job completed.");
+    LOGGER.info("PubSubToBigQuery job completed.");
     jsc.stop();
   }
 
