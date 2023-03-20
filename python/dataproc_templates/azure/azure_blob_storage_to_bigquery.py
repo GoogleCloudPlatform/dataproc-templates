@@ -23,10 +23,10 @@ from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
 
-__all__ = ['AzureBlobToBigQueryTemplate']
+__all__ = ['AzureBlobStorageToBigQueryTemplate']
 
 
-class AzureBlobToBigQueryTemplate(BaseTemplate):
+class AzureBlobStorageToBigQueryTemplate(BaseTemplate):
     """
     Dataproc template implementing loads from GCS into BigQuery
     """
@@ -36,26 +36,26 @@ class AzureBlobToBigQueryTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.AZ_BQ_INPUT_LOCATION}',
-            dest=constants.AZ_BQ_INPUT_LOCATION,
+            f'--{constants.AZ_BLOB_BQ_INPUT_LOCATION}',
+            dest=constants.AZ_BLOB_BQ_INPUT_LOCATION,
             required=True,
             help='Location of the input files'
         )
         parser.add_argument(
-            f'--{constants.AZ_BQ_OUTPUT_DATASET}',
-            dest=constants.AZ_BQ_OUTPUT_DATASET,
+            f'--{constants.AZ_BLOB_BQ_OUTPUT_DATASET}',
+            dest=constants.AZ_BLOB_BQ_OUTPUT_DATASET,
             required=True,
             help='BigQuery dataset for the output table'
         )
         parser.add_argument(
-            f'--{constants.AZ_BQ_OUTPUT_TABLE}',
-            dest=constants.AZ_BQ_OUTPUT_TABLE,
+            f'--{constants.AZ_BLOB_BQ_OUTPUT_TABLE}',
+            dest=constants.AZ_BLOB_BQ_OUTPUT_TABLE,
             required=True,
             help='BigQuery output table name'
         )
         parser.add_argument(
-            f'--{constants.AZ_BQ_INPUT_FORMAT}',
-            dest=constants.AZ_BQ_INPUT_FORMAT,
+            f'--{constants.AZ_BLOB_BQ_INPUT_FORMAT}',
+            dest=constants.AZ_BLOB_BQ_INPUT_FORMAT,
             required=True,
             help='Input file format (one of: avro,parquet,csv,json)',
             choices=[
@@ -67,14 +67,14 @@ class AzureBlobToBigQueryTemplate(BaseTemplate):
             ]
         )
         parser.add_argument(
-            f'--{constants.AZ_BQ_LD_TEMP_BUCKET_NAME}',
-            dest=constants.AZ_BQ_LD_TEMP_BUCKET_NAME,
+            f'--{constants.AZ_BLOB_BQ_LD_TEMP_BUCKET_NAME}',
+            dest=constants.AZ_BLOB_BQ_LD_TEMP_BUCKET_NAME,
             required=True,
             help='Spark BigQuery connector temporary bucket'
         )
         parser.add_argument(
-            f'--{constants.AZ_BQ_OUTPUT_MODE}',
-            dest=constants.AZ_BQ_OUTPUT_MODE,
+            f'--{constants.AZ_BLOB_BQ_OUTPUT_MODE}',
+            dest=constants.AZ_BLOB_BQ_OUTPUT_MODE,
             required=False,
             default=constants.OUTPUT_MODE_APPEND,
             help=(
@@ -90,21 +90,21 @@ class AzureBlobToBigQueryTemplate(BaseTemplate):
             ]
         )
         parser.add_argument(
-            f'--{constants.AZ_STORAGE_ACCOUNT}',
-            dest=constants.AZ_STORAGE_ACCOUNT,
+            f'--{constants.AZ_BLOB_STORAGE_ACCOUNT}',
+            dest=constants.AZ_BLOB_STORAGE_ACCOUNT,
             required=True,
             help='Azure Storage Account'
         )
         parser.add_argument(
-            f'--{constants.AZ_CONTAINER_NAME}',
-            dest=constants.AZ_CONTAINER_NAME,
+            f'--{constants.AZ_BLOB_CONTAINER_NAME}',
+            dest=constants.AZ_BLOB_CONTAINER_NAME,
             required=True,
             help='Azure Account Name'
         )
 
         parser.add_argument(
-            f'--{constants.AZ_SAS_TOKEN}',
-            dest=constants.AZ_SAS_TOKEN,
+            f'--{constants.AZ_BLOB_SAS_TOKEN}',
+            dest=constants.AZ_BLOB_SAS_TOKEN,
             required=True,
             help='Azure SAS TOKEN'
         )
@@ -119,15 +119,15 @@ class AzureBlobToBigQueryTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.AZ_BQ_INPUT_LOCATION]
-        big_query_dataset: str = args[constants.AZ_BQ_OUTPUT_DATASET]
-        big_query_table: str = args[constants.AZ_BQ_OUTPUT_TABLE]
-        input_file_format: str = args[constants.AZ_BQ_INPUT_FORMAT]
-        bq_temp_bucket: str = args[constants.AZ_BQ_LD_TEMP_BUCKET_NAME]
-        output_mode: str = args[constants.AZ_BQ_OUTPUT_MODE]
-        storage_account: str = args[constants.AZ_STORAGE_ACCOUNT]
-        container_name: str = args[constants.AZ_CONTAINER_NAME]
-        sas_token: str = args[constants.AZ_SAS_TOKEN]
+        input_file_location: str = args[constants.AZ_BLOB_BQ_INPUT_LOCATION]
+        big_query_dataset: str = args[constants.AZ_BLOB_BQ_OUTPUT_DATASET]
+        big_query_table: str = args[constants.AZ_BLOB_BQ_OUTPUT_TABLE]
+        input_file_format: str = args[constants.AZ_BLOB_BQ_INPUT_FORMAT]
+        bq_temp_bucket: str = args[constants.AZ_BLOB_BQ_LD_TEMP_BUCKET_NAME]
+        output_mode: str = args[constants.AZ_BLOB_BQ_OUTPUT_MODE]
+        storage_account: str = args[constants.AZ_BLOB_STORAGE_ACCOUNT]
+        container_name: str = args[constants.AZ_BLOB_CONTAINER_NAME]
+        sas_token: str = args[constants.AZ_BLOB_SAS_TOKEN]
 
         spark.conf.set(f"fs.azure.sas.{container_name}.{storage_account}.blob.core.windows.net", sas_token)
 
@@ -161,6 +161,6 @@ class AzureBlobToBigQueryTemplate(BaseTemplate):
         input_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
-            .option(constants.AZ_BQ_TEMP_BUCKET, bq_temp_bucket) \
+            .option(constants.AZ_BLOB_BQ_TEMP_BUCKET, bq_temp_bucket) \
             .mode(output_mode) \
             .save()

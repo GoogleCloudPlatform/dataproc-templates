@@ -309,13 +309,13 @@ KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
 KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
 
 # Azure Storage to BigQuery
-AZ_BQ_INPUT_LOCATION = "azure.bigquery.input.location"
-AZ_BQ_INPUT_FORMAT = "azure.bigquery.input.format"
-AZ_BQ_OUTPUT_DATASET = "azure.bigquery.output.dataset"
-AZ_BQ_OUTPUT_TABLE = "azure.bigquery.output.table"
-AZ_BQ_OUTPUT_MODE = "azure.bigquery.output.mode"
-AZ_BQ_TEMP_BUCKET = "temporaryGcsBucket"
-AZ_BQ_LD_TEMP_BUCKET_NAME = "azure.bigquery.temp.bucket.name"
-AZ_STORAGE_ACCOUNT= "azure.storage.account"
-AZ_CONTAINER_NAME=  "azure.container.name"
-AZ_SAS_TOKEN="azure.sas"
+AZ_BLOB_BQ_INPUT_LOCATION = "azure.blob.bigquery.input.location"
+AZ_BLOB_BQ_INPUT_FORMAT = "azure.blob.bigquery.input.format"
+AZ_BLOB_BQ_OUTPUT_DATASET = "azure.blob.bigquery.output.dataset"
+AZ_BLOB_BQ_OUTPUT_TABLE = "azure.blob.bigquery.output.table"
+AZ_BLOB_BQ_OUTPUT_MODE = "azure.blob.bigquery.output.mode"
+AZ_BLOB_BQ_TEMP_BUCKET = "temporaryGcsBucket"
+AZ_BLOB_BQ_LD_TEMP_BUCKET_NAME = "azure.blob.bigquery.temp.bucket.name"
+AZ_BLOB_STORAGE_ACCOUNT = "azure.blob.storage.account"
+AZ_BLOB_CONTAINER_NAME = "azure.blob.container.name"
+AZ_BLOB_SAS_TOKEN = "azure.blob.sas.token"

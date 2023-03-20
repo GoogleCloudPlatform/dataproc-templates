@@ -42,7 +42,7 @@ from dataproc_templates.kafka.kafka_to_gcs import KafkaToGCSTemplate
 from dataproc_templates.kafka.kafka_to_bq import KafkaToBigQueryTemplate
 from dataproc_templates.s3.s3_to_bigquery import S3ToBigQueryTemplate
 from dataproc_templates.cassandra.cassandra_to_gcs import CassandraToGCSTemplate
-from dataproc_templates.azure.azure_to_bigquery import AzureBlobToBigQueryTemplate
+from dataproc_templates.azure.azure_blob_storage_to_bigquery import AzureBlobStorageToBigQueryTemplate
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
 
@@ -66,7 +66,7 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.SNOWFLAKETOGCS: SnowflakeToGCSTemplate,
     TemplateName.REDSHIFTTOGCS: RedshiftToGCSTemplate,
     TemplateName.CASSANDRATOBQ: CassandraToBQTemplate,
-    TemplateName.AZUREBLOBTOBQ: AzureBlobToBigQueryTemplate
+    TemplateName.AZUREBLOBSTORAGETOBQ: AzureBlobStorageToBigQueryTemplate
     TemplateName.CASSANDRATOGCS: CassandraToGCSTemplate,
     TemplateName.HIVEDDLEXTRACTOR: HiveDDLExtractorTemplate,
     TemplateName.KAFKATOGCS: KafkaToGCSTemplate,

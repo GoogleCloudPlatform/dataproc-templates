@@ -9,12 +9,12 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `azure.storage.account`: Azure Storage Account  
 * `azure.container.name`:  Azure Container Name
 * `azure.sas`: Azure SAS Token
-* `azure.bigquery.input.location`: Azure blob of the input files (format: `"wasbs://{azure.container.name}@{azure.storage.account}.blob.core.windows.net/{input_location}"`)
-* `azure.bigquery.output.dataset`: BigQuery dataset for the output table
-* `azure.bigquery.output.table`: BigQuery output table name
-* `azure.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json)
-* `azure.bigquery.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
-* `azure.bigquery.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+* `azure.blob.bigquery.input.location`: Azure blob of the input files (format: `"wasbs://{azure.container.name}@{azure.storage.account}.blob.core.windows.net/{input_location}"`)
+* `azure.blob.bigquery.output.dataset`: BigQuery dataset for the output table
+* `azure.blob.bigquery.output.table`: BigQuery output table name
+* `azure.blob.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `azure.blob.bigquery.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
+* `azure.blob.bigquery.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 
 ## Usage
 
@@ -22,35 +22,35 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 $ python main.py --template AZUREBLOBTOBQ --help
 
 usage: main.py --template AZUREBLOBTOBQ [-h] \
-    --azure.bigquery.input.location AZURE.BIGQUERY.INPUT.LOCATION \
-    --azure.bigquery.output.dataset AZURE.BIGQUERY.OUTPUT.DATASET \
-    --azure.bigquery.output.table AZURE.BIGQUERY.OUTPUT.TABLE \
-    --azure.bigquery.input.format {avro,parquet,csv,json} \
-    --azure.bigquery.temp.bucket.name AZURE.BIGQUERY.TEMP.BUCKET.NAME \
-    --azure.bigquery.output.mode {overwrite,append,ignore,errorifexists} \ 
-    --azure.storage.account AZURE.STORAGE.ACCOUNT \
-    --azure.container.name AZURE.CONTAINER.NAME \
-    --azure.sas AZURE.SAS  
+    --azure.blob.bigquery.input.location AZURE.BLOB.BIGQUERY.INPUT.LOCATION \
+    --azure.blob.bigquery.output.dataset AZURE.BLOB.BIGQUERY.OUTPUT.DATASET \
+    --azure.blob.bigquery.output.tableAZURE.BLOB.BIGQUERY.OUTPUT.TABLE \
+    --azure.blob.bigquery.input.format {avro,parquet,csv,json} \
+    --azure.blob.bigquery.temp.bucket.name AZURE.BLOB.BIGQUERY.TEMP.BUCKET.NAME \
+    --azure.blob.bigquery.output.mode {overwrite,append,ignore,errorifexists} \ 
+    --azure.blob.storage.account AZURE.BLOB.STORAGE.ACCOUNT \
+    --azure.blob.container.name AZURE.BLOB.CONTAINER.NAME \
+    --azure.blob.sas.token AZURE.BLOB.SAS.TOKEN  
 
 optional arguments:
   -h, --help            show this help message and exit
-  --azure.bigquery.input.location AZURE.BIGQUERY.INPUT.LOCATION
+  --azure.blob.bigquery.input.location AZURE.BLOB.BIGQUERY.INPUT.LOCATION
                         AZURE blob location of the input files
-  --azure.bigquery.output.dataset AZURE.BIGQUERY.OUTPUT.DATASET
+  --azure.blob.bigquery.output.dataset AZURE.BLOB.BIGQUERY.OUTPUT.DATASET
                         BigQuery dataset for the output table
-  --azure.bigquery.output.table AZURE.BIGQUERY.OUTPUT.TABLE
+  --azure.blob.bigquery.output.table AZURE.BLOB.BIGQUERY.OUTPUT.TABLE
                         BigQuery output table name
-  --azure.bigquery.input.format {avro,parquet,csv,json}
+  --azure.blob.bigquery.input.format {avro,parquet,csv,json}
                         Input file format (one of: avro,parquet,csv,json)
-  --azure.bigquery.temp.bucket.name AZURE.BIGQUERY.TEMP.BUCKET.NAME
+  --azure.blob.bigquery.temp.bucket.name AZURE.BLOB.BIGQUERY.TEMP.BUCKET.NAME
                         Spark BigQuery connector temporary bucket
-  --azure.bigquery.output.mode {overwrite,append,ignore,errorifexists}
+  --azure.blob.bigquery.output.mode {overwrite,append,ignore,errorifexists}
                         Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
-  --azure.storage.account AZURE.STORAGE.ACCOUNT 
+  --azure.blob.storage.account AZURE.BLOB.STORAGE.ACCOUNT 
                         Azure storage account
-  --azure.container.name AZURE.CONTAINER.NAME 
+  --azure.blob.container.name AZURE.BLOB.CONTAINER.NAME 
                         Azure container name
-  --azure.sas AZURE.SAS 
+  --azure.blob.sas AZURE.BLOB.SAS.TOKEN 
                         Azure SAS token      
 ```
 
@@ -68,13 +68,13 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, gs://{jars_
 
 ./bin/start.sh \
 -- --template=AZUREBLOBTOBQ \
-    --azure.bigquery.input.format="<json|csv|parquet|avro>" \
-    --azure.bigquery.input.location="wasbs://{azure.container.name}@{azure.storage.account}.blob.core.windows.net/{input_location}" \
-    --azure.bigquery.output.dataset="<dataset>" \
-    --azure.bigquery.output.table="<table>" \
-    --azure.bigquery.output.mode=<append|overwrite|ignore|errorifexists>\
-    --azure.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
-    --azure.storage.account AZURE.STORAGE.ACCOUNT \
-    --azure.container.name AZURE.CONTAINER.NAME \
-    --azure.sas AZURE.SAS 
+    --azure.blob.bigquery.input.format="<json|csv|parquet|avro>" \
+    --azure.blob.bigquery.input.location="wasbs://{azure.container.name}@{azure.storage.account}.blob.core.windows.net/{input_location}" \
+    --azure.blob.bigquery.output.dataset="<dataset>" \
+    --azure.blob.bigquery.output.table="<table>" \
+    --azure.blob.bigquery.output.mode=<append|overwrite|ignore|errorifexists>\
+    --azure.blob.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
+    --azure.blob.storage.account AZURE.BLOB.STORAGE.ACCOUNT \
+    --azure.blob.container.name AZURE.BLOB.CONTAINER.NAME \
+    --azure.blob.sas.token AZURE.BLOB.SAS.TOKEN 
 ```
