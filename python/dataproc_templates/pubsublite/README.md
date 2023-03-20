@@ -10,6 +10,7 @@ Template for reading files from Pub/Sub lite and writing them to Google Cloud St
 * `pubsublite.to.gcs.output.location`: GCS Location to put Output Files (format: `gs://BUCKET/...`)
 * `pubsublite.to.gcs.checkpoint.location`: GCS Checkpoint Folder Location
 * `pubsublite.to.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json)(Defaults to csv)
+* `pubsublite.to.gcs.timeout.ms`: Time for which the subscription will be read
 
 ## Usage
 
@@ -20,6 +21,7 @@ usage: main.py --template PUBSUBLITETOGCS [-h] \
 	--pubsublite.to.gcs.input.subscription PUBSUBLITE.GCS.INPUT.SUBSCRIPTION \
 	--pubsublite.to.gcs.output.location PUBSUBLITE.GCS.OUTPUT.LOCATION \
 	--pubsublite.to.gcs.checkpoint.location PUBSUBLITE.GCS.CHECKPOINT.LOCATION \
+    --pubsublite.to.gcs.timeout.ms PUBSUBLITE.GCS.TIMEOUT.MS \
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -48,4 +50,5 @@ export REGION=us-central1
     --pubsublite.to.gcs.output.location=gs://outputLocation",
     --pubsublite.to.gcs.checkpoint.location=gs://checkpointLocation",
     --pubsublite.to.gcs.output.format=csv"
+    --pubsublite.to.gcs.timeout.ms=120
 ```
