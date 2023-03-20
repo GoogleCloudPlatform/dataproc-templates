@@ -433,4 +433,21 @@ public interface TemplateConstants {
   String JDBCTOJDBC_OUTPUT_PRIMARY_KEY = "jdbctojdbc.output.primary.key";
   String JDBCTOJDBC_TEMP_VIEW_NAME = "jdbctojdbc.temp.view.name";
   String JDBCTOJDBC_SQL_QUERY = "jdbctojdbc.sql.query";
+  
+  /** TextToBigquery properties */
+  String TEXT_BIGQUERY_INPUT_LOCATION = "text.bigquery.input.location";
+
+  String TEXT_BIGQUERY_INPUT_COMPRESSION = "text.bigquery.input.compression";
+  String TEXT_BIGQUERY_INPUT_DELIMITER = "text.bigquery.input.delimiter";
+  String TEXT_BIGQUERY_OUTPUT_DATASET = "text.bigquery.output.dataset";
+  String TEXT_BIGQUERY_OUTPUT_TABLE = "text.bigquery.output.table";
+  String TEXT_BIGQUERY_OUTPUT_MODE = "text.bigquery.output.mode";
+  String TEXT_BIGQUERY_TEMP_BUCKET = "text.bigquery.temp.bucket";
+  String TEXT_BIGQUERY_TEMP_TABLE = "text.bigquery.temp.table";
+  String TEXT_BIGQUERY_TEMP_QUERY = "text.bigquery.temp.query";
+
+  String TEXT_BIGQUERY_COMPRESSION_OPTION = "compression";
+  String TEXT_BIGQUERY_DELIMITER_OPTION = "delimiter";
+  String TEXT_BIGQUERY_INFERSCHEMA_OPTION = "inferSchema";
+  String TEXT_BIGQUERY_HEADER_OPTION = "header";
 }

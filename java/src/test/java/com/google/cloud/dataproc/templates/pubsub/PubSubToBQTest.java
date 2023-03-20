@@ -46,7 +46,7 @@ public class PubSubToBQTest {
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
 
     pubSubToBQ = new PubSubToBQ();
-    assertDoesNotThrow(pubSubToBQ::runTemplate);
+    assertDoesNotThrow(pubSubToBQ::validateInput);
   }
 
   @ParameterizedTest

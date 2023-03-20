@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 Google LLC
+ * Copyright (C) 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,15 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates.databases;
+package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_INPUT_COLLECTION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_INPUT_DATABASE;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_INPUT_URI;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_OUTPUT_FORMAT;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_OUTPUT_LOCATION;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.MONGO_GCS_OUTPUT_MODE;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,11 +31,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MongoToGCSTest {
+public class TextToBigqueryTest {
 
-  private MongoToGCS MONGOToGCSTestObj;
+  private TextToBigquery textToBigquery;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(MongoToGCSTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TextToBigqueryTest.class);
 
   @BeforeEach
   void setUp() {
@@ -54,15 +48,16 @@ public class MongoToGCSTest {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     Properties props = PropertyUtil.getProperties();
     PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
-    props.setProperty(MONGO_GCS_OUTPUT_LOCATION, "gs://output-bucket");
-    props.setProperty(MONGO_GCS_OUTPUT_FORMAT, "parquet");
-    props.setProperty(MONGO_GCS_OUTPUT_MODE, "overwrite");
-    props.setProperty(MONGO_GCS_INPUT_URI, "0.0.0.0");
-    props.setProperty(MONGO_GCS_INPUT_DATABASE, "testDB");
-    props.setProperty(MONGO_GCS_INPUT_COLLECTION, "testCollection");
-    MONGOToGCSTestObj = new MongoToGCS();
+    props.setProperty(TEXT_BIGQUERY_INPUT_LOCATION, "gs://test-bucket");
+    props.setProperty(TEXT_BIGQUERY_INPUT_COMPRESSION, "deflate");
+    props.setProperty(TEXT_BIGQUERY_INPUT_DELIMITER, ",");
+    props.setProperty(TEXT_BIGQUERY_OUTPUT_DATASET, "dataset");
+    props.setProperty(TEXT_BIGQUERY_OUTPUT_TABLE, "table");
+    props.setProperty(TEXT_BIGQUERY_OUTPUT_MODE, "Overwrite");
+    props.setProperty(TEXT_BIGQUERY_TEMP_BUCKET, "xyz/ab");
+    textToBigquery = new TextToBigquery();
 
-    assertDoesNotThrow(MONGOToGCSTestObj::validateInput);
+    assertDoesNotThrow(textToBigquery::validateInput);
   }
 
   @ParameterizedTest
@@ -70,24 +65,25 @@ public class MongoToGCSTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    MONGOToGCSTestObj = new MongoToGCS();
+    textToBigquery = new TextToBigquery();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> MONGOToGCSTestObj.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> textToBigquery.runTemplate());
     assertEquals(
-        "Required parameters for Mongo to GCS not passed. "
-            + "Set mandatory parameter for Mongo to GCS template "
-            + "in resources/conf/template.properties file.",
+        "Required parameters for TextToBigquery not passed. "
+            + "Set mandatory parameter for TextToBigquery template"
+            + " in resources/conf/template.properties file.",
         exception.getMessage());
   }
 
   static Stream<String> propertyKeys() {
     return Stream.of(
         PROJECT_ID_PROP,
-        MONGO_GCS_OUTPUT_LOCATION,
-        MONGO_GCS_OUTPUT_FORMAT,
-        MONGO_GCS_OUTPUT_MODE,
-        MONGO_GCS_INPUT_URI,
-        MONGO_GCS_INPUT_DATABASE,
-        MONGO_GCS_INPUT_COLLECTION);
+        TEXT_BIGQUERY_INPUT_LOCATION,
+        TEXT_BIGQUERY_INPUT_COMPRESSION,
+        TEXT_BIGQUERY_INPUT_DELIMITER,
+        TEXT_BIGQUERY_OUTPUT_DATASET,
+        TEXT_BIGQUERY_OUTPUT_TABLE,
+        TEXT_BIGQUERY_OUTPUT_MODE,
+        TEXT_BIGQUERY_TEMP_BUCKET);
   }
 }

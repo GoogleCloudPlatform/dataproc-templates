@@ -54,6 +54,7 @@ public interface BaseTemplate {
     JDBCTOSPANNER,
     PUBSUBTOBIGTABLE,
     GCSTOBIGTABLE,
+    TEXTTOBIGQUERY,
     JDBCTOJDBC
   }
 
@@ -63,5 +64,5 @@ public interface BaseTemplate {
 
   void validateInput() throws Exception;
   /** Executes the template. */
-  void runTemplate() throws StreamingQueryException, TimeoutException, SQLException;
+  void runTemplate() throws StreamingQueryException, TimeoutException, SQLException, InterruptedException;
 }
