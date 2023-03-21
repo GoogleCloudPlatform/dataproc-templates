@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Google LLC
+ * Copyright (C) 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates.pubsub;
+package com.google.cloud.dataproc.templates.gcs;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,14 +31,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PubSubToBigTableTest {
+public class TextToBigqueryTest {
 
-  private PubSubToBigTable pubSubToBigTableTest;
-  private static final Logger LOGGER = LoggerFactory.getLogger(PubSubToBigTableTest.class);
+  private TextToBigquery textToBigquery;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(TextToBigqueryTest.class);
 
   @BeforeEach
   void setUp() {
-
     System.setProperty("hadoop.home.dir", "/");
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
@@ -45,17 +46,18 @@ public class PubSubToBigTableTest {
   @Test
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_PROJECT_ID_PROP, "yadavaja-sandbox");
-    PropertyUtil.getProperties()
-        .setProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP, "pubsubtobigtable-sub");
-    PropertyUtil.getProperties()
-        .setProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP, "bt-templates-test");
-    PropertyUtil.getProperties()
-        .setProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP, "yadavaja-sandbox");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP, "bus-data");
+    Properties props = PropertyUtil.getProperties();
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
+    props.setProperty(TEXT_BIGQUERY_INPUT_LOCATION, "gs://test-bucket");
+    props.setProperty(TEXT_BIGQUERY_INPUT_COMPRESSION, "deflate");
+    props.setProperty(TEXT_BIGQUERY_INPUT_DELIMITER, ",");
+    props.setProperty(TEXT_BIGQUERY_OUTPUT_DATASET, "dataset");
+    props.setProperty(TEXT_BIGQUERY_OUTPUT_TABLE, "table");
+    props.setProperty(TEXT_BIGQUERY_OUTPUT_MODE, "Overwrite");
+    props.setProperty(TEXT_BIGQUERY_TEMP_BUCKET, "xyz/ab");
+    textToBigquery = new TextToBigquery();
 
-    pubSubToBigTableTest = new PubSubToBigTable();
-    assertDoesNotThrow(pubSubToBigTableTest::validateInput);
+    assertDoesNotThrow(textToBigquery::validateInput);
   }
 
   @ParameterizedTest
@@ -63,23 +65,25 @@ public class PubSubToBigTableTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    pubSubToBigTableTest = new PubSubToBigTable();
-
+    textToBigquery = new TextToBigquery();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> pubSubToBigTableTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> textToBigquery.runTemplate());
     assertEquals(
-        "Required parameters for PubSubToBigTable not passed. "
-            + "Set mandatory parameter for PubSubToBigTable template "
-            + "in resources/conf/template.properties file.",
+        "Required parameters for TextToBigquery not passed. "
+            + "Set mandatory parameter for TextToBigquery template"
+            + " in resources/conf/template.properties file.",
         exception.getMessage());
   }
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-        PUBSUB_INPUT_PROJECT_ID_PROP,
-        PUBSUB_INPUT_SUBSCRIPTION_PROP,
-        PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
-        PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
-        PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
+        PROJECT_ID_PROP,
+        TEXT_BIGQUERY_INPUT_LOCATION,
+        TEXT_BIGQUERY_INPUT_COMPRESSION,
+        TEXT_BIGQUERY_INPUT_DELIMITER,
+        TEXT_BIGQUERY_OUTPUT_DATASET,
+        TEXT_BIGQUERY_OUTPUT_TABLE,
+        TEXT_BIGQUERY_OUTPUT_MODE,
+        TEXT_BIGQUERY_TEMP_BUCKET);
   }
 }
