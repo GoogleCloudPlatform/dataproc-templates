@@ -64,9 +64,11 @@ REDSHIFT_IAMROLE = "aws_iam_role"
 AWS_S3ACCESSKEY = "fs.s3a.access.key"
 AWS_S3SECRETKEY = "fs.s3a.secret.key"
 AWS_S3ENDPOINT = "fs.s3a.endpoint"
-SQL_EXTENSION= "spark.sql.extensions"
-CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
-CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
+SQL_EXTENSION = "spark.sql.extensions"
+CASSANDRA_EXTENSION = "com.datastax.spark.connector.CassandraSparkExtensions"
+CASSANDRA_CATALOG = "com.datastax.spark.connector.datasource.CassandraCatalog"
+PUBSUBLITE_SUBSCRIPTION = "pubsublite.subscription"
+PUBSUBLITE_CHECKPOINT_LOCATION = "checkpointLocation"
 
 
 # Output mode
@@ -315,7 +317,7 @@ KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
 PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL = "pubsublite.to.gcs.input.subscription.url"
 PUBSUBLITE_TO_GCS_WRITE_MODE = "pubsublite.to.gcs.write.mode"
 PUBSUBLITE_TO_GCS_OUTPUT_LOCATION = "pubsublite.to.gcs.output.location"
-PUBSUBLITE_CHECKPOINT_LOCATION = "pubsublite.to.gcs.checkpoint.location"
+PUBSUBLITE_TO_GCS_CHECKPOINT_LOCATION = "pubsublite.to.gcs.checkpoint.location"
 PUBSUBLITE_TO_GCS_OUTPUT_FORMAT = "pubsublite.to.gcs.output.format"
 PUBSUBLITE_TO_GCS_TIMEOUT = "pubsublite.to.gcs.timeout"
 PUBSUBLITE_TO_GCS_PROCESSING_TIME = "pubsublite.to.gcs.processing.time"
@@ -333,10 +335,11 @@ AZ_BLOB_CONTAINER_NAME = "azure.blob.container.name"
 AZ_BLOB_SAS_TOKEN = "azure.blob.sas.token"
 
 # Pub/Sub Lite to Bigtable
-PUBSUBLITE_BIGTABLE_INPUT_SUBSCRIPTION='pubsublite.bigtable.input.subscription'
-PUBSUBLITE_BIGTABLE_TIMEOUT='pubsublite.bigtable.timeout'
-PUBSUBLITE_BIGTABLE_TRIGGER='pubsublite.bigtable.trigger'
-PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT='pubsublite.bigtable.output.project'
-PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE='pubsublite.bigtable.output.instance'
-PUBSUBLITE_BIGTABLE_OUTPUT_TABLE='pubsublite.bigtable.output.table'
-PUBSUBLITE_BIGTABLE_OUTPUT_COLUMN_FAMILY='pubsublite.bigtable.output.column.family'
+PUBSUBLITE_BIGTABLE_SUBSCRIPTION_URL = "pubsublite.bigtable.subscription.url"
+PUBSUBLITE_BIGTABLE_SUBSCRIPTION_TIMEOUT = "pubsublite.bigtable.subsciption.timeout"
+PUBSUBLITE_BIGTABLE_SUBSCRIPTION_TRIGGER = "pubsublite.bigtable.subsciption.trigger"
+PUBSUBLITE_BIGTABLE_CHECKPOINT_LOCATION = "pubsublite.bigtable.checkpoint.location"
+PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT = "pubsublite.bigtable.output.project"
+PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE = "pubsublite.bigtable.output.instance"
+PUBSUBLITE_BIGTABLE_OUTPUT_TABLE = "pubsublite.bigtable.output.table"
+PUBSUBLITE_BIGTABLE_OUTPUT_COLUMN_FAMILY = "pubsublite.bigtable.output.column.family"

@@ -49,8 +49,8 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             help='GCS output Bucket URL'
         )
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_CHECKPOINT_LOCATION}',
-            dest=constants.PUBSUBLITE_CHECKPOINT_LOCATION,
+            f'--{constants.PUBSUBLITE_TO_GCS_CHECKPOINT_LOCATION}',
+            dest=constants.PUBSUBLITE_TO_GCS_CHECKPOINT_LOCATION,
             required=True,
             help='Temporary folder for checkpoint location'
         )
@@ -98,7 +98,7 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
         input_subscription_url: str = args[constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL]
         output_location: str = args[constants.PUBSUBLITE_TO_GCS_OUTPUT_LOCATION]
         output_mode: str = args[constants.PUBSUBLITE_TO_GCS_WRITE_MODE]
-        pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_CHECKPOINT_LOCATION]
+        pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_TO_GCS_CHECKPOINT_LOCATION]
         output_format: str = args[constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT]
         timeout: int = args[constants.PUBSUBLITE_TO_GCS_TIMEOUT]
         processing_time: str = args[constants.PUBSUBLITE_TO_GCS_PROCESSING_TIME]
