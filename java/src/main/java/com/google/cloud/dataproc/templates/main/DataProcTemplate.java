@@ -94,6 +94,7 @@ public class DataProcTemplate {
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
           .put(TemplateName.SNOWFLAKETOGCS, SnowflakeToGCS::of)
+          .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
@@ -146,7 +147,8 @@ public class DataProcTemplate {
     }
   }
 
-  public static void main(String... args) throws StreamingQueryException, TimeoutException {
+  public static void main(String... args)
+      throws StreamingQueryException, TimeoutException, InterruptedException {
     BaseTemplate template = createTemplateAndRegisterProperties(args);
     runSparkJob(template);
   }
@@ -198,7 +200,8 @@ public class DataProcTemplate {
    *
    * @param template the template to run.
    */
-  static void runSparkJob(BaseTemplate template) throws StreamingQueryException, TimeoutException {
+  static void runSparkJob(BaseTemplate template)
+      throws StreamingQueryException, TimeoutException, InterruptedException {
     LOGGER.debug("Start runSparkJob");
     template.runTemplate();
     LOGGER.debug("End runSparkJob");
