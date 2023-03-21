@@ -79,6 +79,12 @@ class PubsubliteToGCSTemplate(BaseTemplate):
             required=True,
             help=('Time for which subscriptions will be read')
         )
+        parser.add_argument(
+            f'--{constants.PUBSUBLITE_TO_GCS_PROCESSING_TIME}',
+            dest=constants.PUBSUBLITE_TO_GCS_PROCESSING_TIME,
+            required=True,
+            help=('Time interval at which the query will be triggered to process input data')
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -96,6 +102,7 @@ class PubsubliteToGCSTemplate(BaseTemplate):
         pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_CHECKPOINT_LOCATION]
         output_format: str = args[constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT]
         timeout: str = args[constants.PUBSUBLITE_TO_GCS_TIMEOUT]
+        processing_time: str = args[constants.PUBSUBLITE_TO_GCS_PROCESSING_TIME]
 
         logger.info(
             "Starting Pubsublite to GCS spark job with parameters:\n"
@@ -114,7 +121,7 @@ class PubsubliteToGCSTemplate(BaseTemplate):
             .option("checkpointLocation", pubsublite_checkpoint_location) \
             .option("path", output_location) \
             .outputMode(output_mode) \
-            .trigger(processingTime="1 second") \
+            .trigger(processingTime=processing_time) \
             .start())
 
         # Wait for some time (must be >= 60 seconds) to start receiving messages.
