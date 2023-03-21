@@ -16,19 +16,19 @@
 
 import mock
 import pyspark
-from dataproc_templates.pubsublite.pubsublite_to_gcs import PubsubliteToGCSTemplate
+from dataproc_templates.pubsublite.pubsublite_to_gcs import PubSubLiteToGCSTemplate
 import dataproc_templates.util.template_constants as constants
 
 
-class TestPubsubliteToGCSTemplate:
+class TestPubSubLiteToGCSTemplate:
     """
-    Test suite for PubsubliteToGCSTemplate
+    Test suite for PubSubLiteToGCSTemplate
     """
 
     def test_parse_args1(self):
-        """Tests PubsubliteToGCSTemplate.parse_args()"""
+        """Tests PubSubLiteToGCSTemplate.parse_args()"""
 
-        pubsublite_to_gcs_template = PubsubliteToGCSTemplate()
+        pubsublite_to_gcs_template = PubSubLiteToGCSTemplate()
         parsed_args = pubsublite_to_gcs_template.parse_args(
             ["--pubsublite.to.gcs.input.subscription.url=test-sub",
              "--pubsublite.to.gcs.write.mode=append",
@@ -48,9 +48,9 @@ class TestPubsubliteToGCSTemplate:
         assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
 
     def test_parse_args2(self):
-        """Tests PubsubliteToGCSTemplate.parse_args() when output format not passed"""
+        """Tests PubSubLiteToGCSTemplate.parse_args() when output format not passed"""
 
-        pubsublite_to_gcs_template = PubsubliteToGCSTemplate()
+        pubsublite_to_gcs_template = PubSubLiteToGCSTemplate()
         parsed_args = pubsublite_to_gcs_template.parse_args(
             ["--pubsublite.to.gcs.input.subscription.url=test-sub",
              "--pubsublite.to.gcs.write.mode=append",
@@ -69,9 +69,9 @@ class TestPubsubliteToGCSTemplate:
         assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
 
     def test_parse_args3(self):
-        """Tests PubsubliteToGCSTemplate.parse_args() when output mode not passed"""
+        """Tests PubSubLiteToGCSTemplate.parse_args() when output mode not passed"""
 
-        pubsublite_to_gcs_template = PubsubliteToGCSTemplate()
+        pubsublite_to_gcs_template = PubSubLiteToGCSTemplate()
         parsed_args = pubsublite_to_gcs_template.parse_args(
             ["--pubsublite.to.gcs.input.subscription.url=test-sub",
              "--pubsublite.to.gcs.output.location=gs://test",

@@ -8,11 +8,11 @@ from pyspark.sql import SparkSession
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
-__all__ = ['PubsubliteToGCSTemplate']
+__all__ = ['PubSubLiteToGCSTemplate']
 
-class PubsubliteToGCSTemplate(BaseTemplate):
+class PubSubLiteToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing exports from Pubsublite to GCS
+    Dataproc template implementing exports from PubSubLite to GCS
     """
 
     @staticmethod
@@ -23,7 +23,7 @@ class PubsubliteToGCSTemplate(BaseTemplate):
             f'--{constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL}',
             dest=constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL,
             required=True,
-            help='Pubsublite to GCS Input subscription url'
+            help='PubSubLite to GCS Input subscription url'
         )
         parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_GCS_WRITE_MODE}',
@@ -104,7 +104,7 @@ class PubsubliteToGCSTemplate(BaseTemplate):
         processing_time: str = args[constants.PUBSUBLITE_TO_GCS_PROCESSING_TIME]
 
         logger.info(
-            "Starting Pubsublite to GCS spark job with parameters:\n"
+            "Starting PubSubLite to GCS spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
