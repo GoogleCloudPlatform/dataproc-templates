@@ -147,7 +147,8 @@ public class DataProcTemplate {
     }
   }
 
-  public static void main(String... args) throws StreamingQueryException, TimeoutException {
+  public static void main(String... args)
+      throws StreamingQueryException, TimeoutException, InterruptedException {
     BaseTemplate template = createTemplateAndRegisterProperties(args);
     runSparkJob(template);
   }
@@ -199,7 +200,8 @@ public class DataProcTemplate {
    *
    * @param template the template to run.
    */
-  static void runSparkJob(BaseTemplate template) throws StreamingQueryException, TimeoutException {
+  static void runSparkJob(BaseTemplate template)
+      throws StreamingQueryException, TimeoutException, InterruptedException {
     LOGGER.debug("Start runSparkJob");
     template.runTemplate();
     LOGGER.debug("End runSparkJob");
