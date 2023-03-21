@@ -40,7 +40,6 @@ public interface TemplateConstants {
    * <p>Note: Key column should be present in input data.
    */
   String BIGTABLE_KEY_COL_PROP = "bigtable.key.col";
-
   String BIGTABLE_COL_FAMILY_NAME_PROP = "bigtable.col.family.name";
   String GCS_STAGING_BUCKET_PATH = "gcs.staging.bucket.path";
 
@@ -64,7 +63,6 @@ public interface TemplateConstants {
 
   /** Property values for HiveToBQ */
   String HIVE_TO_BQ_BIGQUERY_LOCATION = "hivetobq.bigquery.location";
-
   String HIVE_TO_BQ_SQL = "hivetobq.sql";
   String HIVE_TO_BQ_APPEND_MODE = "hivetobq.write.mode";
   String HIVE_TO_BQ_TEMP_GCS_BUCKET = "hivetobq.temp.gcs.bucket";
@@ -73,14 +71,12 @@ public interface TemplateConstants {
 
   /** Property values for HbaseToGCS */
   String HBASE_TO_GCS_OUTPUT_FILE_FORMAT = "hbasetogcs.output.fileformat";
-
   String HBASE_TO_GCS_OUTPUT_SAVE_MODE = "hbasetogcs.output.savemode";
   String HBASE_TO_GCS_OUTPUT_PATH = "hbasetogcs.output.path";
   String HBASE_TO_GCS_TABLE_CATALOG = "hbasetogcs.table.catalog";
 
   /** Property values for CassandraToGCS */
   String CASSANDRA_TO_GSC_INPUT_KEYSPACE = "cassandratogcs.input.keyspace";
-
   String CASSANDRA_TO_GSC_INPUT_TABLE = "cassandratogcs.input.table";
   String CASSANDRA_TO_GSC_INPUT_HOST = "cassandratogcs.input.host";
   String CASSANDRA_TO_GSC_OUTPUT_FORMAT = "cassandratogcs.output.format";
@@ -91,7 +87,6 @@ public interface TemplateConstants {
 
   /** Property values for JDBCToBQ */
   String JDBC_TO_BQ_BIGQUERY_LOCATION = "jdbctobq.bigquery.location";
-
   String JDBC_TO_BQ_JDBC_URL = "jdbctobq.jdbc.url";
   String JDBC_TO_BQ_JDBC_DRIVER_CLASS_NAME = "jdbctobq.jdbc.driver.class.name";
   String JDBC_TO_BQ_JDBC_FETCH_SIZE = "jdbctobq.jdbc.fetchsize";
@@ -108,7 +103,6 @@ public interface TemplateConstants {
 
   /** Property values for JDBCToGCS */
   String JDBC_TO_GCS_OUTPUT_LOCATION = "jdbctogcs.output.location";
-
   String JDBC_TO_GCS_OUTPUT_FORMAT = "jdbctogcs.output.format";
   String JDBC_TO_GCS_JDBC_URL = "jdbctogcs.jdbc.url";
   String JDBC_TO_GCS_JDBC_DRIVER_CLASS_NAME = "jdbctogcs.jdbc.driver.class.name";
@@ -127,7 +121,6 @@ public interface TemplateConstants {
 
   /** Property values for JDBCToSpanner */
   String JDBC_TO_SPANNER_JDBC_URL = "jdbctospanner.jdbc.url";
-
   String JDBC_TO_SPANNER_JDBC_DRIVER_CLASS_NAME = "jdbctospanner.jdbc.driver.class.name";
   String JDBC_TO_SPANNER_JDBC_FETCH_SIZE = "jdbctospanner.jdbc.fetchsize";
   String JDBC_TO_SPANNER_JDBC_SESSION_INIT_STATEMENT = "jdbctospanner.jdbc.sessioninitstatement";
@@ -148,7 +141,6 @@ public interface TemplateConstants {
 
   /** Property values for WordCount template. */
   String WORD_COUNT_INPUT_PATH_PROP = "word.count.input.path";
-
   String WORD_COUNT_OUTPUT_PATH_PROP = "word.count.output.path";
   String WORD_COUNT_INPUT_FORMAT_PROP = "word.count.input.format";
 
@@ -188,7 +180,6 @@ public interface TemplateConstants {
 
   /** GCS to Bigquery properties */
   String GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location";
-
   String GCS_OUTPUT_DATASET_NAME = "gcs.bigquery.output.dataset";
   String GCS_BQ_INPUT_FORMAT = "gcs.bigquery.input.format";
   String GCS_OUTPUT_TABLE_NAME = "gcs.bigquery.output.table";
@@ -208,7 +199,6 @@ public interface TemplateConstants {
 
   /** GCS to BigTable properties */
   String GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location";
-
   String GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format";
   String GCS_BT_OUTPUT_INSTANCE_ID = "gcs.bigtable.output.instance.id";
   String GCS_BT_OUTPUT_PROJECT_ID = "gcs.bigtable.output.project.id";
@@ -217,7 +207,6 @@ public interface TemplateConstants {
 
   /** GCS to GCS properties */
   String GCS_GCS_INPUT_LOCATION = "gcs.gcs.input.location";
-
   String GCS_GCS_INPUT_FORMAT = "gcs.gcs.input.format";
   String GCS_GCS_OUTPUT_LOCATION = "gcs.gcs.output.location";
   String GCS_GCS_OUTPUT_FORMAT = "gcs.gcs.output.format";
@@ -228,7 +217,6 @@ public interface TemplateConstants {
 
   /** GCS to JDBC properties */
   String GCS_JDBC_AVRO_FORMAT = "avro";
-
   String GCS_JDBC_CSV_FORMAT = "csv";
   String GCS_JDBC_CSV_HEADER = "header";
   String GCS_JDBC_CSV_INFER_SCHEMA = "inferSchema";
@@ -244,9 +232,7 @@ public interface TemplateConstants {
   String MONGO_BATCH_SIZE = "maxBatchSize";
   String MONGO_DEFAULT_BATCH_SIZE = "512";
 
-
-  /** GCS to Mongo properties*/
-
+  /** GCS to Mongo properties */
   String GCS_MONGO_INPUT_FORMAT = "gcs.mongodb.input.format";
   String GCS_MONGO_INPUT_LOCATION = "gcs.mongodb.input.location";
   String GCS_MONGO_URL = "gcs.mongodb.output.uri";
@@ -255,10 +241,8 @@ public interface TemplateConstants {
   String GCS_MONGO_BATCH_SIZE = "gcs.mongodb.batch.size";
   String GCS_MONGO_OUTPUT_MODE = "gcs.mongodb.output.mode";
 
-
   /** S3 to Bigquery properties */
   String S3_BQ_INPUT_LOCATION = "s3.bq.input.location";
-
   String S3_BQ_ACCESS_KEY_CONFIG_NAME = "fs.s3a.access.key";
   String S3_BQ_ACCESS_KEY = "s3.bq.access.key";
   String S3_BQ_SECRET_KEY_CONFIG_NAME = "fs.s3a.secret.key";
@@ -278,9 +262,9 @@ public interface TemplateConstants {
   String S3_BQ_AVRO_FORMAT = "avro";
   String S3_BQ_PRQT_FORMAT = "parquet";
   String S3_BQ_JSON_FORMAT = "json";
+
   /** Cassandra to BQ properties */
   String CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace";
-
   String CASSANDRA_TO_BQ_INPUT_TABLE = "cassandratobq.input.table";
   String CASSANDRA_TO_BQ_INPUT_HOST = "cassandratobq.input.host";
   String CASSANDRA_TO_BQ_BIGQUERY_LOCATION = "cassandratobq.bigquery.location";
@@ -291,7 +275,6 @@ public interface TemplateConstants {
 
   /** Bigquery to GCS properties */
   String BQ_GCS_INPUT_TABLE_NAME = "bigquery.gcs.input.table";
-
   String BQ_GCS_OUTPUT_FORMAT_CSV = "csv";
   String BQ_GCS_OUTPUT_FORMAT_AVRO = "avro";
   String BQ_GCS_OUTPUT_FORMAT_PARQUET = "parquet";
@@ -301,7 +284,6 @@ public interface TemplateConstants {
 
   /** RedShift to GCS properties */
   String REDSHIFT_AWS_INPUT_URL = "redshift.aws.input.url";
-
   String REDSHIFT_AWS_INPUT_TABLE = "redshift.aws.input.table";
   String REDSHIFT_AWS_TEMP_DIR = "redshift.aws.input.temp.dir";
   String REDSHIFT_AWS_INPUT_IAM_ROLE = "redshift.aws.input.iam.role";
@@ -337,7 +319,6 @@ public interface TemplateConstants {
 
   /** Dataplex GCS to BQ */
   String DATAPLEX_GCS_BQ_TARGET_DATASET = "dataplex.gcs.bq.target.dataset";
-
   String DATAPLEX_GCS_BQ_TARGET_ASSET = "dataplex.gcs.bq.target.asset";
   String DATAPLEX_GCS_BQ_TARGET_ENTITY = "dataplex.gcs.bq.target.entity";
   String DATAPLEX_GCS_BQ_SAVE_MODE = "dataplex.gcs.bq.save.mode";
@@ -356,7 +337,6 @@ public interface TemplateConstants {
 
   /** Kafka To PubSub properties */
   String KAFKA_PUBSUB_CHECKPOINT_LOCATION = "kafka.pubsub.checkpoint.location";
-
   String KAFKA_PUBSUB_BOOTSTRAP_SERVERS = "kafka.pubsub.bootstrap.servers";
   String KAFKA_PUBSUB_INPUT_TOPIC = "kafka.pubsub.input.topic";
   String KAFKA_PUBSUB_OUTPUT_PROJECT_ID = "kafka.pubsub.output.projectId";
@@ -372,13 +352,12 @@ public interface TemplateConstants {
   String SPARK_CSV_HEADER = "header";
   String SPARK_FILE_FORMAT_PARQUET = "parquet";
   String SPARK_FILE_FORMAT_AVRO = "avro";
-  String SPARK_FILE_FORMAT_JSON ="json";
+  String SPARK_FILE_FORMAT_JSON = "json";
   String SPARK_INFER_SCHEMA = "inferSchema";
   String BQ_TABLE_NAME_FORMAT = "%s.%s.%s";
 
   /** KafkaToBQ properties */
   String KAFKA_BQ_CHECKPOINT_LOCATION = "kafka.bq.checkpoint.location";
-
   String KAFKA_BQ_SPARK_CONF_NAME_INPUT_FORMAT = "kafka";
   String KAFKA_BQ_SPARK_CONF_NAME_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
   String KAFKA_BQ_SPARK_CONF_NAME_SUBSCRIBE = "subscribe";
@@ -401,7 +380,6 @@ public interface TemplateConstants {
 
   /** Common properties for all Kafka Based Templates * */
   String KAFKA_MESSAGE_FORMAT = "kafka.message.format";
-
   String KAFKA_BOOTSTRAP_SERVERS = "kafka.bootstrap.servers";
   String KAFKA_TOPIC = "kafka.topic";
   String KAFKA_STARTING_OFFSET = "kafka.starting.offset";
@@ -409,14 +387,12 @@ public interface TemplateConstants {
 
   /** Kafka To GCS properties */
   String KAFKA_GCS_OUTPUT_LOCATION = "kafka.gcs.output.location";
-
   String KAFKA_GCS_OUTPUT_FORMAT = "kafka.gcs.output.format";
   String KAFKA_GCS_OUTPUT_MODE = "kafka.gcs.output.mode";
   String KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT = "kafka.gcs.await.termination.timeout.ms";
 
   /** SnowflakeToGCS properties */
   String SNOWFLAKE_GCS_SFURL = "snowflake.gcs.sfurl";
-
   String SNOWFLAKE_GCS_SFUSER = "snowflake.gcs.sfuser";
   String SNOWFLAKE_GCS_SFPASSWORD = "snowflake.gcs.sfpassword";
   String SNOWFLAKE_GCS_SFDATABASE = "snowflake.gcs.sfdatabase";

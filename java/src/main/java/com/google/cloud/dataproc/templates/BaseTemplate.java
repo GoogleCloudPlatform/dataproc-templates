@@ -16,10 +16,9 @@
 package com.google.cloud.dataproc.templates;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
-import org.apache.spark.sql.streaming.StreamingQueryException;
-
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 
 /** Base class for Dataproc templates. */
 public interface BaseTemplate {

@@ -43,15 +43,14 @@ import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.TemplateUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.cli.*;
-import org.apache.spark.sql.streaming.StreamingQueryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
+import org.apache.commons.cli.*;
+import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataProcTemplate {
 
