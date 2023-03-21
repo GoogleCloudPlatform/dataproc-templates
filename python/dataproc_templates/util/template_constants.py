@@ -312,10 +312,8 @@ KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
 KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
 
 # Pubsublite to BQ
-PUBSUBLITE_TO_BQ_INPUT_TOPIC = "pubsublite.to.bq.input.topic"
-PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION = "pubsublite.to.bq.input.subscription"
-PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_MS = "pubsublite.to.bq.input.timeout.ms"
-PUBSUBLITE_TO_BQ_STREAMING_DURATION_SECONDS = "pubsublite.to.bq.streaming.duration.seconds"
+PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION_URL = "pubsublite.to.bq.input.subscription.url"
+PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_SEC = "pubsublite.to.bq.input.timeout.ms"
 PUBSUBLITE_TO_BQ_WRITE_MODE = "pubsublite.to.bq.write.mode"
 PUBSUBLITE_TO_BQ_TOTAL_RECEIVERS = "pubsublite.to.bq.total.receivers"
 PUBSUBLITE_TO_BQ_PROJECT_ID = "pubsublite.to.bq.project.id"
@@ -323,4 +321,4 @@ PUBSUBLITE_TO_BQ_OUTPUT_DATASET = "pubsublite.to.bq.output.dataset"
 PUBSUBLITE_TO_BQ_OUTPUT_TABLE = "pubsublite.to.bq.output.table"
 PUBSUBLITE_TO_BQ_BATCH_SIZE = "pubsublite.to.bq.batch.size"
 PUBSUBLITE_TO_BQ_TEMPORARY_BUCKET = "pubsublite.to.bq.temp.bucket.name"
-PUBSUBLITE_CHECKPOINT_LOCATION = "pubsublite.to.bq.checkpoint.location"
+PUBSUBLITE_TO_BQ_CHECKPOINT_LOCATION = "pubsublite.to.bq.checkpoint.location"

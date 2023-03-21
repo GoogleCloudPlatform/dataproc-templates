@@ -36,30 +36,17 @@ class PubsubliteToBQTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_TO_BQ_INPUT_TOPIC}',
-            dest=constants.PUBSUBLITE_TO_BQ_INPUT_TOPIC,
-            required=False,
-            help='Pubsublite to BQ Input topic name'
-        )
-        parser.add_argument(
-            f'--{constants.PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION}',
-            dest=constants.PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION,
+            f'--{constants.PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION_URL}',
+            dest=constants.PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION_URL,
             required=True,
             help='Pubsublite to BQ Input subscription name'
         )
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_MS}',
-            dest=constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_MS,
+            f'--{constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_SEC}',
+            dest=constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_SEC,
             required=False,
-            default=120000,
+            default=120,
             help='Stream timeout, for how long the subscription will be read'
-        )
-        parser.add_argument(
-            f'--{constants.PUBSUBLITE_TO_BQ_STREAMING_DURATION_SECONDS}',
-            dest=constants.PUBSUBLITE_TO_BQ_STREAMING_DURATION_SECONDS,
-            required=False,
-            default=15,
-            help='Streaming duration, how often wil writes to BQ be triggered'
         )
         parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_BQ_WRITE_MODE}',
@@ -103,8 +90,8 @@ class PubsubliteToBQTemplate(BaseTemplate):
             help='Temporary bucket for the Spark BigQuery connector'
         )
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_CHECKPOINT_LOCATION}',
-            dest=constants.PUBSUBLITE_CHECKPOINT_LOCATION,
+            f'--{constants.PUBSUBLITE_TO_BQ_CHECKPOINT_LOCATION}',
+            dest=constants.PUBSUBLITE_TO_BQ_CHECKPOINT_LOCATION,
             required=True,
             help='Temporary folder for checkpoint location'
         )
@@ -119,30 +106,23 @@ class PubsubliteToBQTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_subscription: str = args[constants.PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION]
+        input_subscription_url: str = args[constants.PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION_URL]
         output_project_id: str = args[constants.PUBSUBLITE_TO_BQ_PROJECT_ID]
         output_dataset: str = args[constants.PUBSUBLITE_TO_BQ_OUTPUT_DATASET]
         output_table: str = args[constants.PUBSUBLITE_TO_BQ_OUTPUT_TABLE]
-        pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_CHECKPOINT_LOCATION]
+        pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_TO_BQ_CHECKPOINT_LOCATION]
         bq_temp_bucket: str = args[constants.PUBSUBLITE_TO_BQ_TEMPORARY_BUCKET]
-        timeout_ms: int = args[constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_MS]
+        timeout_sec: int = args[constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_SEC]
 
         logger.info(
             "Starting Pubsublite to Bigquery spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
-        # Set configuration to connect to Pubsublite by overwriting the spark session
-        spark = (
-            SparkSession
-                .builder
-                .appName("read-app")
-                .master("yarn")
-                .getOrCreate())
 
         # Read
         input_data=(spark.readStream \
             .format(constants.FORMAT_PUBSUBLITE) \
-            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription", input_subscription,) \
+            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription", input_subscription_url,) \
             .load())
         
         input_data.withColumn("data", input_data.data.cast(StringType()))
@@ -156,6 +136,6 @@ class PubsubliteToBQTemplate(BaseTemplate):
             .trigger(processingTime="1 second") \
             .start())
 
-        # Wait timeout_ms/1000 seconds (must be >= 60 seconds) to start receiving messages.
-        query.awaitTermination(timeout_ms/1000)
+        # Wait timeout_sec seconds (must be >= 60 seconds) to start receiving messages.
+        query.awaitTermination(timeout_sec)
         query.stop()

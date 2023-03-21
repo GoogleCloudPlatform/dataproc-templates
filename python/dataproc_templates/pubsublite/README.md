@@ -4,7 +4,7 @@ It uses the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifa
 
 ## Arguments
 
-* `pubsublite.to.bq.input.subscription`: Pubsublite input subscription name
+* `pubsublite.to.bq.input.subscription.url`: Pubsublite input subscription url
 * `pubsublite.to.bq.write.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `pubsublite.to.bq.output.dataset`: BigQuery output dataset name
 * `pubsublite.to.bq.output.table`: BigQuery output table name
@@ -15,7 +15,7 @@ It uses the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifa
 ```
 $ python main.py --template PUBSUBLITETOBQ --help
 usage: main.py --template PUBSUBLITETOBQ [-h] \
-    --pubsublite.to.bq.input.subscription PUBSUBLITE.BIGQUERY.INPUT.SUBSCRIPTION \
+    --pubsublite.to.bq.input.subscription.url PUBSUBLITE.BIGQUERY.INPUT.SUBSCRIPTION.URL \
     --pubsublite.to.bq.project.id PUBSUBLITE.BIGQUERY.OUTPUT.PROJECT.ID \
     --pubsublite.to.bq.output.dataset PUBSUBLITE.BIGQUERY.OUTPUT.DATASET \
     --pubsublite.to.bq.output.table PUBSUBLITE.BIGQUERY.OUTPUT.TABLE \
@@ -38,7 +38,7 @@ export GCS_STAGING_LOCATION=<gcs-staging-bucket-name>
 export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-LATEST-with-dependencies.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 ./bin/start.sh \
 -- --template=PUBSUBLITETOBQ \
---pubsublite.to.bq.input.subscription=<pubsublite input subscription (Format: projects/{input_project_id}/locations/{region}/subscriptions/{input_subscription_name})> \
+--pubsublite.to.bq.input.subscription.url=<pubsublite input subscription url (Format: projects/{input_project_id}/locations/{region}/subscriptions/{input_subscription_name})> \
 --pubsublite.to.bq.project.id=<BQ project ID> \
 --pubsublite.to.bq.output.dataset=<BQ dataset name> \
 --pubsublite.to.bq.output.table=<BQ table name> \
@@ -54,17 +54,17 @@ Following properties are available in commandline or [template.constants](../uti
 
 ```
 ## Project that contains the input Pub/Sub subscription to be read
-pubsubliteinput.project.id=<pubsublite project id>
-## PubSublite subscription name
-pubsubliteinput.subscription=<pubsublite subscription (Format: projects/{input_project_id}/locations/{region}/subscriptions/{input_subscription_name})>
-## Stream timeout, for how long the subscription will be read
-pubsublitetimeout.ms=120000
-## Streaming duration, how often wil writes to BQ be triggered
-pubsublitestreaming.duration.seconds=15
-## Project that contains the output table
-pubsublitebq.output.project.id=<pubsublite to bq output project id>
+pubsublite.to.bq.project.id=<pubsublite project id>
+## PubSublite subscription url
+pubsublite.to.bq.input.subscription.url=<pubsublite subscription url (Format: projects/{input_project_id}/locations/{region}/subscriptions/{input_subscription_name})>
 ## BigQuery output dataset
-pubsublitebq.output.dataset=<bq output dataset>
+pubsublite.to.bq.output.dataset=<bq output dataset>
 ## BigQuery output table
-pubsublitebq.output.table=<bq output table>
+pubsublite.to.bq.output.table=<bq output table>
+## BigQuery output write mode
+pubsublite.to.bq.write.mode=<bq output write mode>
+## Pubsublite to BigQuery temp staging bucket
+pubsublite.to.bq.temp.bucket.name=<pubsublite to bq temp staging bucket>
+## Pubsublite to BigQuery checkpoint location
+pubsublite.to.bq.checkpoint.location=<pubsublite to bq checkpoint location>
 ```
