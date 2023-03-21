@@ -1,4 +1,4 @@
-from .pubsublite_to_gcs import PubSubLiteToGCSTemplate# Copyright 2022 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,4 +12,3 @@ from .pubsublite_to_gcs import PubSubLiteToGCSTemplate# Copyright 2022 Google LL
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .pubsublite_to_bigtable import PubSubLiteToBigtableTemplate

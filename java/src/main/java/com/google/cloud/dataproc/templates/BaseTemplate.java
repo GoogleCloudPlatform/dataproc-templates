@@ -52,7 +52,8 @@ public interface BaseTemplate {
     SNOWFLAKETOGCS,
     JDBCTOSPANNER,
     PUBSUBTOBIGTABLE,
-    GCSTOBIGTABLE
+    GCSTOBIGTABLE,
+    TEXTTOBIGQUERY,
   }
 
   default Properties getProperties() {
@@ -61,5 +62,5 @@ public interface BaseTemplate {
 
   void validateInput() throws Exception;
   /** Executes the template. */
-  void runTemplate() throws StreamingQueryException, TimeoutException;
+  void runTemplate() throws StreamingQueryException, TimeoutException, InterruptedException;
 }
