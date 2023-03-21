@@ -30,49 +30,61 @@ class TestPubsubliteToGCSTemplate:
 
         pubsublite_to_gcs_template = PubsubliteToGCSTemplate()
         parsed_args = pubsublite_to_gcs_template.parse_args(
-            ["--pubsublite.to.gcs.input.subscription=test-sub",
+            ["--pubsublite.to.gcs.input.subscription.url=test-sub",
              "--pubsublite.to.gcs.write.mode=append",
              "--pubsublite.to.gcs.output.location=gs://test",
              "--pubsublite.to.gcs.checkpoint.location=gs://test-checkpoint",
              "--pubsublite.to.gcs.output.format=csv",
+             "--pubsublite.to.gcs.timeout=120",
+             "--pubsublite.to.gcs.processing.time=1"
              ])
 
-        assert parsed_args["pubsublite.to.gcs.input.subscription"] == "test-sub"
+        assert parsed_args["pubsublite.to.gcs.input.subscription.url"] == "test-sub"
         assert parsed_args["pubsublite.to.gcs.write.mode"] == "append"
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
         assert parsed_args["pubsublite.to.gcs.checkpoint.location"] == "gs://test-checkpoint"
         assert parsed_args["pubsublite.to.gcs.output.format"] == "csv"
+        assert parsed_args["pubsublite.to.gcs.timeout"] == "120"
+        assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
 
     def test_parse_args2(self):
         """Tests PubsubliteToGCSTemplate.parse_args() when output format not passed"""
 
         pubsublite_to_gcs_template = PubsubliteToGCSTemplate()
         parsed_args = pubsublite_to_gcs_template.parse_args(
-            ["--pubsublite.to.gcs.input.subscription=test-sub",
+            ["--pubsublite.to.gcs.input.subscription.url=test-sub",
              "--pubsublite.to.gcs.write.mode=append",
              "--pubsublite.to.gcs.output.location=gs://test",
              "--pubsublite.to.gcs.checkpoint.location=gs://test-checkpoint",
+             "--pubsublite.to.gcs.timeout=120",
+             "--pubsublite.to.gcs.processing.time=1"
              ])
 
-        assert parsed_args["pubsublite.to.gcs.input.subscription"] == "test-sub"
+        assert parsed_args["pubsublite.to.gcs.input.subscription.url"] == "test-sub"
         assert parsed_args["pubsublite.to.gcs.write.mode"] == "append"
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
         assert parsed_args["pubsublite.to.gcs.checkpoint.location"] == "gs://test-checkpoint"
         assert parsed_args["pubsublite.to.gcs.output.format"] == "csv"
+        assert parsed_args["pubsublite.to.gcs.timeout"] == "120"
+        assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
 
     def test_parse_args3(self):
         """Tests PubsubliteToGCSTemplate.parse_args() when output mode not passed"""
 
         pubsublite_to_gcs_template = PubsubliteToGCSTemplate()
         parsed_args = pubsublite_to_gcs_template.parse_args(
-            ["--pubsublite.to.gcs.input.subscription=test-sub",
+            ["--pubsublite.to.gcs.input.subscription.url=test-sub",
              "--pubsublite.to.gcs.output.location=gs://test",
              "--pubsublite.to.gcs.checkpoint.location=gs://test-checkpoint",
              "--pubsublite.to.gcs.output.format=csv",
+             "--pubsublite.to.gcs.timeout=120",
+             "--pubsublite.to.gcs.processing.time=1"
              ])
 
-        assert parsed_args["pubsublite.to.gcs.input.subscription"] == "test-sub"
+        assert parsed_args["pubsublite.to.gcs.input.subscription.url"] == "test-sub"
         assert parsed_args["pubsublite.to.gcs.write.mode"] == "append"
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
         assert parsed_args["pubsublite.to.gcs.checkpoint.location"] == "gs://test-checkpoint"
         assert parsed_args["pubsublite.to.gcs.output.format"] == "csv"
+        assert parsed_args["pubsublite.to.gcs.timeout"] == "120"
+        assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
