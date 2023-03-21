@@ -15,7 +15,9 @@
  */
 package com.google.cloud.dataproc.templates.dataplex;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.DATAPLEX_GCS_BQ_TARGET_DATASET;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.DATAPLEX_GCS_BQ_TARGET_ENTITY;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
