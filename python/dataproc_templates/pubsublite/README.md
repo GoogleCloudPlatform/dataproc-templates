@@ -47,11 +47,11 @@ export REGION=us-central1
 	
 ./bin/start.sh \
 -- --template=PUBSUBLITETOGCS \
-    --pubsublite.to.gcs.input.subscription.url=projects/my-project/locations/us-central1/subscriptions/pubsublite-subscription",
-    --pubsublite.to.gcs.write.mode=append",
-    --pubsublite.to.gcs.output.location=gs://outputLocation",
-    --pubsublite.to.gcs.checkpoint.location=gs://checkpointLocation",
-    --pubsublite.to.gcs.output.format=csv"
+    --pubsublite.to.gcs.input.subscription.url=projects/my-project/locations/us-central1/subscriptions/pubsublite-subscription,
+    --pubsublite.to.gcs.write.mode=append,
+    --pubsublite.to.gcs.output.location=gs://outputLocation,
+    --pubsublite.to.gcs.checkpoint.location=gs://checkpointLocation,
+    --pubsublite.to.gcs.output.format="csv"
     --pubsublite.to.gcs.timeout=120
     --pubsublite.to.gcs.processing.time="1 second"
 ```
