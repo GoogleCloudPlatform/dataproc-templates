@@ -1,1 +1,0 @@
-from .pubsublite_to_gcs import PubSubLiteToGCSTemplate

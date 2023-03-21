@@ -66,7 +66,6 @@ AWS_S3ENDPOINT = "fs.s3a.endpoint"
 SQL_EXTENSION= "spark.sql.extensions"
 CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
 CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
-FORMAT_PUBSUBLITE = "pubsublite"
 
 
 # Output mode
@@ -310,15 +309,6 @@ KAFKA_GCS_OUPUT_MODE='kafka.gcs.output.mode'
 KAFKA_GCS_TERMINATION_TIMEOUT='kafka.gcs.termination.timeout'
 KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
 KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
-
-#Pubsublite To GCS
-PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL = "pubsublite.to.gcs.input.subscription.url"
-PUBSUBLITE_TO_GCS_WRITE_MODE = "pubsublite.to.gcs.write.mode"
-PUBSUBLITE_TO_GCS_OUTPUT_LOCATION = "pubsublite.to.gcs.output.location"
-PUBSUBLITE_CHECKPOINT_LOCATION = "pubsublite.to.gcs.checkpoint.location"
-PUBSUBLITE_TO_GCS_OUTPUT_FORMAT = "pubsublite.to.gcs.output.format"
-PUBSUBLITE_TO_GCS_TIMEOUT = "pubsublite.to.gcs.timeout"
-PUBSUBLITE_TO_GCS_PROCESSING_TIME = "pubsublite.to.gcs.processing.time"
 
 # Azure Storage to BigQuery
 AZ_BLOB_BQ_INPUT_LOCATION = "azure.blob.bigquery.input.location"
