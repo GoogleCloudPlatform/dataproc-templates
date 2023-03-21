@@ -1,6 +1,7 @@
 ![Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build)
 
 # Dataproc Templates (Python - PySpark)
+* [AzureBlobStorageToBigQuery](/python/dataproc_templates/azure#azure-blob-storage-to-bigquery)
 * [BigQueryToGCS](/python/dataproc_templates/bigquery#bigquery-to-gcs) (blogpost [link](https://medium.com/google-cloud/moving-data-from-bigquery-to-gcs-using-gcp-dataproc-serverless-and-pyspark-f6481b86bcd1))
 * [CassandraToBigquery](/python/dataproc_templates/cassandra#cassandra-to-bigquery)
 * [CassandraToGCS](/python/dataproc_templates/cassandra#cassandra-to-gcs)
