@@ -46,7 +46,7 @@ public class PubSubToGCSTest {
     PropertyUtil.getProperties().setProperty(propKey, "someValue");
 
     pubSubToGCS = new PubSubToGCS();
-    assertDoesNotThrow(pubSubToGCS::runTemplate);
+    assertDoesNotThrow(pubSubToGCS::validateInput);
   }
 
   @ParameterizedTest
