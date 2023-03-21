@@ -67,7 +67,6 @@ AWS_S3ENDPOINT = "fs.s3a.endpoint"
 SQL_EXTENSION= "spark.sql.extensions"
 CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
 CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
-FORMAT_PUBSUBLITE = "pubsublite"
 
 
 # Output mode
