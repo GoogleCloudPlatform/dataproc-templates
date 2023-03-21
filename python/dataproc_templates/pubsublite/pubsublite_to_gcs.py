@@ -1,11 +1,9 @@
-import os
 from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
-from pyspark.sql.types import StringType
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
