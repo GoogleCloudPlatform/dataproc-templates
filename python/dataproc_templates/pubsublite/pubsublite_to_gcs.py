@@ -77,6 +77,7 @@ class PubsubliteToGCSTemplate(BaseTemplate):
             f'--{constants.PUBSUBLITE_TO_GCS_TIMEOUT}',
             dest=constants.PUBSUBLITE_TO_GCS_TIMEOUT,
             required=True,
+            type=int,
             help=('Time for which subscriptions will be read')
         )
         parser.add_argument(
@@ -101,7 +102,7 @@ class PubsubliteToGCSTemplate(BaseTemplate):
         output_mode: str = args[constants.PUBSUBLITE_TO_GCS_WRITE_MODE]
         pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_CHECKPOINT_LOCATION]
         output_format: str = args[constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT]
-        timeout: str = args[constants.PUBSUBLITE_TO_GCS_TIMEOUT]
+        timeout: int = args[constants.PUBSUBLITE_TO_GCS_TIMEOUT]
         processing_time: str = args[constants.PUBSUBLITE_TO_GCS_PROCESSING_TIME]
 
         logger.info(
@@ -125,5 +126,5 @@ class PubsubliteToGCSTemplate(BaseTemplate):
             .start())
 
         # Wait for some time (must be >= 60 seconds) to start receiving messages.
-        query.awaitTermination(int(timeout))
+        query.awaitTermination(timeout)
         query.stop()
