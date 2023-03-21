@@ -312,7 +312,7 @@ KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
 KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
 
 #Pubsublite To GCS
-PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION = "pubsublite.to.gcs.input.subscription"
+PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL = "pubsublite.to.gcs.input.subscription.url"
 PUBSUBLITE_TO_GCS_WRITE_MODE = "pubsublite.to.gcs.write.mode"
 PUBSUBLITE_TO_GCS_OUTPUT_LOCATION = "pubsublite.to.gcs.output.location"
 PUBSUBLITE_CHECKPOINT_LOCATION = "pubsublite.to.gcs.checkpoint.location"

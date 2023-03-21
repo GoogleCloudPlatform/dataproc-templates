@@ -22,10 +22,10 @@ class PubsubliteToGCSTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION}',
-            dest=constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION,
+            f'--{constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL}',
+            dest=constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL,
             required=True,
-            help='Pubsublite to GCS Input subscription name'
+            help='Pubsublite to GCS Input subscription url'
         )
         parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_GCS_WRITE_MODE}',
@@ -90,7 +90,7 @@ class PubsubliteToGCSTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_subscription: str = args[constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION]
+        input_subscription_url: str = args[constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL]
         output_location: str = args[constants.PUBSUBLITE_TO_GCS_OUTPUT_LOCATION]
         output_mode: str = args[constants.PUBSUBLITE_TO_GCS_WRITE_MODE]
         pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_CHECKPOINT_LOCATION]
@@ -105,7 +105,7 @@ class PubsubliteToGCSTemplate(BaseTemplate):
         # Read
         input_data=(spark.readStream \
             .format(constants.FORMAT_PUBSUBLITE) \
-            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription", input_subscription,) \
+            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription", input_subscription_url) \
             .load())
 
         # Write
