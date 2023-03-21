@@ -29,7 +29,6 @@ class TestJDBCToJDBCTemplate:
     def test_parse_args(self):
         """Tests JDBCToJDBCTemplate.parse_args()"""
 
-        print('NJNJ')
         jdbc_to_jdbc_template = JDBCToJDBCTemplate()
         parsed_args = jdbc_to_jdbc_template.parse_args(
             ["--jdbctojdbc.input.url=url",
@@ -191,3 +190,4 @@ class TestJDBCToJDBCTemplate:
         mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option.assert_called_once_with(constants.JDBC_NUMPARTITIONS, "10")
         mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode().save.assert_called_once()
+

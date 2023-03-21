@@ -64,6 +64,7 @@ if [ -z "$SKIP_BUILD" ]; then
 
 fi
 
+OPT_SPARK_VERSION="--version=1.1"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
 OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
@@ -88,7 +89,7 @@ if [ -n "${JARS}" ]; then
   OPT_JARS="${OPT_JARS},${JARS}"
 fi
 if [ -n "${SPARK_PROPERTIES}" ]; then
-  OPT_PROPERTIES="${OPT_PROPERTIES},${SPARK_PROPERTIES}"
+  OPT_PROPERTIES="--properties=${SPARK_PROPERTIES}"
 fi
 
 #if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
@@ -119,11 +120,13 @@ if [ "${JOB_TYPE}" == "CLUSTER" ]; then
   check_required_envvar CLUSTER
   command=$(cat << EOF
   gcloud dataproc jobs submit spark \
+      ${OPT_SPARK_VERSION} \
       ${OPT_PROJECT} \
       ${OPT_REGION} \
       ${OPT_CLUSTER} \
       ${OPT_JARS} \
       ${OPT_LABELS} \
+      ${OPT_PROPERTIES} \
       ${OPT_CLASS}
 EOF
 )
@@ -131,12 +134,14 @@ elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
   echo "JOB_TYPE is SERVERLESS, so will submit on serverless spark"
   command=$(cat << EOF
   gcloud beta dataproc batches submit spark \
+      ${OPT_SPARK_VERSION} \
       ${OPT_PROJECT} \
       ${OPT_REGION} \
       ${OPT_JARS} \
       ${OPT_LABELS} \
       ${OPT_DEPS_BUCKET} \
       ${OPT_CLASS} \
+      ${OPT_PROPERTIES} \
       ${OPT_SUBNET} \
       ${OPT_HISTORY_SERVER_CLUSTER} \
       ${OPT_METASTORE_SERVICE}
