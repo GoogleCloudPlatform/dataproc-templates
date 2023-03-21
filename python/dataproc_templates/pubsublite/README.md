@@ -41,7 +41,7 @@ It uses the [Pubsublite Spark SQL Streaming](https://central.sonatype.com/artifa
 
 ```
 export GCP_PROJECT=my-project
-export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-1.0.0.jar"
+export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-LATEST-with-dependencies.jar"
 export GCS_STAGING_LOCATION="gs://my-bucket"
 export REGION=us-central1
 	
