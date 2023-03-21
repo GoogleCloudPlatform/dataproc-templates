@@ -44,7 +44,7 @@ class TestPubsubliteToGCSTemplate:
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
         assert parsed_args["pubsublite.to.gcs.checkpoint.location"] == "gs://test-checkpoint"
         assert parsed_args["pubsublite.to.gcs.output.format"] == "csv"
-        assert parsed_args["pubsublite.to.gcs.timeout"] == "120"
+        assert parsed_args["pubsublite.to.gcs.timeout"] == 120
         assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
 
     def test_parse_args2(self):
@@ -65,7 +65,7 @@ class TestPubsubliteToGCSTemplate:
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
         assert parsed_args["pubsublite.to.gcs.checkpoint.location"] == "gs://test-checkpoint"
         assert parsed_args["pubsublite.to.gcs.output.format"] == "csv"
-        assert parsed_args["pubsublite.to.gcs.timeout"] == "120"
+        assert parsed_args["pubsublite.to.gcs.timeout"] == 120
         assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
 
     def test_parse_args3(self):
@@ -86,5 +86,5 @@ class TestPubsubliteToGCSTemplate:
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
         assert parsed_args["pubsublite.to.gcs.checkpoint.location"] == "gs://test-checkpoint"
         assert parsed_args["pubsublite.to.gcs.output.format"] == "csv"
-        assert parsed_args["pubsublite.to.gcs.timeout"] == "120"
+        assert parsed_args["pubsublite.to.gcs.timeout"] == 120
         assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
