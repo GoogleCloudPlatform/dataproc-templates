@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  jenkins-integeration-tests-java:
+  jenkins-integration-tests-java:
     runs-on: ubuntu-latest
     outputs:
       BUILD_URL: ${{ steps.trigger.outputs.BUILD_URL }}
