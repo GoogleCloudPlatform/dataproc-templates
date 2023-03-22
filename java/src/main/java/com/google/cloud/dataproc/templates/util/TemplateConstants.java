@@ -429,4 +429,13 @@ public interface TemplateConstants {
   String TEXT_BIGQUERY_DELIMITER_OPTION = "delimiter";
   String TEXT_BIGQUERY_INFERSCHEMA_OPTION = "inferSchema";
   String TEXT_BIGQUERY_HEADER_OPTION = "header";
+
+  /** PubSubLite To GCS Properties */
+  String PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION = "pubsublite.to.gcs.input.subscription";
+  String PUBSUBLITE_TO_GCS_INPUT_TIMEOUT_MS = "pubsublite.to.gcs.input.timeout.ms";
+  String PUBSUBLITE_TO_GCS_PROCESSING_TIME_SECONDS = "pubsublite.to.gcs.processing.time.seconds";
+  String PUBSUBLITE_TO_GCS_WRITE_MODE = "pubsublite.to.gcs.write.mode";
+  String PUBSUBLITE_TO_GCS_OUTPUT_FORMAT = "pubsublite.to.gcs.output.format";
+  String PUBSUBLITE_TO_GCS_OUTPUT_LOCATION = "pubsublite.to.gcs.output.location";
+  String PUBSUBLITE_CHECKPOINT_LOCATION = "pubsublite.to.gcs.checkpoint.location";
 }
