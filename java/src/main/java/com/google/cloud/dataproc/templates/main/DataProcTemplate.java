@@ -59,6 +59,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.cloud.dataproc.templates.pubsublite.PubSubLiteToGCS;
 
 public class DataProcTemplate {
 
@@ -95,6 +96,7 @@ public class DataProcTemplate {
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
           .put(TemplateName.SNOWFLAKETOGCS, SnowflakeToGCS::of)
           .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
+          .put(TemplateName.PUBSUBLITETOGCS, (args) -> new PubSubLiteToGCS())
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";

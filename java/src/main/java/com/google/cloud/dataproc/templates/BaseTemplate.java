@@ -54,6 +54,7 @@ public interface BaseTemplate {
     PUBSUBTOBIGTABLE,
     GCSTOBIGTABLE,
     TEXTTOBIGQUERY,
+    PUBSUBLITETOGCS,
   }
 
   default Properties getProperties() {
