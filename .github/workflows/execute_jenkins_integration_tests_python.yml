@@ -1,12 +1,11 @@
-name: Trigger Jenkins Job
+name: Python Integration
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  jenkins-integeration-tests-python-job:
-    name: Execute Jenkins Job
+  jenkins-integeration-tests-python:
     runs-on: ubuntu-latest
     outputs:
       BUILD_URL: ${{ steps.trigger.outputs.BUILD_URL }}

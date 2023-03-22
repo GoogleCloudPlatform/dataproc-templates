@@ -1,15 +1,10 @@
-name: "Commit Message Check"
+name: "Conventional Commit"
 on:
   pull_request:
-    types:
-      - opened
-      - edited
-      - reopened
-      - synchronize
+    types: [opened, synchronize, reopened]
 
 jobs:
   check-commit-message:
-    name: Check Commit Message
     runs-on: ubuntu-latest
     steps:
       - name: Check for Conventional commit standard type

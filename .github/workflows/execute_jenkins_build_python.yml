@@ -1,12 +1,11 @@
-name: Trigger Jenkins Build Job
+name: Python Build
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  trigger-jenkins-build-python-job:
-    name: Execute Jenkins Build Job
+  jenkins-build-python:
     runs-on: ubuntu-latest
     outputs:
       BUILD_URL: ${{ steps.trigger.outputs.BUILD_URL }}
