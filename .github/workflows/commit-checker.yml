@@ -1,4 +1,4 @@
-name: "Conventional Commit"
+name: Conventional Commit
 on:
   pull_request:
     types: [opened, synchronize, reopened]
