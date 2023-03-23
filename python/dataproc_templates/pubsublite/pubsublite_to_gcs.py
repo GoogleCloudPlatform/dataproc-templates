@@ -103,9 +103,11 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
         timeout: int = args[constants.PUBSUBLITE_TO_GCS_TIMEOUT]
         processing_time: str = args[constants.PUBSUBLITE_TO_GCS_PROCESSING_TIME]
 
+        ignore_keys = {constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting PubSubLite to GCS spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Read

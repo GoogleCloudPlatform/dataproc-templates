@@ -137,9 +137,11 @@ class RedshiftToGCSTemplate(BaseTemplate):
         output_mode: str = args[constants.REDSHIFTTOGCS_OUTPUT_MODE]
         output_partitioncolumn: str = args[constants.REDSHIFTTOGCS_OUTPUT_PARTITIONCOLUMN]
 
+        ignore_keys = {constants.REDSHIFTTOGCS_S3_ACCESSKEY, constants.REDSHIFTTOGCS_S3_SECRETKEY}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting REDSHIFT to GCS spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
         
         # Read

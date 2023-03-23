@@ -105,9 +105,11 @@ class MongoToGCSTemplate(BaseTemplate):
         output_mode: str = args[constants.MONGO_GCS_OUTPUT_MODE]
         output_location: str = args[constants.MONGO_GCS_OUTPUT_LOCATION]
 
+        ignore_keys = {constants.MONGO_GCS_INPUT_URI}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting Mongo to GCS spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Read
