@@ -163,7 +163,9 @@ bin/start.sh \
 
 ## 6. GCS To Mongo:
 
-Please download the MongoDb connector spark driver and copy it to GCS bucket location.
+Download the following MongoDb connectors and copy it to GCS bucket location:
+* [MongoDb Spark Connector](https://mvnrepository.com/artifact/org.mongodb.spark/mongo-spark-connector)
+* [MongoDb Java Driver](https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver)
 
 ```
 export GCP_PROJECT=<project-id>\
@@ -175,12 +177,12 @@ export JARS=<gcs-location-to-mongodb-drivers>\
 bin/start.sh \
 -- --template GCSTOMONGO \
 --templateProperty log.level="ERROR" \
---templateProperty gcs.mongodb.input.format=<input file format> \
+--templateProperty gcs.mongodb.input.format=<csv|avro|parquet|json> \
 --templateProperty gcs.mongodb.input.location=<gcs-input-location> \
 --templateProperty gcs.mongodb.output.uri=<mongodb-output-uri> \
 --templateProperty gcs.mongodb.output.database=<database-name>\
 --templateProperty gcs.mongodb.output.collection=<collection-name> \
---templateProperty gcs.mongo.output.mode=<output-mode> \
+--templateProperty gcs.mongo.output.mode=<Append|Overwrite|ErrorIfExists|Ignore>
 
 ```
 Example execution:
@@ -199,7 +201,7 @@ bin/start.sh \
 --templateProperty gcs.mongodb.output.uri="mongodb://1.2.3.4:27017" \
 --templateProperty gcs.mongodb.output.database="demo" \
 --templateProperty gcs.mongodb.output.collection="test" \
---templateProperty gcs.mongo.output.mode="overwrite" \
+--templateProperty gcs.mongo.output.mode="overwrite"
 ```
 
 ## 7. Text To BigQuery

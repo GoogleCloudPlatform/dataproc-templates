@@ -18,7 +18,6 @@ package com.google.cloud.dataproc.templates.gcs;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -55,57 +54,44 @@ public class GCStoMongo implements BaseTemplate {
     validateInput();
     SparkSession spark = null;
 
-    try {
-      spark = SparkSession.builder().appName("GCS to Mongo load").getOrCreate();
+    spark = SparkSession.builder().appName("GCS to Mongo load").getOrCreate();
 
-      // Set log level
-      spark.sparkContext().setLogLevel(sparkLogLevel);
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
-      Dataset<Row> inputData = null;
-      switch (inputFileFormat) {
-        case SPARK_FILE_FORMAT_CSV:
-          inputData =
-              spark
-                  .read()
-                  .format(inputFileFormat)
-                  .option(SPARK_CSV_HEADER, true)
-                  .option(SPARK_INFER_SCHEMA, true)
-                  .load(inputFileLocation);
-          break;
-        case SPARK_FILE_FORMAT_PARQUET:
-          inputData = spark.read().parquet(inputFileLocation);
-          break;
-        case SPARK_FILE_FORMAT_AVRO:
-          inputData = spark.read().format(inputFileFormat).load(inputFileLocation);
-          break;
-        case SPARK_FILE_FORMAT_JSON:
-          inputData = spark.read().json(inputFileLocation);
-          break;
-        default:
-          throw new IllegalArgumentException(
-              "Currently avro, parquet, csv and json are the only supported formats");
-      }
-      if (StringUtils.isAllBlank(mongoBatchSize)) {
-        mongoBatchSize = MONGO_DEFAULT_BATCH_SIZE;
-      }
-      if (StringUtils.isAllBlank(mongoSaveMode)) {
-        mongoSaveMode = SPARK_SAVE_MODE_APPEND;
-      }
-      inputData
-          .write()
-          .format(MONGO_FORMAT)
-          .option(MONGO_URL, mongoUrl)
-          .option(MONGO_DATABASE, mongoDatabase)
-          .option(MONGO_COLLECTION, mongoCollection)
-          .option(MONGO_BATCH_SIZE, mongoBatchSize)
-          .mode(mongoSaveMode)
-          .save();
-    } catch (Throwable th) {
-      LOGGER.error("Exception in GCStoMongo", th);
-      if (Objects.nonNull(spark)) {
-        spark.stop();
-      }
+    Dataset<Row> inputData = null;
+    switch (inputFileFormat) {
+      case SPARK_FILE_FORMAT_CSV:
+        inputData =
+            spark
+                .read()
+                .format(inputFileFormat)
+                .option(SPARK_CSV_HEADER, true)
+                .option(SPARK_INFER_SCHEMA, true)
+                .load(inputFileLocation);
+        break;
+      case SPARK_FILE_FORMAT_PARQUET:
+        inputData = spark.read().parquet(inputFileLocation);
+        break;
+      case SPARK_FILE_FORMAT_AVRO:
+        inputData = spark.read().format(inputFileFormat).load(inputFileLocation);
+        break;
+      case SPARK_FILE_FORMAT_JSON:
+        inputData = spark.read().json(inputFileLocation);
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "Currently avro, parquet, csv and json are the only supported formats");
     }
+    inputData
+        .write()
+        .format(MONGO_FORMAT)
+        .option(MONGO_URL, mongoUrl)
+        .option(MONGO_DATABASE, mongoDatabase)
+        .option(MONGO_COLLECTION, mongoCollection)
+        .option(MONGO_BATCH_SIZE, mongoBatchSize)
+        .mode(mongoSaveMode)
+        .save();
   }
 
   public void validateInput() {
