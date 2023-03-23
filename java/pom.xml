@@ -289,6 +289,21 @@
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
+      <artifactId>pubsublite-spark-sql-streaming</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-pubsublite</artifactId>
+      <version>1.9.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+      <version>2.9.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
       <version>${gcs.version}</version>
     </dependency>
