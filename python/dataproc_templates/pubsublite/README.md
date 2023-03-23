@@ -85,10 +85,10 @@ usage: main.py [-h] \
 [--pubsublite.bigtable.streaming.timeout PUBSUBLITE.BIGTABLE.STREAMING.TIMEOUT] \
 [--pubsublite.bigtable.streaming.trigger PUBSUBLITE.BIGTABLE.STREAMING.TRIGGER] \
 [--pubsublite.bigtable.streaming.checkpoint.path PUBSUBLITE.BIGTABLE.STREAMING.CHECKPOINT.PATH] \
---pubsublite.bigtable.output.project PUBSUBLITE.BIGTABLE.OUTPUT.PROJECT 
---pubsublite.bigtable.output.instance PUBSUBLITE.BIGTABLE.OUTPUT.INSTANCE 
+--pubsublite.bigtable.output.project PUBSUBLITE.BIGTABLE.OUTPUT.PROJECT \
+--pubsublite.bigtable.output.instance PUBSUBLITE.BIGTABLE.OUTPUT.INSTANCE \
 --pubsublite.bigtable.output.table PUBSUBLITE.BIGTABLE.OUTPUT.TABLE \
-[--pubsublite.bigtable.output.column.families PUBSUBLITE.BIGTABLE.OUTPUT.COLUMN.FAMILIES]
+[--pubsublite.bigtable.output.column.families PUBSUBLITE.BIGTABLE.OUTPUT.COLUMN.FAMILIES] \
 [--pubsublite.bigtable.output.max.versions PUBSUBLITE.BIGTABLE.OUTPUT.MAX.VERSIONS]
 
 optional arguments:
