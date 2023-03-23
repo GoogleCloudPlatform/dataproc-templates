@@ -55,7 +55,7 @@ public class PubSubToBigTableTest {
     PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP, "bus-data");
 
     pubSubToBigTableTest = new PubSubToBigTable();
-    assertDoesNotThrow(pubSubToBigTableTest::runTemplate);
+    assertDoesNotThrow(pubSubToBigTableTest::validateInput);
   }
 
   @ParameterizedTest

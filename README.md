@@ -48,6 +48,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more 
 
 ## Dataproc Templates (Python - PySpark)
 Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for more information
+* [AzureBlobToBigQuery](/python/dataproc_templates/azure#azure-blob-to-bigquery)
 * [BigQueryToGCS](/python/dataproc_templates/bigquery#bigquery-to-gcs) (blogpost [link](https://medium.com/google-cloud/moving-data-from-bigquery-to-gcs-using-gcp-dataproc-serverless-and-pyspark-f6481b86bcd1))
 * [CassandraToBigquery](/python/dataproc_templates/cassandra)
 * [CassandraToGCS](/python/dataproc_templates/cassandra)
