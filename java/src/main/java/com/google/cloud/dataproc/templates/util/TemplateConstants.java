@@ -431,8 +431,9 @@ public interface TemplateConstants {
   String TEXT_BIGQUERY_HEADER_OPTION = "header";
 
   /** PubSubLite To GCS Properties */
-  String PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION = "pubsublite.to.gcs.input.subscription";
-  String PUBSUBLITE_TO_GCS_INPUT_TIMEOUT_MS = "pubsublite.to.gcs.input.timeout.ms";
+  String PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL = "pubsublite.to.gcs.input.subscription.url";
+
+  String PUBSUBLITE_TO_GCS_TIMEOUT_MS = "pubsublite.to.gcs.timeout.ms";
   String PUBSUBLITE_TO_GCS_PROCESSING_TIME_SECONDS = "pubsublite.to.gcs.processing.time.seconds";
   String PUBSUBLITE_TO_GCS_WRITE_MODE = "pubsublite.to.gcs.write.mode";
   String PUBSUBLITE_TO_GCS_OUTPUT_FORMAT = "pubsublite.to.gcs.output.format";

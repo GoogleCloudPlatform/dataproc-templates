@@ -38,6 +38,7 @@ import com.google.cloud.dataproc.templates.kafka.KafkaToPubSub;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBigTable;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
+import com.google.cloud.dataproc.templates.pubsublite.PubSubLiteToGCS;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.snowflake.SnowflakeToGCS;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -59,7 +60,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.cloud.dataproc.templates.pubsublite.PubSubLiteToGCS;
 
 public class DataProcTemplate {
 
