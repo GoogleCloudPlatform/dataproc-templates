@@ -31,7 +31,6 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_L
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_READ_FORMAT_BIGQUERY;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
@@ -64,41 +63,33 @@ public class BigQueryToGCS implements BaseTemplate {
 
     validateInput();
 
-    SparkSession spark = null;
-    try {
-      spark = SparkSession.builder().appName("BigQuery to GCS").getOrCreate();
+    SparkSession spark = SparkSession.builder().appName("BigQuery to GCS").getOrCreate();
 
-      // Set log level
-      spark.sparkContext().setLogLevel(sparkLogLevel);
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
-      Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
-      DataFrameWriter<Row> writer = inputData.write().mode(SaveMode.valueOf(outputMode));
-      switch (outputFileFormat) {
-        case BQ_GCS_OUTPUT_FORMAT_CSV:
-          writer
-              .format(GCS_BQ_CSV_FORMAT)
-              .option(GCS_BQ_CSV_HEADER, true)
-              .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
-              .save(outputFileLocation);
-          break;
-        case BQ_GCS_OUTPUT_FORMAT_JSON:
-          writer.json(outputFileLocation);
-          break;
-        case BQ_GCS_OUTPUT_FORMAT_AVRO:
-          writer.format(GCS_BQ_AVRO_EXTD_FORMAT).save(outputFileLocation);
-          break;
-        case BQ_GCS_OUTPUT_FORMAT_PARQUET:
-          writer.parquet(outputFileLocation);
-          break;
-        default:
-          throw new IllegalArgumentException(
-              "Currently avro, parquet, csv and json are the only supported formats");
-      }
-    } catch (Throwable t) {
-      LOGGER.error("Exception in BigQueryToGCS", t);
-      if (Objects.nonNull(spark)) {
-        spark.stop();
-      }
+    Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
+    DataFrameWriter<Row> writer = inputData.write().mode(SaveMode.valueOf(outputMode));
+    switch (outputFileFormat) {
+      case BQ_GCS_OUTPUT_FORMAT_CSV:
+        writer
+            .format(GCS_BQ_CSV_FORMAT)
+            .option(GCS_BQ_CSV_HEADER, true)
+            .option(GCS_BQ_CSV_INFOR_SCHEMA, true)
+            .save(outputFileLocation);
+        break;
+      case BQ_GCS_OUTPUT_FORMAT_JSON:
+        writer.json(outputFileLocation);
+        break;
+      case BQ_GCS_OUTPUT_FORMAT_AVRO:
+        writer.format(GCS_BQ_AVRO_EXTD_FORMAT).save(outputFileLocation);
+        break;
+      case BQ_GCS_OUTPUT_FORMAT_PARQUET:
+        writer.parquet(outputFileLocation);
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "Currently avro, parquet, csv and json are the only supported formats");
     }
   }
 
