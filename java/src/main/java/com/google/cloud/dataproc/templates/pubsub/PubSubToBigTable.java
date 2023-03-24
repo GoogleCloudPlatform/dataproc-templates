@@ -21,7 +21,6 @@ import com.google.cloud.bigtable.data.v2.BigtableDataClient;
 import com.google.cloud.bigtable.data.v2.models.RowMutation;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.Iterator;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -66,54 +65,47 @@ public class PubSubToBigTable implements BaseTemplate {
   }
 
   @Override
-  public void runTemplate() {
+  public void runTemplate() throws InterruptedException {
 
     validateInput();
 
-    JavaStreamingContext jsc = null;
+    JavaStreamingContext jsc;
 
-    try {
-      SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigTable Dataproc Job");
-      jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
+    SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigTable Dataproc Job");
+    jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
 
-      // Set log level
-      jsc.sparkContext().setLogLevel(sparkLogLevel);
+    // Set log level
+    jsc.sparkContext().setLogLevel(sparkLogLevel);
 
-      JavaDStream<SparkPubsubMessage> stream = null;
-      for (int i = 0; i < totalReceivers; i += 1) {
-        JavaDStream<SparkPubsubMessage> pubSubReciever =
-            PubsubUtils.createStream(
-                jsc,
-                inputProjectID,
-                pubsubInputSubscription,
-                new SparkGCPCredentials.Builder().build(),
-                StorageLevel.MEMORY_AND_DISK_SER());
-        if (stream == null) {
-          stream = pubSubReciever;
-        } else {
-          stream = stream.union(pubSubReciever);
-        }
-      }
-
-      LOGGER.info("Writing data to outputPath: {}", pubSubBigTableOutputTable);
-
-      writeToBigTable(
-          stream,
-          pubSubBigTableOutputInstanceId,
-          pubSubBigTableOutputProjectId,
-          pubSubBigTableOutputTable);
-
-      jsc.start();
-      jsc.awaitTerminationOrTimeout(timeoutMs);
-
-      LOGGER.info("PubSubToBigTable job completed.");
-      jsc.stop();
-    } catch (Throwable th) {
-      LOGGER.error("Exception in PubSubToBTable", th);
-      if (Objects.nonNull(jsc)) {
-        jsc.stop();
+    JavaDStream<SparkPubsubMessage> stream = null;
+    for (int i = 0; i < totalReceivers; i += 1) {
+      JavaDStream<SparkPubsubMessage> pubSubReciever =
+          PubsubUtils.createStream(
+              jsc,
+              inputProjectID,
+              pubsubInputSubscription,
+              new SparkGCPCredentials.Builder().build(),
+              StorageLevel.MEMORY_AND_DISK_SER());
+      if (stream == null) {
+        stream = pubSubReciever;
+      } else {
+        stream = stream.union(pubSubReciever);
       }
     }
+
+    LOGGER.info("Writing data to outputPath: {}", pubSubBigTableOutputTable);
+
+    writeToBigTable(
+        stream,
+        pubSubBigTableOutputInstanceId,
+        pubSubBigTableOutputProjectId,
+        pubSubBigTableOutputTable);
+
+    jsc.start();
+    jsc.awaitTerminationOrTimeout(timeoutMs);
+
+    LOGGER.info("PubSubToBigTable job completed.");
+    jsc.stop();
   }
 
   public static void writeToBigTable(
@@ -190,8 +182,7 @@ public class PubSubToBigTable implements BaseTemplate {
             + "5. {},{}"
             + "6. {},{}"
             + "7. {},{}"
-            + "8. {},{}"
-            + "9, {},{}",
+            + "8. {},{}",
         PUBSUB_INPUT_PROJECT_ID_PROP,
         inputProjectID,
         PUBSUB_INPUT_SUBSCRIPTION_PROP,

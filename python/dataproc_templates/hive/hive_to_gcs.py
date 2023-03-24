@@ -110,6 +110,7 @@ class HiveToGCSTemplate(BaseTemplate):
 
         return vars(known_args)
 
+    
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
         logger: Logger = self.get_logger(spark=spark)
@@ -130,7 +131,7 @@ class HiveToGCSTemplate(BaseTemplate):
 
         # Read
         input_data = spark.table(hive_database + "." + hive_table)
-
+      
         if sql_query:
             # Create temp view on source data
             input_data.createGlobalTempView(hive_temp_view)
