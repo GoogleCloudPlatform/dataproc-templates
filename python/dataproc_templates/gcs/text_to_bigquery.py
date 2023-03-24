@@ -118,8 +118,10 @@ class TextToBigQueryTemplate(BaseTemplate):
         big_query_table: str = args[constants.TEXT_BQ_OUTPUT_TABLE]
         bq_temp_bucket: str = args[constants.TEXT_BQ_LD_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.TEXT_BQ_OUTPUT_MODE]
-        input_delimiter: str = args[constants.TEXT_INPUT_DELIMITER]
-        input_file_codec_format: str = args[constants.TEXT_INPUT_COMPRESSION]
+        # These options are redundant but left in place until this template is removed
+        # via issue https://github.com/GoogleCloudPlatform/dataproc-templates/issues/721
+        # input_delimiter: str = args[constants.TEXT_INPUT_DELIMITER]
+        # input_file_codec_format: str = args[constants.TEXT_INPUT_COMPRESSION]
 
         logger.info(
             "Starting GCS to Bigquery Spark job with parameters:\n"
@@ -127,20 +129,12 @@ class TextToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        spark_option_overrides = {}
-        if input_delimiter:
-            # TEXT_INPUT_DELIMITER is a duplicate of text.bigquery.input.sep,
-            # we maintain it for backward compatibility.
-            spark_option_overrides[constants.CSV_SEP] = input_delimiter
-        if input_file_codec_format:
-            spark_option_overrides[constants.INPUT_COMPRESSION] = input_file_codec_format
         input_data = ingest_dataframe_from_cloud_storage(
             spark,
             args,
             input_location,
             constants.FORMAT_CSV,
             "text.bigquery.input.",
-            spark_option_overrides=spark_option_overrides,
         )
 
         # Write

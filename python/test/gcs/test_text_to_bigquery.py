@@ -37,7 +37,7 @@ class TestTextToBigQueryTemplate:
              "--text.bigquery.output.dataset=dataset",
              "--text.bigquery.output.table=table",
              "--text.bigquery.temp.bucket.name=bucket",
-             "--text.bigquery.input.delimiter=|"])
+             "--text.bigquery.input.sep=|"])
 
         assert parsed_args["text.bigquery.input.compression"] == "bzip2"
         assert parsed_args["text.bigquery.output.mode"] == "append"
@@ -45,7 +45,7 @@ class TestTextToBigQueryTemplate:
         assert parsed_args["text.bigquery.output.dataset"] == "dataset"
         assert parsed_args["text.bigquery.output.table"] == "table"
         assert parsed_args["text.bigquery.temp.bucket.name"] == "bucket"
-        assert parsed_args["text.bigquery.input.delimiter"] == "|"
+        assert parsed_args["text.bigquery.input.sep"] == "|"
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_bzip2(self, mock_spark_session):
@@ -60,7 +60,7 @@ class TestTextToBigQueryTemplate:
              "--text.bigquery.input.compression=bzip2",
              "--text.bigquery.temp.bucket.name=bucket",
              "--text.bigquery.output.mode=ignore",
-             "--text.bigquery.input.delimiter=|"])
+             "--text.bigquery.input.sep=|"])
 
         mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
         text_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
@@ -70,7 +70,6 @@ class TestTextToBigQueryTemplate:
         mock_spark_session.read.format().options.assert_called_with(**{
             constants.CSV_HEADER: 'false',
             constants.CSV_INFER_SCHEMA: 'true',
-            constants.INPUT_COMPRESSION: constants.COMPRESSION_BZIP2,
             constants.CSV_SEP: "|",
         })
         mock_spark_session.read.format().options().load.assert_called_once_with("gs://test")
@@ -101,7 +100,7 @@ class TestTextToBigQueryTemplate:
              "--text.bigquery.output.table=table",
              "--text.bigquery.temp.bucket.name=bucket",
              "--text.bigquery.output.mode=ignore",
-             "--text.bigquery.input.delimiter=|"])
+             "--text.bigquery.input.sep=|"])
 
         mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
         text_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
@@ -111,7 +110,6 @@ class TestTextToBigQueryTemplate:
         mock_spark_session.read.format().options.assert_called_with(**{
             constants.CSV_HEADER: 'false',
             constants.CSV_INFER_SCHEMA: 'true',
-            constants.INPUT_COMPRESSION: constants.COMPRESSION_LZ4,
             constants.CSV_SEP: "|",
             constants.CSV_COMMENT: "#",
             constants.CSV_TIMESTAMPNTZFORMAT: "yyyy-MM-dd'T'HH:mm:ss",
@@ -143,7 +141,7 @@ class TestTextToBigQueryTemplate:
              "--text.bigquery.output.table=table",
              "--text.bigquery.temp.bucket.name=bucket",
              "--text.bigquery.output.mode=ignore",
-             "--text.bigquery.input.delimiter=|"])
+             "--text.bigquery.input.sep=|"])
 
         mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
         text_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
@@ -154,7 +152,6 @@ class TestTextToBigQueryTemplate:
             constants.CSV_HEADER: 'false',
             constants.CSV_INFER_SCHEMA: 'true',
             constants.CSV_MODE: 'FAILFAST',
-            constants.INPUT_COMPRESSION: constants.COMPRESSION_DEFLATE,
             constants.CSV_SEP: "|",
         })
         mock_spark_session.read.format().options().load.assert_called_once_with("gs://test")
@@ -184,7 +181,7 @@ class TestTextToBigQueryTemplate:
              "--text.bigquery.output.table=table",
              "--text.bigquery.temp.bucket.name=bucket",
              "--text.bigquery.output.mode=ignore",
-             "--text.bigquery.input.delimiter=|"])
+             "--text.bigquery.input.sep=|"])
         mock_spark_session.read.format().options(
         ).load.return_value = mock_spark_session.dataframe.DataFrame
         text_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
@@ -196,7 +193,6 @@ class TestTextToBigQueryTemplate:
             constants.CSV_INFER_SCHEMA: 'true',
             constants.CSV_MAXCOLUMNS: '100',
             constants.CSV_MAXCHARSPERCOLUMN: '64',
-            constants.INPUT_COMPRESSION: constants.COMPRESSION_GZIP,
             constants.CSV_SEP: "|",
         })
         mock_spark_session.read.format().options().load.assert_called_once_with("gs://test")
