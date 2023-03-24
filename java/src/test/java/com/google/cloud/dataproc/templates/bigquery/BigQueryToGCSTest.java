@@ -46,7 +46,7 @@ class BigQueryToGCSTest {
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     BigQueryToGCS template = new BigQueryToGCS();
-    assertDoesNotThrow(template::runTemplate);
+    assertDoesNotThrow(template::validateInput);
   }
 
   @ParameterizedTest

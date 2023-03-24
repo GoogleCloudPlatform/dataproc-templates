@@ -62,9 +62,11 @@ REDSHIFT_TEMPDIR = "tempdir"
 REDSHIFT_IAMROLE = "aws_iam_role"
 AWS_S3ACCESSKEY = "fs.s3a.access.key"
 AWS_S3SECRETKEY = "fs.s3a.secret.key"
+AWS_S3ENDPOINT = "fs.s3a.endpoint"
 SQL_EXTENSION= "spark.sql.extensions"
 CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
 CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
+FORMAT_PUBSUBLITE = "pubsublite"
 
 
 # Output mode
@@ -270,3 +272,62 @@ CASSANDRA_TO_GCS_QUERY = "cassandratogcs.input.query"
 # Hive DDL Extractor Util
 HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"
 HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH = "hive.ddl.extractor.output.path"
+HIVE_DDL_CONSIDER_SPARK_TABLES = "hive.ddl.consider.spark.tables"
+HIVE_DDL_TRANSLATION_DISPOSITION = "hive.ddl.translation.disposition"
+
+# AWS S3 To BigQuery
+S3_BQ_INPUT_LOCATION = "s3.bq.input.location"
+S3_BQ_INPUT_FORMAT = "s3.bq.input.format"
+S3_BQ_ACCESS_KEY = "s3.bq.access.key"
+S3_BQ_SECRET_KEY = "s3.bq.secret.key"
+S3_BQ_OUTPUT_DATASET_NAME = "s3.bq.output.dataset.name"
+S3_BQ_OUTPUT_TABLE_NAME = "s3.bq.output.table.name"
+S3_BQ_TEMP_BUCKET_NAME = "s3.bq.temp.bucket.name"
+S3_BQ_OUTPUT_MODE = "s3.bq.output.mode"
+S3_BQ_ENDPOINT_VALUE = "s3.amazonaws.com"
+
+
+#Kafka To Bq
+KAFKA_BQ_CHECKPOINT_LOCATION='kafka.to.bq.checkpoint.location'
+KAFKA_BOOTSTRAP_SERVERS='kafka.to.bq.bootstrap.servers'
+KAFKA_BQ_TOPIC='kafka.to.bq.topic'
+KAFKA_BQ_STARTING_OFFSET='kafka.to.bq.starting.offset'
+KAFKA_BQ_DATASET='kafka.to.bq.dataset'
+KAFKA_BQ_TABLE_NAME='kafka.to.bq.table'
+KAFKA_BQ_TEMP_BUCKET_NAME='kafka.to.bq.temp.bucket.name'
+KAFKA_BQ_TERMINATION_TIMEOUT='kafka.to.bq.termination.timeout'
+KAFKA_INPUT_FORMAT='kafka'
+KAFKA_BQ_OUTPUT_MODE='kafka.to.bq.output.mode'
+
+KAFKA_INPUT_FORMAT='kafka'
+
+#Kafka To GCS
+KAFKA_GCS_BOOTSTRAP_SERVERS='kafka.gcs.bootstrap.servers'
+KAFKA_GCS_OUTPUT_LOCATION='kafka.gcs.output.location.gcs.path'
+KAFKA_TOPIC='kafka.gcs.topic'
+KAFKA_GCS_OUTPUT_FORMAT='kafka.gcs.output.format'
+KAFKA_GCS_OUPUT_MODE='kafka.gcs.output.mode'
+KAFKA_GCS_TERMINATION_TIMEOUT='kafka.gcs.termination.timeout'
+KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
+KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
+
+#Pubsublite To GCS
+PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL = "pubsublite.to.gcs.input.subscription.url"
+PUBSUBLITE_TO_GCS_WRITE_MODE = "pubsublite.to.gcs.write.mode"
+PUBSUBLITE_TO_GCS_OUTPUT_LOCATION = "pubsublite.to.gcs.output.location"
+PUBSUBLITE_CHECKPOINT_LOCATION = "pubsublite.to.gcs.checkpoint.location"
+PUBSUBLITE_TO_GCS_OUTPUT_FORMAT = "pubsublite.to.gcs.output.format"
+PUBSUBLITE_TO_GCS_TIMEOUT = "pubsublite.to.gcs.timeout"
+PUBSUBLITE_TO_GCS_PROCESSING_TIME = "pubsublite.to.gcs.processing.time"
+
+# Azure Storage to BigQuery
+AZ_BLOB_BQ_INPUT_LOCATION = "azure.blob.bigquery.input.location"
+AZ_BLOB_BQ_INPUT_FORMAT = "azure.blob.bigquery.input.format"
+AZ_BLOB_BQ_OUTPUT_DATASET = "azure.blob.bigquery.output.dataset"
+AZ_BLOB_BQ_OUTPUT_TABLE = "azure.blob.bigquery.output.table"
+AZ_BLOB_BQ_OUTPUT_MODE = "azure.blob.bigquery.output.mode"
+AZ_BLOB_BQ_TEMP_BUCKET = "temporaryGcsBucket"
+AZ_BLOB_BQ_LD_TEMP_BUCKET_NAME = "azure.blob.bigquery.temp.bucket.name"
+AZ_BLOB_STORAGE_ACCOUNT = "azure.blob.storage.account"
+AZ_BLOB_CONTAINER_NAME = "azure.blob.container.name"
+AZ_BLOB_SAS_TOKEN = "azure.blob.sas.token"

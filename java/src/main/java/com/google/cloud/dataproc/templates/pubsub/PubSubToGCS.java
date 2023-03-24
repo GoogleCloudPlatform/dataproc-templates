@@ -23,7 +23,6 @@ import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import java.util.Iterator;
-import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
@@ -69,48 +68,42 @@ public class PubSubToGCS implements BaseTemplate {
   }
 
   @Override
-  public void runTemplate() {
+  public void runTemplate() throws InterruptedException {
     validateInput();
-    JavaStreamingContext jsc = null;
-    try {
-      SparkConf sparkConf = new SparkConf().setAppName("PubSubToGCS Dataproc Job");
-      jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
+    JavaStreamingContext jsc;
 
-      // Set log level
-      jsc.sparkContext().setLogLevel(sparkLogLevel);
+    SparkConf sparkConf = new SparkConf().setAppName("PubSubToGCS Dataproc Job");
+    jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
 
-      JavaDStream<SparkPubsubMessage> stream = null;
-      for (int i = 0; i < totalReceivers; i += 1) {
-        JavaDStream<SparkPubsubMessage> pubSubReciever =
-            PubsubUtils.createStream(
-                jsc,
-                inputProjectID,
-                pubsubInputSubscription,
-                new SparkGCPCredentials.Builder().build(),
-                StorageLevel.MEMORY_AND_DISK_SER());
-        if (stream == null) {
-          stream = pubSubReciever;
-        } else {
-          stream = stream.union(pubSubReciever);
-        }
-      }
+    // Set log level
+    jsc.sparkContext().setLogLevel(sparkLogLevel);
 
-      LOGGER.info("Writing data to output GCS Bucket: {}", gcsBucketName);
-      Storage storage = StorageOptions.getDefaultInstance().getService();
-      Bucket bucket = storage.get(gcsBucketName);
-      writeToGCS(stream, outputProjectID, gcsBucketName, batchSize, outputDataFormat, bucket);
-
-      jsc.start();
-      jsc.awaitTerminationOrTimeout(timeoutMs);
-
-      LOGGER.info("PubSubToGCS job completed.");
-      jsc.stop();
-    } catch (Throwable th) {
-      LOGGER.error("Exception in PubSubToGCS", th);
-      if (Objects.nonNull(jsc)) {
-        jsc.stop();
+    JavaDStream<SparkPubsubMessage> stream = null;
+    for (int i = 0; i < totalReceivers; i += 1) {
+      JavaDStream<SparkPubsubMessage> pubSubReciever =
+          PubsubUtils.createStream(
+              jsc,
+              inputProjectID,
+              pubsubInputSubscription,
+              new SparkGCPCredentials.Builder().build(),
+              StorageLevel.MEMORY_AND_DISK_SER());
+      if (stream == null) {
+        stream = pubSubReciever;
+      } else {
+        stream = stream.union(pubSubReciever);
       }
     }
+
+    LOGGER.info("Writing data to output GCS Bucket: {}", gcsBucketName);
+    Storage storage = StorageOptions.getDefaultInstance().getService();
+    Bucket bucket = storage.get(gcsBucketName);
+    writeToGCS(stream, outputProjectID, gcsBucketName, batchSize, outputDataFormat, bucket);
+
+    jsc.start();
+    jsc.awaitTerminationOrTimeout(timeoutMs);
+
+    LOGGER.info("PubSubToGCS job completed.");
+    jsc.stop();
   }
 
   public void validateInput() {

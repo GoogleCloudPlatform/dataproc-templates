@@ -15,6 +15,7 @@ bin/start.sh \
 --templateProperty gcs.bigquery.input.format=<csv|parquet|avro|orc> \
 --templateProperty gcs.bigquery.output.dataset=<datasetId> \
 --templateProperty gcs.bigquery.output.table=<tableName> \
+--templateProperty gcs.bigquery.output.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
 --templateProperty gcs.bigquery.temp.bucket.name=<bigquery temp bucket name>
 ```
 
@@ -160,3 +161,34 @@ bin/start.sh \
 --templateProperty gcs.gcs.temp.query='select * from global_temp.tempTable where sal>1500'
 
 ```
+
+## 6. Text To BigQuery
+
+General Execution:
+
+```
+GCP_PROJECT=<gcp-project-id> \
+REGION=<region>  \
+SUBNET=<subnet>   \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+HISTORY_SERVER_CLUSTER=<history-server> \
+bin/start.sh \
+-- --template TEXTTOBIGQUERY \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty text.bigquery.input.location=<gcs path for input file> \
+--templateProperty text.bigquery.input.compression=<compression file format like gzip or deflate> \
+--templateProperty text.bigquery.input.delimiter=<, for csv> \
+--templateProperty text.bigquery.output.dataset=<Big query dataset name> \
+--templateProperty text.bigquery.output.table=<Big query table name> \
+--templateProperty text.bigquery.output.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
+--templateProperty text.bigquery.temp.bucket=<bigquery temp bucket name>
+```
+
+There are two optional properties as well with "Text to BigQuery" Template. Please find below the details :-
+
+```
+--templateProperty text.bigquery.temp.table='temporary_view_name'
+--templateProperty text.bigquery.temp.query='select * from global_temp.temporary_view_name'
+```
+These properties are responsible for applying some spark sql transformations while loading data into BigQuery.
+The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
