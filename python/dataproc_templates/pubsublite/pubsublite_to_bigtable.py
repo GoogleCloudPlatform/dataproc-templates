@@ -185,9 +185,14 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
         trigger: str = args[constants.PUBSUBLITE_BIGTABLE_STREAMING_TRIGGER]
         checkpoint_location: str = args[constants.PUBSUBLITE_BIGTABLE_STREAMING_CHECKPOINT_PATH]
 
+        ignore_keys = {constants.PUBSUBLITE_BIGTABLE_SUBSCRIPTION_PATH,
+                       constants.PUBSUBLITE_BIGTABLE_STREAMING_CHECKPOINT_PATH,
+                       constants.PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT}
+        filtered_args = {key: val for key,
+                         val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting Pub/Sub Lite to Bigtable spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Read
