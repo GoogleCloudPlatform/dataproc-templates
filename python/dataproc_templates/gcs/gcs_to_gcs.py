@@ -50,12 +50,13 @@ class GCSToGCSTemplate(BaseTemplate):
             f'--{constants.GCS_TO_GCS_INPUT_FORMAT}',
             dest=constants.GCS_TO_GCS_INPUT_FORMAT,
             required=True,
-            help='Cloud Storage input file format (one of: avro,parquet,csv,json)',
+            help='Cloud Storage input file format (one of: avro,parquet,csv,json,delta)',
             choices=[
                 constants.FORMAT_AVRO,
                 constants.FORMAT_PRQT,
                 constants.FORMAT_CSV,
-                constants.FORMAT_JSON
+                constants.FORMAT_JSON,
+                constants.FORMAT_DELTA
             ]
         )
         add_spark_options(parser, constants.get_csv_input_spark_options("gcs.gcs.input."))

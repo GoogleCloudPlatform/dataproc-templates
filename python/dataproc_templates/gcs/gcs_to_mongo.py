@@ -46,12 +46,13 @@ class GCSToMONGOTemplate(BaseTemplate):
             f'--{constants.GCS_MONGO_INPUT_FORMAT}',
             dest=constants.GCS_MONGO_INPUT_FORMAT,
             required=True,
-            help='Input file format (one of: avro,parquet,csv,json)',
+            help='Input file format (one of: avro,parquet,csv,json,delta)',
             choices=[
                 constants.FORMAT_AVRO,
                 constants.FORMAT_PRQT,
                 constants.FORMAT_CSV,
-                constants.FORMAT_JSON
+                constants.FORMAT_JSON,
+                constants.FORMAT_DELTA
             ]
         )
         add_spark_options(parser, constants.get_csv_input_spark_options("gcs.mongo.input."))

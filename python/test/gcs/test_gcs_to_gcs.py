@@ -23,7 +23,7 @@ import dataproc_templates.util.template_constants as constants
 
 class TestGCSToGCSTemplate:
     """
-    Test suite for GCSToBigQueryTemplate
+    Test suite for GCSToGCSTemplate
     """
 
     def test_parse_args(self):
@@ -49,7 +49,7 @@ class TestGCSToGCSTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_parquet(self, mock_spark_session):
-        """Tests GCSToBigqueryTemplate runs with parquet format"""
+        """Tests GCSToGCSTemplate runs with parquet format"""
 
         gcs_to_gcs_template = GCSToGCSTemplate()
         mock_parsed_args = gcs_to_gcs_template.parse_args(
@@ -80,7 +80,7 @@ class TestGCSToGCSTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_csv(self, mock_spark_session):
-        """Tests GCSToBigqueryTemplate runs with parquet format"""
+        """Tests GCSToGCSTemplate runs with parquet format"""
 
         gcs_to_gcs_template = GCSToGCSTemplate()
         mock_parsed_args = gcs_to_gcs_template.parse_args(
@@ -127,7 +127,7 @@ class TestGCSToGCSTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_avro(self, mock_spark_session):
-        """Tests GCSToBigqueryTemplate runs with parquet format"""
+        """Tests GCSToGCSTemplate runs with avro format"""
 
         gcs_to_gcs_template = GCSToGCSTemplate()
         mock_parsed_args = gcs_to_gcs_template.parse_args(
@@ -170,7 +170,7 @@ class TestGCSToGCSTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_json(self, mock_spark_session):
-        """Tests GCSToBigqueryTemplate runs with parquet format"""
+        """Tests GCSToGCSTemplate runs with json format"""
 
         gcs_to_gcs_template = GCSToGCSTemplate()
         mock_parsed_args = gcs_to_gcs_template.parse_args(
@@ -199,3 +199,45 @@ class TestGCSToGCSTemplate:
             .partitionBy() \
             .json.assert_called_once_with("gs://output")
 
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_delta(self, mock_spark_session):
+        """Tests GCSToGCSTemplate runs with delta format"""
+
+        gcs_to_gcs_template = GCSToGCSTemplate()
+        mock_parsed_args = gcs_to_gcs_template.parse_args(
+            ["--gcs.to.gcs.input.location=gs://input",
+             "--gcs.to.gcs.input.format=delta",
+             "--gcs.to.gcs.temp.view.name=temp",
+             "--gcs.to.gcs.sql.query=select * from temp",
+             "--gcs.to.gcs.output.format=avro",
+             "--gcs.to.gcs.output.mode=overwrite",
+             "--gcs.to.gcs.output.partition.column=column",
+             "--gcs.to.gcs.output.location=gs://output"])
+
+        mock_spark_session.read.csv.return_value = mock_spark_session.dataframe.DataFrame
+        gcs_to_gcs_template.run(mock_spark_session, mock_parsed_args)
+
+        mock_spark_session.read.format.assert_called_once_with(constants.FORMAT_DELTA)
+
+        mock_spark_session.read.format() \
+            .load.assert_called_once_with("gs://input")
+        mock_spark_session.read.format() \
+            .load() \
+            .createOrReplaceTempView.assert_called_once_with("temp")
+
+        mock_spark_session.sql.assert_called_once_with("select * from temp")
+        mock_spark_session.sql().write \
+            .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
+        mock_spark_session.sql().write \
+            .mode() \
+            .partitionBy.assert_called_once_with("column")
+        mock_spark_session.sql().write \
+            .mode() \
+            .partitionBy() \
+            .format.assert_called_once_with(constants.FORMAT_AVRO)
+
+        mock_spark_session.sql().write \
+            .mode() \
+            .partitionBy() \
+            .format() \
+            .save.assert_called_once_with("gs://output")

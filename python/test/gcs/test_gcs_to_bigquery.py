@@ -72,9 +72,37 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
 
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_json(self, mock_spark_session):
+        """Tests GCSToBigqueryTemplate runs with json format"""
+
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
+        mock_parsed_args = gcs_to_bigquery_template.parse_args(
+            ["--gcs.bigquery.input.format=json",
+             "--gcs.bigquery.output.mode=errorifexists",
+             "--gcs.bigquery.input.location=gs://test",
+             "--gcs.bigquery.output.dataset=dataset",
+             "--gcs.bigquery.output.table=table",
+             "--gcs.bigquery.temp.bucket.name=bucket"])
+        mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
+        gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
+        mock_spark_session.read.json.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
+            constants.FORMAT_BIGQUERY)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
+        mock_spark_session.dataframe.DataFrame.write.format().option(
+        ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_ERRORIFEXISTS)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode().save.assert_called_once()
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_avro(self, mock_spark_session):
-        """Tests GCSToBigqueryTemplate runs with parquet avro"""
+        """Tests GCSToBigqueryTemplate runs with avro"""
 
         gcs_to_bigquery_template = GCSToBigQueryTemplate()
         mock_parsed_args = gcs_to_bigquery_template.parse_args(
@@ -89,6 +117,35 @@ class TestGCSToBigQueryTemplate:
 
         mock_spark_session.read.format.assert_called_with(
             constants.FORMAT_AVRO_EXTD)
+        mock_spark_session.read.format().load.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
+            constants.FORMAT_BIGQUERY)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
+        mock_spark_session.dataframe.DataFrame.write.format().option(
+        ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode().save.assert_called_once()
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_delta(self, mock_spark_session):
+        """Tests GCSToBigqueryTemplate runs with delta format"""
+
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
+        mock_parsed_args = gcs_to_bigquery_template.parse_args(
+            ["--gcs.bigquery.input.format=delta",
+             "--gcs.bigquery.output.mode=overwrite",
+             "--gcs.bigquery.input.location=gs://test",
+             "--gcs.bigquery.output.dataset=dataset",
+             "--gcs.bigquery.output.table=table",
+             "--gcs.bigquery.temp.bucket.name=bucket"])
+        mock_spark_session.read.format().load.return_value = mock_spark_session.dataframe.DataFrame
+        gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
+        mock_spark_session.read.format.assert_called_with(
+            constants.FORMAT_DELTA)
         mock_spark_session.read.format().load.assert_called_once_with("gs://test")
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_BIGQUERY)
@@ -178,30 +235,3 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
 
-
-    @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_json(self, mock_spark_session):
-        """Tests GCSToBigqueryTemplate runs with json format"""
-
-        gcs_to_bigquery_template = GCSToBigQueryTemplate()
-        mock_parsed_args = gcs_to_bigquery_template.parse_args(
-            ["--gcs.bigquery.input.format=json",
-             "--gcs.bigquery.output.mode=errorifexists",
-             "--gcs.bigquery.input.location=gs://test",
-             "--gcs.bigquery.output.dataset=dataset",
-             "--gcs.bigquery.output.table=table",
-             "--gcs.bigquery.temp.bucket.name=bucket"])
-        mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
-        gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
-
-        mock_spark_session.read.json.assert_called_once_with("gs://test")
-        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
-            constants.FORMAT_BIGQUERY)
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
-        mock_spark_session.dataframe.DataFrame.write.format().option(
-        ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_ERRORIFEXISTS)
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode().save.assert_called_once()

@@ -1,6 +1,6 @@
 # GCS To BigQuery
 
-Template for reading files from Cloud Storage and writing them to a BigQuery table. It supports reading JSON, CSV, Parquet and Avro formats.
+Template for reading files from Cloud Storage and writing them to a BigQuery table. It supports reading JSON, CSV, Parquet, Avro and Delta formats.
 
 It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
 
@@ -8,7 +8,7 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `gcs.bigquery.input.location`: Cloud Storage location of the input files (format: `gs://bucket/...`)
 * `gcs.bigquery.output.dataset`: BigQuery dataset for the output table
 * `gcs.bigquery.output.table`: BigQuery output table name
-* `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
 * `gcs.bigquery.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
 * `gcs.bigquery.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 #### Optional Arguments
@@ -91,7 +91,7 @@ options:
   --gcs.bigquery.output.table GCS.BIGQUERY.OUTPUT.TABLE
                         BigQuery output table name
   --gcs.bigquery.input.format {avro,parquet,csv,json,delta}
-                        Input file format (one of: avro,parquet,csv,json)
+                        Input file format (one of: avro,parquet,csv,json,delta)
   --gcs.bigquery.input.chartoescapequoteescaping GCS.BIGQUERY.INPUT.CHARTOESCAPEQUOTEESCAPING
                         Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
                         different, \0 otherwise
@@ -160,7 +160,8 @@ options:
 
 ## Required JAR files
 
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example)  and [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster.
+This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example).  
+It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
 
 
 ## Example submission
@@ -169,7 +170,7 @@ This template requires the [Spark BigQuery connector](https://cloud.google.com/d
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, gs://{jars_bucket}/delta-core_2.12-1.1.0.jar"
+export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, <gs://{your_bucket}/delta-core_2.12-1.1.0.jar>"
 
 ./bin/start.sh \
 -- --template=GCSTOBIGQUERY \
@@ -184,7 +185,7 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, gs://{jars_
 
 # GCS To Bigtable
 
-Template for reading files from Cloud Storage and writing them to a Bigtable table. It supports reading JSON, CSV, Parquet and Avro formats.
+Template for reading files from Cloud Storage and writing them to a Bigtable table. It supports reading JSON, CSV, Parquet, Avro and Delta formats.
 
 It uses the Apache HBase Spark Connector to write to Bigtable.
 
@@ -252,9 +253,12 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
   - gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar
       - Download it using ``` wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar```
 
+It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
+
+
 ## Arguments
 * `gcs.bigquery.input.location`: Cloud Storage location of the input files (format: `gs://<bucket>/...`)
-* `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
 * `gcs.bigtable.hbase.catalog.json`: HBase catalog inline json
 #### Optional Arguments
 * `gcs.bigtable.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
@@ -293,7 +297,7 @@ $ python main.py --template GCSTOBIGTABLE --help
 
 usage: main.py [-h]
                --gcs.bigtable.input.location GCS.BIGTABLE.INPUT.LOCATION
-               --gcs.bigtable.input.format {avro,parquet,csv,json}
+               --gcs.bigtable.input.format {avro,parquet,csv,json,delta}
                [--gcs.bigtable.input.chartoescapequoteescaping GCS.BIGTABLE.INPUT.CHARTOESCAPEQUOTEESCAPING]
                [--gcs.bigtable.input.columnnameofcorruptrecord GCS.BIGTABLE.INPUT.COLUMNNAMEOFCORRUPTRECORD]
                [--gcs.bigtable.input.comment GCS.BIGTABLE.INPUT.COMMENT]
@@ -328,8 +332,8 @@ options:
   -h, --help            show this help message and exit
   --gcs.bigtable.input.location GCS.BIGTABLE.INPUT.LOCATION
                         Cloud Storage location of the input files
-  --gcs.bigtable.input.format {avro,parquet,csv,json}
-                        Input file format (one of: avro,parquet,csv,json)
+  --gcs.bigtable.input.format {avro,parquet,csv,json,delta}
+                        Input file format (one of: avro,parquet,csv,json,delta)
   --gcs.bigtable.input.chartoescapequoteescaping GCS.BIGTABLE.INPUT.CHARTOESCAPEQUOTEESCAPING
                         Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
                         different, \0 otherwise
@@ -426,10 +430,10 @@ export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-
 
 # GCS To JDBC
 
-Template for reading files from Cloud Storage and writing them to a JDBC table. It supports reading JSON, CSV, Parquet and Avro formats.
+Template for reading files from Cloud Storage and writing them to a JDBC table. It supports reading JSON, CSV, Parquet, Avro and Delta formats.
 
 ## Arguments
-* `gcs.jdbc.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `gcs.jdbc.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
 * `gcs.jdbc.input.location`: Cloud Storage location of the input files (format: `gs://BUCKET/...`)
 * `gcs.jdbc.output.table`: JDBC output table name
 * `gcs.jdbc.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
@@ -514,8 +518,8 @@ options:
   -h, --help            show this help message and exit
   --gcs.jdbc.input.location GCS.JDBC.INPUT.LOCATION
                         Cloud Storage location of the input files
-  --gcs.jdbc.input.format {avro,parquet,csv,json}
-                        Input file format (one of: avro,parquet,csv,json)
+  --gcs.jdbc.input.format {avro,parquet,csv,json,delta}
+                        Input file format (one of: avro,parquet,csv,json,delta)
   --gcs.jdbc.input.chartoescapequoteescaping GCS.JDBC.INPUT.CHARTOESCAPEQUOTEESCAPING
                         Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
                         different, \0 otherwise
@@ -604,6 +608,8 @@ wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.30.
 
 Once the jar file gets downloaded, please upload the file into a Cloud Storage bucket.
 
+It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
+
 ## Example submission
 
 ```
@@ -622,10 +628,10 @@ export JARS=<gcs-bucket-location-containing-jar-file>
 
 # GCS To MongoDB
 
-Template for reading files from Cloud Storage and writing them to a MongoDB Collection. It supports reading JSON, CSV, Parquet and Avro formats.
+Template for reading files from Cloud Storage and writing them to a MongoDB Collection. It supports reading JSON, CSV, Parquet, Avro and Delta formats.
 
 ## Arguments
-* `gcs.mongo.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `gcs.mongo.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
 * `gcs.mongo.input.location`: Cloud Storage location of the input files (format: `gs://BUCKET/...`)
 * `gcs.mongo.output.uri`: MongoDB Output URI for connection
 * `gcs.mongo.output.database`: MongoDB Output Database Name
@@ -668,7 +674,7 @@ $ python main.py --template GCSTOMONGO --help
 
 usage: main.py [-h]
                --gcs.mongo.input.location GCS.MONGO.INPUT.LOCATION
-               --gcs.mongo.input.format {avro,parquet,csv,json}
+               --gcs.mongo.input.format {avro,parquet,csv,json,delta}
                [--gcs.mongo.input.chartoescapequoteescaping GCS.MONGO.INPUT.CHARTOESCAPEQUOTEESCAPING]
                [--gcs.mongo.input.columnnameofcorruptrecord GCS.MONGO.INPUT.COLUMNNAMEOFCORRUPTRECORD]
                [--gcs.mongo.input.comment GCS.MONGO.INPUT.COMMENT]
@@ -707,8 +713,8 @@ options:
   -h, --help            show this help message and exit
   --gcs.mongo.input.location GCS.MONGO.INPUT.LOCATION
                         Cloud Storage location of the input files
-  --gcs.mongo.input.format {avro,parquet,csv,json}
-                        Input file format (one of: avro,parquet,csv,json)
+  --gcs.mongo.input.format {avro,parquet,csv,json,delta}
+                        Input file format (one of: avro,parquet,csv,json,delta)
   --gcs.mongo.input.chartoescapequoteescaping GCS.MONGO.INPUT.CHARTOESCAPEQUOTEESCAPING
                         Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
                         different, \0 otherwise
@@ -793,6 +799,8 @@ Wget Command to download these jar files is as follows :-
 sudo wget https://repo1.maven.org/maven2/org/mongodb/spark/mongo-spark-connector_2.12/2.4.0/mongo-spark-connector_2.12-2.4.0.jar
 sudo wget https://repo1.maven.org/maven2/org/mongodb/mongo-java-driver/3.9.1/mongo-java-driver-3.9.1.jar
 ```
+
+It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
 
 ## Example submission
 
@@ -1004,11 +1012,11 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 ```
 # GCS To GCS - SQL Transformation
 
-Template for reading files from Cloud Storage, applying data transformations using Spark SQL and then writing the tranformed data back to Cloud Storage. It supports reading and writing JSON, CSV, Parquet and Avro formats.
+Template for reading files from Cloud Storage, applying data transformations using Spark SQL and then writing the transformed data back to Cloud Storage. It supports reading and writing JSON, CSV, Parquet and Avro formats. Additionally, it can read Delta format.
 
 ## Arguments
 * `gcs.to.gcs.input.location`: Cloud Storage location of the input files (format: `gs://BUCKET/...`)
-* `gcs.to.gcs.input.format`: Input file format (one of: avro,parquet,csv,json)
+* `gcs.to.gcs.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
 * `gcs.to.gcs.temp.view.name`: Temp view name for creating a spark sql view on source data.
   This name has to match with the table name that will be used in the SQLquery
 * `gcs.to.gcs.sql.query`: SQL query for data transformation. This must use the
@@ -1071,7 +1079,7 @@ $ python main.py --template GCSTOGCS --help
 
 usage: main.py [-h]
                --gcs.to.gcs.input.location GCS.TO.GCS.INPUT.LOCATION
-               --gcs.to.gcs.input.format {avro,parquet,csv,json}
+               --gcs.to.gcs.input.format {avro,parquet,csv,json,delta}
                [--gcs.to.gcs.input.chartoescapequoteescaping GCS.TO.GCS.INPUT.CHARTOESCAPEQUOTEESCAPING]
                [--gcs.to.gcs.input.columnnameofcorruptrecord GCS.TO.GCS.INPUT.COLUMNNAMEOFCORRUPTRECORD]
                [--gcs.to.gcs.input.comment GCS.TO.GCS.INPUT.COMMENT]
@@ -1128,8 +1136,8 @@ options:
   -h, --help            show this help message and exit
   --gcs.to.gcs.input.location GCS.TO.GCS.INPUT.LOCATION
                         Cloud Storage location of the input files
-  --gcs.to.gcs.input.format {avro,parquet,csv,json}
-                        Cloud Storage input file format (one of: avro,parquet,csv,json)
+  --gcs.to.gcs.input.format {avro,parquet,csv,json,delta}
+                        Cloud Storage input file format (one of: avro,parquet,csv,json,delta)
   --gcs.to.gcs.input.chartoescapequoteescaping GCS.TO.GCS.INPUT.CHARTOESCAPEQUOTEESCAPING
                         Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
                         different, \0 otherwise
@@ -1242,7 +1250,7 @@ options:
 
 ```
 
-No specific jar files are needed for this template. For using AVRO file format, spark-avro.jar is neede. However, this is already accessible to dataproc serverless.
+It requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
 
 ```
 
