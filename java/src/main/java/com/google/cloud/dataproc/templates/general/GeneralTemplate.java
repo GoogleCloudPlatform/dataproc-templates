@@ -85,10 +85,8 @@ public class GeneralTemplate implements BaseTemplate {
     } catch (IOException e) {
       throw new IllegalArgumentException("Could not load config yaml", e);
     }
-    GeneralTemplate generalTemplate = new GeneralTemplate(config);
-    generalTemplate.validateInput();
     LOGGER.info("Config loaded\n{}", config);
-    return generalTemplate;
+    return new GeneralTemplate(config);
   }
 
   /**

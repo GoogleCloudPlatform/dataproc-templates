@@ -199,11 +199,14 @@ public class DataProcTemplate {
    * Run spark job for template.
    *
    * @param template the template to run.
+   * @throws Exception
    */
   static void runSparkJob(BaseTemplate template)
-      throws StreamingQueryException, TimeoutException, InterruptedException {
-    LOGGER.debug("Start runSparkJob");
-    template.runTemplate();
-    LOGGER.debug("End runSparkJob");
+      throws Exception {
+        LOGGER.debug("Validating Input");
+        template.validateInput();  
+        LOGGER.debug("Start runSparkJob");
+        template.runTemplate();
+        LOGGER.debug("End runSparkJob");
   }
 }
