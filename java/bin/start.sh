@@ -89,7 +89,7 @@ if [ -n "${JARS}" ]; then
   OPT_JARS="${OPT_JARS},${JARS}"
 fi
 if [ -n "${SPARK_PROPERTIES}" ]; then
-  OPT_PROPERTIES="${OPT_PROPERTIES},${SPARK_PROPERTIES}"
+  OPT_PROPERTIES="--properties=${SPARK_PROPERTIES}"
 fi
 
 #if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
@@ -126,6 +126,7 @@ if [ "${JOB_TYPE}" == "CLUSTER" ]; then
       ${OPT_CLUSTER} \
       ${OPT_JARS} \
       ${OPT_LABELS} \
+      ${OPT_PROPERTIES} \
       ${OPT_CLASS}
 EOF
 )
@@ -140,6 +141,7 @@ elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
       ${OPT_LABELS} \
       ${OPT_DEPS_BUCKET} \
       ${OPT_CLASS} \
+      ${OPT_PROPERTIES} \
       ${OPT_SUBNET} \
       ${OPT_HISTORY_SERVER_CLUSTER} \
       ${OPT_METASTORE_SERVICE}

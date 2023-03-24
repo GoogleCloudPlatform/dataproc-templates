@@ -403,4 +403,30 @@ public interface TemplateConstants {
   String SNOWFLAKE_GCS_OUTPUT_FORMAT = "snowflake.gcs.output.format";
   String SNOWFLAKE_GCS_OUTPUT_MODE = "snowflake.gcs.output.mode";
   String SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN = "snowflake.gcs.output.partitionColumn";
+
+  /** MongoToGCS properties */
+  String MONGO_GCS_OUTPUT_LOCATION = "mongo.gcs.output.location";
+
+  String MONGO_GCS_OUTPUT_FORMAT = "mongo.gcs.output.format";
+  String MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode";
+  String MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri";
+  String MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database";
+  String MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection";
+
+  /** TextToBigquery properties */
+  String TEXT_BIGQUERY_INPUT_LOCATION = "text.bigquery.input.location";
+
+  String TEXT_BIGQUERY_INPUT_COMPRESSION = "text.bigquery.input.compression";
+  String TEXT_BIGQUERY_INPUT_DELIMITER = "text.bigquery.input.delimiter";
+  String TEXT_BIGQUERY_OUTPUT_DATASET = "text.bigquery.output.dataset";
+  String TEXT_BIGQUERY_OUTPUT_TABLE = "text.bigquery.output.table";
+  String TEXT_BIGQUERY_OUTPUT_MODE = "text.bigquery.output.mode";
+  String TEXT_BIGQUERY_TEMP_BUCKET = "text.bigquery.temp.bucket";
+  String TEXT_BIGQUERY_TEMP_TABLE = "text.bigquery.temp.table";
+  String TEXT_BIGQUERY_TEMP_QUERY = "text.bigquery.temp.query";
+
+  String TEXT_BIGQUERY_COMPRESSION_OPTION = "compression";
+  String TEXT_BIGQUERY_DELIMITER_OPTION = "delimiter";
+  String TEXT_BIGQUERY_INFERSCHEMA_OPTION = "inferSchema";
+  String TEXT_BIGQUERY_HEADER_OPTION = "header";
 }
