@@ -105,6 +105,7 @@ class JDBCInputManagerInterface(AbstractClass):
         table: str,
         column: str,
         accepted_data_types: List[str],
+        row_count: int,
         row_count_threshold: int,
         column_description: str,
         sa_connection: "sqlalchemy.engine.base.Connection",
@@ -118,7 +119,7 @@ class JDBCInputManagerInterface(AbstractClass):
                 #      and not as in _read_partitioning_num_partitions() but leaving logic
                 #      as-is for now, we can revisit in the future.
                 num_partitions = self._read_partitioning_num_partitions(
-                    lowerbound, upperbound, row_count_threshold
+                    row_count, row_count_threshold
                 )
                 return {
                     SPARK_PARTITION_COLUMN: column,
@@ -210,23 +211,13 @@ class JDBCInputManagerInterface(AbstractClass):
                 row = conn.execute(sql).fetchone()
         return row[0] if row else row
 
-    def _read_partitioning_num_partitions(self, lowerbound, upperbound, stride):
-        """Return appropriate Spark SQL numPartition value for input range/stride."""
-        assert stride > 0
-        if isinstance(lowerbound, (int, float, Decimal)) and isinstance(
-            upperbound, (int, float, Decimal)
-        ):
-            if upperbound == lowerbound:
-                return 1
-            elif upperbound < lowerbound:
-                raise JDBCInputManagerException(
-                    f"Unsupported partition boundary values: {type(lowerbound)} > {type(upperbound)}"
-                )
-            return math.ceil(float(upperbound - lowerbound) / float(stride))
-        else:
-            raise JDBCInputManagerException(
-                f"Unsupported partition boundary values: {type(lowerbound)}/{type(upperbound)}"
-            )
+    def _read_partitioning_num_partitions(self, row_count: int, stride: int) -> int:
+        """Return appropriate Spark SQL numPartition value for input range/row count."""
+        assert row_count >= 0
+        assert stride >= 0
+        if not row_count or not stride:
+            return 1
+        return math.ceil(row_count / stride)
 
     # Public methods
 
@@ -256,14 +247,18 @@ class JDBCInputManagerInterface(AbstractClass):
         """
         read_partition_info = {}
         # Case insensitive match for custom_partition_column in case user was imprecise.
-        custom_partition_columns = {k.upper(): v for k, v in custom_partition_columns.items()}
+        custom_partition_columns = {
+            k.upper(): v for k, v in custom_partition_columns.items()
+        }
         with self._alchemy_db.connect() as conn:
             for table in self._table_list:
                 partition_options = self._define_read_partitioning(
                     table,
                     row_count_threshold,
                     conn,
-                    custom_partition_column=(custom_partition_columns or {}).get(table.upper()),
+                    custom_partition_column=(custom_partition_columns or {}).get(
+                        table.upper()
+                    ),
                 )
                 if partition_options:
                     read_partition_info[table] = partition_options

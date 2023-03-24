@@ -111,6 +111,7 @@ def test_define_native_column_read_partitioning_oracle():
         "table1",
         "column",
         ["NUMBERxxx"],
+        99,
         50,
         "test column",
         None,
@@ -124,6 +125,7 @@ def test_define_native_column_read_partitioning_oracle():
             "table1",
             "column",
             ["NUMBER"],
+            99,
             50,
             "test column",
             None,
@@ -146,6 +148,7 @@ def test_define_native_column_read_partitioning_mysql():
         "table1",
         "column",
         ["intxxx"],
+        99,
         50,
         "test column",
         None,
@@ -159,6 +162,7 @@ def test_define_native_column_read_partitioning_mysql():
             "table1",
             "column",
             ["int", "bigint", "mediumint"],
+            99,
             50,
             "test column",
             None,
@@ -229,35 +233,21 @@ def test__normalise_oracle_data_type():
 def test__read_partitioning_num_partitions():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
     # Numeric ranges
-    for lowerbound, upperbound, stride, expected_partitions in [
-        [1, 1, 10, 1],
-        [1, 100, 10, 10],
-        [float(1), float(100), float(10), 10],
-        [Decimal(1), Decimal(100), Decimal(10), 10],
-        [int(1), float(100), Decimal(10), 10],
+    for num_rows, stride, expected_partitions in [
+        [1, 10, 1],
+        [100, 10, 10],
+        [float(100), float(10), 10],
+        [Decimal(100), Decimal(10), 10],
+        [int(99), Decimal(10), 10],
         [
-            Decimal(1),
             Decimal(9_999_999_999_999_999_999),
             Decimal(1_000_000_000_000_000_000),
             10,
         ],
-        [1, 105, 10, 11],
-        [-99, 1, 10, 10],
+        [105, 10, 11],
+        [0, 10, 1],
     ]:
         assert (
-            mgr._read_partitioning_num_partitions(lowerbound, upperbound, stride)
+            mgr._read_partitioning_num_partitions(num_rows, stride)
             == expected_partitions
         )
-
-    # Unsupported boundary inputs
-    for lowerbound, upperbound, stride, expected_partitions in [
-        # Datetime ranges are currently unsupported
-        [datetime(2020, 1, 1), datetime(2020, 1, 20), 2, None],
-        # Upperbound < lowerbound
-        [100, 1, 10, None],
-    ]:
-        with pytest.raises(JDBCInputManagerException):
-            assert (
-                mgr._read_partitioning_num_partitions(lowerbound, upperbound, stride)
-                == expected_partitions
-            )

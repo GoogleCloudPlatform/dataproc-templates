@@ -81,6 +81,7 @@ class MySQLInputManager(JDBCInputManagerInterface):
                 table,
                 column,
                 accepted_data_types,
+                row_count,
                 row_count_threshold,
                 "user provided column",
                 sa_connection,
@@ -96,6 +97,7 @@ class MySQLInputManager(JDBCInputManagerInterface):
                 table,
                 column,
                 accepted_data_types,
+                row_count,
                 row_count_threshold,
                 "primary key column",
                 sa_connection,
@@ -179,7 +181,7 @@ class MySQLInputManager(JDBCInputManagerInterface):
     ) -> str:
         sql = dedent(
             """
-            SELECT data_type
+            SELECT column_name
             FROM information_schema.columns
             WHERE table_schema = '{}'
             AND table_name = '{}'
