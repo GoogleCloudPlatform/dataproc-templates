@@ -80,22 +80,9 @@ def test_get_invalid_log_level():
 def test_add_spark_options():
     for option_set, option_prefix in [
         # Read options
-        (in_csv_opt("gcs.jdbc.input."), "gcs.jdbc.input"),
-        (in_csv_opt("gcs.bigquery.input."), "gcs.bigquery.input"),
-        (in_csv_opt("gcs.bigtable.input."), "gcs.bigtable.input"),
-        (in_csv_opt("gcs.mongo.input."), "gcs.mongo.input"),
-        (in_csv_opt("gcs.to.gcs.input."), "gcs.to.gcs.input"),
-        (in_csv_opt("text.bigquery.input."), "text.bigquery.input"),
+        (in_csv_opt("mock.in.prefix."), "mock.in.prefix"),
         # Write options
-        (out_csv_opt("bigquery.gcs.output."), "bigquery.gcs.output"),
-        (out_csv_opt("cassandratogcs.output."), "cassandratogcs.output"),
-        (out_csv_opt("gcs.to.gcs.output."), "gcs.to.gcs.output"),
-        (out_csv_opt("hbase.gcs.output."), "hbase.gcs.output"),
-        (out_csv_opt("hive.gcs.output."), "hive.gcs.output"),
-        (out_csv_opt("jdbctogcs.output."), "jdbctogcs.output"),
-        (out_csv_opt("mongo.gcs.output."), "mongo.gcs.output"),
-        (out_csv_opt("redshifttogcs.output."), "redshifttogcs.output"),
-        (out_csv_opt("snowflake.to.gcs.output."), "snowflake.to.gcs.output"),
+        (out_csv_opt("mock.out.prefix."), "mock.out.prefix"),
     ]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
         add_spark_options(parser, option_set)
