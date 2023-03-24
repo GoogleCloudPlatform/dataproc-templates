@@ -23,8 +23,12 @@ from util.jdbc.jdbc_input_manager import JDBCInputManager
 from util.jdbc.jdbc_input_manager_interface import (
     JDBCInputManagerException,
     JDBCInputManagerInterface,
+    SPARK_PARTITION_COLUMN,
+    SPARK_NUM_PARTITIONS,
+    SPARK_LOWER_BOUND,
+    SPARK_UPPER_BOUND,
+    PARTITION_COMMENT,
 )
-from util.jdbc.engines.oracle_input_manager import OracleInputManager
 
 
 ALCHEMY_DB = mock.MagicMock()
@@ -36,7 +40,7 @@ def test_input_manager_init():
         assert isinstance(mgr, JDBCInputManagerInterface)
 
 
-def test_oracle_enclose_identifier():
+def test_enclose_identifier_oracle():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
     assert mgr._enclose_identifier("a", "'") == "'a'"
     assert mgr._enclose_identifier("a") == '"a"'
@@ -44,7 +48,7 @@ def test_oracle_enclose_identifier():
     assert mgr._enclose_identifier("A", '"') == '"A"'
 
 
-def test_mysql_enclose_identifier():
+def test_enclose_identifier_mysql():
     mgr = JDBCInputManager.create("mysql", ALCHEMY_DB)
     assert mgr._enclose_identifier("a", "'") == "'a'"
     assert mgr._enclose_identifier("a") == "`a`"
@@ -52,7 +56,8 @@ def test_mysql_enclose_identifier():
     assert mgr._enclose_identifier("A", "`") == "`A`"
 
 
-def test__filter_table_list():
+def test_filter_table_list():
+    # This is the same for all engines therefore no need to test across all.
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
     table_list = ["table1", "TABLE2", "Table3"]
     assert mgr._filter_table_list(table_list, ["TABLE1", "table2", "table4"]) == [
@@ -66,7 +71,7 @@ def test__filter_table_list():
     assert mgr._filter_table_list([(_,) for _ in table_list], []) == table_list
 
 
-def test_oracle_qualified_name():
+def test_qualified_name_oracle():
     mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
     assert mgr.qualified_name("SCHEMA1", "TABLE1", enclosed=False) == "SCHEMA1.TABLE1"
     assert (
@@ -74,7 +79,7 @@ def test_oracle_qualified_name():
     )
 
 
-def test_mysql_qualified_name():
+def test_qualified_name_mysql():
     mgr = JDBCInputManager.create("mysql", ALCHEMY_DB)
     assert mgr.qualified_name("SCHEMA1", "TABLE1", enclosed=False) == "SCHEMA1.TABLE1"
     assert (
@@ -95,6 +100,76 @@ def test_get_table_list_with_counts():
     table_list = ["table1", "table2"]
     mgr.set_table_list(table_list)
     assert mgr.get_table_list_with_counts() == [42, 42]
+
+
+def test_define_native_column_read_partitioning_oracle():
+    mgr = JDBCInputManager.create("oracle", ALCHEMY_DB)
+    mgr._get_table_min = mock.MagicMock(return_value=1)
+    mgr._get_table_max = mock.MagicMock(return_value=100)
+    mgr._get_column_data_type = mock.MagicMock(return_value="NUMBER")
+    part_opts = mgr._define_native_column_read_partitioning(
+        "table1",
+        "column",
+        ["NUMBERxxx"],
+        50,
+        "test column",
+        None,
+    )
+    assert part_opts is None
+
+    # Accepted numeric partition columns
+    for data_type in ["NUMBER"]:
+        mgr._get_column_data_type = mock.MagicMock(return_value=data_type)
+        part_opts = mgr._define_native_column_read_partitioning(
+            "table1",
+            "column",
+            ["NUMBER"],
+            50,
+            "test column",
+            None,
+        )
+        assert part_opts == {
+            SPARK_PARTITION_COLUMN: "column",
+            SPARK_NUM_PARTITIONS: 2,
+            SPARK_LOWER_BOUND: 1,
+            SPARK_UPPER_BOUND: 100,
+            PARTITION_COMMENT: f"Partitioning by {data_type} test column",
+        }
+
+
+def test_define_native_column_read_partitioning_mysql():
+    mgr = JDBCInputManager.create("mysql", ALCHEMY_DB)
+    mgr._get_table_min = mock.MagicMock(return_value=1)
+    mgr._get_table_max = mock.MagicMock(return_value=100)
+    mgr._get_column_data_type = mock.MagicMock(return_value="int")
+    part_opts = mgr._define_native_column_read_partitioning(
+        "table1",
+        "column",
+        ["intxxx"],
+        50,
+        "test column",
+        None,
+    )
+    assert part_opts is None
+
+    # Accepted numeric partition columns
+    for data_type in ["int", "bigint", "mediumint"]:
+        mgr._get_column_data_type = mock.MagicMock(return_value=data_type)
+        part_opts = mgr._define_native_column_read_partitioning(
+            "table1",
+            "column",
+            ["int", "bigint", "mediumint"],
+            50,
+            "test column",
+            None,
+        )
+        assert part_opts == {
+            SPARK_PARTITION_COLUMN: "column",
+            SPARK_NUM_PARTITIONS: 2,
+            SPARK_LOWER_BOUND: 1,
+            SPARK_UPPER_BOUND: 100,
+            PARTITION_COMMENT: f"Partitioning by {data_type} test column",
+        }
 
 
 def test_read_partitioning_df():

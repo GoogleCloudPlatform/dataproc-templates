@@ -59,6 +59,7 @@ class JDBCInputManagerInterface(AbstractClass):
         table: str,
         row_count_threshold: int,
         sa_connection: "sqlalchemy.engine.base.Connection",
+        custom_partition_column: Optional[str],
     ) -> str:
         """Return a dictionary defining how to partition the Spark SQL extraction."""
 
@@ -98,6 +99,32 @@ class JDBCInputManagerInterface(AbstractClass):
         """Return schema_filter normalised to the correct case."""
 
     # Private methods
+
+    def _define_native_column_read_partitioning(
+        self,
+        table: str,
+        column: str,
+        accepted_data_types: List[str],
+        row_count_threshold: int,
+        column_description: str,
+        sa_connection: "sqlalchemy.engine.base.Connection",
+    ):
+        column_datatype = self._get_column_data_type(table, column)
+        if column_datatype in accepted_data_types:
+            lowerbound = self._get_table_min(table, column, sa_connection=sa_connection)
+            upperbound = self._get_table_max(table, column, sa_connection=sa_connection)
+            if lowerbound and upperbound:
+                num_partitions = self._read_partitioning_num_partitions(
+                    lowerbound, upperbound, row_count_threshold
+                )
+                return {
+                    SPARK_PARTITION_COLUMN: column,
+                    SPARK_NUM_PARTITIONS: num_partitions,
+                    SPARK_LOWER_BOUND: lowerbound,
+                    SPARK_UPPER_BOUND: upperbound,
+                    PARTITION_COMMENT: f"Partitioning by {column_datatype} {column_description}",
+                }
+        return None
 
     def _filter_table_list(self, table_list: List[str], table_filter: List[str]):
         """Returns table_list filtered for entries (case-insensitive) in table_filter."""
@@ -150,6 +177,36 @@ class JDBCInputManagerInterface(AbstractClass):
                 row = conn.execute(sql).fetchone()
         return row[0] if row else row
 
+    def _get_table_min(
+        self,
+        table: str,
+        column: str,
+        sa_connection: "Optional[sqlalchemy.engine.base.Connection]" = None,
+    ) -> Optional[int]:
+        """Return min(column) for a table."""
+        sql = self._get_min_sql(table, column)
+        if sa_connection:
+            row = sa_connection.execute(sql).fetchone()
+        else:
+            with self._alchemy_db.connect() as conn:
+                row = conn.execute(sql).fetchone()
+        return row[0] if row else row
+
+    def _get_table_max(
+        self,
+        table: str,
+        column: str,
+        sa_connection: "Optional[sqlalchemy.engine.base.Connection]" = None,
+    ) -> Optional[int]:
+        """Return max(column) for a table."""
+        sql = self._get_max_sql(table, column)
+        if sa_connection:
+            row = sa_connection.execute(sql).fetchone()
+        else:
+            with self._alchemy_db.connect() as conn:
+                row = conn.execute(sql).fetchone()
+        return row[0] if row else row
+
     def _read_partitioning_num_partitions(self, lowerbound, upperbound, stride):
         """Return appropriate Spark SQL numPartition value for input range/stride."""
         assert stride > 0
@@ -184,13 +241,24 @@ class JDBCInputManagerInterface(AbstractClass):
         )
         return self._table_list
 
-    def define_read_partitioning(self, row_count_threshold: int) -> dict:
-        """Return a dictionary defining how to partition the Spark SQL extraction."""
+    def define_read_partitioning(
+        self,
+        row_count_threshold: int,
+        custom_partition_columns: Optional[dict] = None,
+    ) -> dict:
+        """
+        Return a dictionary defining how to partition the Spark SQL extraction.
+        custom_partition_columns is an optional dict allowing the user to provide
+        any column name as a read partition column.
+        """
         read_partition_info = {}
         with self._alchemy_db.connect() as conn:
             for table in self._table_list:
                 partition_options = self._define_read_partitioning(
-                    table, row_count_threshold, conn
+                    table,
+                    row_count_threshold,
+                    conn,
+                    custom_partition_column=(custom_partition_columns or {}).get(table),
                 )
                 if partition_options:
                     read_partition_info[table] = partition_options
