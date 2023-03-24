@@ -132,3 +132,4 @@ Questions, issues, and comments should be directed to dataproc-templates-support
 [gcf]: https://cloud.google.com/functions/
 [gcf-bg]: https://cloud.google.com/functions/docs/writing/background
 [logs-export]: https://cloud.google.com/logging/docs/export/
+
