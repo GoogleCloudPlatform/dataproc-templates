@@ -64,11 +64,11 @@ class OracleInputManager(JDBCInputManagerInterface):
         """Return a dictionary defining how to partition the Spark SQL extraction."""
         # TODO In the future we may want to support checking DBA_SEGMENTS
         row_count = self._get_table_count_from_stats(table, sa_connection=sa_connection)
-        if not row_count:
-            # In case this is a new table with no stats, do a full count
+        if not row_count or row_count < row_count_threshold:
+            # In case this is a new table with no stats or a table with stale stats, do a full count
             row_count = self._get_table_count(table, sa_connection=sa_connection)
 
-        if row_count < int(row_count_threshold):
+        if row_count < row_count_threshold:
             # The table does not have enough rows to merit partitioning Spark SQL read.
             return None
 
@@ -76,9 +76,16 @@ class OracleInputManager(JDBCInputManagerInterface):
 
         if custom_partition_column:
             # The user provided a partition column.
+            column = self._normalise_column_name(
+                table, custom_partition_column, sa_connection
+            )
+            if not column:
+                return {
+                    PARTITION_COMMENT: f"Serial read, column does not exist: {custom_partition_column}"
+                }
             partition_options = self._define_native_column_read_partitioning(
                 table,
-                custom_partition_column,
+                column,
                 accepted_data_types,
                 row_count_threshold,
                 "user provided column",
@@ -118,12 +125,12 @@ class OracleInputManager(JDBCInputManagerInterface):
     ) -> str:
         sql = dedent(
             """
-        SELECT data_type
-        FROM   all_tab_columns
-        WHERE  owner = :own
-        AND    table_name = :tab
-        AND    column_name = :col
-        """
+            SELECT data_type
+            FROM   all_tab_columns
+            WHERE  owner = :own
+            AND    table_name = :tab
+            AND    column_name = :col
+            """
         )
         if sa_connection:
             row = sa_connection.execute(
@@ -183,6 +190,25 @@ class OracleInputManager(JDBCInputManagerInterface):
         else:
             with self._alchemy_db.connect() as conn:
                 row = conn.execute(sql, own=self._schema, tab=table).fetchone()
+        return row[0] if row else row
+
+    def _normalise_column_name(
+        self,
+        table: str,
+        column: str,
+        sa_connection: "sqlalchemy.engine.base.Connection",
+    ) -> str:
+        sql = dedent(
+            """
+            SELECT column_name
+            FROM all_tab_columns
+            WHERE owner = :own
+            AND table_name = :tab
+            AND UPPER(column_name) = UPPER(:col)"""
+        )
+        row = sa_connection.execute(
+            sql, own=self._schema, tab=table, col=column
+        ).fetchone()
         return row[0] if row else row
 
     def _normalise_oracle_data_type(self, data_type: str) -> str:

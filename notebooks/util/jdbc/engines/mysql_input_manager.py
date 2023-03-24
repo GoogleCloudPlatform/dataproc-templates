@@ -70,9 +70,16 @@ class MySQLInputManager(JDBCInputManagerInterface):
 
         if custom_partition_column:
             # The user provided a partition column.
+            column = self._normalise_column_name(
+                table, custom_partition_column, sa_connection
+            )
+            if not column:
+                return {
+                    PARTITION_COMMENT: f"Serial read, column does not exist: {custom_partition_column}"
+                }
             partition_options = self._define_native_column_read_partitioning(
                 table,
-                custom_partition_column,
+                column,
                 accepted_data_types,
                 row_count_threshold,
                 "user provided column",
@@ -111,12 +118,12 @@ class MySQLInputManager(JDBCInputManagerInterface):
         # TODO Does MySQL support parameterised queries?
         sql = dedent(
             """
-        SELECT data_type
-        FROM information_schema.columns
-        WHERE table_schema = '{}'
-        AND table_name = '{}'
-        AND column_name = '{}'
-        """.format(
+            SELECT data_type
+            FROM information_schema.columns
+            WHERE table_schema = '{}'
+            AND table_name = '{}'
+            AND column_name = '{}'
+            """.format(
                 self._schema, table, column
             )
         )
@@ -162,6 +169,26 @@ class MySQLInputManager(JDBCInputManagerInterface):
         else:
             with self._alchemy_db.connect() as conn:
                 row = conn.execute(sql, own=self._schema, tab=table).fetchone()
+        return row[0] if row else row
+
+    def _normalise_column_name(
+        self,
+        table: str,
+        column: str,
+        sa_connection: "sqlalchemy.engine.base.Connection",
+    ) -> str:
+        sql = dedent(
+            """
+            SELECT data_type
+            FROM information_schema.columns
+            WHERE table_schema = '{}'
+            AND table_name = '{}'
+            AND UPPER(column_name) = UPPER('{}')
+            """.format(
+                self._schema, table, column
+            )
+        )
+        row = sa_connection.execute(sql).fetchone()
         return row[0] if row else row
 
     def _normalise_schema_filter(

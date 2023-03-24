@@ -114,6 +114,9 @@ class JDBCInputManagerInterface(AbstractClass):
             lowerbound = self._get_table_min(table, column, sa_connection=sa_connection)
             upperbound = self._get_table_max(table, column, sa_connection=sa_connection)
             if lowerbound and upperbound:
+                # TODO Really we should define num_partitions as ceil(table row count / threshold)
+                #      and not as in _read_partitioning_num_partitions() but leaving logic
+                #      as-is for now, we can revisit in the future.
                 num_partitions = self._read_partitioning_num_partitions(
                     lowerbound, upperbound, row_count_threshold
                 )
@@ -252,13 +255,15 @@ class JDBCInputManagerInterface(AbstractClass):
         any column name as a read partition column.
         """
         read_partition_info = {}
+        # Case insensitive match for custom_partition_column in case user was imprecise.
+        custom_partition_columns = {k.upper(): v for k, v in custom_partition_columns.items()}
         with self._alchemy_db.connect() as conn:
             for table in self._table_list:
                 partition_options = self._define_read_partitioning(
                     table,
                     row_count_threshold,
                     conn,
-                    custom_partition_column=(custom_partition_columns or {}).get(table),
+                    custom_partition_column=(custom_partition_columns or {}).get(table.upper()),
                 )
                 if partition_options:
                     read_partition_info[table] = partition_options
