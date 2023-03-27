@@ -20,6 +20,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -88,5 +89,48 @@ public class PubSubLiteToGCS implements BaseTemplate {
   }
 
   @Override
-  public void validateInput() {}
+  public void validateInput() {
+    if (StringUtils.isAllBlank(inputSubscriptionUrl)
+        || StringUtils.isAllBlank(checkpointLocation)
+        || StringUtils.isAllBlank(timeoutMs)
+        || StringUtils.isAllBlank(processingTime)
+        || StringUtils.isAllBlank(outputBucket)) {
+      LOGGER.error(
+          "{},{},{},{},{} are required parameter. ",
+          PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL,
+          PUBSUBLITE_TO_GCS_PROCESSING_TIME_SECONDS,
+          PUBSUBLITE_TO_GCS_OUTPUT_LOCATION,
+          PUBSUBLITE_CHECKPOINT_LOCATION,
+          PUBSUBLITE_TO_GCS_TIMEOUT_MS);
+      throw new IllegalArgumentException(
+          "Required parameters for PubSubLiteToGCS not passed. "
+              + "Set mandatory parameter for PubSubLiteToGCS template "
+              + "in resources/conf/template.properties file.");
+    }
+    LOGGER.info(
+        "Starting PubSubLite to GCS spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {},{}"
+            + "5. {},{}"
+            + "6. {},{}"
+            + "7. {},{}"
+            + "8. {},{}"
+            + "9. {},{}",
+        PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL,
+        inputSubscriptionUrl,
+        PUBSUBLITE_TO_GCS_TIMEOUT_MS,
+        timeoutMs,
+        PUBSUBLITE_TO_GCS_PROCESSING_TIME_SECONDS,
+        processingTime,
+        PUBSUBLITE_TO_GCS_WRITE_MODE,
+        writeMode,
+        PUBSUBLITE_TO_GCS_OUTPUT_FORMAT,
+        outputFormat,
+        PUBSUBLITE_TO_GCS_OUTPUT_LOCATION,
+        outputBucket,
+        PUBSUBLITE_CHECKPOINT_LOCATION,
+        checkpointLocation);
+  }
 }
