@@ -56,7 +56,7 @@ export REGION=us-central1
     --pubsublite.to.gcs.processing.time="1 second"
 ```
 
-# PubSubLite to Bigtable
+# Pub/Sub Lite to Bigtable
 
 Template for reading data from Pub/Sub Lite and writing it to Bigtable.
 
