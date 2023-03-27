@@ -96,7 +96,7 @@ class TestPubSubLiteToBigtableTemplate:
     @mock.patch.object(pyspark.sql, 'DataFrame')
     @mock.patch.object(pyspark.sql.streaming, 'StreamingQuery')
     def test_run_pass_args3(self, mock_spark_session, mock_df, mock_query):
-        """Tests PubSubLiteToBigtableTemplate writes streaming query"""
+        """Tests PubSubLiteToBigtableTemplate writes data to Bigtable"""
 
         pubsublite_to_bigtable_template = PubSubLiteToBigtableTemplate()
 
@@ -118,8 +118,61 @@ class TestPubSubLiteToBigtableTemplate:
         writer = mock_df.writeStream
 
         writer \
-            .foreachBatch() \
-            .options() \
-            .trigger() \
-            .start \
+            .foreachBatch(pubsublite_to_bigtable_template.write_to_bigtable) \
+            .return_value = writer
+
+        writer \
+            .foreachBatch.options({
+            constants.PUBSUBLITE_CHECKPOINT_LOCATION:
+            mock_parsed_args["pubsublite.bigtable.streaming.checkpoint.path"]
+            }) \
+            .return_value = writer
+
+        writer \
+            .foreachBatch \
+            .options.trigger(processingTime=
+                             mock_parsed_args["pubsublite.bigtable.streaming.trigger"]) \
+            .return_value = writer
+
+        writer \
+            .foreachBatch \
+            .options \
+            .trigger \
+            .start() \
             .return_value = mock_query
+
+        mock_query.awaitTermination(
+            mock_parsed_args["pubsublite.bigtable.streaming.timeout"])
+
+        mock_query.stop()
+
+        # Verify that the correct methods were called
+        writer \
+            .foreachBatch \
+            .assert_called_once_with(pubsublite_to_bigtable_template.write_to_bigtable)
+
+        writer \
+            .foreachBatch \
+            .options \
+            .assert_called_once_with({'checkpointLocation': "gs://temp-bucket/checkpoint"})
+
+        writer \
+            .foreachBatch \
+            .options \
+            .trigger \
+            .assert_called_once_with(processingTime='2 seconds')
+
+        writer \
+            .foreachBatch \
+            .options \
+            .trigger \
+            .start \
+            .assert_called_once_with()
+
+        mock_query \
+            .awaitTermination \
+            .assert_called_once_with(120)
+
+        mock_query \
+            .stop \
+            .assert_called_once_with()
