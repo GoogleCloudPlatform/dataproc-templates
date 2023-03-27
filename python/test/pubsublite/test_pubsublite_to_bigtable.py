@@ -16,6 +16,7 @@
 
 import mock
 import pyspark.sql
+import pyspark.sql.streaming
 
 from dataproc_templates.pubsublite.pubsublite_to_bigtable import PubSubLiteToBigtableTemplate
 import dataproc_templates.util.template_constants as constants
@@ -53,7 +54,8 @@ class TestPubSubLiteToBigtableTemplate:
         assert parsed_args["pubsublite.bigtable.output.max.versions"] == 3
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_pass_args2(self, mock_spark_session):
+    @mock.patch.object(pyspark.sql, 'DataFrame')
+    def test_run_pass_args2(self, mock_spark_session, mock_df):
         """Tests PubSubLiteToBigtableTemplate reads data as a Dataframe"""
 
         pubsublite_to_bigtable_template = PubSubLiteToBigtableTemplate()
@@ -73,24 +75,28 @@ class TestPubSubLiteToBigtableTemplate:
         pubsublite_to_bigtable_template.run(
             mock_spark_session, mock_parsed_args)
 
-        mock_spark_session.readStream \
+        reader = mock_spark_session.readStream
+
+        reader \
             .format \
             .assert_called_once_with(constants.FORMAT_PUBSUBLITE)
 
-        mock_spark_session.readStream \
+        reader \
             .format() \
             .option \
             .assert_called_once_with(constants.PUBSUBLITE_SUBSCRIPTION, 'projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub')
 
-        mock_spark_session.readStream \
+        reader \
             .format() \
             .option() \
             .load \
-            .return_value = mock_spark_session.dataframe.DataFrame
+            .return_value = mock_df
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_pass_args3(self, mock_spark_session):
-        """Tests PubSubLiteToBigtableTemplate returns streaming query"""
+    @mock.patch.object(pyspark.sql, 'DataFrame')
+    @mock.patch.object(pyspark.sql.streaming, 'StreamingQuery')
+    def test_run_pass_args3(self, mock_spark_session, mock_df, mock_query):
+        """Tests PubSubLiteToBigtableTemplate writes streaming query"""
 
         pubsublite_to_bigtable_template = PubSubLiteToBigtableTemplate()
 
@@ -109,9 +115,11 @@ class TestPubSubLiteToBigtableTemplate:
         pubsublite_to_bigtable_template.run(
             mock_spark_session, mock_parsed_args)
 
-        mock_spark_session.dataframe.Dataframe.writeStream \
+        writer = mock_df.writeStream
+
+        writer \
             .foreachBatch() \
             .options() \
             .trigger() \
             .start \
-            .return_value = mock_spark_session.streaming.StreamingQuery
+            .return_value = mock_query
