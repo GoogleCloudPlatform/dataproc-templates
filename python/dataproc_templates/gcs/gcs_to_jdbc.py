@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,17 +17,20 @@ from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
+
 
 __all__ = ['GCSToJDBCTemplate']
 
 
 class GCSToJDBCTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from GCS into JDBC
+    Dataproc template implementing loads from Cloud Storage into JDBC
     """
 
     @staticmethod
@@ -38,20 +41,22 @@ class GCSToJDBCTemplate(BaseTemplate):
             f'--{constants.GCS_JDBC_INPUT_LOCATION}',
             dest=constants.GCS_JDBC_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input files'
+            help='Cloud Storage location of the input files'
         )
         parser.add_argument(
             f'--{constants.GCS_JDBC_INPUT_FORMAT}',
             dest=constants.GCS_JDBC_INPUT_FORMAT,
             required=True,
-            help='Input file format (one of: avro,parquet,csv,json)',
+            help='Input file format (one of: avro,parquet,csv,json,delta)',
             choices=[
                 constants.FORMAT_AVRO,
                 constants.FORMAT_PRQT,
                 constants.FORMAT_CSV,
-                constants.FORMAT_JSON
+                constants.FORMAT_JSON,
+                constants.FORMAT_DELTA
             ]
         )
+        add_spark_options(parser, constants.get_csv_input_spark_options("gcs.jdbc.input."))
         parser.add_argument(
             f'--{constants.GCS_JDBC_OUTPUT_TABLE}',
             dest=constants.GCS_JDBC_OUTPUT_TABLE,
@@ -107,12 +112,11 @@ class GCSToJDBCTemplate(BaseTemplate):
         return vars(known_args)
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
-
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.GCS_JDBC_INPUT_LOCATION]
-        input_file_format: str = args[constants.GCS_JDBC_INPUT_FORMAT]
+        input_location: str = args[constants.GCS_JDBC_INPUT_LOCATION]
+        input_format: str = args[constants.GCS_JDBC_INPUT_FORMAT]
         jdbc_url: str = args[constants.GCS_JDBC_OUTPUT_URL]
         jdbc_table: str = args[constants.GCS_JDBC_OUTPUT_TABLE]
         output_mode: str = args[constants.GCS_JDBC_OUTPUT_MODE]
@@ -121,34 +125,18 @@ class GCSToJDBCTemplate(BaseTemplate):
         jdbc_numpartitions: int = args[constants.GCS_JDBC_NUMPARTITIONS]
 
         logger.info(
-            "Starting GCS to JDBC spark job with parameters:\n"
+            "Starting Cloud Storage to JDBC Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        input_data: DataFrame
-
-        if input_file_format == constants.FORMAT_PRQT:
-            input_data = spark.read \
-                .parquet(input_file_location)
-        elif input_file_format == constants.FORMAT_AVRO:
-            input_data = spark.read \
-                .format(constants.FORMAT_AVRO_EXTD) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_CSV:
-            input_data = spark.read \
-                .format(constants.FORMAT_CSV) \
-                .option(constants.HEADER, True) \
-                .option(constants.INFER_SCHEMA, True) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_JSON:
-            input_data = spark.read \
-                .json(input_file_location)
+        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, input_format, "gcs.jdbc.input.")
 
         # Write
         if not jdbc_numpartitions:
             jdbc_numpartitions = input_data.rdd.getNumPartitions()
 
+        # TODO Convert this call to a function in dataproc_templates.util.dataframe_writer_wrappers
         input_data.write \
             .format(constants.FORMAT_JDBC) \
             .option(constants.JDBC_URL, jdbc_url) \

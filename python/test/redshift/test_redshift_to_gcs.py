@@ -41,8 +41,8 @@ class TestRedshiftToGCSTemplate:
              "--redshifttogcs.output.format=csv",
              "--redshifttogcs.output.mode=append",
              "--redshifttogcs.output.partitioncolumn=column"
-             ])       
-        
+             ])
+
         assert parsed_args["redshifttogcs.input.url"] == "url"
         assert parsed_args["redshifttogcs.s3.tempdir"] == "s3a://temp"
         assert parsed_args["redshifttogcs.input.table"] == "table1"
@@ -51,8 +51,8 @@ class TestRedshiftToGCSTemplate:
         assert parsed_args["redshifttogcs.s3.secretkey"] == "lmn"
         assert parsed_args["redshifttogcs.output.location"] == "gs://test"
         assert parsed_args["redshifttogcs.output.format"] == "csv"
-        assert parsed_args["redshifttogcs.output.mode"] == "append"  
-        assert parsed_args["redshifttogcs.output.partitioncolumn"] == "column"      
+        assert parsed_args["redshifttogcs.output.mode"] == "append"
+        assert parsed_args["redshifttogcs.output.partitioncolumn"] == "column"
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args2(self, mock_spark_session):
@@ -83,7 +83,7 @@ class TestRedshiftToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
         mock_spark_session.dataframe.DataFrame.write.mode().parquet.assert_called_once_with("gs://test")
-        
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args3(self, mock_spark_session):
         """Tests RedshiftToGCSTemplate write avro"""
@@ -112,7 +112,7 @@ class TestRedshiftToGCSTemplate:
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.mode().format.assert_called_once_with(constants.FORMAT_AVRO)
         mock_spark_session.dataframe.DataFrame.write.mode().format().save.assert_called_once_with("gs://test")
-        
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args4(self, mock_spark_session):
         """Tests RedshiftToGCSTemplate write csv"""
@@ -139,9 +139,9 @@ class TestRedshiftToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.REDSHIFT_IAMROLE, "arn:aws:iam::xxxx:role/role")
         mock_spark_session.read.format().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
-        mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.HEADER, True)
-        mock_spark_session.dataframe.DataFrame.write.mode().option().csv.assert_called_once_with("gs://test")
-        
+        mock_spark_session.dataframe.DataFrame.write.mode().options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
+        mock_spark_session.dataframe.DataFrame.write.mode().options().csv.assert_called_once_with("gs://test")
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args5(self, mock_spark_session):
         """Tests RedshiftToGCSTemplate write json"""
@@ -169,7 +169,7 @@ class TestRedshiftToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
         mock_spark_session.dataframe.DataFrame.write.mode().json.assert_called_once_with("gs://test")
-        
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args6(self, mock_spark_session):
         """Tests RedshiftToGCSTemplate pass args"""
@@ -196,9 +196,9 @@ class TestRedshiftToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option.assert_called_with(constants.REDSHIFT_IAMROLE, "arn:aws:iam::xxxx:role/role")
         mock_spark_session.read.format().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
-        mock_spark_session.dataframe.DataFrame.write.mode().option.assert_called_once_with(constants.HEADER, True)
-        mock_spark_session.dataframe.DataFrame.write.mode().option().csv.assert_called_once_with("gs://test")
-        
+        mock_spark_session.dataframe.DataFrame.write.mode().options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
+        mock_spark_session.dataframe.DataFrame.write.mode().options().csv.assert_called_once_with("gs://test")
+
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_pass_args7(self, mock_spark_session):
         """Tests RedshiftToGCSTemplate pass args"""
@@ -227,5 +227,5 @@ class TestRedshiftToGCSTemplate:
         mock_spark_session.read.format().option().option().option().option().load()
         mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.mode().partitionBy.assert_called_once_with("column")
-        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option.assert_called_once_with(constants.HEADER, True)
-        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().option().csv.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
+        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().options().csv.assert_called_once_with("gs://test")
