@@ -433,7 +433,7 @@ public interface TemplateConstants {
   String JDBCTOJDBC_OUTPUT_PRIMARY_KEY = "jdbctojdbc.output.primary.key";
   String JDBCTOJDBC_TEMP_VIEW_NAME = "jdbctojdbc.temp.view.name";
   String JDBCTOJDBC_SQL_QUERY = "jdbctojdbc.sql.query";
-  
+
   /** TextToBigquery properties */
   String TEXT_BIGQUERY_INPUT_LOCATION = "text.bigquery.input.location";
 

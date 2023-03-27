@@ -64,5 +64,6 @@ public interface BaseTemplate {
 
   void validateInput() throws Exception;
   /** Executes the template. */
-  void runTemplate() throws StreamingQueryException, TimeoutException, SQLException, InterruptedException;
+  void runTemplate()
+      throws StreamingQueryException, TimeoutException, SQLException, InterruptedException;
 }
