@@ -148,7 +148,7 @@ public class DataProcTemplate {
   }
 
   public static void main(String... args)
-      throws StreamingQueryException, TimeoutException, InterruptedException {
+      throws Exception {
     BaseTemplate template = createTemplateAndRegisterProperties(args);
     runSparkJob(template);
   }
