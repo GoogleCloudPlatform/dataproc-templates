@@ -249,7 +249,6 @@ public class JDBCToJDBCConfig {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-        .add("jdbcInputURL", jdbcInputURL)
         .add("jdbcInputDriver", jdbcInputDriver)
         .add("jdbcInputTable", jdbcInputTable)
         .add("jdbcInputFetchSize", jdbcInputFetchSize)
@@ -257,7 +256,6 @@ public class JDBCToJDBCConfig {
         .add("jdbcInputLowerBound", jdbcInputLowerBound)
         .add("jdbcInputUpperBound", jdbcInputUpperBound)
         .add("jdbcNumPartitions", jdbcNumPartitions)
-        .add("jdbcOutputURL", jdbcOutputURL)
         .add("jdbcOutputDriver", jdbcOutputDriver)
         .add("jdbcOutputTable", jdbcOutputTable)
         .add("jdbcOutputCreateTableOption", jdbcOutputCreateTableOption)
