@@ -20,14 +20,17 @@ import pprint
 from pyspark.sql import SparkSession, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_writer_wrappers import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['BigQueryToGCSTemplate']
 
 
 class BigQueryToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing exports from BigQuery to GCS
+    Dataproc template implementing exports from BigQuery to Cloud Storage
     """
 
     @staticmethod
@@ -56,7 +59,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
             f'--{constants.BQ_GCS_OUTPUT_LOCATION}',
             dest=constants.BQ_GCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS location for output files'
+            help='Cloud Storage location for output files'
         )
         parser.add_argument(
             f'--{constants.BQ_GCS_OUTPUT_MODE}',
@@ -75,6 +78,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        add_spark_options(parser, constants.get_csv_output_spark_options("bigquery.gcs.output."))
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -87,12 +91,13 @@ class BigQueryToGCSTemplate(BaseTemplate):
 
         # Arguments
         input_table: str = args[constants.BQ_GCS_INPUT_TABLE]
-        output_format: str = args[constants.BQ_GCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.BQ_GCS_OUTPUT_MODE]
+
         output_location: str = args[constants.BQ_GCS_OUTPUT_LOCATION]
+        output_format: str = args[constants.BQ_GCS_OUTPUT_FORMAT]
 
         logger.info(
-            "Starting Bigquery to GCS spark job with parameters:\n"
+            "Starting Bigquery to Cloud Storage Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -104,16 +109,4 @@ class BigQueryToGCSTemplate(BaseTemplate):
 
         # Write
         writer: DataFrameWriter = input_data.write.mode(output_mode)
-
-        if output_format == constants.FORMAT_PRQT:
-            writer.parquet(output_location)
-        elif output_format == constants.FORMAT_AVRO:
-            writer \
-                .format(constants.FORMAT_AVRO) \
-                .save(output_location)
-        elif output_format == constants.FORMAT_CSV:
-            writer \
-                .option(constants.HEADER, True) \
-                .csv(output_location)
-        elif output_format == constants.FORMAT_JSON:
-            writer.json(output_location)
+        persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "bigquery.gcs.output.")
