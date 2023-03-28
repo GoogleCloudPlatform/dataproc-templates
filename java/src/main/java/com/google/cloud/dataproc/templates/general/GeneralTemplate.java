@@ -71,6 +71,7 @@ public class GeneralTemplate implements BaseTemplate {
     }
   }
 
+  @Override
   public void validateInput() {
     ValidationUtil.validateOrThrow(config);
   }
