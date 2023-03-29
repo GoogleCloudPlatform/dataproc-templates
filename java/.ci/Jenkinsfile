@@ -725,6 +725,26 @@ pipeline {
                                 '''
                         }
                     }
+                    stage('JDBC To JDBC'){
+                        steps {
+                            sh '''
+                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export SKIP_BUILD=true
+                                    
+                                cd java
+
+                                bin/start.sh \
+                                -- --template JDBCTOJDBC \
+                                --templateProperty jdbctojdbc.input.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+                                --templateProperty jdbctojdbc.input.table="employee" \
+                                --templateProperty jdbctojdbc.output.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+                                --templateProperty jdbctojdbc.output.table="employee_output" \
+                                --templateProperty jdbctojdbc.output.mode="Overwrite" 
+                            '''
+                        }
+                    }
                 }
             }
             
