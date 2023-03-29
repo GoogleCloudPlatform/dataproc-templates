@@ -24,9 +24,9 @@ from pyspark.sql.types import StringType
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
-__all__ = ['PubsubliteToBQTemplate']
+__all__ = ['PubSubLiteToBQTemplate']
 
-class PubsubliteToBQTemplate(BaseTemplate):
+class PubSubLiteToBQTemplate(BaseTemplate):
     """
     Dataproc template implementing exports from Pubsublite to BQ
     """

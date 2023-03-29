@@ -497,7 +497,6 @@ KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
 PUBSUBLITE_TO_BQ_INPUT_SUBSCRIPTION_URL = "pubsublite.to.bq.input.subscription.url"
 PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_SEC = "pubsublite.to.bq.input.timeout.sec"
 PUBSUBLITE_TO_BQ_WRITE_MODE = "pubsublite.to.bq.write.mode"
-PUBSUBLITE_TO_BQ_TOTAL_RECEIVERS = "pubsublite.to.bq.total.receivers"
 PUBSUBLITE_TO_BQ_PROJECT_ID = "pubsublite.to.bq.project.id"
 PUBSUBLITE_TO_BQ_OUTPUT_DATASET = "pubsublite.to.bq.output.dataset"
 PUBSUBLITE_TO_BQ_OUTPUT_TABLE = "pubsublite.to.bq.output.table"

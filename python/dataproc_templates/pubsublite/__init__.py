@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .pubsublite_to_bigquery import PubsubliteToBQTemplate
+from .pubsublite_to_bigquery import PubSubLiteToBQTemplate
 from .pubsublite_to_gcs import PubSubLiteToGCSTemplate

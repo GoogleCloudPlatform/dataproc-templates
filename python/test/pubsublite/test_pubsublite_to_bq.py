@@ -17,19 +17,19 @@
 import mock
 import pyspark
 
-from dataproc_templates.pubsublite.pubsublite_to_bigquery import PubsubliteToBQTemplate
+from dataproc_templates.pubsublite.pubsublite_to_bigquery import PubSubLiteToBQTemplate
 import dataproc_templates.util.template_constants as constants
 
 
-class TestPubsubliteToBQTemplate:
+class TestPubSubLiteToBQTemplate:
     """
-    Test suite for PubsubliteToBQTemplate
+    Test suite for PubSubLiteToBQTemplate
     """
 
     def test_parse_args1(self):
-        """Tests PubsubliteToBQTemplate.parse_args()"""
+        """Tests PubSubLiteToBQTemplate.parse_args()"""
 
-        pubsublite_to_bq_template = PubsubliteToBQTemplate()
+        pubsublite_to_bq_template = PubSubLiteToBQTemplate()
         parsed_args = pubsublite_to_bq_template.parse_args(
             ["--pubsublite.to.bq.input.subscription.url=url",
              "--pubsublite.to.bq.project.id=projectID",
@@ -51,9 +51,9 @@ class TestPubsubliteToBQTemplate:
     @mock.patch.object(pyspark.sql, 'SparkSession')
     @mock.patch.object(pyspark.sql, 'DataFrame')
     def test_run_pass_args2(self, mock_spark_session, mock_df):
-        """Tests PubsubliteToBQTemplate reads data as a Dataframe"""
+        """Tests PubSubLiteToBQTemplate reads data as a Dataframe"""
 
-        pubsublite_to_bigquery_template = PubsubliteToBQTemplate()
+        pubsublite_to_bigquery_template = PubSubLiteToBQTemplate()
 
         mock_parsed_args = pubsublite_to_bigquery_template.parse_args([
             "--pubsublite.to.bq.input.subscription.url=url",
@@ -89,9 +89,9 @@ class TestPubsubliteToBQTemplate:
     @mock.patch.object(pyspark.sql, 'DataFrame')
     @mock.patch.object(pyspark.sql.streaming, 'StreamingQuery')
     def test_run_pass_args3(self, mock_spark_session, mock_df, mock_query):
-        """Tests PubsubliteToBQTemplate writes data to BigQuery"""
+        """Tests PubSubLiteToBQTemplate writes data to BigQuery"""
 
-        pubsublite_to_bigquery_template = PubsubliteToBQTemplate()
+        pubsublite_to_bigquery_template = PubSubLiteToBQTemplate()
 
         mock_parsed_args = pubsublite_to_bigquery_template.parse_args([
             "--pubsublite.to.bq.input.subscription.url=url",
