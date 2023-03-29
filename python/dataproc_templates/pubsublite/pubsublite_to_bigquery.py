@@ -95,6 +95,13 @@ class PubsubliteToBQTemplate(BaseTemplate):
             required=True,
             help='Temporary folder for checkpoint location'
         )
+        parser.add_argument(
+            f'--{constants.PUBSUBLITE_TO_BQ_PROCESSING_TIME}',
+            dest=constants.PUBSUBLITE_TO_BQ_PROCESSING_TIME,
+            required=False,
+            default='1 second',
+            help='Processing time to write the streaming data into BigQuery'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -113,6 +120,7 @@ class PubsubliteToBQTemplate(BaseTemplate):
         pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_TO_BQ_CHECKPOINT_LOCATION]
         bq_temp_bucket: str = args[constants.PUBSUBLITE_TO_BQ_TEMPORARY_BUCKET]
         timeout_sec: int = args[constants.PUBSUBLITE_TO_BQ_INPUT_TIMEOUT_SEC]
+        processing_time: str = args[constants.PUBSUBLITE_TO_BQ_PROCESSING_TIME]
 
         logger.info(
             "Starting Pubsublite to Bigquery spark job with parameters:\n"
@@ -122,7 +130,7 @@ class PubsubliteToBQTemplate(BaseTemplate):
         # Read
         input_data=(spark.readStream \
             .format(constants.FORMAT_PUBSUBLITE) \
-            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription", input_subscription_url,) \
+            .option(f"{constants.FORMAT_PUBSUBLITE}.subscription", input_subscription_url) \
             .load())
         
         input_data.withColumn("data", input_data.data.cast(StringType()))
@@ -133,7 +141,7 @@ class PubsubliteToBQTemplate(BaseTemplate):
             .option("temporaryGcsBucket", bq_temp_bucket) \
             .option("checkpointLocation", pubsublite_checkpoint_location) \
             .option("table", f"{output_project_id}.{output_dataset}.{output_table}") \
-            .trigger(processingTime="1 second") \
+            .trigger(processingTime=processing_time) \
             .start())
 
         # Wait timeout_sec seconds (must be >= 60 seconds) to start receiving messages.

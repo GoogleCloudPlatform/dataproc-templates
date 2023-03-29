@@ -85,6 +85,13 @@ usage: main.py --template PUBSUBLITETOBQ [-h] \
    --pubsublite.to.bq.temp.bucket.name PUBSUBLITE.BIGQUERY.TEMP.BUCKET.NAME \
    [--pubsublite.to.bq.write.mode {overwrite,append,ignore,errorifexists}] \
    --pubsublite.to.bq.checkpoint.location PUBSUBLITE.BIGQUERY.CHECKPOINT.LOCATION
+
+optional arguments:
+    -h, --help            show this help message and exit
+    --pubsublite.to.bq.processing.time PUBSUBLITE.TO.BQ.PROCESSING.TIME
+            (Processing time to write the streaming data into BigQuery)
+    --pubsublite.to.bq.input.timeout.sec PUBSUBLITE.TO.BQ.INPUT.TIMEOUT.SEC
+            (Stream timeout, for how long the subscription will be read)
 ```
 
 
@@ -137,4 +144,6 @@ pubsublite.to.bq.write.mode=<bq output write mode>
 pubsublite.to.bq.temp.bucket.name=<pubsublite to bq temp staging bucket>
 ## Pubsublite to BigQuery checkpoint location
 pubsublite.to.bq.checkpoint.location=<pubsublite to bq checkpoint location>
+## Pubsublite to BigQuery processing time
+pubsublite.to.bq.processing.time=<pubsublite to bq processing time>
 ```
