@@ -114,12 +114,12 @@ public class GCStoMongo implements BaseTemplate {
     }
 
     LOGGER.info(
-        "Starting GCS to Bigquery spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {}:{}"
-            + "5. {}:{}",
+        "Starting GCS to Mongo spark job with following parameters:"
+            + "1. {}:{} | "
+            + "2. {}:{} | "
+            + "3. {}:{} | "
+            + "4. {}:{} | "
+            + "5. {}:{} | ",
         GCS_MONGO_INPUT_LOCATION,
         inputFileLocation,
         GCS_MONGO_INPUT_FORMAT,

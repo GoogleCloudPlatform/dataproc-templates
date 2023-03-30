@@ -750,13 +750,13 @@ pipeline {
                         steps{
                             sh '''
 
-                                export SKIP_IMAGE_BUILD=TRUE
+                                export SKIP_BUILD=true
                                 export JARS="gs://dataproc-templates/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/jars/mongo-spark-connector_2.12-2.4.0.jar"
 
                                 cd java
 
                                 bin/start.sh \
-                                -- —template GCSTOMONGO \
+                                -- --template GCSTOMONGO \
                                 --templateProperty gcs.mongodb.input.format=avro \
                                 --templateProperty gcs.mongodb.input.location=gs://dataproc-templates/data/avro/empavro \
                                 --templateProperty gcs.mongodb.output.uri="$ENV_TEST_MONGO_DB_URI" \
