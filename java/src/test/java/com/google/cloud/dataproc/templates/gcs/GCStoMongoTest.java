@@ -15,7 +15,12 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import java.util.Properties;
+import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,12 +28,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Properties;
-import java.util.stream.Stream;
-
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class GCStoMongoTest {
   private GCStoMongo gcstoMongoTestObject;

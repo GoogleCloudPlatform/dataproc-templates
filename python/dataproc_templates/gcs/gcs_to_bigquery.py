@@ -17,10 +17,13 @@ from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['GCSToBigQueryTemplate']
 
@@ -38,7 +41,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
             f'--{constants.GCS_BQ_INPUT_LOCATION}',
             dest=constants.GCS_BQ_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input files'
+            help='Cloud Storage location of the input files'
         )
         parser.add_argument(
             f'--{constants.GCS_BQ_OUTPUT_DATASET}',
@@ -56,7 +59,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
             f'--{constants.GCS_BQ_INPUT_FORMAT}',
             dest=constants.GCS_BQ_INPUT_FORMAT,
             required=True,
-            help='Input file format (one of: avro,parquet,csv,json)',
+            help='Input file format (one of: avro,parquet,csv,json,delta)',
             choices=[
                 constants.FORMAT_AVRO,
                 constants.FORMAT_PRQT,
@@ -65,6 +68,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 constants.FORMAT_DELTA
             ]
         )
+        add_spark_options(parser, constants.get_csv_input_spark_options("gcs.bigquery.input."))
         parser.add_argument(
             f'--{constants.GCS_BQ_LD_TEMP_BUCKET_NAME}',
             dest=constants.GCS_BQ_LD_TEMP_BUCKET_NAME,
@@ -99,41 +103,22 @@ class GCSToBigQueryTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.GCS_BQ_INPUT_LOCATION]
+        input_location: str = args[constants.GCS_BQ_INPUT_LOCATION]
+        input_format: str = args[constants.GCS_BQ_INPUT_FORMAT]
         big_query_dataset: str = args[constants.GCS_BQ_OUTPUT_DATASET]
         big_query_table: str = args[constants.GCS_BQ_OUTPUT_TABLE]
-        input_file_format: str = args[constants.GCS_BQ_INPUT_FORMAT]
         bq_temp_bucket: str = args[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.GCS_BQ_OUTPUT_MODE]
 
         logger.info(
-            "Starting GCS to Bigquery spark job with parameters:\n"
+            "Starting Cloud Storage to BigQuery Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        input_data: DataFrame
-
-        if input_file_format == constants.FORMAT_PRQT:
-            input_data = spark.read \
-                .parquet(input_file_location)
-        elif input_file_format == constants.FORMAT_AVRO:
-            input_data = spark.read \
-                .format(constants.FORMAT_AVRO_EXTD) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_CSV:
-            input_data = spark.read \
-                .format(constants.FORMAT_CSV) \
-                .option(constants.HEADER, True) \
-                .option(constants.INFER_SCHEMA, True) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_JSON:
-            input_data = spark.read \
-                .json(input_file_location)
-        elif input_file_format == constants.FORMAT_DELTA:
-            input_data = spark.read \
-                .format(constants.FORMAT_DELTA) \
-                .load(input_file_location)
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, args, input_location, input_format, "gcs.bigquery.input."
+        )
 
         # Write
         input_data.write \

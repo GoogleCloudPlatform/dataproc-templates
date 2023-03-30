@@ -205,6 +205,7 @@ public interface TemplateConstants {
   String GCS_BQ_TEMP_QUERY = "gcs.bigquery.temp.query";
   String GCS_BQ_OUTPUT = "table";
   String GCS_BQ_AVRO_EXTD_FORMAT = "com.databricks.spark.avro";
+  String GCS_BQ_OUTPUT_MODE = "gcs.bigquery.output.mode";
 
   /** GCS to BigTable properties */
   String GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location";
@@ -237,6 +238,7 @@ public interface TemplateConstants {
 
   /** MongoDb common properties */
   String MONGO_FORMAT = "com.mongodb.spark.sql.DefaultSource";
+
   String MONGO_URL = "spark.mongodb.output.uri";
   String MONGO_INPUT_URI = "spark.mongodb.input.uri";
   String MONGO_DATABASE = "database";
@@ -244,17 +246,15 @@ public interface TemplateConstants {
   String MONGO_BATCH_SIZE = "maxBatchSize";
   String MONGO_DEFAULT_BATCH_SIZE = "512";
 
-
-  /** GCS to Mongo properties*/
-
+  /** GCS to Mongo properties */
   String GCS_MONGO_INPUT_FORMAT = "gcs.mongodb.input.format";
+
   String GCS_MONGO_INPUT_LOCATION = "gcs.mongodb.input.location";
   String GCS_MONGO_URL = "gcs.mongodb.output.uri";
   String GCS_MONGO_DATABASE = "gcs.mongodb.output.database";
   String GCS_MONGO_COLLECTION = "gcs.mongodb.output.collection";
   String GCS_MONGO_BATCH_SIZE = "gcs.mongodb.batch.size";
   String GCS_MONGO_OUTPUT_MODE = "gcs.mongodb.output.mode";
-
 
   /** S3 to Bigquery properties */
   String S3_BQ_INPUT_LOCATION = "s3.bq.input.location";
@@ -278,6 +278,8 @@ public interface TemplateConstants {
   String S3_BQ_AVRO_FORMAT = "avro";
   String S3_BQ_PRQT_FORMAT = "parquet";
   String S3_BQ_JSON_FORMAT = "json";
+  String S3_BQ_OUTPUT_MODE = "s3.bq.output.mode";
+
   /** Cassandra to BQ properties */
   String CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace";
 
@@ -298,6 +300,7 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_FORMAT_JSON = "json";
   String BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format";
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
+  String BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode";
 
   /** RedShift to GCS properties */
   String REDSHIFT_AWS_INPUT_URL = "redshift.aws.input.url";
@@ -372,7 +375,7 @@ public interface TemplateConstants {
   String SPARK_CSV_HEADER = "header";
   String SPARK_FILE_FORMAT_PARQUET = "parquet";
   String SPARK_FILE_FORMAT_AVRO = "avro";
-  String SPARK_FILE_FORMAT_JSON ="json";
+  String SPARK_FILE_FORMAT_JSON = "json";
   String SPARK_INFER_SCHEMA = "inferSchema";
   String BQ_TABLE_NAME_FORMAT = "%s.%s.%s";
 
@@ -429,4 +432,30 @@ public interface TemplateConstants {
   String SNOWFLAKE_GCS_OUTPUT_FORMAT = "snowflake.gcs.output.format";
   String SNOWFLAKE_GCS_OUTPUT_MODE = "snowflake.gcs.output.mode";
   String SNOWFLAKE_GCS_OUTPUT_PARTITION_COLUMN = "snowflake.gcs.output.partitionColumn";
+
+  /** MongoToGCS properties */
+  String MONGO_GCS_OUTPUT_LOCATION = "mongo.gcs.output.location";
+
+  String MONGO_GCS_OUTPUT_FORMAT = "mongo.gcs.output.format";
+  String MONGO_GCS_OUTPUT_MODE = "mongo.gcs.output.mode";
+  String MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri";
+  String MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database";
+  String MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection";
+
+  /** TextToBigquery properties */
+  String TEXT_BIGQUERY_INPUT_LOCATION = "text.bigquery.input.location";
+
+  String TEXT_BIGQUERY_INPUT_COMPRESSION = "text.bigquery.input.compression";
+  String TEXT_BIGQUERY_INPUT_DELIMITER = "text.bigquery.input.delimiter";
+  String TEXT_BIGQUERY_OUTPUT_DATASET = "text.bigquery.output.dataset";
+  String TEXT_BIGQUERY_OUTPUT_TABLE = "text.bigquery.output.table";
+  String TEXT_BIGQUERY_OUTPUT_MODE = "text.bigquery.output.mode";
+  String TEXT_BIGQUERY_TEMP_BUCKET = "text.bigquery.temp.bucket";
+  String TEXT_BIGQUERY_TEMP_TABLE = "text.bigquery.temp.table";
+  String TEXT_BIGQUERY_TEMP_QUERY = "text.bigquery.temp.query";
+
+  String TEXT_BIGQUERY_COMPRESSION_OPTION = "compression";
+  String TEXT_BIGQUERY_DELIMITER_OPTION = "delimiter";
+  String TEXT_BIGQUERY_INFERSCHEMA_OPTION = "inferSchema";
+  String TEXT_BIGQUERY_HEADER_OPTION = "header";
 }
