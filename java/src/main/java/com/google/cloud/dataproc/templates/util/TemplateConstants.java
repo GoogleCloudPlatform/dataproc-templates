@@ -442,6 +442,27 @@ public interface TemplateConstants {
   String MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database";
   String MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection";
 
+  /** JDBCToJDBC properties */
+  String JDBCTOJDBC_INPUT_URL = "jdbctojdbc.input.url";
+
+  String JDBCTOJDBC_INPUT_DRIVER = "jdbctojdbc.input.driver";
+  String JDBCTOJDBC_INPUT_TABLE = "jdbctojdbc.input.table";
+  String JDBCTOJDBC_INPUT_FETCHSIZE = "jdbctojdbc.input.fetchsize";
+  String JDBCTOJDBC_INPUT_PARTITIONCOLUMN = "jdbctojdbc.input.partitioncolumn";
+  String JDBCTOJDBC_INPUT_LOWERBOUND = "jdbctojdbc.input.lowerbound";
+  String JDBCTOJDBC_INPUT_UPPERBOUND = "jdbctojdbc.input.upperbound";
+  String JDBCTOJDBC_NUMPARTITIONS = "jdbctojdbc.numpartitions";
+  String JDBCTOJDBC_OUTPUT_URL = "jdbctojdbc.output.url";
+  String JDBCTOJDBC_OUTPUT_DRIVER = "jdbctojdbc.output.driver";
+  String JDBCTOJDBC_OUTPUT_TABLE = "jdbctojdbc.output.table";
+  String JDBCTOJDBC_OUTPUT_CREATE_TABLE_OPTION = "jdbctojdbc.output.create.table.option";
+  String JDBCTOJDBC_OUTPUT_MODE = "jdbctojdbc.output.mode";
+  String JDBCTOJDBC_OUTPUT_BATCH_SIZE = "jdbctojdbc.output.batch.size";
+  String JDBCTOJDBC_SESSION_INIT_STATEMENT = "jdbctojdbc.sessioninitstatement";
+  String JDBCTOJDBC_OUTPUT_PRIMARY_KEY = "jdbctojdbc.output.primary.key";
+  String JDBCTOJDBC_TEMP_VIEW_NAME = "jdbctojdbc.temp.view.name";
+  String JDBCTOJDBC_SQL_QUERY = "jdbctojdbc.sql.query";
+
   /** TextToBigquery properties */
   String TEXT_BIGQUERY_INPUT_LOCATION = "text.bigquery.input.location";
 

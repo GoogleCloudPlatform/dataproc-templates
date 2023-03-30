@@ -31,6 +31,7 @@ import com.google.cloud.dataproc.templates.hive.HiveToBigQuery;
 import com.google.cloud.dataproc.templates.hive.HiveToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToBigQuery;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
+import com.google.cloud.dataproc.templates.jdbc.JDBCToJDBC;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToSpanner;
 import com.google.cloud.dataproc.templates.kafka.KafkaToBQ;
 import com.google.cloud.dataproc.templates.kafka.KafkaToGCS;
@@ -44,6 +45,7 @@ import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.TemplateUtil;
 import com.google.cloud.dataproc.templates.word.WordCount;
 import com.google.common.collect.ImmutableMap;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
@@ -88,6 +90,7 @@ public class DataProcTemplate {
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
           .put(TemplateName.SNOWFLAKETOGCS, SnowflakeToGCS::of)
+          .put(TemplateName.JDBCTOJDBC, JDBCToJDBC::of)
           .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
@@ -142,7 +145,7 @@ public class DataProcTemplate {
   }
 
   public static void main(String... args)
-      throws StreamingQueryException, TimeoutException, InterruptedException {
+      throws StreamingQueryException, TimeoutException, SQLException, InterruptedException {
     BaseTemplate template = createTemplateAndRegisterProperties(args);
     runSparkJob(template);
   }
@@ -195,7 +198,7 @@ public class DataProcTemplate {
    * @param template the template to run.
    */
   static void runSparkJob(BaseTemplate template)
-      throws StreamingQueryException, TimeoutException, InterruptedException {
+      throws StreamingQueryException, TimeoutException, SQLException, InterruptedException {
     LOGGER.debug("Start runSparkJob");
     template.runTemplate();
     LOGGER.debug("End runSparkJob");
