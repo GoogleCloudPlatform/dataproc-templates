@@ -17,10 +17,13 @@ from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['GCSToBigTableTemplate']
 
@@ -38,20 +41,22 @@ class GCSToBigTableTemplate(BaseTemplate):
             f'--{constants.GCS_BT_INPUT_LOCATION}',
             dest=constants.GCS_BT_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input files'
+            help='Cloud Storage location of the input files'
         )
         parser.add_argument(
             f'--{constants.GCS_BT_INPUT_FORMAT}',
             dest=constants.GCS_BT_INPUT_FORMAT,
             required=True,
-            help='Input file format (one of: avro,parquet,csv,json)',
+            help='Input file format (one of: avro,parquet,csv,json,delta)',
             choices=[
                 constants.FORMAT_AVRO,
                 constants.FORMAT_PRQT,
                 constants.FORMAT_CSV,
-                constants.FORMAT_JSON
+                constants.FORMAT_JSON,
+                constants.FORMAT_DELTA
             ]
         )
+        add_spark_options(parser, constants.get_csv_input_spark_options("gcs.bigtable.input."))
         parser.add_argument(
             f'--{constants.GCS_BT_HBASE_CATALOG_JSON}',
             dest=constants.GCS_BT_HBASE_CATALOG_JSON,
@@ -69,34 +74,19 @@ class GCSToBigTableTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.GCS_BT_INPUT_LOCATION]
-        input_file_format: str = args[constants.GCS_BT_INPUT_FORMAT]
+        input_location: str = args[constants.GCS_BT_INPUT_LOCATION]
+        input_format: str = args[constants.GCS_BT_INPUT_FORMAT]
         catalog: str = ''.join(args[constants.GCS_BT_HBASE_CATALOG_JSON].split())
 
         logger.info(
-            "Starting GCS to BigTable spark job with parameters:\n"
+            "Starting Cloud Storage to BigTable Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        input_data: DataFrame
-
-        if input_file_format == constants.FORMAT_PRQT:
-            input_data = spark.read \
-                .parquet(input_file_location)
-        elif input_file_format == constants.FORMAT_AVRO:
-            input_data = spark.read \
-                .format(constants.FORMAT_AVRO_EXTD) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_CSV:
-            input_data = spark.read \
-                .format(constants.FORMAT_CSV) \
-                .option(constants.HEADER, True) \
-                .option(constants.INFER_SCHEMA, True) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_JSON:
-            input_data = spark.read \
-                .json(input_file_location)
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark, args, input_location, input_format, "gcs.bigtable.input."
+        )
 
         # Write
         input_data.write \
