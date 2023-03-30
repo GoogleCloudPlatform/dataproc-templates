@@ -446,7 +446,7 @@ pipeline {
 
                                         gcloud pubsub lite-topics publish psltobt \
                                         --location=us-west1 \
-                                        --message='''
+                                        --message=\'\'\'
                                         { 
                                             "rowkey":"rk1",
                                             "columns": [
@@ -467,7 +467,7 @@ pipeline {
                                                 }
                                             ] 
                                         }
-                                        '''
+                                        \'\'\'
     
                                         cd python
 
