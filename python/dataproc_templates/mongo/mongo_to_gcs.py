@@ -20,14 +20,17 @@ import pprint
 from pyspark.sql import SparkSession, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_writer_wrappers import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['MongoToGCSTemplate']
 
 
 class MongoToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing exports from Mongo to GCS
+    Dataproc template implementing exports from Mongo to Cloud Storage
     """
 
     @staticmethod
@@ -38,19 +41,19 @@ class MongoToGCSTemplate(BaseTemplate):
             f'--{constants.MONGO_GCS_INPUT_URI}',
             dest=constants.MONGO_GCS_INPUT_URI,
             required=True,
-            help='MONGO GCS Input Connection Uri'
+            help='MONGO Cloud Storage Input Connection Uri'
         )
         parser.add_argument(
             f'--{constants.MONGO_GCS_INPUT_DATABASE}',
             dest=constants.MONGO_GCS_INPUT_DATABASE,
             required=True,
-            help='MONGO GCS Input Database Name'
+            help='MONGO Cloud Storage Input Database Name'
         )
         parser.add_argument(
             f'--{constants.MONGO_GCS_INPUT_COLLECTION}',
             dest=constants.MONGO_GCS_INPUT_COLLECTION,
             required=True,
-            help='MONGO GCS Input Collection Name'
+            help='MONGO Cloud Storage Input Collection Name'
         )
         parser.add_argument(
             f'--{constants.MONGO_GCS_OUTPUT_FORMAT}',
@@ -68,7 +71,7 @@ class MongoToGCSTemplate(BaseTemplate):
             f'--{constants.MONGO_GCS_OUTPUT_LOCATION}',
             dest=constants.MONGO_GCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS location for output files'
+            help='Cloud Storage location for output files'
         )
         parser.add_argument(
             f'--{constants.MONGO_GCS_OUTPUT_MODE}',
@@ -87,6 +90,7 @@ class MongoToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        add_spark_options(parser, constants.get_csv_output_spark_options("mongo.gcs.output."))
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -106,7 +110,7 @@ class MongoToGCSTemplate(BaseTemplate):
         output_location: str = args[constants.MONGO_GCS_OUTPUT_LOCATION]
 
         logger.info(
-            "Starting Mongo to GCS spark job with parameters:\n"
+            "Starting Mongo to Cloud Storage Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
@@ -120,16 +124,4 @@ class MongoToGCSTemplate(BaseTemplate):
 
         # Write
         writer: DataFrameWriter = input_data.write.mode(output_mode)
-
-        if output_format == constants.FORMAT_PRQT:
-            writer.parquet(output_location)
-        elif output_format == constants.FORMAT_AVRO:
-            writer \
-                .format(constants.FORMAT_AVRO) \
-                .save(output_location)
-        elif output_format == constants.FORMAT_CSV:
-            writer \
-                .option(constants.HEADER, True) \
-                .csv(output_location)
-        elif output_format == constants.FORMAT_JSON:
-            writer.json(output_location)
+        persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "mongo.gcs.output.")

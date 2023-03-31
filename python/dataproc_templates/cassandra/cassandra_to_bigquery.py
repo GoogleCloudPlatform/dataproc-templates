@@ -74,7 +74,7 @@ class CassandraToBQTemplate(BaseTemplate):
             f'--{constants.CASSANDRA_TO_BQ_TEMP_LOCATION}',
             dest=constants.CASSANDRA_TO_BQ_TEMP_LOCATION,
             required=True,
-            help='GCS location for staging, Format: <bucket-name>'
+            help='Cloud Storage location for staging, Format: <bucket-name>'
         )
         parser.add_argument(
             f'--{constants.CASSANDRA_TO_BQ_QUERY}',
@@ -99,17 +99,17 @@ class CassandraToBQTemplate(BaseTemplate):
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
-        if (not getattr(known_args, constants.CASSANDRA_TO_BQ_QUERY) 
-            and (not getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE) 
+        if (not getattr(known_args, constants.CASSANDRA_TO_BQ_QUERY)
+            and (not getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE)
             or not getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_TABLE))):
-            
+
             sys.exit("ArgumentParser Error: Either of cassandratobq.input.keyspace and cassandratobq.input.table "
                         + "OR cassandratobq.input.query needs to be provided as argument to read data from Cassandra")
 
         elif (getattr(known_args, constants.CASSANDRA_TO_BQ_QUERY)
-            and (getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE) 
+            and (getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_KEYSPACE)
             or getattr(known_args, constants.CASSANDRA_TO_BQ_INPUT_TABLE))):
-            
+
             sys.exit("ArgumentParser Error: Both cassandratobq.input.keyspace and cassandratobq.input.table "
                         + "AND cassandratobq.input.query cannot be provided as arguments at the same time.")
 
