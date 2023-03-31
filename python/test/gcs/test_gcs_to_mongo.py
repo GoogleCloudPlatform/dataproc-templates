@@ -104,12 +104,12 @@ class TestGCSToMONGOTemplate:
 
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_avro(self, mock_spark_session):
-        """Tests GCSToMONGOTemplate runs with avro"""
+    def test_run_delta(self, mock_spark_session):
+        """Tests GCSToMONGOTemplate runs with delta"""
 
         gcs_to_mongo_template = GCSToMONGOTemplate()
         mock_parsed_args = gcs_to_mongo_template.parse_args(
-            ["--gcs.mongo.input.format=avro",
+            ["--gcs.mongo.input.format=delta",
              "--gcs.mongo.input.location=gs://test",
              "--gcs.mongo.output.uri=uri",
              "--gcs.mongo.output.database=database",
@@ -119,7 +119,7 @@ class TestGCSToMONGOTemplate:
         gcs_to_mongo_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read.format.assert_called_with(
-            constants.FORMAT_AVRO_EXTD)
+            constants.FORMAT_DELTA)
         mock_spark_session.read.format().load.assert_called_once_with("gs://test")
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_MONGO)
@@ -131,43 +131,6 @@ class TestGCSToMONGOTemplate:
         ).option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().option().option().mode().save.assert_called_once()
-
-
-    @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_csv(self, mock_spark_session):
-        """Tests GCSToMONGOTemplate runs with csv format"""
-
-        gcs_to_mongo_template = GCSToMONGOTemplate()
-        mock_parsed_args = gcs_to_mongo_template.parse_args(
-            ["--gcs.mongo.input.format=csv",
-             "--gcs.mongo.input.location=gs://test",
-             "--gcs.mongo.output.uri=uri",
-             "--gcs.mongo.output.database=database",
-             "--gcs.mongo.output.collection=collection",
-             "--gcs.mongo.output.mode=append"])
-        mock_spark_session.read.format().option().option(
-        ).load.return_value = mock_spark_session.dataframe.DataFrame
-        gcs_to_mongo_template.run(mock_spark_session, mock_parsed_args)
-
-        mock_spark_session.read.format.assert_called_with(
-            constants.FORMAT_CSV)
-        mock_spark_session.read.format().option.assert_called_with(
-            constants.HEADER, True)
-        mock_spark_session.read.format().option().option.assert_called_with(
-            constants.INFER_SCHEMA, True)
-        mock_spark_session.read.format().option().option(
-        ).load.assert_called_once_with("gs://test")
-        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
-            constants.FORMAT_MONGO)
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option.assert_called_once_with(constants.MONGO_DATABASE, "database")
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().option.assert_called_once_with(constants.MONGO_COLLECTION, "collection")
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().option().option().mode().save.assert_called_once()
-
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_json(self, mock_spark_session):
@@ -185,6 +148,84 @@ class TestGCSToMONGOTemplate:
         gcs_to_mongo_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.read.json.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
+            constants.FORMAT_MONGO)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option.assert_called_once_with(constants.MONGO_DATABASE, "database")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().option.assert_called_once_with(constants.MONGO_COLLECTION, "collection")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().option().option().mode().save.assert_called_once()
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_csv1(self, mock_spark_session):
+        """Tests GCSToMONGOTemplate runs with csv format"""
+
+        gcs_to_mongo_template = GCSToMONGOTemplate()
+        mock_parsed_args = gcs_to_mongo_template.parse_args(
+            ["--gcs.mongo.input.format=csv",
+             "--gcs.mongo.input.location=gs://test",
+             "--gcs.mongo.input.header=false",
+             "--gcs.mongo.output.uri=uri",
+             "--gcs.mongo.output.database=database",
+             "--gcs.mongo.output.collection=collection",
+             "--gcs.mongo.output.mode=append"])
+        mock_spark_session.read.format().options(
+        ).load.return_value = mock_spark_session.dataframe.DataFrame
+        gcs_to_mongo_template.run(mock_spark_session, mock_parsed_args)
+
+        mock_spark_session.read.format.assert_called_with(
+            constants.FORMAT_CSV)
+        mock_spark_session.read.format().options.assert_called_with(**{
+            constants.CSV_HEADER: 'false',
+            constants.CSV_INFER_SCHEMA: 'true',
+        })
+        mock_spark_session.read.format().options(
+        ).load.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
+            constants.FORMAT_MONGO)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option.assert_called_once_with(constants.MONGO_DATABASE, "database")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().option.assert_called_once_with(constants.MONGO_COLLECTION, "collection")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().option().option().mode().save.assert_called_once()
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_csv2(self, mock_spark_session):
+        """Tests GCSToMONGOTemplate runs with csv format and some optional csv options"""
+
+        gcs_to_mongo_template = GCSToMONGOTemplate()
+        mock_parsed_args = gcs_to_mongo_template.parse_args(
+            ["--gcs.mongo.input.format=csv",
+             "--gcs.mongo.input.location=gs://test",
+             "--gcs.mongo.input.inferschema=false",
+             "--gcs.mongo.input.sep=|",
+             "--gcs.mongo.input.comment=#",
+             "--gcs.mongo.input.timestampntzformat=yyyy-MM-dd'T'HH:mm:ss",
+             "--gcs.mongo.output.uri=uri",
+             "--gcs.mongo.output.database=database",
+             "--gcs.mongo.output.collection=collection",
+             "--gcs.mongo.output.mode=append"])
+        mock_spark_session.read.format().options(
+        ).load.return_value = mock_spark_session.dataframe.DataFrame
+        gcs_to_mongo_template.run(mock_spark_session, mock_parsed_args)
+
+        mock_spark_session.read.format.assert_called_with(
+            constants.FORMAT_CSV)
+        mock_spark_session.read.format().options.assert_called_with(**{
+            constants.CSV_HEADER: 'true',
+            constants.CSV_INFER_SCHEMA: 'false',
+            constants.CSV_SEP: "|",
+            constants.CSV_COMMENT: "#",
+            constants.CSV_TIMESTAMPNTZFORMAT: "yyyy-MM-dd'T'HH:mm:ss",
+        })
+        mock_spark_session.read.format().options(
+        ).load.assert_called_once_with("gs://test")
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_MONGO)
         mock_spark_session.dataframe.DataFrame.write.format(
