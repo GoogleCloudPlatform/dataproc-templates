@@ -16,6 +16,7 @@
 package com.google.cloud.dataproc.templates;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import java.sql.SQLException;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 import org.apache.spark.sql.streaming.StreamingQueryException;
@@ -54,7 +55,8 @@ public interface BaseTemplate {
     PUBSUBTOBIGTABLE,
     GCSTOBIGTABLE,
     TEXTTOBIGQUERY,
-    PUBSUBLITETOGCS,
+    JDBCTOJDBC,
+    PUBSUBLITETOGCS
   }
 
   default Properties getProperties() {
@@ -63,5 +65,6 @@ public interface BaseTemplate {
 
   void validateInput() throws Exception;
   /** Executes the template. */
-  void runTemplate() throws StreamingQueryException, TimeoutException, InterruptedException;
+  void runTemplate()
+      throws StreamingQueryException, TimeoutException, SQLException, InterruptedException;
 }
