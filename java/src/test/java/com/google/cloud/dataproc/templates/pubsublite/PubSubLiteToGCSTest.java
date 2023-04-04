@@ -31,9 +31,11 @@ public class PubSubLiteToGCSTest {
 
   @BeforeEach
   void setUp() {
-    PropertyUtil.getProperties().setProperty(PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL, "some value");
+    PropertyUtil.getProperties()
+        .setProperty(PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL, "some value");
     PropertyUtil.getProperties().setProperty(PUBSUBLITE_TO_GCS_TIMEOUT_MS, "some value");
-    PropertyUtil.getProperties().setProperty(PUBSUBLITE_TO_GCS_PROCESSING_TIME_SECONDS, "some value");
+    PropertyUtil.getProperties()
+        .setProperty(PUBSUBLITE_TO_GCS_PROCESSING_TIME_SECONDS, "some value");
     PropertyUtil.getProperties().setProperty(PUBSUBLITE_TO_GCS_OUTPUT_LOCATION, "some value");
     PropertyUtil.getProperties().setProperty(PUBSUBLITE_CHECKPOINT_LOCATION, "some value");
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
@@ -59,8 +61,8 @@ public class PubSubLiteToGCSTest {
         assertThrows(IllegalArgumentException.class, () -> pubSubLiteToGCS.runTemplate());
     assertEquals(
         "Required parameters for PubSubLiteToGCS not passed. "
-              + "Set mandatory parameter for PubSubLiteToGCS template "
-              + "in resources/conf/template.properties file.",
+            + "Set mandatory parameter for PubSubLiteToGCS template "
+            + "in resources/conf/template.properties file.",
         exception.getMessage());
   }
 
