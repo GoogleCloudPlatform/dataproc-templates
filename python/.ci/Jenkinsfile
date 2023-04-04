@@ -476,7 +476,7 @@ pipeline {
                                         --pubsublite.bigtable.subscription.path=projects/$GCP_PROJECT/locations/$REGION/subscriptions/psltobt-sub \
                                         --pubsublite.bigtable.streaming.checkpoint.location="gs://dataproc-templates/integration-testing/psltobt/checkpoint" \
                                         --pubsublite.bigtable.output.project=$GCP_PROJECT \
-                                        --pubsublite.bigtable.output.instance="psltobt" \
+                                        --pubsublite.bigtable.output.instance="tanyawarrier-bt-1" \
                                         --pubsublite.bigtable.output.table="output_table"
                                     '''
                                 }
