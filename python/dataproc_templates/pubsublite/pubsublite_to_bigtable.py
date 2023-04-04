@@ -21,6 +21,7 @@ from json import loads
 
 from google.cloud.bigtable import Client, column_family
 from google.cloud.bigtable.table import Table
+from google.cloud.bigtable.row import DirectRow
 
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StringType
@@ -156,7 +157,7 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
         # Write to table
         logger.info("Writing input data to the table.")
 
-        rows = []
+        rows: list[DirectRow] = []
         for row in batch_df.collect():
             message_data = loads(row.data)
             row_key = message_data["rowkey"]
