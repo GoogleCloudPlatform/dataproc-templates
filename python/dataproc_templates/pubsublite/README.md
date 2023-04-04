@@ -194,7 +194,8 @@ export SUBNET="projects/my-project/regions/us-west1/subnetworks/test-subnet"
 --pubsublite.bigtable.streaming.checkpoint.location="gs://temp-bucket/checkpoint" \
 --pubsublite.bigtable.output.project="my-project" \
 --pubsublite.bigtable.output.instance="bt-instance-1" \
---pubsublite.bigtable.output.table="output_table"
+--pubsublite.bigtable.output.table="output_table" \
+--pubsublite.bigtable.streaming.timeout=20
 ```
 
 The below [cbt CLI](https://cloud.google.com/bigtable/docs/cbt-overview) command to [read rows](https://cloud.google.com/bigtable/docs/cbt-reference#read_rows) can be used as an example to verify if data was written to the Bigtable table named `output_table` :
