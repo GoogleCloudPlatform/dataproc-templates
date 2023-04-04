@@ -22,8 +22,8 @@ usage: main.py --template PUBSUBLITETOGCS [-h] \
 	--pubsublite.to.gcs.input.subscription.url PUBSUBLITE.GCS.INPUT.SUBSCRIPTION.URL \
 	--pubsublite.to.gcs.output.location PUBSUBLITE.GCS.OUTPUT.LOCATION \
 	--pubsublite.to.gcs.checkpoint.location PUBSUBLITE.GCS.CHECKPOINT.LOCATION \
-    --pubsublite.to.gcs.timeout.ms PUBSUBLITE.GCS.TIMEOUT.MS \
-    --pubsublite.to.gcs.processing.time.seconds PUBSUBLITE.GCS.PROCESSING.TIME.SECONDS \
+    	--pubsublite.to.gcs.timeout.ms PUBSUBLITE.GCS.TIMEOUT.MS \
+    	--pubsublite.to.gcs.processing.time.seconds PUBSUBLITE.GCS.PROCESSING.TIME.SECONDS \
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -46,7 +46,7 @@ export REGION=us-central1
 	
 ./bin/start.sh \
 -- --template=PUBSUBLITETOGCS \
-    --pubsublite.to.gcs.input.subscription.url=projects/my-project/locations/us-central1/subscriptions/pubsublite-subscription,
+    --templateProperty pubsublite.to.gcs.input.subscription.url=projects/my-project/locations/us-central1/subscriptions/pubsublite-subscription,
     --templateProperty pubsublite.to.gcs.write.mode=append,
     --templateProperty pubsublite.to.gcs.output.location=gs://outputLocation,
     --templateProperty pubsublite.to.gcs.checkpoint.location=gs://checkpointLocation,
