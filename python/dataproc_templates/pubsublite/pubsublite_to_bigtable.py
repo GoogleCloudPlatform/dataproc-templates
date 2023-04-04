@@ -20,6 +20,7 @@ from datetime import datetime
 from json import loads
 
 from google.cloud.bigtable import Client, column_family
+from google.cloud.bigtable.table import Table
 
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StringType
@@ -28,7 +29,7 @@ from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
 
 
-__all__ = ['PubSubLiteToBigtableTemplate']
+__all__ = ["PubSubLiteToBigtableTemplate"]
 
 
 class PubSubLiteToBigtableTemplate(BaseTemplate):
@@ -42,71 +43,71 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_BIGTABLE_SUBSCRIPTION_PATH}',
+            f"--{constants.PUBSUBLITE_BIGTABLE_SUBSCRIPTION_PATH}",
             dest=constants.PUBSUBLITE_BIGTABLE_SUBSCRIPTION_PATH,
             required=True,
-            help='Pub/Sub Lite subscription path'
+            help="Pub/Sub Lite subscription path",
         )
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_BIGTABLE_STREAMING_TIMEOUT}',
+            f"--{constants.PUBSUBLITE_BIGTABLE_STREAMING_TIMEOUT}",
             dest=constants.PUBSUBLITE_BIGTABLE_STREAMING_TIMEOUT,
             type=int,
             default=60,
             required=False,
-            help='Time duration after which the streaming query will be stopped (in seconds)'
+            help="Time duration after which the streaming query will be stopped (in seconds)",
         )
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_BIGTABLE_STREAMING_TRIGGER}',
+            f"--{constants.PUBSUBLITE_BIGTABLE_STREAMING_TRIGGER}",
             dest=constants.PUBSUBLITE_BIGTABLE_STREAMING_TRIGGER,
-            default='0 seconds',
+            default="0 seconds",
             required=False,
-            help='Time interval at which the streaming query runs to process incoming data'
+            help="Time interval at which the streaming query runs to process incoming data",
         )
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_BIGTABLE_STREAMING_CHECKPOINT_PATH}',
+            f"--{constants.PUBSUBLITE_BIGTABLE_STREAMING_CHECKPOINT_PATH}",
             dest=constants.PUBSUBLITE_BIGTABLE_STREAMING_CHECKPOINT_PATH,
             required=False,
-            help='Temporary folder path to store checkpoint information'
+            help="Temporary folder path to store checkpoint information",
         )
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT}',
+            f"--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT}",
             dest=constants.PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT,
             required=True,
-            help='GCP project containing the Bigtable instance'
+            help="GCP project containing the Bigtable instance",
         )
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE}',
+            f"--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE}",
             dest=constants.PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE,
             required=True,
-            help='Bigtable instance ID, containing the output table'
+            help="Bigtable instance ID, containing the output table",
         )
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_TABLE}',
+            f"--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_TABLE}",
             dest=constants.PUBSUBLITE_BIGTABLE_OUTPUT_TABLE,
             required=True,
-            help='Table ID in Bigtable, to store the output'
+            help="Table ID in Bigtable, to store the output",
         )
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_COLUMN_FAMILIES}',
+            f"--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_COLUMN_FAMILIES}",
             dest=constants.PUBSUBLITE_BIGTABLE_OUTPUT_COLUMN_FAMILIES,
             required=False,
-            help='List of Column Family names to create a new table'
+            help="List of Column Family names to create a new table",
         )
 
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_MAX_VERSIONS}',
+            f"--{constants.PUBSUBLITE_BIGTABLE_OUTPUT_MAX_VERSIONS}",
             dest=constants.PUBSUBLITE_BIGTABLE_OUTPUT_MAX_VERSIONS,
             default=1,
             type=int,
             required=False,
-            help='Maximum number of versions of cells in the new table (Garbage Collection Policy)'
+            help="Maximum number of versions of cells in the new table (Garbage Collection Policy)",
         )
 
         known_args: argparse.Namespace
@@ -114,16 +115,18 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
 
         return vars(known_args)
 
-    def get_table(self, client: Client, args: Dict[str, Any], logger: Logger):
+    def get_table(
+        self,
+        client: Client,
+        instance_id: str,
+        table_id: str,
+        column_families_list: str,
+        max_versions: str,
+        logger: Logger,
+    ) -> Table:
         """
         Checks if table exists in Bigtable or tries to create one
         """
-
-        # Arguments
-        instance_id: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE]
-        table_id: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_TABLE]
-        column_families_list: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_COLUMN_FAMILIES]
-        max_versions: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_MAX_VERSIONS]
 
         table = client.instance(instance_id).table(table_id)
         if table.exists():
@@ -133,26 +136,22 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
                 logger.info(f"Table {table_id} does not exist. Creating {table_id}")
 
                 max_versions_rule = column_family.MaxVersionsGCRule(max_versions)
-                column_families_itr = list(map(str.strip, column_families_list.split(',')))
+                column_families_itr = list(
+                    map(str.strip, column_families_list.split(","))
+                )
                 column_families = dict.fromkeys(column_families_itr, max_versions_rule)
                 table.create(column_families=column_families)
             else:
                 raise RuntimeError(
-                    f"Table {table_id} does not exist, provide column families to create it")
+                    f"Table {table_id} does not exist, provide column families to create it"
+                )
 
         return table
 
-    def write_to_bigtable(self, batch_df: DataFrame, args: Dict[str, Any], logger: Logger) -> None:
-
+    def populate_table(self, batch_df: DataFrame, table: Table, logger: Logger) -> None:
         """
         Writes data to Bigtable instance
         """
-
-        # Arguments
-        project: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT]
-
-        client = Client(project=project, admin=True)
-        table = self.get_table(client, args, logger)
 
         # Write to table
         logger.info("Writing input data to the table.")
@@ -160,23 +159,20 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
         rows = []
         for row in batch_df.collect():
             message_data = loads(row.data)
-            row_key = message_data['rowkey']
+            row_key = message_data["rowkey"]
             new_row = table.direct_row(row_key)
 
-            for cell in message_data['columns']:
+            for cell in message_data["columns"]:
                 new_row.set_cell(
-                    column_family_id=cell['columnfamily'],
-                    column=cell['columnname'],
-                    value=cell['columnvalue'],
-                    timestamp=datetime.utcnow()
+                    column_family_id=cell["columnfamily"],
+                    column=cell["columnname"],
+                    value=cell["columnvalue"],
+                    timestamp=datetime.utcnow(),
                 )
             rows.append(new_row)
         table.mutate_rows(rows)
 
-        client.close()
-
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
-
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
@@ -184,12 +180,20 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
         timeout: int = args[constants.PUBSUBLITE_BIGTABLE_STREAMING_TIMEOUT]
         trigger: str = args[constants.PUBSUBLITE_BIGTABLE_STREAMING_TRIGGER]
         checkpoint_location: str = args[constants.PUBSUBLITE_BIGTABLE_STREAMING_CHECKPOINT_PATH]
+        project: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT]
+        instance_id: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE]
+        table_id: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_TABLE]
+        column_families_list: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_COLUMN_FAMILIES]
+        max_versions: str = args[constants.PUBSUBLITE_BIGTABLE_OUTPUT_MAX_VERSIONS]
 
-        ignore_keys = {constants.PUBSUBLITE_BIGTABLE_SUBSCRIPTION_PATH,
-                       constants.PUBSUBLITE_BIGTABLE_STREAMING_CHECKPOINT_PATH,
-                       constants.PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT}
-        filtered_args = {key: val for key,
-                         val in args.items() if key not in ignore_keys}
+        ignore_keys = {
+            constants.PUBSUBLITE_BIGTABLE_SUBSCRIPTION_PATH,
+            constants.PUBSUBLITE_BIGTABLE_STREAMING_CHECKPOINT_PATH,
+            constants.PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT,
+        }
+        filtered_args = {
+            key: val for key, val in args.items() if key not in ignore_keys
+        }
         logger.info(
             "Starting Pub/Sub Lite to Bigtable spark job with parameters:\n"
             f"{pprint.pformat(filtered_args)}"
@@ -198,10 +202,11 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
         # Read
         input_data: DataFrame
 
-        input_data = spark.readStream \
-            .format(constants.FORMAT_PUBSUBLITE) \
-            .option(constants.PUBSUBLITE_SUBSCRIPTION, subscription_path) \
+        input_data = (
+            spark.readStream.format(constants.FORMAT_PUBSUBLITE)
+            .option(constants.PUBSUBLITE_SUBSCRIPTION, subscription_path)
             .load()
+        )
 
         input_data = input_data.withColumn("data", input_data.data.cast(StringType()))
 
@@ -211,13 +216,26 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
             options = {constants.PUBSUBLITE_CHECKPOINT_LOCATION: checkpoint_location}
 
         def write_to_bigtable(batch_df: DataFrame, batch_id: int):
-            self.write_to_bigtable(batch_df, args, logger)
+            client = Client(project=project, admin=True)
 
-        query = input_data.writeStream \
-            .foreachBatch(write_to_bigtable) \
-            .options(**options) \
-            .trigger(processingTime=trigger) \
+            table = self.get_table(
+                client,
+                instance_id,
+                table_id,
+                column_families_list,
+                max_versions,
+                logger,
+            )
+
+            self.populate_table(batch_df, table, logger)
+            client.close()
+
+        query = (
+            input_data.writeStream.foreachBatch(write_to_bigtable)
+            .options(**options)
+            .trigger(processingTime=trigger)
             .start()
+        )
 
         query.awaitTermination(timeout)
         query.stop()
