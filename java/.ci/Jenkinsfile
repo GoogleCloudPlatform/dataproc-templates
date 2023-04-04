@@ -743,6 +743,28 @@ pipeline {
                                 --templateProperty jdbctojdbc.output.table="employee_output" \
                                 --templateProperty jdbctojdbc.output.mode="Overwrite" 
                             '''
+
+                        }
+                    }
+                    stage('GCS TO Mongo') {
+                        steps{
+                            sh '''
+
+                                export SKIP_BUILD=true
+                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar"
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template GCSTOMONGO \
+                                --templateProperty gcs.mongodb.input.format=avro \
+                                --templateProperty gcs.mongodb.input.location=gs://dataproc-templates/data/avro/empavro \
+                                --templateProperty gcs.mongodb.output.uri="$ENV_TEST_MONGO_DB_URI" \
+                                --templateProperty gcs.mongodb.output.database=demo \
+                                --templateProperty gcs.mongodb.output.collection=test \
+                                --templateProperty gcs.mongo.output.mode=overwrite
+
+                            '''
                         }
                     }
                 }
