@@ -1,5 +1,5 @@
 """
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,18 @@
  * limitations under the License.
 """
 
+import logging
+from datetime import datetime
 import mock
 import pyspark.sql
 import pyspark.sql.streaming
+import google.cloud.bigtable
+import google.cloud.bigtable.table
+import google.cloud.bigtable.row
 
-from dataproc_templates.pubsublite.pubsublite_to_bigtable import PubSubLiteToBigtableTemplate
+from dataproc_templates.pubsublite.pubsublite_to_bigtable import (
+    PubSubLiteToBigtableTemplate,
+)
 import dataproc_templates.util.template_constants as constants
 
 
@@ -27,152 +34,211 @@ class TestPubSubLiteToBigtableTemplate:
     Test suite for PubSubLiteToBigtableTemplate
     """
 
-    def test_parse_args1(self):
+    def test_parse_args(self):
         """Tests PubSubLiteToBigtableTemplate.parse_args()"""
 
         pubsublite_to_bigtable_template = PubSubLiteToBigtableTemplate()
         parsed_args = pubsublite_to_bigtable_template.parse_args(
-            ["--pubsublite.bigtable.subscription.path=projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub",
-             "--pubsublite.bigtable.streaming.timeout=120",
-             "--pubsublite.bigtable.streaming.trigger=2 seconds",
-             "--pubsublite.bigtable.streaming.checkpoint.path=gs://temp-bucket/checkpoint",
-             "--pubsublite.bigtable.output.project=my-project",
-             "--pubsublite.bigtable.output.instance=bt-instance1",
-             "--pubsublite.bigtable.output.table=output_table",
-             "--pubsublite.bigtable.output.column.families=cf1, cf2, cf3",
-             "--pubsublite.bigtable.output.max.versions=3"
-             ])
+            [
+                "--pubsublite.bigtable.subscription.path=projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub",
+                "--pubsublite.bigtable.streaming.timeout=120",
+                "--pubsublite.bigtable.streaming.trigger=2 seconds",
+                "--pubsublite.bigtable.streaming.checkpoint.path=gs://temp-bucket/checkpoint",
+                "--pubsublite.bigtable.output.project=my-project",
+                "--pubsublite.bigtable.output.instance=bt-instance1",
+                "--pubsublite.bigtable.output.table=output_table",
+                "--pubsublite.bigtable.output.column.families=cf1, cf2, cf3",
+                "--pubsublite.bigtable.output.max.versions=3",
+            ]
+        )
 
-        assert parsed_args["pubsublite.bigtable.subscription.path"] == "projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub"
+        # Verify
+        assert (
+            parsed_args["pubsublite.bigtable.subscription.path"]
+            == "projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub"
+        )
         assert parsed_args["pubsublite.bigtable.streaming.timeout"] == 120
         assert parsed_args["pubsublite.bigtable.streaming.trigger"] == "2 seconds"
-        assert parsed_args["pubsublite.bigtable.streaming.checkpoint.path"] == "gs://temp-bucket/checkpoint"
+        assert (
+            parsed_args["pubsublite.bigtable.streaming.checkpoint.path"]
+            == "gs://temp-bucket/checkpoint"
+        )
         assert parsed_args["pubsublite.bigtable.output.project"] == "my-project"
         assert parsed_args["pubsublite.bigtable.output.instance"] == "bt-instance1"
         assert parsed_args["pubsublite.bigtable.output.table"] == "output_table"
-        assert parsed_args["pubsublite.bigtable.output.column.families"] == "cf1, cf2, cf3"
+        assert (
+            parsed_args["pubsublite.bigtable.output.column.families"] == "cf1, cf2, cf3"
+        )
         assert parsed_args["pubsublite.bigtable.output.max.versions"] == 3
 
-    @mock.patch.object(pyspark.sql, 'SparkSession')
-    @mock.patch.object(pyspark.sql, 'DataFrame')
-    def test_run_pass_args2(self, mock_spark_session, mock_df):
-        """Tests PubSubLiteToBigtableTemplate reads data as a Dataframe"""
+    @mock.patch.object(pyspark.sql, "SparkSession")
+    @mock.patch.object(pyspark.sql, "DataFrame")
+    def test_run_read_stream(self, mock_spark_session, mock_df):
+        """Tests PubSubLiteToBigtableTemplate reads stream data as a Dataframe"""
 
         pubsublite_to_bigtable_template = PubSubLiteToBigtableTemplate()
 
         mock_parsed_args = pubsublite_to_bigtable_template.parse_args(
-            ["--pubsublite.bigtable.subscription.path=projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub",
-             "--pubsublite.bigtable.streaming.timeout=120",
-             "--pubsublite.bigtable.streaming.trigger=2 seconds",
-             "--pubsublite.bigtable.streaming.checkpoint.path=gs://temp-bucket/checkpoint",
-             "--pubsublite.bigtable.output.project=my-project",
-             "--pubsublite.bigtable.output.instance=bt-instance1",
-             "--pubsublite.bigtable.output.table=output_table",
-             "--pubsublite.bigtable.output.column.families=cf1, cf2, cf3",
-             "--pubsublite.bigtable.output.max.versions=3"
-             ])
+            [
+                "--pubsublite.bigtable.subscription.path=projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub",
+                "--pubsublite.bigtable.streaming.timeout=120",
+                "--pubsublite.bigtable.streaming.trigger=2 seconds",
+                "--pubsublite.bigtable.streaming.checkpoint.path=gs://temp-bucket/checkpoint",
+                "--pubsublite.bigtable.output.project=my-project",
+                "--pubsublite.bigtable.output.instance=bt-instance1",
+                "--pubsublite.bigtable.output.table=output_table",
+                "--pubsublite.bigtable.output.column.families=cf1, cf2, cf3",
+                "--pubsublite.bigtable.output.max.versions=3",
+            ]
+        )
 
-        pubsublite_to_bigtable_template.run(
-            mock_spark_session, mock_parsed_args)
+        pubsublite_to_bigtable_template.run(mock_spark_session, mock_parsed_args)
 
-        reader = mock_spark_session.readStream
+        mock_reader = mock_spark_session.readStream
 
-        reader \
-            .format \
-            .assert_called_once_with(constants.FORMAT_PUBSUBLITE)
+        # Verify
+        mock_reader.format.assert_called_once_with(constants.FORMAT_PUBSUBLITE)
 
-        reader \
-            .format() \
-            .option \
-            .assert_called_once_with(constants.PUBSUBLITE_SUBSCRIPTION, 'projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub')
+        mock_reader.format().option.assert_called_once_with(
+            constants.PUBSUBLITE_SUBSCRIPTION,
+            "projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub",
+        )
 
-        reader \
-            .format() \
-            .option() \
-            .load \
-            .return_value = mock_df
+        mock_reader.format().option().load.return_value = mock_df
 
-    @mock.patch.object(pyspark.sql, 'SparkSession')
-    @mock.patch.object(pyspark.sql, 'DataFrame')
-    @mock.patch.object(pyspark.sql.streaming, 'StreamingQuery')
-    def test_run_pass_args3(self, mock_spark_session, mock_df, mock_query):
-        """Tests PubSubLiteToBigtableTemplate writes data to Bigtable"""
+    @mock.patch.object(google.cloud.bigtable, "Client")
+    @mock.patch.object(logging, "Logger")
+    def test_get_table(self, mock_client, mock_logger):
+        """Tests PubSubLiteToBigtableTemplate writes stream data to Bigtable"""
+
+        pubsublite_to_bigtable_template = PubSubLiteToBigtableTemplate()
+
+        mock_instance_id = "bt-instance1"
+        mock_table_id = "output_table"
+        mock_cf_list = ""
+        mock_max_versions = "3"
+
+        mock_table = pubsublite_to_bigtable_template.get_table(
+            mock_client,
+            mock_instance_id,
+            mock_table_id,
+            mock_cf_list,
+            mock_max_versions,
+            mock_logger,
+        )
+
+        # Verify
+        mock_table.exists.assert_called_once_with()
+
+        mock_logger.info.assert_called_once_with("Table output_table already exists.")
+
+    @mock.patch.object(pyspark.sql, "DataFrame")
+    @mock.patch.object(google.cloud.bigtable.table, "Table")
+    @mock.patch.object(google.cloud.bigtable.row, "DirectRow")
+    @mock.patch.object(logging, "Logger")
+    def test_populate_table(self, mock_batch_df, mock_table, mock_row, mock_logger):
+        """Tests PubSubLiteToBigtableTemplate writes stream data to Bigtable"""
+
+        pubsublite_to_bigtable_template = PubSubLiteToBigtableTemplate()
+
+        pubsublite_to_bigtable_template.populate_table(
+            mock_batch_df,
+            mock_table,
+            mock_logger,
+        )
+
+        mock_message_data = {
+            "rowkey": "rk1",
+            "columns": [
+                {
+                    "columnfamily": "place",
+                    "columnname": "city",
+                    "columnvalue": "Bangalore",
+                }
+            ],
+        }
+        mock_timestamp = datetime(2023, 4, 4, 14, 26, 6, 122642)
+        mock_row = mock_table.direct_row(mock_message_data["rowkey"])
+        for mock_cell in mock_message_data["columns"]:
+            mock_cf = mock_cell["columnfamily"]
+            mock_name = mock_cell["columnname"]
+            mock_value = mock_cell["columnvalue"]
+            mock_row.set_cell(mock_cf, mock_name, mock_value, mock_timestamp)
+
+        # Verify
+        mock_logger.info.assert_called_once_with("Writing input data to the table.")
+
+        mock_batch_df.collect.assert_called_once_with()
+
+        mock_table.direct_row.assert_called_once_with("rk1")
+
+        mock_row.set_cell.assert_called_once_with(
+            "place", "city", "Bangalore", datetime(2023, 4, 4, 14, 26, 6, 122642)
+        )
+
+        mock_table.mutate_rows.assert_called_once_with([])
+
+    @mock.patch.object(pyspark.sql, "SparkSession")
+    @mock.patch.object(pyspark.sql, "DataFrame")
+    @mock.patch.object(pyspark.sql.streaming, "StreamingQuery")
+    def test_run_write_stream(self, mock_spark_session, mock_df, mock_query):
+        """Tests PubSubLiteToBigtableTemplate writes stream data to Bigtable"""
 
         pubsublite_to_bigtable_template = PubSubLiteToBigtableTemplate()
 
         mock_parsed_args = pubsublite_to_bigtable_template.parse_args(
-            ["--pubsublite.bigtable.subscription.path=projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub",
-             "--pubsublite.bigtable.streaming.timeout=120",
-             "--pubsublite.bigtable.streaming.trigger=2 seconds",
-             "--pubsublite.bigtable.streaming.checkpoint.path=gs://temp-bucket/checkpoint",
-             "--pubsublite.bigtable.output.project=my-project",
-             "--pubsublite.bigtable.output.instance=bt-instance1",
-             "--pubsublite.bigtable.output.table=output_table",
-             "--pubsublite.bigtable.output.column.families=cf1, cf2, cf3",
-             "--pubsublite.bigtable.output.max.versions=3"
-             ])
+            [
+                "--pubsublite.bigtable.subscription.path=projects/gcp-project/locations/us-west1/subscriptions/psltobt-sub",
+                "--pubsublite.bigtable.streaming.timeout=120",
+                "--pubsublite.bigtable.streaming.trigger=2 seconds",
+                "--pubsublite.bigtable.streaming.checkpoint.path=gs://temp-bucket/checkpoint",
+                "--pubsublite.bigtable.output.project=my-project",
+                "--pubsublite.bigtable.output.instance=bt-instance1",
+                "--pubsublite.bigtable.output.table=output_table",
+                "--pubsublite.bigtable.output.column.families=cf1, cf2, cf3",
+                "--pubsublite.bigtable.output.max.versions=3",
+            ]
+        )
 
-        pubsublite_to_bigtable_template.run(
-            mock_spark_session, mock_parsed_args)
+        pubsublite_to_bigtable_template.run(mock_spark_session, mock_parsed_args)
 
-        writer = mock_df.writeStream
+        mock_writer = mock_df.writeStream
 
-        writer \
-            .foreachBatch(pubsublite_to_bigtable_template.write_to_bigtable) \
-            .return_value = writer
+        mock_writer.foreachBatch().return_value = mock_writer
 
-        writer \
-            .foreachBatch.options({
-            constants.PUBSUBLITE_CHECKPOINT_LOCATION:
-            mock_parsed_args["pubsublite.bigtable.streaming.checkpoint.path"]
-            }) \
-            .return_value = writer
+        mock_writer.foreachBatch.options(
+            {
+                constants.PUBSUBLITE_CHECKPOINT_LOCATION: mock_parsed_args[
+                    "pubsublite.bigtable.streaming.checkpoint.path"
+                ]
+            }
+        ).return_value = mock_writer
 
-        writer \
-            .foreachBatch \
-            .options.trigger(processingTime=
-                             mock_parsed_args["pubsublite.bigtable.streaming.trigger"]) \
-            .return_value = writer
+        mock_writer.foreachBatch.options.trigger(
+            processingTime=mock_parsed_args["pubsublite.bigtable.streaming.trigger"]
+        ).return_value = mock_writer
 
-        writer \
-            .foreachBatch \
-            .options \
-            .trigger \
-            .start() \
-            .return_value = mock_query
+        mock_writer.foreachBatch.options.trigger.start().return_value = mock_query
 
         mock_query.awaitTermination(
-            mock_parsed_args["pubsublite.bigtable.streaming.timeout"])
+            mock_parsed_args["pubsublite.bigtable.streaming.timeout"]
+        )
 
         mock_query.stop()
 
         # Verify that the correct methods were called
-        writer \
-            .foreachBatch \
-            .assert_called_once_with(pubsublite_to_bigtable_template.write_to_bigtable)
+        mock_writer.foreachBatch.assert_called_once_with()
 
-        writer \
-            .foreachBatch \
-            .options \
-            .assert_called_once_with({'checkpointLocation': "gs://temp-bucket/checkpoint"})
+        mock_writer.foreachBatch.options.assert_called_once_with(
+            {"checkpointLocation": "gs://temp-bucket/checkpoint"}
+        )
 
-        writer \
-            .foreachBatch \
-            .options \
-            .trigger \
-            .assert_called_once_with(processingTime='2 seconds')
+        mock_writer.foreachBatch.options.trigger.assert_called_once_with(
+            processingTime="2 seconds"
+        )
 
-        writer \
-            .foreachBatch \
-            .options \
-            .trigger \
-            .start \
-            .assert_called_once_with()
+        mock_writer.foreachBatch.options.trigger.start.assert_called_once_with()
 
-        mock_query \
-            .awaitTermination \
-            .assert_called_once_with(120)
+        mock_query.awaitTermination.assert_called_once_with(120)
 
-        mock_query \
-            .stop \
-            .assert_called_once_with()
+        mock_query.stop.assert_called_once_with()
