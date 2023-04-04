@@ -196,3 +196,9 @@ export SUBNET="projects/my-project/regions/us-west1/subnetworks/test-subnet"
 --pubsublite.bigtable.output.instance="bt-instance-1" \
 --pubsublite.bigtable.output.table="output_table"
 ```
+
+The below [cbt CLI](https://cloud.google.com/bigtable/docs/cbt-overview) command to [read rows](https://cloud.google.com/bigtable/docs/cbt-reference#read_rows) can be used as an example to verify if data was written to the Bigtable table named `output_table` :
+
+```sh
+cbt -project my-project -instance bt-instance-1 read output_table
+```
