@@ -769,7 +769,28 @@ pipeline {
                     }
                 }
             }
-            
+            stage('Parallel Execution 9'){
+                parallel{
+                    stage('PubSubLite To GCS') {
+                        steps{
+                            sh '''
+
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \                              
+                                -- --template PUBSUBLITETOGCS \
+                                --templateProperty pubsublite.to.gcs.input.subscription.url=projects/$GCP_PROJECT/locations/$REGION/subscriptions/psltobt-sub \
+                                --templateProperty pubsublite.to.gcs.processing.time.seconds=1 \
+                                --templateProperty pubsublite.to.gcs.timeout.ms=120000 \
+                                --templateProperty pubsublite.to.gcs.output.location=gs://saumyasinha/pubsublite/output \
+                                --templateProperty pubsublite.to.gcs.checkpoint.location=gs://saumyasinha/pubsublite/checkpointLocation
+                            '''
+                        }
+                    }
+                }
+            }
         }
     post {
         always{
