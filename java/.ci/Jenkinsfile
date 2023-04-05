@@ -774,8 +774,9 @@ pipeline {
                     stage('PubSubLite To GCS') {
                         steps{
                             sh '''
-
-                                export SKIP_BUILD=true
+                                export GCP_PROJECT=yadavaja-sandbox
+                                export REGION=us-west1
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
 
                                 cd java
 
