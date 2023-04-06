@@ -12,7 +12,7 @@ __all__ = ['PubSubLiteToGCSTemplate']
 
 class PubSubLiteToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing exports from PubSubLite to GCS
+    Dataproc template implementing exports from Pub/Sub Lite to Cloud Storage
     """
 
     @staticmethod
@@ -23,7 +23,7 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             f'--{constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL}',
             dest=constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL,
             required=True,
-            help='PubSubLite to GCS Input subscription url'
+            help='Pub/Sub Lite Input subscription url'
         )
         parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_GCS_WRITE_MODE}',
@@ -46,7 +46,7 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             f'--{constants.PUBSUBLITE_TO_GCS_OUTPUT_LOCATION}',
             dest=constants.PUBSUBLITE_TO_GCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS output Bucket URL'
+            help='Cloud Storage output Bucket URL'
         )
         parser.add_argument(
             f'--{constants.PUBSUBLITE_CHECKPOINT_LOCATION}',
@@ -60,7 +60,7 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             required=False,
             default=constants.FORMAT_CSV,
             help=(
-                'Output Format to GCS '
+                'Output Format to Cloud Storage '
                 '(one of: json, csv, avro, parquet) '
                 '(Defaults to csv)'
             ),
@@ -104,7 +104,7 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
         processing_time: str = args[constants.PUBSUBLITE_TO_GCS_PROCESSING_TIME]
 
         logger.info(
-            "Starting PubSubLite to GCS spark job with parameters:\n"
+            "Starting Pub/Sub Lite to Cloud Storage spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 

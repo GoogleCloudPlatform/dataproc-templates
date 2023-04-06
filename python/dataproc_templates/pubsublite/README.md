@@ -1,15 +1,15 @@
-## PubSubLite to GCS
+## Pub/Sub Lite to Cloud Storage
 
 Template for reading files from Pub/Sub Lite and writing them to Google Cloud Storage. It supports writing JSON, CSV, Parquet and Avro formats.
 
 
 ## Arguments
 
-* `pubsublite.to.gcs.input.subscription.url`: PubSubLite Input Subscription Url
+* `pubsublite.to.gcs.input.subscription.url`: Pub/Sub Lite Input Subscription Url
 * `pubsublite.to.gcs.write.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
-* `pubsublite.to.gcs.output.location`: GCS Location to put Output Files (format: `gs://BUCKET/...`)
-* `pubsublite.to.gcs.checkpoint.location`: GCS Checkpoint Folder Location
-* `pubsublite.to.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json)(Defaults to csv)
+* `pubsublite.to.gcs.output.location`: Cloud Storage Location to put Output Files (format: `gs://BUCKET/...`)
+* `pubsublite.to.gcs.checkpoint.location`: Cloud Storage Checkpoint Folder Location
+* `pubsublite.to.gcs.output.format`: Cloud Storage Output File Format (one of: avro,parquet,csv,json)(Defaults to csv)
 * `pubsublite.to.gcs.timeout`: Time for which the subscription will be read (measured in seconds)
 * `pubsublite.to.gcs.processing.time`: Time at which the query will be triggered to process input data (measured in seconds) (format: `"1 second"`)
 
@@ -35,7 +35,7 @@ optional arguments:
 
 ## Required JAR files
 
-It uses the [PubSubLite Spark SQL Streaming](https://central.sonatype.com/artifact/com.google.cloud/pubsublite-spark-sql-streaming/1.0.0) for reading data from Pub/Sub lite to be available in the Dataproc cluster.
+It uses the [Pub/Sub Lite Spark SQL Streaming](https://central.sonatype.com/artifact/com.google.cloud/pubsublite-spark-sql-streaming/1.0.0) for reading data from Pub/Sub lite to be available in the Dataproc cluster.
 
 ## Example submission
 
