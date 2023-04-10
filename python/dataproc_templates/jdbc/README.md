@@ -106,6 +106,7 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 * `jdbctojdbc.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbctojdbc.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
 * `jdbctojdbc.input.fetchsize` (Optional): Determines how many rows to fetch per round trip
+* `jdbctojdbc.input.sessioninitstatement` (Optional): Custom SQL statement to execute in each reader database session
 * `jdbctojdbc.output.create_table.option` (Optional): This option allows setting of database-specific table and partition options when creating a output table
 * `jdbctojdbc.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `jdbctojdbc.output.batch.size` (Optional): JDBC output batch size. Default set to 1000
@@ -130,6 +131,7 @@ optional arguments:
     --jdbctojdbc.input.upperbound JDBCTOJDBC.INPUT.UPPERBOUND \
     --jdbctojdbc.numpartitions JDBCTOJDBC.NUMPARTITIONS \
     --jdbctojdbc.input.fetchsize JDBCTOJDBC.INPUT.FETCHSIZE \
+    --jdbctojdbc.input.sessioninitstatement JDBCTOJDBC.INPUT.SESSIONINITSTATEMENT \
     --jdbctojdbc.output.create_table.option JDBCTOJDBC.OUTPUT.CREATE_TABLE.OPTION \
     --jdbctojdbc.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctojdbc.output.batch.size JDBCTOJDBC.OUTPUT.BATCH.SIZE \
@@ -165,6 +167,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctojdbc.input.upperbound=<optional-partition-end-value>  \
 --jdbctojdbc.numpartitions=<optional-partition-number> \
 --jdbctojdbc.input.fetchsize=<optional-fetch-size> \
+--jdbctojdbc.input.sessioninitstatement=<optional-SQL-statement> \
 --jdbctojdbc.output.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
 --jdbctojdbc.output.driver=<jdbc-driver-class-name> \
 --jdbctojdbc.output.table=<output-table-name> \
@@ -289,6 +292,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.input.upperbound="20" \
 --jdbctojdbc.numpartitions="4" \
 --jdbctojdbc.input.fetchsize="200" \
+--jdbctojdbc.input.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOJDBC'); END;" \
 --jdbctojdbc.output.url="jdbc:postgresql://1.1.1.1:5432/postgres?user=postgres&password=password123&reWriteBatchedInserts=True" \
 --jdbctojdbc.output.driver="org.postgresql.Driver" \
 --jdbctojdbc.output.table="employees_out" \
@@ -296,7 +300,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.output.batch.size="1000"
 ```
 
-There are two optional properties as well with "Hive to JDBC" Template. Please find below the details :-
+There are two optional properties as well with "JDBC to JDBC" Template. Please find below the details :-
 
 ```
 --templateProperty jdbctojdbc.temp.view.name='temporary_view_name'
@@ -311,10 +315,10 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 Template for reading data from JDBC table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
 
 ## Arguments
-
 * `jdbctogcs.input.url`: JDBC input URL
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
+* `jdbctogcs.input.sql.query`: JDBC input SQL query
 * `jdbctogcs.output.location`: GCS location for output files (format: `gs://BUCKET/...`)
 * `jdbctogcs.output.format`: Output file format (one of: avro,parquet,csv,json)
 * `jdbctogcs.input.partitioncolumn` (Optional): JDBC input table partition column name
@@ -322,32 +326,136 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 * `jdbctogcs.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbctogcs.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
 * `jdbctogcs.input.fetchsize` (Optional): Determines how many rows to fetch per round trip
+* `jdbctogcs.input.sessioninitstatement` (Optional): Custom SQL statement to execute in each reader database session
 * `jdbctogcs.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 * `jdbctogcs.output.partitioncolumn` (Optional): Output partition column name
+#### Optional Arguments
+* `jdbctogcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
+* `jdbctogcs.output.compression`: None
+* `jdbctogcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type
+* `jdbctogcs.output.emptyvalue`: Sets the string representation of an empty value
+* `jdbctogcs.output.encoding`: Decodes the CSV files by the given encoding type
+* `jdbctogcs.output.escape`: Sets a single character used for escaping quotes inside an already quoted value
+* `jdbctogcs.output.escapequotes`: A flag indicating whether values containing quotes should always be enclosed in quotes. Default is to escape all values containing a quote character
+* `jdbctogcs.output.header`: Uses the first line of CSV file as names of columns. Defaults to True
+* `jdbctogcs.output.ignoreleadingwhitespace`: A flag indicating whether or not leading whitespaces from values being read/written should be skipped
+* `jdbctogcs.output.ignoretrailingwhitespace`: A flag indicating whether or not trailing whitespaces from values being read/written should be skipped
+* `jdbctogcs.output.linesep`: Defines the line separator that should be used for parsing. Defaults to \r, \r\n and \n for reading and \n for writing
+* `jdbctogcs.output.nullvalue`: Sets the string representation of a null value
+* `jdbctogcs.output.quote`: Sets a single character used for escaping quoted values where the separator can be part of the value. For reading, if you would like to turn off quotations, you need to set not null but an empty string
+* `jdbctogcs.output.quoteall`: None
+* `jdbctogcs.output.sep`: Sets a separator for each field and value. This separator can be one or more characters
+* `jdbctogcs.output.timestampformat`: Sets the string that indicates a timestamp with timezone format
+* `jdbctogcs.output.timestampntzformat`: Sets the string that indicates a timestamp without timezone format
 
 ## Usage
 
 ```
 $ python main.py --template JDBCTOGCS --help
 
-usage: main.py --template JDBCTOGCS \
-    --jdbctogcs.input.url JDBCTOGCS.INPUT.URL \
-    --jdbctogcs.input.driver JDBCTOGCS.INPUT.DRIVER \
-    --jdbctogcs.input.table JDBCTOGCS.INPUT.TABLE \
-    --jdbctogcs.output.location JDBCTOGCS.OUTPUT.LOCATION \
-    --jdbctogcs.output.format {avro,parquet,csv,json} \
+usage: main.py [-h]
+               --jdbctogcs.input.url JDBCTOGCS.INPUT.URL
+               --jdbctogcs.input.driver JDBCTOGCS.INPUT.DRIVER
+               [--jdbctogcs.input.table JDBCTOGCS.INPUT.TABLE]
+               [--jdbctogcs.input.sql.query JDBCTOGCS.INPUT.SQL.QUERY]
+               [--jdbctogcs.input.partitioncolumn JDBCTOGCS.INPUT.PARTITIONCOLUMN]
+               [--jdbctogcs.input.lowerbound JDBCTOGCS.INPUT.LOWERBOUND]
+               [--jdbctogcs.input.upperbound JDBCTOGCS.INPUT.UPPERBOUND]
+               [--jdbctogcs.numpartitions JDBCTOGCS.NUMPARTITIONS]
+               [--jdbctogcs.input.fetchsize JDBCTOGCS.INPUT.FETCHSIZE]
+               [--jdbctogcs.input.sessioninitstatement JDBCTOGCS.INPUT.SESSIONINITSTATEMENT]
+               --jdbctogcs.output.location JDBCTOGCS.OUTPUT.LOCATION --jdbctogcs.output.format {avro,parquet,csv,json}
+               [--jdbctogcs.output.mode {overwrite,append,ignore,errorifexists}]
+               [--jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN]
+               [--jdbctogcs.temp.view.name JDBCTOGCS.TEMP.VIEW.NAME]
+               [--jdbctogcs.temp.sql.query JDBCTOGCS.TEMP.SQL.QUERY]
+               [--jdbctogcs.output.chartoescapequoteescaping JDBCTOGCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING]
+               [--jdbctogcs.output.compression JDBCTOGCS.OUTPUT.COMPRESSION]
+               [--jdbctogcs.output.dateformat JDBCTOGCS.OUTPUT.DATEFORMAT]
+               [--jdbctogcs.output.emptyvalue JDBCTOGCS.OUTPUT.EMPTYVALUE]
+               [--jdbctogcs.output.encoding JDBCTOGCS.OUTPUT.ENCODING]
+               [--jdbctogcs.output.escape JDBCTOGCS.OUTPUT.ESCAPE]
+               [--jdbctogcs.output.escapequotes JDBCTOGCS.OUTPUT.ESCAPEQUOTES]
+               [--jdbctogcs.output.header JDBCTOGCS.OUTPUT.HEADER]
+               [--jdbctogcs.output.ignoreleadingwhitespace JDBCTOGCS.OUTPUT.IGNORELEADINGWHITESPACE]
+               [--jdbctogcs.output.ignoretrailingwhitespace JDBCTOGCS.OUTPUT.IGNORETRAILINGWHITESPACE]
+               [--jdbctogcs.output.linesep JDBCTOGCS.OUTPUT.LINESEP]
+               [--jdbctogcs.output.nullvalue JDBCTOGCS.OUTPUT.NULLVALUE]
+               [--jdbctogcs.output.quote JDBCTOGCS.OUTPUT.QUOTE]
+               [--jdbctogcs.output.quoteall JDBCTOGCS.OUTPUT.QUOTEALL]
+               [--jdbctogcs.output.sep JDBCTOGCS.OUTPUT.SEP]
+               [--jdbctogcs.output.timestampformat JDBCTOGCS.OUTPUT.TIMESTAMPFORMAT]
+               [--jdbctogcs.output.timestampntzformat JDBCTOGCS.OUTPUT.TIMESTAMPNTZFORMAT]
 
-optional arguments:
-    -h, --help            show this help message and exit
-    --jdbctogcs.input.partitioncolumn JDBCTOGCS.INPUT.PARTITIONCOLUMN \
-    --jdbctogcs.input.lowerbound JDBCTOGCS.INPUT.LOWERBOUND \
-    --jdbctogcs.input.upperbound JDBCTOGCS.INPUT.UPPERBOUND \
-    --jdbctogcs.numpartitions JDBCTOGCS.NUMPARTITIONS \
-    --jdbctogcs.input.fetchsize JDBCTOJDBC.INPUT.FETCHSIZE \
-    --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists} \
-    --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN \
+options:
+  -h, --help            show this help message and exit
+  --jdbctogcs.input.url JDBCTOGCS.INPUT.URL
+                        JDBC input URL
+  --jdbctogcs.input.driver JDBCTOGCS.INPUT.DRIVER
+                        JDBC input driver name
+  --jdbctogcs.input.table JDBCTOGCS.INPUT.TABLE
+                        JDBC input table name
+  --jdbctogcs.input.sql.query JDBCTOGCS.INPUT.SQL.QUERY
+                        JDBC input SQL query
+  --jdbctogcs.input.partitioncolumn JDBCTOGCS.INPUT.PARTITIONCOLUMN
+                        JDBC input table partition column name
+  --jdbctogcs.input.lowerbound JDBCTOGCS.INPUT.LOWERBOUND
+                        JDBC input table partition column lower bound which is used to decide the partition stride
+  --jdbctogcs.input.upperbound JDBCTOGCS.INPUT.UPPERBOUND
+                        JDBC input table partition column upper bound which is used to decide the partition stride
+  --jdbctogcs.numpartitions JDBCTOGCS.NUMPARTITIONS
+                        The maximum number of partitions that can be used for parallelism in table reading and writing. Default set to 10
+  --jdbctogcs.input.fetchsize JDBCTOGCS.INPUT.FETCHSIZE
+                        Determines how many rows to fetch per round trip
+  --jdbctogcs.input.sessioninitstatement JDBCTOGCS.INPUT.SESSIONINITSTATEMENT
+                        Custom SQL statement to execute in each reader database session
+  --jdbctogcs.output.location JDBCTOGCS.OUTPUT.LOCATION
+                        Cloud Storage location for output files
+  --jdbctogcs.output.format {avro,parquet,csv,json}
+                        Output file format (one of: avro,parquet,csv,json)
+  --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists}
+                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+  --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN
+                        Cloud Storage partition column name
+  --jdbctogcs.temp.view.name JDBCTOGCS.TEMP.VIEW.NAME
+                        Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query
+  --jdbctogcs.temp.sql.query JDBCTOGCS.TEMP.SQL.QUERY
+                        SQL query for data transformation. This must use the temp view name as the table to query from.
+  --jdbctogcs.output.chartoescapequoteescaping JDBCTOGCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING
+                        Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
+                        different, \0 otherwise
+  --jdbctogcs.output.compression JDBCTOGCS.OUTPUT.COMPRESSION
+  --jdbctogcs.output.dateformat JDBCTOGCS.OUTPUT.DATEFORMAT
+                        Sets the string that indicates a date format. This applies to date type
+  --jdbctogcs.output.emptyvalue JDBCTOGCS.OUTPUT.EMPTYVALUE
+                        Sets the string representation of an empty value
+  --jdbctogcs.output.encoding JDBCTOGCS.OUTPUT.ENCODING
+                        Decodes the CSV files by the given encoding type
+  --jdbctogcs.output.escape JDBCTOGCS.OUTPUT.ESCAPE
+                        Sets a single character used for escaping quotes inside an already quoted value
+  --jdbctogcs.output.escapequotes JDBCTOGCS.OUTPUT.ESCAPEQUOTES
+                        A flag indicating whether values containing quotes should always be enclosed in quotes. Default is to escape all values containing a quote character
+  --jdbctogcs.output.header JDBCTOGCS.OUTPUT.HEADER
+                        Uses the first line of CSV file as names of columns. Defaults to True
+  --jdbctogcs.output.ignoreleadingwhitespace JDBCTOGCS.OUTPUT.IGNORELEADINGWHITESPACE
+                        A flag indicating whether or not leading whitespaces from values being read/written should be skipped
+  --jdbctogcs.output.ignoretrailingwhitespace JDBCTOGCS.OUTPUT.IGNORETRAILINGWHITESPACE
+                        A flag indicating whether or not trailing whitespaces from values being read/written should be skipped
+  --jdbctogcs.output.linesep JDBCTOGCS.OUTPUT.LINESEP
+                        Defines the line separator that should be used for parsing. Defaults to \r, \r\n and \n for reading and \n for writing
+  --jdbctogcs.output.nullvalue JDBCTOGCS.OUTPUT.NULLVALUE
+                        Sets the string representation of a null value
+  --jdbctogcs.output.quote JDBCTOGCS.OUTPUT.QUOTE
+                        Sets a single character used for escaping quoted values where the separator can be part of the value. For reading, if you would like to turn off quotations, you
+                        need to set not null but an empty string
+  --jdbctogcs.output.quoteall JDBCTOGCS.OUTPUT.QUOTEALL
+  --jdbctogcs.output.sep JDBCTOGCS.OUTPUT.SEP
+                        Sets a separator for each field and value. This separator can be one or more characters
+  --jdbctogcs.output.timestampformat JDBCTOGCS.OUTPUT.TIMESTAMPFORMAT
+                        Sets the string that indicates a timestamp with timezone format
+  --jdbctogcs.output.timestampntzformat JDBCTOGCS.OUTPUT.TIMESTAMPNTZFORMAT
+                        Sets the string that indicates a timestamp without timezone format
 ```
-
 ## General execution:
 
 ```
@@ -367,11 +475,18 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctogcs.input.upperbound=<optional-partition-end-value>  \
 --jdbctogcs.numpartitions=<optional-partition-number> \
 --jdbctogcs.input.fetchsize=<optional-fetch-size> \
+--jdbctogcs.input.sessioninitstatement=<optional-SQL-statement> \
 --jdbctogcs.output.location=<gcs-output-location> \
 --jdbctogcs.output.mode=<optional-write-mode> \
 --jdbctogcs.output.format=<output-write-format> \
 --jdbctogcs.output.partitioncolumn=<optional-output-partition-column-name>
 ```
+
+Instead of input table name, an input SQL query can also be passed. Example,
+```
+--jdbctogcs.input.sql.query="select * from table"
+```
+Note: While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.input.sql.query```. Passing both the properties would result in an error.
 
 ## Example execution:
 
@@ -445,6 +560,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.input.upperbound="20" \
 --jdbctogcs.numpartitions="4" \
 --jdbctogcs.input.fetchsize="200" \
+--jdbctogcs.input.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOGCS'); END;" \
 --jdbctogcs.output.location="gs://output_bucket/output/" \
 --jdbctogcs.output.mode="overwrite" \
 --jdbctogcs.output.format="csv" \
@@ -455,12 +571,10 @@ There are two optional properties as well with "JDBC to GCS" Template. Please fi
 
 ```
 --templateProperty jdbctogcs.temp.view.name='temporary_view_name'
---templateProperty jdbctogcs.sql.query='select * from global_temp.temporary_view_name'
+--templateProperty jdbctogcs.temp.sql.query='select * from global_temp.temporary_view_name'
 ```
 These properties are responsible for applying some spark sql transformations before loading data into GCS.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
-
-While passing the properties for execution, either provide ```jdbctogcs.input.table``` or ```jdbctogcs.sql.query```. Passing both the properties would result in an error.
 
 # 3. JDBC To BigQuery
 
@@ -480,6 +594,7 @@ This template requires the JBDC jar files mentioned, and also the [Spark BigQuer
 * `jdbc.bigquery.input.upperbound` (Optional): JDBC input table partition column upper bound which is used to decide the partition stride
 * `jdbc.bigquery.numpartitions` (Optional): The maximum number of partitions that can be used for parallelism in table reading and writing. Same value will be used for both input and output jdbc connection. Default set to 10
 * `jdbc.bigquery.input.fetchsize` (Optional): Determines how many rows to fetch per round trip
+* `jdbc.bigquery.input.sessioninitstatement` (Optional): Custom SQL statement to execute in each reader database session
 * `jdbc.bigquery.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 
 ## Usage
@@ -502,6 +617,7 @@ usage: main.py [-h] --jdbc.bigquery.output.dataset
                [--jdbc.bigquery.input.upperbound JDBC.BIGQUERY.INPUT.UPPERBOUND]
                [--jdbc.bigquery.numpartitions JDBC.BIGQUERY.NUMPARTITIONS]
                [--jdbc.bigquery.input.fetchsize JDBC.BIGQUERY.INPUT.FETCHSIZE]
+               [--jdbc.bigquery.input.sessioninitstatement JDBC.BIGQUERY.INPUT.SESSIONINITSTATEMENT]
                [--jdbc.bigquery.output.mode {overwrite,append,ignore,errorifexists}]
 
 optional arguments:
@@ -534,6 +650,8 @@ optional arguments:
                         writing. Default set to 10
   --jdbc.bigquery.input.fetchsize JDBC.BIGQUERY.INPUT.FETCHSIZE
                         Determines how many rows to fetch per round trip
+  --jdbc.bigquery.input.sessioninitstatement JDBC.BIGQUERY.INPUT.SESSIONINITSTATEMENT
+                        Custom SQL statement to execute in each reader database session
   --jdbc.bigquery.output.mode {overwrite,append,ignore,errorifexists}
                         Output write mode (one of:
                         append,overwrite,ignore,errorifexists)
@@ -637,6 +755,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbc.bigquery.input.upperbound="20" \
 --jdbc.bigquery.input.numpartitions="4" \
 --jdbc.bigquery.input.fetchsize="200" \
+--jdbc.bigquery.input.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Dataproc Templates','JDBCTOBIGQUERY'); END;" \
 --jdbc.bigquery.output.mode="overwrite" \
 --jdbc.bigquery.output.dataset="bq-dataset" \
 --jdbc.bigquery.output.table="bq-table" \

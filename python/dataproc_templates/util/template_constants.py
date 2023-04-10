@@ -23,10 +23,9 @@ COMPRESSION_GZIP = "gzip"
 COMPRESSION_DEFLATE = "deflate"
 COMPRESSION_LZ4 = "lz4"
 COMPRESSION_NONE = "None"
-HEADER = "header"
-INFER_SCHEMA = "inferSchema"
 FORMAT_JSON = "json"
 FORMAT_CSV = "csv"
+FORMAT_DELTA = "delta"
 FORMAT_TXT = "txt"
 FORMAT_AVRO = "avro"
 FORMAT_PRQT = "parquet"
@@ -36,6 +35,7 @@ FORMAT_JDBC = "jdbc"
 FORMAT_REDSHIFT = "io.github.spark_redshift_community.spark.redshift"
 JDBC_URL = "url"
 JDBC_TABLE = "dbtable"
+JDBC_QUERY = "query"
 JDBC_DRIVER = "driver"
 JDBC_FETCHSIZE = "fetchsize"
 JDBC_BATCH_SIZE = "batchsize"
@@ -43,7 +43,39 @@ JDBC_PARTITIONCOLUMN = "partitionColumn"
 JDBC_LOWERBOUND = "lowerBound"
 JDBC_UPPERBOUND = "upperBound"
 JDBC_NUMPARTITIONS = "numPartitions"
+JDBC_SESSIONINITSTATEMENT = "sessionInitStatement"
 JDBC_CREATE_TABLE_OPTIONS = "createTableOptions"
+CSV_CHARTOESCAPEQUOTEESCAPING = "charToEscapeQuoteEscaping"
+CSV_COLUMNNAMEOFCORRUPTRECORD = "columnNameOfCorruptRecord"
+CSV_COMMENT = "comment"
+CSV_COMPRESSION = "compression"
+CSV_DATEFORMAT = "dateFormat"
+CSV_EMPTYVALUE = "emptyValue"
+CSV_ENCODING = "encoding"
+CSV_ENFORCESCHEMA = "enforceSchema"
+CSV_ESCAPE = "escape"
+CSV_ESCAPEQUOTES = "escapeQuotes"
+CSV_HEADER = "header"
+CSV_IGNORELEADINGWHITESPACE = "ignoreLeadingWhiteSpace"
+CSV_IGNORETRAILINGWHITESPACE = "ignoreTrailingWhiteSpace"
+CSV_INFER_SCHEMA = "inferSchema"
+CSV_LINESEP = "lineSep"
+CSV_LOCALE = "locale"
+CSV_MAXCHARSPERCOLUMN = "maxCharsPerColumn"
+CSV_MAXCOLUMNS = "maxColumns"
+CSV_MODE = "mode"
+CSV_MULTILINE = "multiLine"
+CSV_NANVALUE = "nanValue"
+CSV_NULLVALUE = "nullValue"
+CSV_NEGATIVEINF = "negativeInf"
+CSV_POSITIVEINF = "positiveInf"
+CSV_QUOTE = "quote"
+CSV_QUOTEALL = "quoteAll"
+CSV_SAMPLINGRATIO = "samplingRatio"
+CSV_SEP = "sep"
+CSV_TIMESTAMPFORMAT = "timestampFormat"
+CSV_TIMESTAMPNTZFORMAT = "timestampNTZFormat"
+CSV_UNESCAPEDQUOTEHANDLING = "unescapedQuoteHandling"
 FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
 TEMP_GCS_BUCKET="temporaryGcsBucket"
@@ -59,9 +91,167 @@ REDSHIFT_TEMPDIR = "tempdir"
 REDSHIFT_IAMROLE = "aws_iam_role"
 AWS_S3ACCESSKEY = "fs.s3a.access.key"
 AWS_S3SECRETKEY = "fs.s3a.secret.key"
+AWS_S3ENDPOINT = "fs.s3a.endpoint"
 SQL_EXTENSION= "spark.sql.extensions"
 CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
 CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
+FORMAT_PUBSUBLITE = "pubsublite"
+
+OPTION_DEFAULT = "default"
+OPTION_HELP = "help"
+OPTION_READ_HELP = "read_help"
+OPTION_WRITE_HELP = "write_help"
+
+# At the moment this is just a map of CSV related options but it will be expanded as required for other uses.
+SPARK_OPTIONS = {
+    CSV_CHARTOESCAPEQUOTEESCAPING:
+        {OPTION_HELP: "Sets a single character used for escaping the escape for the quote character. "
+                      "The default value is escape character when escape and quote characters are "
+                      "different, \\0 otherwise"},
+    CSV_COLUMNNAMEOFCORRUPTRECORD:
+        {OPTION_READ_HELP: "Allows renaming the new field having malformed "
+                           "string created by PERMISSIVE mode"},
+    CSV_COMMENT:
+        {OPTION_READ_HELP: "Sets a single character used for skipping lines beginning with this "
+                           "character. By default it is disabled"},
+    CSV_COMPRESSION:
+        {OPTION_WRITE_HELP: "Compression codec to use when saving to file. This can be one of the known "
+                            "case-insensitive short names (none, bzip2, gzip, lz4, snappy and deflate)"},
+    CSV_DATEFORMAT:
+        {OPTION_HELP: "Sets the string that indicates a date format. This applies to date type"},
+    CSV_EMPTYVALUE:
+        {OPTION_HELP: "Sets the string representation of an empty value"},
+    CSV_ENCODING:
+        {OPTION_READ_HELP: "Decodes the CSV files by the given encoding type",
+         OPTION_WRITE_HELP: "Specifies encoding (charset) of saved CSV files"},
+    CSV_ENFORCESCHEMA:
+        {OPTION_READ_HELP: "If it is set to true, the specified or inferred schema will be "
+                           "forcibly applied to datasource files, and headers in CSV files "
+                           "will be ignored. If the option is set to false, the schema will "
+                           "be validated against all headers in CSV files in the case when "
+                           "the header option is set to true. Defaults to True"},
+    CSV_ESCAPE:
+        {OPTION_HELP: "Sets a single character used for escaping quotes inside an already quoted value"},
+    CSV_ESCAPEQUOTES:
+        {OPTION_HELP: "A flag indicating whether values containing quotes should always be enclosed "
+                      "in quotes. Default is to escape all values containing a quote character"},
+    CSV_HEADER:
+        {OPTION_DEFAULT: "true",
+         OPTION_READ_HELP: "Uses the first line of CSV file as names of columns. Defaults to True",
+         OPTION_WRITE_HELP: "Writes the names of columns as the first line. Defaults to True"},
+    CSV_IGNORELEADINGWHITESPACE:
+        {OPTION_HELP: "A flag indicating whether or not leading whitespaces from "
+                      "values being read/written should be skipped"},
+    CSV_IGNORETRAILINGWHITESPACE:
+        {OPTION_HELP: "A flag indicating whether or not trailing whitespaces from "
+                      "values being read/written should be skipped"},
+    CSV_INFER_SCHEMA:
+        {OPTION_DEFAULT: "true",
+         OPTION_READ_HELP: "Infers the input schema automatically from data. It requires one "
+                           "extra pass over the data. Defaults to True"},
+    CSV_LINESEP:
+        {OPTION_HELP: "Defines the line separator that should be used for parsing. "
+                      "Defaults to \\r, \\r\\n and \\n for reading and \\n for writing"},
+    CSV_LOCALE:
+        {OPTION_READ_HELP: "Sets a locale as language tag in IETF BCP 47 format"},
+    CSV_MAXCHARSPERCOLUMN:
+        {OPTION_READ_HELP: "Defines the maximum number of characters allowed for any "
+                           "given value being read. By default, it is -1 meaning unlimited length"},
+    CSV_MAXCOLUMNS:
+        {OPTION_READ_HELP: "Defines a hard limit of how many columns a record can have"},
+    CSV_MODE:
+        {OPTION_READ_HELP: "Allows a mode for dealing with corrupt records during parsing. It supports "
+                           "the following case-insensitive modes: PERMISSIVE, DROPMALFORMED, FAILFAST"},
+    CSV_MULTILINE:
+        {OPTION_READ_HELP: "Parse one record, which may span multiple lines, per file"},
+    CSV_NANVALUE:
+        {OPTION_READ_HELP: "Sets the string representation of a non-number value"},
+    CSV_NULLVALUE:
+        {OPTION_HELP: "Sets the string representation of a null value"},
+    CSV_NEGATIVEINF:
+        {OPTION_READ_HELP: "Sets the string representation of a negative infinity value"},
+    CSV_POSITIVEINF:
+        {OPTION_READ_HELP: "Sets the string representation of a positive infinity value"},
+    CSV_QUOTE:
+        {OPTION_READ_HELP: "Sets a single character used for escaping quoted values where the separator can "
+                           "be part of the value. For reading, if you would like to turn off quotations, "
+                           "you need to set not null but an empty string",
+         OPTION_WRITE_HELP: "Sets a single character used for escaping quoted values where the separator can "
+                            "be part of the value. For writing, if an empty string is set, it uses u0000 "
+                            "(null character)"},
+    CSV_QUOTEALL:
+        {OPTION_WRITE_HELP: "A flag indicating whether all values should always be enclosed in quotes. "
+                            "Default is to only escape values containing a quote character"},
+    CSV_SAMPLINGRATIO:
+        {OPTION_READ_HELP: "Defines fraction of rows used for schema inferring"},
+    CSV_SEP:
+        {OPTION_HELP: "Sets a separator for each field and value. This separator can be one or more characters"},
+    CSV_TIMESTAMPFORMAT:
+        {OPTION_HELP: "Sets the string that indicates a timestamp with timezone format"},
+    CSV_TIMESTAMPNTZFORMAT:
+        {OPTION_HELP: "Sets the string that indicates a timestamp without timezone format"},
+    CSV_UNESCAPEDQUOTEHANDLING:
+        {OPTION_READ_HELP: "Defines how the CsvParser will handle values with unescaped quotes."
+                           "Valid values are: STOP_AT_CLOSING_QUOTE, BACK_TO_DELIMITER, STOP_AT_DELIMITER, SKIP_VALUE, RAISE_ERROR"},
+}
+
+# Helper functions for applying SPARK_OPTIONS to templates
+def get_csv_input_spark_options(prefix):
+    input_options = [
+        CSV_CHARTOESCAPEQUOTEESCAPING,
+        CSV_COLUMNNAMEOFCORRUPTRECORD,
+        CSV_COMMENT,
+        CSV_DATEFORMAT,
+        CSV_EMPTYVALUE,
+        CSV_ENCODING,
+        CSV_ENFORCESCHEMA,
+        CSV_ESCAPE,
+        CSV_HEADER,
+        CSV_IGNORELEADINGWHITESPACE,
+        CSV_IGNORETRAILINGWHITESPACE,
+        CSV_INFER_SCHEMA,
+        CSV_LINESEP,
+        CSV_LOCALE,
+        CSV_MAXCHARSPERCOLUMN,
+        CSV_MAXCOLUMNS,
+        CSV_MODE,
+        CSV_MULTILINE,
+        CSV_NANVALUE,
+        CSV_NULLVALUE,
+        CSV_NEGATIVEINF,
+        CSV_POSITIVEINF,
+        CSV_QUOTE,
+        CSV_SAMPLINGRATIO,
+        CSV_SEP,
+        CSV_TIMESTAMPFORMAT,
+        CSV_TIMESTAMPNTZFORMAT,
+        CSV_UNESCAPEDQUOTEHANDLING,
+    ]
+    spark_options = {(prefix + _).lower(): _ for _ in input_options}
+    return spark_options
+
+def get_csv_output_spark_options(prefix):
+    output_options = {
+        CSV_CHARTOESCAPEQUOTEESCAPING,
+        CSV_COMPRESSION,
+        CSV_DATEFORMAT,
+        CSV_EMPTYVALUE,
+        CSV_ENCODING,
+        CSV_ESCAPE,
+        CSV_ESCAPEQUOTES,
+        CSV_HEADER,
+        CSV_IGNORELEADINGWHITESPACE,
+        CSV_IGNORETRAILINGWHITESPACE,
+        CSV_LINESEP,
+        CSV_NULLVALUE,
+        CSV_QUOTE,
+        CSV_QUOTEALL,
+        CSV_SEP,
+        CSV_TIMESTAMPFORMAT,
+        CSV_TIMESTAMPNTZFORMAT,
+    }
+    spark_options = {(prefix + _).lower(): _ for _ in output_options}
+    return spark_options
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -164,7 +354,6 @@ TEXT_BQ_OUTPUT_TABLE = "text.bigquery.output.table"
 TEXT_BQ_OUTPUT_MODE = "text.bigquery.output.mode"
 TEXT_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 TEXT_BQ_LD_TEMP_BUCKET_NAME = "text.bigquery.temp.bucket.name"
-TEXT_BQ_INPUT_INFERSCHEMA = "text.bigquery.input.inferschema"
 
 # Hbase to GCS
 HBASE_GCS_OUTPUT_LOCATION = "hbase.gcs.output.location"
@@ -180,6 +369,7 @@ JDBCTOJDBC_INPUT_FETCHSIZE = "jdbctojdbc.input.fetchsize"
 JDBCTOJDBC_INPUT_PARTITIONCOLUMN = "jdbctojdbc.input.partitioncolumn"
 JDBCTOJDBC_INPUT_LOWERBOUND = "jdbctojdbc.input.lowerbound"
 JDBCTOJDBC_INPUT_UPPERBOUND = "jdbctojdbc.input.upperbound"
+JDBCTOJDBC_SESSIONINITSTATEMENT = "jdbctojdbc.input.sessioninitstatement"
 JDBCTOJDBC_NUMPARTITIONS = "jdbctojdbc.numpartitions"
 JDBCTOJDBC_OUTPUT_URL = "jdbctojdbc.output.url"
 JDBCTOJDBC_OUTPUT_DRIVER = "jdbctojdbc.output.driver"
@@ -194,17 +384,19 @@ JDBCTOJDBC_SQL_QUERY = "jdbctojdbc.sql.query"
 JDBCTOGCS_INPUT_URL = "jdbctogcs.input.url"
 JDBCTOGCS_INPUT_DRIVER = "jdbctogcs.input.driver"
 JDBCTOGCS_INPUT_TABLE = "jdbctogcs.input.table"
+JDBCTOGCS_INPUT_SQL_QUERY = "jdbctogcs.input.sql.query"
 JDBCTOGCS_INPUT_FETCHSIZE = "jdbctogcs.input.fetchsize"
 JDBCTOGCS_INPUT_PARTITIONCOLUMN = "jdbctogcs.input.partitioncolumn"
 JDBCTOGCS_INPUT_LOWERBOUND = "jdbctogcs.input.lowerbound"
 JDBCTOGCS_INPUT_UPPERBOUND = "jdbctogcs.input.upperbound"
+JDBCTOGCS_SESSIONINITSTATEMENT = "jdbctogcs.input.sessioninitstatement"
 JDBCTOGCS_NUMPARTITIONS = "jdbctogcs.numpartitions"
 JDBCTOGCS_OUTPUT_LOCATION = "jdbctogcs.output.location"
 JDBCTOGCS_OUTPUT_FORMAT = "jdbctogcs.output.format"
 JDBCTOGCS_OUTPUT_MODE = "jdbctogcs.output.mode"
 JDBCTOGCS_OUTPUT_PARTITIONCOLUMN = "jdbctogcs.output.partitioncolumn"
 JDBCTOGCS_TEMP_VIEW_NAME = "jdbctogcs.temp.view.name"
-JDBCTOGCS_SQL_QUERY = "jdbctogcs.sql.query"
+JDBCTOGCS_TEMP_SQL_QUERY = "jdbctogcs.temp.sql.query"
 
 # JDBC to BigQuery
 JDBC_BQ_INPUT_URL = "jdbc.bigquery.input.url"
@@ -214,6 +406,7 @@ JDBC_BQ_INPUT_FETCHSIZE = "jdbc.bigquery.input.fetchsize"
 JDBC_BQ_INPUT_PARTITIONCOLUMN = "jdbc.bigquery.input.partitioncolumn"
 JDBC_BQ_INPUT_LOWERBOUND = "jdbc.bigquery.input.lowerbound"
 JDBC_BQ_INPUT_UPPERBOUND = "jdbc.bigquery.input.upperbound"
+JDBC_BQ_SESSIONINITSTATEMENT = "jdbc.bigquery.input.sessioninitstatement"
 JDBC_BQ_NUMPARTITIONS = "jdbc.bigquery.numpartitions"
 JDBC_BQ_OUTPUT_MODE = "jdbc.bigquery.output.mode"
 JDBC_BQ_OUTPUT_DATASET = "jdbc.bigquery.output.dataset"
@@ -249,3 +442,75 @@ SNOWFLAKE_TO_GCS_OUTPUT_MODE = "snowflake.to.gcs.output.mode"
 SNOWFLAKE_TO_GCS_OUTPUT_FORMAT = "snowflake.to.gcs.output.format"
 SNOWFLAKE_TO_GCS_PARTITION_COLUMN = "snowflake.to.gcs.partition.column"
 
+# Cassandra To GCS
+CASSANDRA_TO_GCS_INPUT_KEYSPACE = "cassandratogcs.input.keyspace"
+CASSANDRA_TO_GCS_INPUT_TABLE = "cassandratogcs.input.table"
+CASSANDRA_TO_GCS_INPUT_HOST = "cassandratogcs.input.host"
+CASSANDRA_TO_GCS_OUTPUT_FORMAT = "cassandratogcs.output.format"
+CASSANDRA_TO_GCS_OUTPUT_PATH = "cassandratogcs.output.path"
+CASSANDRA_TO_GCS_OUTPUT_SAVEMODE = "cassandratogcs.output.savemode"
+CASSANDRA_TO_GCS_CATALOG = "cassandratogcs.input.catalog.name"
+CASSANDRA_TO_GCS_QUERY = "cassandratogcs.input.query"
+
+# Hive DDL Extractor Util
+HIVE_DDL_EXTRACTOR_INPUT_DATABASE = "hive.ddl.extractor.input.database"
+HIVE_DDL_EXTRACTOR_OUTPUT_GCS_PATH = "hive.ddl.extractor.output.path"
+HIVE_DDL_CONSIDER_SPARK_TABLES = "hive.ddl.consider.spark.tables"
+HIVE_DDL_TRANSLATION_DISPOSITION = "hive.ddl.translation.disposition"
+
+# AWS S3 To BigQuery
+S3_BQ_INPUT_LOCATION = "s3.bq.input.location"
+S3_BQ_INPUT_FORMAT = "s3.bq.input.format"
+S3_BQ_ACCESS_KEY = "s3.bq.access.key"
+S3_BQ_SECRET_KEY = "s3.bq.secret.key"
+S3_BQ_OUTPUT_DATASET_NAME = "s3.bq.output.dataset.name"
+S3_BQ_OUTPUT_TABLE_NAME = "s3.bq.output.table.name"
+S3_BQ_TEMP_BUCKET_NAME = "s3.bq.temp.bucket.name"
+S3_BQ_OUTPUT_MODE = "s3.bq.output.mode"
+S3_BQ_ENDPOINT_VALUE = "s3.amazonaws.com"
+
+
+#Kafka To Bq
+KAFKA_BQ_CHECKPOINT_LOCATION='kafka.to.bq.checkpoint.location'
+KAFKA_BOOTSTRAP_SERVERS='kafka.to.bq.bootstrap.servers'
+KAFKA_BQ_TOPIC='kafka.to.bq.topic'
+KAFKA_BQ_STARTING_OFFSET='kafka.to.bq.starting.offset'
+KAFKA_BQ_DATASET='kafka.to.bq.dataset'
+KAFKA_BQ_TABLE_NAME='kafka.to.bq.table'
+KAFKA_BQ_TEMP_BUCKET_NAME='kafka.to.bq.temp.bucket.name'
+KAFKA_BQ_TERMINATION_TIMEOUT='kafka.to.bq.termination.timeout'
+KAFKA_INPUT_FORMAT='kafka'
+KAFKA_BQ_OUTPUT_MODE='kafka.to.bq.output.mode'
+
+KAFKA_INPUT_FORMAT='kafka'
+
+#Kafka To GCS
+KAFKA_GCS_BOOTSTRAP_SERVERS='kafka.gcs.bootstrap.servers'
+KAFKA_GCS_OUTPUT_LOCATION='kafka.gcs.output.location.gcs.path'
+KAFKA_TOPIC='kafka.gcs.topic'
+KAFKA_GCS_OUTPUT_FORMAT='kafka.gcs.output.format'
+KAFKA_GCS_OUPUT_MODE='kafka.gcs.output.mode'
+KAFKA_GCS_TERMINATION_TIMEOUT='kafka.gcs.termination.timeout'
+KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
+KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
+
+#Pubsublite To GCS
+PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL = "pubsublite.to.gcs.input.subscription.url"
+PUBSUBLITE_TO_GCS_WRITE_MODE = "pubsublite.to.gcs.write.mode"
+PUBSUBLITE_TO_GCS_OUTPUT_LOCATION = "pubsublite.to.gcs.output.location"
+PUBSUBLITE_CHECKPOINT_LOCATION = "pubsublite.to.gcs.checkpoint.location"
+PUBSUBLITE_TO_GCS_OUTPUT_FORMAT = "pubsublite.to.gcs.output.format"
+PUBSUBLITE_TO_GCS_TIMEOUT = "pubsublite.to.gcs.timeout"
+PUBSUBLITE_TO_GCS_PROCESSING_TIME = "pubsublite.to.gcs.processing.time"
+
+# Azure Storage to BigQuery
+AZ_BLOB_BQ_INPUT_LOCATION = "azure.blob.bigquery.input.location"
+AZ_BLOB_BQ_INPUT_FORMAT = "azure.blob.bigquery.input.format"
+AZ_BLOB_BQ_OUTPUT_DATASET = "azure.blob.bigquery.output.dataset"
+AZ_BLOB_BQ_OUTPUT_TABLE = "azure.blob.bigquery.output.table"
+AZ_BLOB_BQ_OUTPUT_MODE = "azure.blob.bigquery.output.mode"
+AZ_BLOB_BQ_TEMP_BUCKET = "temporaryGcsBucket"
+AZ_BLOB_BQ_LD_TEMP_BUCKET_NAME = "azure.blob.bigquery.temp.bucket.name"
+AZ_BLOB_STORAGE_ACCOUNT = "azure.blob.storage.account"
+AZ_BLOB_CONTAINER_NAME = "azure.blob.container.name"
+AZ_BLOB_SAS_TOKEN = "azure.blob.sas.token"

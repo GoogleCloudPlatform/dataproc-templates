@@ -40,6 +40,7 @@ public class HiveToBigQuery implements BaseTemplate {
   private String bqAppendMode;
   private String tempTable;
   private String tempQuery;
+  private final String sparkLogLevel;
 
   public HiveToBigQuery() {
     bqLocation = getProperties().getProperty(HIVE_TO_BQ_BIGQUERY_LOCATION);
@@ -48,6 +49,7 @@ public class HiveToBigQuery implements BaseTemplate {
     bqAppendMode = getProperties().getProperty(HIVE_TO_BQ_APPEND_MODE);
     tempTable = getProperties().getProperty(HIVE_TO_BQ_TEMP_TABLE);
     tempQuery = getProperties().getProperty(HIVE_TO_BQ_TEMP_QUERY);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
   @Override
@@ -62,6 +64,9 @@ public class HiveToBigQuery implements BaseTemplate {
             .config("temporaryGcsBucket", temporaryGcsBucket)
             .enableHiveSupport()
             .getOrCreate();
+
+    // Set log level
+    spark.sparkContext().setLogLevel(sparkLogLevel);
 
     LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
 

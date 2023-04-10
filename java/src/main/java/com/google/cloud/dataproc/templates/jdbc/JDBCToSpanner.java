@@ -55,12 +55,11 @@ public class JDBCToSpanner implements BaseTemplate {
             .enableHiveSupport()
             .getOrCreate();
 
+    // Set log level
+    spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+
     /** Read Input data from JDBC table */
     validateInput();
-
-    if (StringUtils.isNotBlank(config.getJdbcFetchSize())) {
-      jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), config.getJdbcFetchSize());
-    }
 
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
@@ -110,6 +109,15 @@ public class JDBCToSpanner implements BaseTemplate {
       jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), config.getJdbcSQLUpperBound());
       jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), config.getJdbcSQLLowerBound());
       jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), config.getJdbcSQLNumPartitions());
+    }
+
+    if (StringUtils.isNotBlank(config.getJdbcFetchSize())) {
+      jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), config.getJdbcFetchSize());
+    }
+
+    if (StringUtils.isNotBlank(config.getJdbcSessionInitStatement())) {
+      jdbcProperties.put(
+          JDBCOptions.JDBC_SESSION_INIT_STATEMENT(), config.getJdbcSessionInitStatement());
     }
   }
 }
