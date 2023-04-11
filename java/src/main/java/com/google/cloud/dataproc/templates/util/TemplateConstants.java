@@ -236,6 +236,26 @@ public interface TemplateConstants {
   String GCS_JDBC_ORC_FORMAT = "orc";
   String GCS_JDBC_PRQT_FORMAT = "parquet";
 
+  /** MongoDb common properties */
+  String MONGO_FORMAT = "com.mongodb.spark.sql.DefaultSource";
+
+  String MONGO_URL = "spark.mongodb.output.uri";
+  String MONGO_INPUT_URI = "spark.mongodb.input.uri";
+  String MONGO_DATABASE = "database";
+  String MONGO_COLLECTION = "collection";
+  String MONGO_BATCH_SIZE = "maxBatchSize";
+  String MONGO_DEFAULT_BATCH_SIZE = "512";
+
+  /** GCS to Mongo properties */
+  String GCS_MONGO_INPUT_FORMAT = "gcs.mongodb.input.format";
+
+  String GCS_MONGO_INPUT_LOCATION = "gcs.mongodb.input.location";
+  String GCS_MONGO_URL = "gcs.mongodb.output.uri";
+  String GCS_MONGO_DATABASE = "gcs.mongodb.output.database";
+  String GCS_MONGO_COLLECTION = "gcs.mongodb.output.collection";
+  String GCS_MONGO_BATCH_SIZE = "gcs.mongodb.batch.size";
+  String GCS_MONGO_OUTPUT_MODE = "gcs.mongodb.output.mode";
+
   /** S3 to Bigquery properties */
   String S3_BQ_INPUT_LOCATION = "s3.bq.input.location";
 
@@ -348,6 +368,15 @@ public interface TemplateConstants {
   String KAFKA_PUBSUB_AWAIT_TERMINATION_TIMEOUT = "kafka.pubsub.await.termination.timeout";
 
   String SPARK_SAVE_MODE_OVERWRITE = "overwrite";
+  String SPARK_SAVE_MODE_APPEND = "append";
+  String SPARK_SAVE_MODE_IGNORE = "ignore";
+  String SPARK_SAVE_MODE_ERRORIFEXISTS = "errorifexists";
+  String SPARK_FILE_FORMAT_CSV = "csv";
+  String SPARK_CSV_HEADER = "header";
+  String SPARK_FILE_FORMAT_PARQUET = "parquet";
+  String SPARK_FILE_FORMAT_AVRO = "avro";
+  String SPARK_FILE_FORMAT_JSON = "json";
+  String SPARK_INFER_SCHEMA = "inferSchema";
   String BQ_TABLE_NAME_FORMAT = "%s.%s.%s";
 
   /** KafkaToBQ properties */
@@ -412,6 +441,27 @@ public interface TemplateConstants {
   String MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri";
   String MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database";
   String MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection";
+
+  /** JDBCToJDBC properties */
+  String JDBCTOJDBC_INPUT_URL = "jdbctojdbc.input.url";
+
+  String JDBCTOJDBC_INPUT_DRIVER = "jdbctojdbc.input.driver";
+  String JDBCTOJDBC_INPUT_TABLE = "jdbctojdbc.input.table";
+  String JDBCTOJDBC_INPUT_FETCHSIZE = "jdbctojdbc.input.fetchsize";
+  String JDBCTOJDBC_INPUT_PARTITIONCOLUMN = "jdbctojdbc.input.partitioncolumn";
+  String JDBCTOJDBC_INPUT_LOWERBOUND = "jdbctojdbc.input.lowerbound";
+  String JDBCTOJDBC_INPUT_UPPERBOUND = "jdbctojdbc.input.upperbound";
+  String JDBCTOJDBC_NUMPARTITIONS = "jdbctojdbc.numpartitions";
+  String JDBCTOJDBC_OUTPUT_URL = "jdbctojdbc.output.url";
+  String JDBCTOJDBC_OUTPUT_DRIVER = "jdbctojdbc.output.driver";
+  String JDBCTOJDBC_OUTPUT_TABLE = "jdbctojdbc.output.table";
+  String JDBCTOJDBC_OUTPUT_CREATE_TABLE_OPTION = "jdbctojdbc.output.create.table.option";
+  String JDBCTOJDBC_OUTPUT_MODE = "jdbctojdbc.output.mode";
+  String JDBCTOJDBC_OUTPUT_BATCH_SIZE = "jdbctojdbc.output.batch.size";
+  String JDBCTOJDBC_SESSION_INIT_STATEMENT = "jdbctojdbc.sessioninitstatement";
+  String JDBCTOJDBC_OUTPUT_PRIMARY_KEY = "jdbctojdbc.output.primary.key";
+  String JDBCTOJDBC_TEMP_VIEW_NAME = "jdbctojdbc.temp.view.name";
+  String JDBCTOJDBC_SQL_QUERY = "jdbctojdbc.sql.query";
 
   /** TextToBigquery properties */
   String TEXT_BIGQUERY_INPUT_LOCATION = "text.bigquery.input.location";

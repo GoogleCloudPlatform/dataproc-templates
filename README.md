@@ -23,6 +23,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more 
 * [GCSToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#1-gcs-to-bigquery) (blogpost [link](https://medium.com/google-cloud/load-data-from-gcs-to-bigtable-using-gcp-dataproc-serverless-5c43d773e615)) (Video [link](https://www.youtube.com/watch?v=JwO72i2nVPU))
 * [GCSToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#4-gcs-to-gcs) (blogpost [link](https://medium.com/@ankuljain/migrate-gcs-to-gcs-using-dataproc-serverless-3b7b0f6ad6b9))
 * [GCSToJDBC](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#3-gcs-to-jdbc) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-databases-via-jdbc-using-dataproc-serverless-7ed75eab93ba))
+* [GCSToMongo](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#6-gcs-to-mongo)
 * [GCSToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#2-gcs-to-spanner) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
 * [GeneralTemplate](/java/src/main/java/com/google/cloud/dataproc/templates/general)
 * [HBaseToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hbase#1-hbase-to-gcs)(blogpost [link](https://medium.com/google-cloud/using-dataproc-serverless-to-migrate-your-hbase-data-to-gcs-bf1ccf4ab945))
@@ -30,7 +31,8 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more 
 * [HiveToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hive#2-hive-to-gcs) (blogpost [link](https://medium.com/@nehamodgil_21070/processing-and-migrating-large-data-tables-from-hive-to-gcs-using-java-and-dataproc-serverless-b6dbbae61c5d))
 * [JDBCToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc#1-jdbc-to-bigquery) (blogpost [link](https://medium.com/@sjlva/java-fast-export-large-database-tables-using-gcp-serverless-dataproc-fe6ffffe28b5))
 * [JDBCToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc#2-jdbc-to-gcs) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
-* [JDBCToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc#3-jdbc-to-spanner)
+* [JDBCToJDBC](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc#3-jdbc-to-jdbc)
+* [JDBCToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/jdbc#4-jdbc-to-spanner)
 * [KafkaToBQ](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#1-kafka-to-bigquery) (blogpost [link](https://medium.com/google-cloud/export-data-from-apache-kafka-to-bigquery-using-dataproc-serverless-4a666535117c))
 * [KafkaToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md#2-kafka-to-gcs) (blogpost [link](https://medium.com/@pniralakeri/importing-data-from-kafka-to-gcs-using-dataproc-serverless-38e449d559f9))
 * [KafkaToPubSub](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md#3-kafka-to-pubsub)
@@ -42,7 +44,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more 
 * [S3ToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/s3#1-s3-to-bigquery) (blogpost [link](https://medium.com/google-cloud/export-data-from-aws-s3-to-bigquery-using-dataproc-serverless-6dc7a9952fc4))
 * [SnowflakeToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/snowflake#1-snowflake-to-gcs) (blogpost [link](https://medium.com/google-cloud/export-snowflake-query-results-to-gcs-using-dataproc-serverless-3d68f5a01ca9))
 * [SpannerToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-spanner-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/cloud-spanner-export-query-results-using-dataproc-serverless-6f2f65b583a4))
-* [TextToBigquery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#6-text-to-bigquery)
+* [TextToBigquery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#7-text-to-bigquery)
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 
 
@@ -80,7 +82,7 @@ Please refer to the [Dataproc Templates (Notebooks) README](/notebooks) for more
 * [MsSqlToBigQuery](/notebooks/mssql2bq#jupyter-notebook-solution-for-migrating-mssql-sql-server-to-bigquery-dwh-using-dataproc-templates)(blogpost [link](https://medium.com/google-cloud/mssql-to-bigquery-migrate-efficiently-using-vertex-ai-notebook-and-gcp-dataproc-serverless-98358943568a))
 * [MySQLToSpanner](/notebooks/mysql2spanner#jupyter-notebook-solution-for-migrating-mysql-database-to-cloud-spanner-using-dataproc-templates) (blogpost [link](https://medium.com/google-cloud/mysql-to-cloud-spanner-migrate-mysql-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-ad7d2ed8a317))
 * [SQLServerToPostgres](/notebooks/mssql2postgresql#jupyter-notebook-solution-for-migrating-mssql-sql-server-to-postgres-database-using-dataproc-templates)
-* [OracleToBigQuery](/notebooks/oracle2bq#jupyter-notebook-solution-for-migrating-oracle-database-to-bigquery-using-dataproc-templates)
+* [OracleToBigQuery](/notebooks/oracle2bq#jupyter-notebook-solution-for-migrating-oracle-database-to-bigquery-using-dataproc-templates)(blogpost [link](https://medium.com/@neerajshivhare/oracle-to-bigquery-migrate-oracle-to-bigquery-using-vertex-ai-notebooks-and-gcp-dataproc-9d22b73968c3))
 * [OracleToSpanner](/notebooks/oracle2spanner#jupyter-notebook-solution-for-migrating-oracle-database-to-cloud-spanner-using-dataproc-templates) (blogpost [Link](https://medium.com/@surjitsh/oracle-to-cloud-spanner-migrate-oracle-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-49152ce7f4e8))
 
 
