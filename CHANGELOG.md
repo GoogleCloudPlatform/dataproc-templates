@@ -1,5 +1,71 @@
 # Changelog
 
+## [0.2.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.1.0-beta...v0.2.0-beta) (2023-04-11)
+
+
+### Features
+
+* Add all supported Spark CSV options to BigQuery and Cassandra README files ([33539b0](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/33539b026741b4564f70e36557ae388994fbadcc))
+* Add all supported Spark CSV options to GCS reader Python templates ([5c38e65](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5c38e6596e5510a29ce2dd8597dca16f80fc6bf7))
+* Add all supported Spark CSV options to GCS source README file ([0001a40](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/0001a403a32d3c00fd952f5feaffe00101717e10))
+* Add all supported Spark CSV options to README files ([a689f61](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a689f610364a2b829f1d3b65702bddc079b519f5))
+* Add all supported Spark CSV write options to GCS reader Python templates ([a213aa9](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a213aa90a658d6af1da1f4dde48a3048a6e8f32a))
+* add integration test for JDBCToJDBC ([5f16cde](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5f16cdef23b9e7556c45cfe887204af75b4635a2))
+* Add JUnit test for DataplexGCStoBQ template ([6d19473](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/6d19473a7530d3f898ac4a708e12eb2e6cf7cbc3))
+* Add JUnit test for DataplexGCStoBQ template ([52745b8](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/52745b8004f53a65065867c222ae50a3d968e876))
+* Added automation bots to execute Jenkins build jobs ([#712](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/712)) ([806119f](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/806119f3b25ceae86b017511b826904be5ffffab))
+* Cater for legacy CSV options in text_to_bigquery.py ([517c163](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/517c16308ab0a12ca47179e1c04e7e54911188a2))
+* GCStoMongo : fixed typos and variable values in utc ([d65faa0](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/d65faa057d8a451024673c5812a74fa2612dbc00))
+* GCStoMongo new template - updated template name in print statement ([1ab03d5](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/1ab03d56e754cdb822d15f54dd98e6f6187e9345))
+* Refine README entries for new CSV options ([34ae430](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/34ae430fce05eeff63ac185d75717a0a7b74a8e4))
+* Small refactor to add spark options functions ([100b7aa](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/100b7aade3c9f79dd1e5df4d0ddd087aa1fa70a6))
+
+
+### Bug Fixes
+
+* Add validation for additional input fields to the template ([dbaa408](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/dbaa408894c69a8b9d23929e87c75ba67ba459d5))
+* Add validation for additional input fields to the template ([2685c2c](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/2685c2c60136108225720bf5bb0ef213f8b4939c))
+* added processing time as template property ([57b4d61](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/57b4d611b562bd991282b807f112b58f08d44426))
+* build and integration test breakage ([a0781db](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a0781db86b76871df83c6323fae32d98a5ba6209))
+* container name for GCSTOBIGTABLE ([a6f876f](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a6f876fac101346477edf38dbe026658be8a3cb2))
+* fixed unit tests ([5972eda](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5972eda82508558d0c6bef65297d5e39c8186d67))
+* formatting ([65c08e9](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/65c08e9b4c657c5a079c18319f2ef2e80a6e402f))
+* Made timeout value configurable via templateProperty ([7dafc64](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7dafc642e86ec61b4ddfc58eeac6b394ba8250fe))
+* minor fix ([cec0ea0](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/cec0ea01656265db638d80e62419f82fc6ede83b))
+* minor fix ([0410575](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/04105758767f6b667c39f62cc1a94e006ea60bbc))
+* minor fix ([ba94365](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/ba943658d60395b7ab0c7f30e265bca0b7f8c91a))
+* Modified subscription name ([c8dc953](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c8dc953c4a1ac2bf791b7b7409469dcb87d0f5e6))
+* modified timeout property name ([87e5aa0](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/87e5aa0d2551a15ac6f4dd06372289827ee0e75b))
+* reduce number of imports ([72eb0e7](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/72eb0e7c3a329a342798c2616a35afb5d292981c))
+* remove extra changes from rebase errors ([5108afe](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5108afe87830f6b415fa897ea8285302988e44e2))
+* remove extra changes from rebase errors ([4adc445](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/4adc445cb558c276ff144ab70e1093a4ddeefff4))
+* remove sensitive information from logs ([4eda3f1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/4eda3f1c20a6c218e501e4ded9a35d0ee903fb8e))
+* removed unwanted imports ([cbbb7f7](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/cbbb7f72f6be626fe8c95ac01fea88beab905879))
+* revert "hive_ddl_extractor_enhancement" ([78632f1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/78632f11626020656a4c551a4bf9b064e4782658))
+* revert "hive_ddl_extractor_enhancement" ([4581468](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/45814687660468c560c4f690cec3d05e67609019))
+* update Dataproc version to 1.1 ([2627351](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/2627351a0d98a3c3b322cd6312e9b70cbb7db1e6))
+* update parameters to dummy values ([4e0a3d7](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/4e0a3d755f7d68354fe859da8dae6969b070f038))
+* update parameters to dummy values ([d803cf1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/d803cf1d44a3d15078d668b63df95c6be4a4ca9c))
+* Update release-please-config.json ([#703](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/703)) ([7a344bd](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7a344bdc54ec18be34109eda1a64128070884bea))
+* updated README ([194cc96](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/194cc9601251b2fe5a2a375f8a51bcdfe5c88be5))
+* updated tests ([a6eeade](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a6eeadeee864623d795aba98fc0a5a97015d3121))
+* updated the ad-hoc folder path in Jenkins integration-test-python job ([fa8eec1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/fa8eec1931d27cf2c85301813403d24a68e6c3c6))
+* Updated the ad-hoc folder path in Jenkins job ([#724](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/724)) ([3a14176](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3a14176fe70271caa9ac406e92eea9549239b8ac))
+* Updated the bots to skip release-please branch ([#717](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/717)) ([9fbd66c](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/9fbd66ca24fc472e344ff3efa4e6bc0410af400e))
+* upgrade dataproc version ([c8bf1bf](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c8bf1bffd8c2534c72f59c195262f24ee4283c00))
+
+
+### Documentation
+
+* [#361](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/361) Adding medium article link in Readme.md for OracleToBQ notebook ([d8dbbf6](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/d8dbbf617410c40b3f73c347fe3f9ba42a47b28a))
+* Added README links ([62c0b1a](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/62c0b1afecda2403e3402e0ac445e94ae677e391))
+* Added README.md ([f9363ca](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/f9363ca36073771858d5497d8147cfa4e7f19eca))
+* fixed links ([85adaa9](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/85adaa91f7e7f4d0cc40e1e2e911cbe902676496))
+* minor changes in README ([e3504e4](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/e3504e4f4ddd52997a96b09c4195d32a28fcff35))
+* updated README ([bba7277](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/bba7277a514ec1effe9c38639736afc64cef1cf8))
+* updated README ([a9f4f20](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a9f4f200c86b12ac1192717796664f6ed1a35d7d))
+* updated README ([81598fd](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/81598fd9c5ef6d81ba1c045f5e176c7619096a0e))
+
 ## [0.2.0](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.1.0...v0.2.0) (2023-03-17)
 
 
