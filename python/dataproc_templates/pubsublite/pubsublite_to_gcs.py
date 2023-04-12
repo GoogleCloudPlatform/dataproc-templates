@@ -36,14 +36,13 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             default=constants.OUTPUT_MODE_APPEND,
             help=(
                 'Output write mode '
-                '(one of: append,overwrite,ignore,errorifexists) '
+                '(one of: append, update, complete) '
                 '(Defaults to append)'
             ),
             choices=[
-                constants.OUTPUT_MODE_OVERWRITE,
                 constants.OUTPUT_MODE_APPEND,
-                constants.OUTPUT_MODE_IGNORE,
-                constants.OUTPUT_MODE_ERRORIFEXISTS
+                constants.OUTPUT_MODE_UPDATE,
+                constants.OUTPUT_MODE_COMPLETE
             ]
         )
         parser.add_argument(
