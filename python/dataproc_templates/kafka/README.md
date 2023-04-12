@@ -20,7 +20,7 @@ It uses the Spark-Sql Kafka jars to write streaming data from Kafka topic to Clo
 * `kafka.gcs.output.mode`: append|complete|update
 * `kafka.gcs.termination.timeout`: timeout **(in seconds)**
 
-## CSV Optional Arguments
+## Optional Arguments
 
 * `kafka.gcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `kafka.gcs.output.compression`: None

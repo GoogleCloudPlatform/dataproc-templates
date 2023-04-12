@@ -13,7 +13,7 @@ Template for reading files from Pub/Sub Lite and writing them to Google Cloud St
 * `pubsublite.to.gcs.timeout`: Time for which the subscription will be read (measured in seconds)
 * `pubsublite.to.gcs.processing.time`: Time at which the query will be triggered to process input data (measured in seconds) (format: `"1 second"`)
 
-## CSV Optional Arguments
+## Optional Arguments
 
 * `pubsublite.to.gcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `pubsublite.to.gcs.output.compression`: None
