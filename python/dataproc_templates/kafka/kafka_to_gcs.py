@@ -10,6 +10,7 @@ from pyspark.sql import SparkSession
 
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options
 from dataproc_templates.util.dataframe_writer_wrappers import persist_streaming_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
 
@@ -76,6 +77,9 @@ class KafkaToGCSTemplate(BaseTemplate):
             required=True,
             help="Timeout for termination of kafka subscription"
         )
+        add_spark_options(
+            parser,
+            constants.get_csv_output_spark_options("kafka.gcs.output."))
 
 
 
