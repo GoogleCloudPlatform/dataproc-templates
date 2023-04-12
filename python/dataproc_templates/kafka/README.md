@@ -1,8 +1,8 @@
-# Kafka To GCS
+# Kafka To Cloud Storage
 
-Template for reading files from Kafka topic and writing them to a GCS bucket. It supports reading JSON, CSV, Parquet and Avro formats.
+Template for reading files from Kafka topic and writing them to a Cloud Storage bucket. It supports reading JSON, CSV, Parquet and Avro formats.
 
-It uses the Spark-Sql Kafka jars to write streaming data from Kafka topic to GCS .
+It uses the Spark-Sql Kafka jars to write streaming data from Kafka topic to Cloud Storage .
 
 ## Required JAR files
 
@@ -12,12 +12,12 @@ It uses the Spark-Sql Kafka jars to write streaming data from Kafka topic to GCS
 ## Arguments
 
 * `kafka.gcs.checkpoint.location`: Cloud Storage location for storing checkpoints during transfer (format: `gs://bucket/...`)
-* `kafka.gcs.output.location.gcs.path`: Output GCS Location for storing streaming data
+* `kafka.gcs.output.location.gcs.path`: Output Cloud Storage Location for storing streaming data
 * `kafka.gcs.bootstrap.servers`: List of kafka bootstrap servers (format: *'[x1.x2.x3.x4:port1,y1.y2.y3.y4:port2]')*
 * `kafka.gcs.topic`: Topic names for respective kafka server
 * `kafka.gcs.starting.offset`: Offset to start reading from. Accepted values: "earliest", "latest" (streaming only), or json string """ {"topicA":{"0":23,"1":-1},"topicB":{"0":-2}} """
 * `kafka.gcs.output.format`: csv| json| parquet| avro 
-* `kafka.gcs.output.mode`: append|overwrite
+* `kafka.gcs.output.mode`: append|complete|update
 * `kafka.gcs.termination.timeout`: timeout **(in seconds)**
 
 ## Usage
