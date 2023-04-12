@@ -260,6 +260,8 @@ OUTPUT_MODE_OVERWRITE = "overwrite"
 OUTPUT_MODE_APPEND = "append"
 OUTPUT_MODE_IGNORE = "ignore"
 OUTPUT_MODE_ERRORIFEXISTS = "errorifexists"
+OUTPUT_MODE_COMPLETE = "complete"
+OUTPUT_MODE_UPDATE = "update"
 
 # GCS to BigQuery
 GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location"
