@@ -89,7 +89,9 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
         )
         add_spark_options(
             parser,
-            constants.get_csv_output_spark_options("pubsublite.to.gcs.output."))
+            constants.get_csv_output_spark_options("pubsublite.to.gcs.output."),
+            read_options=False
+            )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)

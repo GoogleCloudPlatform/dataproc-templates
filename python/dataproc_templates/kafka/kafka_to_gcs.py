@@ -79,7 +79,9 @@ class KafkaToGCSTemplate(BaseTemplate):
         )
         add_spark_options(
             parser,
-            constants.get_csv_output_spark_options("kafka.gcs.output."))
+            constants.get_csv_output_spark_options("kafka.gcs.output."),
+            read_options=False
+            )
 
 
 
