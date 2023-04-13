@@ -126,11 +126,12 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
         input_data = input_data.withColumn("attributes", to_json(input_data.attributes))
 
         # Write
-        writer = (input_data.writeStream \
-            .outputMode(output_mode)) \
+        writer = input_data.writeStream \
             .trigger(processingTime=processing_time)
-        
-        writer = persist_streaming_dataframe_to_cloud_storage(writer, args, pubsublite_checkpoint_location, output_location, output_format, "pubsublite.to.gcs.output.")
+
+        writer = persist_streaming_dataframe_to_cloud_storage(
+            writer, args, pubsublite_checkpoint_location, output_location,
+            output_format, output_mode, "pubsublite.to.gcs.output.")
 
         query = writer.start()
 

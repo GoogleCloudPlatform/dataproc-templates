@@ -115,14 +115,15 @@ class KafkaToGCSTemplate(BaseTemplate):
                   .option('subscribe', kafka_topics) \
                   .option('startingOffsets',offset) \
                   .load()
-        
+
         df = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
 
         # Write
-        writer = (df.writeStream \
-            .outputMode(output_mode))
+        writer = df.writeStream
 
-        writer = persist_streaming_dataframe_to_cloud_storage(writer, args, checkpoint_loc, gcs_output_location, output_format, "kafka.gcs.output.")
+        writer = persist_streaming_dataframe_to_cloud_storage(
+            writer, args, checkpoint_loc, gcs_output_location,
+            output_format, output_mode, "kafka.gcs.output.")
 
         query = writer.start()
 
