@@ -184,6 +184,14 @@ public interface TemplateConstants {
   String COLUMN_NAME = "columnname";
   String COLUMN_VALUE = "columnvalue";
   String COLUMNS = "columns";
+
+  /** Property values for PubSubLite To BigTable */
+  // Many constants are reused from Pubsub to Bigtable
+  String PUBSUBLITE_CHECKPOINT_LOCATION_PROP = "pubsublite.checkpoint.location";
+
+  String PUBSUBLITE_FORMAT = "pubsublite";
+  String PUBSUBLITE_CHECKPOINT = "checkpointLocation";
+  String PUBSUBLITE_SUBSCRIPTION = "pubsublite.subscription";
   // Constants to be used for parsing the JSON from pubsub
 
   /** GCS to Bigquery properties */

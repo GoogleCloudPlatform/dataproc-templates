@@ -769,7 +769,28 @@ pipeline {
                     }
                 }
             }
-            
+            stage('Parallel Execution 10'){
+                                        parallel{
+                                            stage('PubSubLite To BigTable') {
+                                                steps{
+                                                    sh '''
+                                                        export GCP_PROJECT=yadavaja-sandbox
+                                                        export REGION=us-west1
+                                                        export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                                        cd java
+                                                        bin/start.sh \
+                                                        -- --template PUBSUBLITETOBIGTABLE \
+                                                        --templateProperty pubsub.input.project.id=yadavaja-sandbox \
+                                                        --templateProperty pubsub.input.subscription=projects/617357862702/locations/us-west1/subscriptions/pubsublitetobigtable-test-subscription2 \
+                                                        --templateProperty pubsublite.checkpoint.location=dataproc-template-test1/checkpointlocation \
+                                                        --templateProperty pubsub.bigtable.output.project.id=yadavaja-sandbox \
+                                                        --templateProperty pubsub.bigtable.output.instance.id=bt-templates-test \
+                                                        --templateProperty pubsub.bigtable.output.table=bus-data
+                                                    '''
+                                                }
+                                            }
+                                        }
+                                    }
         }
     post {
         always{
