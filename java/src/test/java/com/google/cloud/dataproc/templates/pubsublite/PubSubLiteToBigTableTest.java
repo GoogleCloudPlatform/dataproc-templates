@@ -45,8 +45,8 @@ public class PubSubLiteToBigTableTest {
   @Test
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_PROJECT_ID_PROP, "some-value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUBLITE_INPUT_PROJECT_ID_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUBLITE_INPUT_SUBSCRIPTION_PROP, "some-value");
     PropertyUtil.getProperties().setProperty(PUBSUBLITE_CHECKPOINT_LOCATION_PROP, "some-value");
     PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP, "some-value");
     PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP, "some-value");
@@ -74,8 +74,8 @@ public class PubSubLiteToBigTableTest {
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-        PUBSUB_INPUT_PROJECT_ID_PROP,
-        PUBSUB_INPUT_SUBSCRIPTION_PROP,
+        PUBSUBLITE_INPUT_PROJECT_ID_PROP,
+        PUBSUBLITE_INPUT_SUBSCRIPTION_PROP,
         PUBSUBLITE_CHECKPOINT_LOCATION_PROP,
         PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
         PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,

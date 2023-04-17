@@ -187,6 +187,13 @@ public interface TemplateConstants {
 
   /** Property values for PubSubLite To BigTable */
   // Many constants are reused from Pubsub to Bigtable
+  String PUBSUBLITE_INPUT_PROJECT_ID_PROP = "pubsublite.input.project.id";
+  // PubSub subscription name
+  String PUBSUBLITE_INPUT_SUBSCRIPTION_PROP = "pubsublite.input.subscription";
+  // Stream timeout
+  String PUBSUBLITE_TIMEOUT_MS_PROP = "pubsublite.timeout.ms";
+  // Streaming duration
+  String PUBSUBLITE_STREAMING_DURATION_SECONDS_PROP = "pubsublite.streaming.duration.seconds";
   String PUBSUBLITE_CHECKPOINT_LOCATION_PROP = "pubsublite.checkpoint.location";
 
   String PUBSUBLITE_FORMAT = "pubsublite";

@@ -13,8 +13,8 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 
 bin/start.sh \
 -- --template PUBSUBLITETOBIGTABLE \
---templateProperty pubsub.input.project.id=<pubsub project id> \
---templateProperty pubsub.input.subscription=<pubsub subscription> \
+--templateProperty pubsublite.input.project.id=<pubsub project id> \
+--templateProperty pubsublite.input.subscription=<pubsub subscription> \
 --templateProperty pubsublite.checkpoint.location=<pubsublite checkpoint location> \ 
 --templateProperty pubsub.bigtable.output.instance.id=<bigtable instance id> \
 --templateProperty pubsub.bigtable.output.project.id=<bigtable output project id> \
@@ -26,13 +26,13 @@ Following properties are available in commandline or [template.properties](../..
 
 ```
 ## Project that contains the input Pub/Sub subscription to be read
-pubsub.input.project.id=<pubsub project id>
-## PubSub subscription name
-pubsub.input.subscription=<pubsub subscription>
+pubsublite.input.project.id=<pubsub project id>
+## PubSub Lite subscription path
+pubsublite.input.subscription=<pubsub subscription>
 ## Stream timeout, for how long the subscription will be read
-pubsub.timeout.ms=60000
-## Streaming duration, how often wil writes to BQ be triggered
-pubsub.streaming.duration.seconds=15
+pubsublite.timeout.ms=60000
+## Streaming duration, how often will writes to Bigtable be triggered
+pubsublite.streaming.duration.seconds=15
 ## checkpoint location for the pubsublite topics
 pubsublite.checkpoint.location=<checkpoint location>
 ## Project that contains the output table

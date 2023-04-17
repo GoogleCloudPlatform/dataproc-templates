@@ -50,11 +50,11 @@ public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable 
   private final String sparkLogLevel;
 
   public PubSubLiteToBigTable() {
-    inputProjectID = getProperties().getProperty(PUBSUB_INPUT_PROJECT_ID_PROP);
-    pubsubInputSubscription = getProperties().getProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP);
-    timeoutMs = Long.parseLong(getProperties().getProperty(PUBSUB_TIMEOUT_MS_PROP));
+    inputProjectID = getProperties().getProperty(PUBSUBLITE_INPUT_PROJECT_ID_PROP);
+    pubsubInputSubscription = getProperties().getProperty(PUBSUBLITE_INPUT_SUBSCRIPTION_PROP);
+    timeoutMs = Long.parseLong(getProperties().getProperty(PUBSUBLITE_TIMEOUT_MS_PROP));
     streamingDuration =
-        Integer.parseInt(getProperties().getProperty(PUBSUB_STREAMING_DURATION_SECONDS_PROP));
+        Integer.parseInt(getProperties().getProperty(PUBSUBLITE_STREAMING_DURATION_SECONDS_PROP));
     pubsubCheckpointLocation = getProperties().getProperty(PUBSUBLITE_CHECKPOINT_LOCATION_PROP);
     pubSubBigTableOutputInstanceId =
         getProperties().getProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP);
@@ -141,8 +141,8 @@ public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable 
         || StringUtils.isAllBlank(pubSubBigTableOutputTable)) {
       LOGGER.error(
           "{},{},{},{},{} are required parameter. ",
-          PUBSUB_INPUT_PROJECT_ID_PROP,
-          PUBSUB_INPUT_SUBSCRIPTION_PROP,
+          PUBSUBLITE_INPUT_PROJECT_ID_PROP,
+          PUBSUBLITE_INPUT_SUBSCRIPTION_PROP,
           PUBSUBLITE_CHECKPOINT_LOCATION_PROP,
           PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
           PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
@@ -163,13 +163,13 @@ public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable 
             + "6. {},{}"
             + "7. {},{}"
             + "8. {},{}",
-        PUBSUB_INPUT_PROJECT_ID_PROP,
+        PUBSUBLITE_INPUT_PROJECT_ID_PROP,
         inputProjectID,
-        PUBSUB_INPUT_SUBSCRIPTION_PROP,
+        PUBSUBLITE_INPUT_SUBSCRIPTION_PROP,
         pubsubInputSubscription,
-        PUBSUB_TIMEOUT_MS_PROP,
+        PUBSUBLITE_TIMEOUT_MS_PROP,
         timeoutMs,
-        PUBSUB_STREAMING_DURATION_SECONDS_PROP,
+        PUBSUBLITE_STREAMING_DURATION_SECONDS_PROP,
         streamingDuration,
         PUBSUBLITE_CHECKPOINT_LOCATION_PROP,
         pubsubCheckpointLocation,
