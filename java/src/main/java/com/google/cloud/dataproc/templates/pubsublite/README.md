@@ -12,7 +12,7 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 
 
 bin/start.sh \
--- --template PUBSUBTOBIGTABLE \
+-- --template PUBSUBLITETOBIGTABLE \
 --templateProperty pubsub.input.project.id=<pubsub project id> \
 --templateProperty pubsub.input.subscription=<pubsub subscription> \
 --templateProperty pubsublite.checkpoint.location=<pubsublite checkpoint location> \ 

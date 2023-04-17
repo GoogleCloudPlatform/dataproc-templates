@@ -774,17 +774,15 @@ pipeline {
                                             stage('PubSubLite To BigTable') {
                                                 steps{
                                                     sh '''
-                                                        export GCP_PROJECT=yadavaja-sandbox
-                                                        export REGION=us-west1
-                                                        export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                                        export SKIP_BUILD=true
                                                         cd java
                                                         bin/start.sh \
                                                         -- --template PUBSUBLITETOBIGTABLE \
-                                                        --templateProperty pubsub.input.project.id=yadavaja-sandbox \
-                                                        --templateProperty pubsub.input.subscription=projects/617357862702/locations/us-west1/subscriptions/pubsublitetobigtable-test-subscription2 \
+                                                        --templateProperty pubsub.input.project.id=$GCP_PROJECT \
+                                                        --templateProperty pubsub.input.subscription=projects/$GCP_PROJECT_NUMBER/locations/us-west1/subscriptions/pubsublitetobigtable-test-subscription2 \
                                                         --templateProperty pubsublite.checkpoint.location=dataproc-template-test1/checkpointlocation \
-                                                        --templateProperty pubsub.bigtable.output.project.id=yadavaja-sandbox \
-                                                        --templateProperty pubsub.bigtable.output.instance.id=bt-templates-test \
+                                                        --templateProperty pubsub.bigtable.output.project.id=$GCP_PROJECT \
+                                                        --templateProperty pubsub.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
                                                         --templateProperty pubsub.bigtable.output.table=bus-data
                                                     '''
                                                 }

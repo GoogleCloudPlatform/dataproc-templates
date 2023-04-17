@@ -72,7 +72,7 @@ public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable 
     SparkSession spark =
         SparkSession.builder().appName("Spark PubSubLiteToGCS Demo Job").getOrCreate();
 
-    // Stream data from Kafka topic
+    // Stream data from Pubsublite topic topic
     Dataset<Row> df =
         spark
             .readStream()
