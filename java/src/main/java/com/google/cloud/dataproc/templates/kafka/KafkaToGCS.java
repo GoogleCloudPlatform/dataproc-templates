@@ -69,7 +69,6 @@ public class KafkaToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() throws TimeoutException, StreamingQueryException {
-    validateInput();
 
     // Initialize Spark session
     SparkSession spark = SparkSession.builder().appName("Spark KafkaToGCS Job").getOrCreate();
