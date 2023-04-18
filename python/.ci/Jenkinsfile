@@ -565,7 +565,7 @@ pipeline {
                                             cd python
                                             
                                             ./bin/start.sh \
-                                            --container-image="gcr.io/$GCP_PROJECT/tanyawarrier-gcstobigtable:1.0.0" \
+                                            --container-image="gcr.io/$GCP_PROJECT/bt-templates-test:1.0.0" \
                                             --properties="spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/" \
                                             -- --template=GCSTOBIGTABLE \
                                             --gcs.bigtable.input.format="csv" \
