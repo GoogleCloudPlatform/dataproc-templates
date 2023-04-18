@@ -65,7 +65,8 @@ class JDBCToJDBCTest {
     properties.setProperty(propKey, "");
     JDBCToJDBCConfig config = JDBCToJDBCConfig.fromProperties(PropertyUtil.getProperties());
     JDBCToJDBC template = new JDBCToJDBC(config);
-    assertThrows(ValidationException.class, template::validateInput);
+    ValidationException exception =
+        assertThrows(ValidationException.class, template::validateInput);
   }
 
   static Stream<String> propertyKeys() {
