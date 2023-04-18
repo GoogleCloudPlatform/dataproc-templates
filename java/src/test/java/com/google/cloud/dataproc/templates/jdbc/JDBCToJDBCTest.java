@@ -29,7 +29,6 @@ import com.google.cloud.dataproc.templates.util.ValidationUtil.ValidationExcepti
 import java.util.Properties;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -54,7 +53,9 @@ class JDBCToJDBCTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    assertDoesNotThrow((ThrowingSupplier<JDBCToJDBC>) JDBCToJDBC::of);
+    JDBCToJDBCConfig config = JDBCToJDBCConfig.fromProperties(PropertyUtil.getProperties());
+    JDBCToJDBC template = new JDBCToJDBC(config);
+    assertDoesNotThrow(template::validateInput);
   }
 
   @ParameterizedTest
@@ -62,7 +63,9 @@ class JDBCToJDBCTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     properties.setProperty(propKey, "");
-    ValidationException exception = assertThrows(ValidationException.class, JDBCToJDBC::of);
+    JDBCToJDBCConfig config = JDBCToJDBCConfig.fromProperties(PropertyUtil.getProperties());
+    JDBCToJDBC template = new JDBCToJDBC(config);
+    assertThrows(ValidationException.class, template::validateInput);
   }
 
   static Stream<String> propertyKeys() {

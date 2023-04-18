@@ -56,7 +56,7 @@ public class PubSubToBQTest {
     pubSubToBQ = new PubSubToBQ();
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> pubSubToBQ.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> pubSubToBQ.validateInput());
     assertEquals(
         "Required parameters for PubSubToBQ not passed. "
             + "Set mandatory parameter for PubSubToBQ template "
