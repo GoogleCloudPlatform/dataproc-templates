@@ -198,7 +198,8 @@ public class DataProcTemplate {
    * @param template the template to run.
    */
   static void runSparkJob(BaseTemplate template)
-      throws IllegalArgumentException, StreamingQueryException, TimeoutException, SQLException, InterruptedException {
+      throws IllegalArgumentException, StreamingQueryException, TimeoutException, SQLException,
+          InterruptedException {
     LOGGER.debug("Validating input parameters");
     template.validateInput();
     LOGGER.debug("Start runSparkJob");
