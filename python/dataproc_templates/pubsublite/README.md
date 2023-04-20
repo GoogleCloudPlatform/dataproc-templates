@@ -1,6 +1,6 @@
 # Pub/Sub Lite to GCS
 
-Template for reading files from Pub/Sub Lite and writing them to Google Cloud Storage. It supports writing JSON, CSV, Parquet and Avro formats.
+Template for reading files from Pub/Sub Lite and writing them to Google Cloud Storage.
 
 
 ## Arguments
@@ -9,7 +9,7 @@ Template for reading files from Pub/Sub Lite and writing them to Google Cloud St
 * `pubsublite.to.gcs.write.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `pubsublite.to.gcs.output.location`: GCS Location to put Output Files (format: `gs://BUCKET/...`)
 * `pubsublite.to.gcs.checkpoint.location`: GCS Checkpoint Folder Location
-* `pubsublite.to.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json)(Defaults to csv)
+* `pubsublite.to.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json) (Defaults to json)
 * `pubsublite.to.gcs.timeout`: Time for which the subscription will be read (measured in seconds)
 * `pubsublite.to.gcs.processing.time`: Time at which the query will be triggered to process input data (measured in seconds) (format: `"1 second"`)
 
@@ -30,7 +30,7 @@ optional arguments:
   --pubsublite.to.gcs.write.mode PUBSUBLITE.TO.GCS.WRITE.MODE 
             {overwrite,append,ignore,errorifexists} Output Write Mode (Defaults to append)
   --pubsublite.to.gcs.output.format PUBSUBLITE.TO.GCS.OUTPUT.FORMAT
-            {avro,parquet,csv,json} Output Format (Defaults to csv)
+            {avro,parquet,csv,json} Output Format (Defaults to json)
 ```
 
 ## Required JAR files
@@ -47,12 +47,12 @@ export REGION=us-central1
 	
 ./bin/start.sh \
 -- --template=PUBSUBLITETOGCS \
-    --pubsublite.to.gcs.input.subscription.url=projects/my-project/locations/us-central1/subscriptions/pubsublite-subscription,
-    --pubsublite.to.gcs.write.mode=append,
-    --pubsublite.to.gcs.output.location=gs://outputLocation,
-    --pubsublite.to.gcs.checkpoint.location=gs://checkpointLocation,
-    --pubsublite.to.gcs.output.format="csv"
-    --pubsublite.to.gcs.timeout=120
+    --pubsublite.to.gcs.input.subscription.url=projects/my-project/locations/us-central1/subscriptions/pubsublite-subscription \
+    --pubsublite.to.gcs.write.mode=append \
+    --pubsublite.to.gcs.output.location=gs://outputLocation \
+    --pubsublite.to.gcs.checkpoint.location=gs://checkpointLocation \
+    --pubsublite.to.gcs.output.format="json" \
+    --pubsublite.to.gcs.timeout=120 \
     --pubsublite.to.gcs.processing.time="1 second"
 ```
 
