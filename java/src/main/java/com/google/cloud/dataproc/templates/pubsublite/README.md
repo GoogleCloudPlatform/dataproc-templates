@@ -16,19 +16,19 @@ bin/start.sh \
 --templateProperty pubsublite.input.project.id=<pubsub project id> \
 --templateProperty pubsublite.input.subscription=<pubsub subscription> \
 --templateProperty pubsublite.checkpoint.location=<pubsublite checkpoint location> \ 
---templateProperty pubsub.bigtable.output.instance.id=<bigtable instance id> \
---templateProperty pubsub.bigtable.output.project.id=<bigtable output project id> \
---templateProperty pubsub.bigtable.output.table=<bigtable output table>
+--templateProperty pubsublite.bigtable.output.instance.id=<bigtable instance id> \
+--templateProperty pubsublite.bigtable.output.project.id=<bigtable output project id> \
+--templateProperty pubsublite.bigtable.output.table=<bigtable output table>
 ```
 
 ### Configurable Parameters
 Following properties are available in commandline or [template.properties](../../../../../../../resources/template.properties) file:
 
 ```
-## Project that contains the input Pub/Sub subscription to be read
-pubsublite.input.project.id=<pubsub project id>
+## Project that contains the input Pub/Sub lite subscription to be read
+pubsublite.input.project.id=<pubsub lite project id>
 ## PubSub Lite subscription path
-pubsublite.input.subscription=<pubsub subscription>
+pubsublite.input.subscription=<pubsub lite subscription>
 ## Stream timeout, for how long the subscription will be read
 pubsublite.timeout.ms=60000
 ## Streaming duration, how often will writes to Bigtable be triggered
@@ -36,11 +36,11 @@ pubsublite.streaming.duration.seconds=15
 ## checkpoint location for the pubsublite topics
 pubsublite.checkpoint.location=<checkpoint location>
 ## Project that contains the output table
-pubsub.bigtable.output.project.id=<bigtable output project id>
+pubsublite.bigtable.output.project.id=<bigtable output project id>
 ## BigTable Instance Id
-pubsub.bigtable.output.instance.id=<bigtable instance id>
+pubsublite.bigtable.output.instance.id=<bigtable instance id>
 ## BigTable output table
-pubsub.bigtable.output.table=<bigtable output table>
+pubsublite.bigtable.output.table=<bigtable output table>
 
 The input message has to be in the following format for one rowkey.
 {

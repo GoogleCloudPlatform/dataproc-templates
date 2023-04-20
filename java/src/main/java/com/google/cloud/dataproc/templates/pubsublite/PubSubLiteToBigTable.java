@@ -57,10 +57,10 @@ public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable 
         Integer.parseInt(getProperties().getProperty(PUBSUBLITE_STREAMING_DURATION_SECONDS_PROP));
     pubsubCheckpointLocation = getProperties().getProperty(PUBSUBLITE_CHECKPOINT_LOCATION_PROP);
     pubSubBigTableOutputInstanceId =
-        getProperties().getProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP);
+        getProperties().getProperty(PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE_ID_PROP);
     pubSubBigTableOutputProjectId =
-        getProperties().getProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP);
-    pubSubBigTableOutputTable = getProperties().getProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
+        getProperties().getProperty(PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT_ID_PROP);
+    pubSubBigTableOutputTable = getProperties().getProperty(PUBSUBLITE_BIGTABLE_OUTPUT_TABLE_PROP);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
@@ -144,9 +144,9 @@ public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable 
           PUBSUBLITE_INPUT_PROJECT_ID_PROP,
           PUBSUBLITE_INPUT_SUBSCRIPTION_PROP,
           PUBSUBLITE_CHECKPOINT_LOCATION_PROP,
-          PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
-          PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
-          PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
+          PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
+          PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
+          PUBSUBLITE_BIGTABLE_OUTPUT_TABLE_PROP);
       throw new IllegalArgumentException(
           "Required parameters for PubSubLiteToBigTable not passed. "
               + "Set mandatory parameter for PubSubLiteToBigTable template "
@@ -173,11 +173,11 @@ public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable 
         streamingDuration,
         PUBSUBLITE_CHECKPOINT_LOCATION_PROP,
         pubsubCheckpointLocation,
-        PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
+        PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
         pubSubBigTableOutputInstanceId,
-        PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
+        PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
         pubSubBigTableOutputProjectId,
-        PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP,
+        PUBSUBLITE_BIGTABLE_OUTPUT_TABLE_PROP,
         pubSubBigTableOutputTable);
   }
 }
