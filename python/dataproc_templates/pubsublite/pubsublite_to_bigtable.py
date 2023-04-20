@@ -216,20 +216,18 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
         if checkpoint_location:
             options = {constants.PUBSUBLITE_CHECKPOINT_LOCATION: checkpoint_location}
 
+        client = Client(project=project, admin=True)
+        table = self.get_table(
+            client,
+            instance_id,
+            table_id,
+            column_families_list,
+            max_versions,
+            logger,
+        )
+
         def write_to_bigtable(batch_df: DataFrame, batch_id: int):
-            client = Client(project=project, admin=True)
-
-            table = self.get_table(
-                client,
-                instance_id,
-                table_id,
-                column_families_list,
-                max_versions,
-                logger,
-            )
-
             self.populate_table(batch_df, table, logger)
-            client.close()
 
         query = (
             input_data.writeStream.foreachBatch(write_to_bigtable)
@@ -237,6 +235,7 @@ class PubSubLiteToBigtableTemplate(BaseTemplate):
             .trigger(processingTime=trigger)
             .start()
         )
-
         query.awaitTermination(timeout)
         query.stop()
+
+        client.close()
