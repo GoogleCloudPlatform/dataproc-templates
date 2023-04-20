@@ -781,9 +781,9 @@ pipeline {
                                                         --templateProperty pubsublite.input.project.id=$GCP_PROJECT \
                                                         --templateProperty pubsublite.input.subscription=projects/$GCP_PROJECT_NUMBER/locations/us-west1/subscriptions/pubsublitetobigtable-test-subscription2 \
                                                         --templateProperty pubsublite.checkpoint.location=dataproc-template-test1/checkpointlocation \
-                                                        --templateProperty pubsub.bigtable.output.project.id=$GCP_PROJECT \
-                                                        --templateProperty pubsub.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
-                                                        --templateProperty pubsub.bigtable.output.table=bus-data
+                                                        --templateProperty pubsublite.bigtable.output.project.id=$GCP_PROJECT \
+                                                        --templateProperty pubsublite.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
+                                                        --templateProperty pubsublite.bigtable.output.table=bus-data
                                                     '''
                                                 }
                                             }
