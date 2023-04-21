@@ -97,6 +97,8 @@ SQL_EXTENSION= "spark.sql.extensions"
 CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
 CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
 FORMAT_PUBSUBLITE = "pubsublite"
+PUBSUBLITE_SUBSCRIPTION = "pubsublite.subscription"
+PUBSUBLITE_CHECKPOINT_LOCATION = "checkpointLocation"
 STREAM_PATH = "path"
 STREAM_CHECKPOINT_LOCATION = "checkpointLocation"
 
