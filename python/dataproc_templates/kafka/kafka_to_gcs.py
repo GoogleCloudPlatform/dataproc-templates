@@ -6,10 +6,12 @@ import pprint
 
 
 
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_writer_wrappers import persist_streaming_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
 
 __all__ = ['KafkaToGCSTemplate']
@@ -62,7 +64,12 @@ class KafkaToGCSTemplate(BaseTemplate):
             f'--{constants.KAFKA_GCS_OUPUT_MODE}',
             dest=constants.KAFKA_GCS_OUPUT_MODE,
             required=True,
-            help="Ouput type of GCS append|overwrite"
+            help="Ouput write mode (append, update, complete)",
+            choices=[
+                constants.OUTPUT_MODE_APPEND,
+                constants.OUTPUT_MODE_UPDATE,
+                constants.OUTPUT_MODE_COMPLETE
+            ]
         )
         parser.add_argument(
             f'--{constants.KAFKA_GCS_TERMINATION_TIMEOUT}',
@@ -70,6 +77,11 @@ class KafkaToGCSTemplate(BaseTemplate):
             required=True,
             help="Timeout for termination of kafka subscription"
         )
+        add_spark_options(
+            parser,
+            constants.get_csv_output_spark_options("kafka.gcs.output."),
+            read_options=False
+            )
 
 
 
@@ -103,15 +115,17 @@ class KafkaToGCSTemplate(BaseTemplate):
                   .option('subscribe', kafka_topics) \
                   .option('startingOffsets',offset) \
                   .load()
-        
+
         df = df.selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+
         # Write
-        
-        df \
-        .writeStream \
-        .format(output_format) \
-        .outputMode(output_mode) \
-        .option('checkpointLocation',checkpoint_loc) \
-        .option('path',gcs_output_location) \
-        .start() \
-        .awaitTermination(timeout)
+        writer = df.writeStream
+
+        writer = persist_streaming_dataframe_to_cloud_storage(
+            writer, args, checkpoint_loc, gcs_output_location,
+            output_format, output_mode, "kafka.gcs.output.")
+
+        query = writer.start()
+
+        query.awaitTermination(timeout)
+        query.stop()
