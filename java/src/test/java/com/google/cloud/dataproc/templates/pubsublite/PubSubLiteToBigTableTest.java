@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates.pubsub;
+package com.google.cloud.dataproc.templates.pubsublite;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -30,10 +30,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PubSubToBigTableTest {
+public class PubSubLiteToBigTableTest {
 
-  private PubSubToBigTable pubSubToBigTableTest;
-  private static final Logger LOGGER = LoggerFactory.getLogger(PubSubToBigTableTest.class);
+  private PubSubLiteToBigTable pubSubLiteToBigTableTest;
+  private static final Logger LOGGER = LoggerFactory.getLogger(PubSubLiteToBigTableTest.class);
 
   @BeforeEach
   void setUp() {
@@ -45,14 +45,17 @@ public class PubSubToBigTableTest {
   @Test
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_PROJECT_ID_PROP, "some-value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP, "some-value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP, "some-value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP, "some-value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUBLITE_INPUT_PROJECT_ID_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUBLITE_INPUT_SUBSCRIPTION_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUBLITE_CHECKPOINT_LOCATION_PROP, "some-value");
+    PropertyUtil.getProperties()
+        .setProperty(PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE_ID_PROP, "some-value");
+    PropertyUtil.getProperties()
+        .setProperty(PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT_ID_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUBLITE_BIGTABLE_OUTPUT_TABLE_PROP, "some-value");
 
-    pubSubToBigTableTest = new PubSubToBigTable();
-    assertDoesNotThrow(pubSubToBigTableTest::validateInput);
+    pubSubLiteToBigTableTest = new PubSubLiteToBigTable();
+    assertDoesNotThrow(pubSubLiteToBigTableTest::validateInput);
   }
 
   @ParameterizedTest
@@ -60,23 +63,24 @@ public class PubSubToBigTableTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    pubSubToBigTableTest = new PubSubToBigTable();
+    pubSubLiteToBigTableTest = new PubSubLiteToBigTable();
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> pubSubToBigTableTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> pubSubLiteToBigTableTest.runTemplate());
     assertEquals(
-        "Required parameters for PubSubToBigTable not passed. "
-            + "Set mandatory parameter for PubSubToBigTable template "
+        "Required parameters for PubSubLiteToBigTable not passed. "
+            + "Set mandatory parameter for PubSubLiteToBigTable template "
             + "in resources/conf/template.properties file.",
         exception.getMessage());
   }
 
   static Stream<String> propertyKeys() {
     return Stream.of(
-        PUBSUB_INPUT_PROJECT_ID_PROP,
-        PUBSUB_INPUT_SUBSCRIPTION_PROP,
-        PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
-        PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
-        PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
+        PUBSUBLITE_INPUT_PROJECT_ID_PROP,
+        PUBSUBLITE_INPUT_SUBSCRIPTION_PROP,
+        PUBSUBLITE_CHECKPOINT_LOCATION_PROP,
+        PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
+        PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
+        PUBSUBLITE_BIGTABLE_OUTPUT_TABLE_PROP);
   }
 }

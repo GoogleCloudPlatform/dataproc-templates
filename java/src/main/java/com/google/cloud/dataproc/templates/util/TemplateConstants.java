@@ -184,6 +184,27 @@ public interface TemplateConstants {
   String COLUMN_NAME = "columnname";
   String COLUMN_VALUE = "columnvalue";
   String COLUMNS = "columns";
+
+  /** Property values for PubSubLite To BigTable */
+  // Many constants are reused from Pubsub to Bigtable
+  String PUBSUBLITE_INPUT_PROJECT_ID_PROP = "pubsublite.input.project.id";
+  // PubSub subscription name
+  String PUBSUBLITE_INPUT_SUBSCRIPTION_PROP = "pubsublite.input.subscription";
+  // Stream timeout
+  String PUBSUBLITE_TIMEOUT_MS_PROP = "pubsublite.timeout.ms";
+  // Streaming duration
+  String PUBSUBLITE_STREAMING_DURATION_SECONDS_PROP = "pubsublite.streaming.duration.seconds";
+  // Checkpoint location
+  String PUBSUBLITE_CHECKPOINT_LOCATION_PROP = "pubsublite.checkpoint.location";
+  // BigTable Instance Id
+  String PUBSUBLITE_BIGTABLE_OUTPUT_INSTANCE_ID_PROP = "pubsublite.bigtable.output.instance.id";
+  // Project that contains the output table
+  String PUBSUBLITE_BIGTABLE_OUTPUT_PROJECT_ID_PROP = "pubsublite.bigtable.output.project.id";
+  // BigTable table name
+  String PUBSUBLITE_BIGTABLE_OUTPUT_TABLE_PROP = "pubsublite.bigtable.output.table";
+  String PUBSUBLITE_FORMAT = "pubsublite";
+  String PUBSUBLITE_CHECKPOINT = "checkpointLocation";
+  String PUBSUBLITE_SUBSCRIPTION = "pubsublite.subscription";
   // Constants to be used for parsing the JSON from pubsub
 
   /** GCS to Bigquery properties */
