@@ -27,9 +27,9 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.streaming.Trigger;
+import org.apache.spark.sql.types.DataTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.spark.sql.types.DataTypes;
 
 public class PubSubLiteToGCS implements BaseTemplate {
   public static final Logger LOGGER = LoggerFactory.getLogger(PubSubLiteToGCS.class);
@@ -65,13 +65,15 @@ public class PubSubLiteToGCS implements BaseTemplate {
 
     // Set log level
     spark.sparkContext().setLogLevel(sparkLogLevel);
+
+    // Stream data from Pubsublite topic
     Dataset<Row> df =
         spark
             .readStream()
             .format("pubsublite")
             .option("pubsublite.subscription", inputSubscriptionUrl)
             .load();
-    
+
     df = df.withColumn("data", df.col("data").cast(DataTypes.StringType));
 
     StreamingQuery query =
