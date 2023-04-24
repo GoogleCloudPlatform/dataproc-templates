@@ -29,6 +29,7 @@ import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.streaming.Trigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.spark.sql.types.DataTypes;
 
 public class PubSubLiteToGCS implements BaseTemplate {
   public static final Logger LOGGER = LoggerFactory.getLogger(PubSubLiteToGCS.class);
@@ -70,6 +71,8 @@ public class PubSubLiteToGCS implements BaseTemplate {
             .format("pubsublite")
             .option("pubsublite.subscription", inputSubscriptionUrl)
             .load();
+    
+    df = df.withColumn("data", df.col("data").cast(DataTypes.StringType));
 
     StreamingQuery query =
         df.writeStream()
