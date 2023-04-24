@@ -771,13 +771,49 @@ pipeline {
             }
             stage('Parallel Execution 9'){
                 parallel{
+                                            stage('PubSubLite To BigTable') {
+                                                steps{
+                                                    sh '''
+                                                        export SKIP_BUILD=true
+                                                        cd java
+                                                        bin/start.sh \
+                                                        -- --template PUBSUBLITETOBIGTABLE \
+                                                        --templateProperty pubsublite.input.project.id=$GCP_PROJECT \
+                                                        --templateProperty pubsublite.input.subscription=projects/$GCP_PROJECT_NUMBER/locations/us-west1/subscriptions/pubsublitetobigtable-test-subscription2 \
+                                                        --templateProperty pubsublite.checkpoint.location=dataproc-template-test1/checkpointlocation \
+                                                        --templateProperty pubsublite.bigtable.output.project.id=$GCP_PROJECT \
+                                                        --templateProperty pubsublite.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
+                                                        --templateProperty pubsublite.bigtable.output.table=bus-data
+                                                    '''
+                                                }
+                                            }
+                                        }
                     stage('PubSubLite To GCS') {
                         steps{
                             sh '''
                                 export GCP_PROJECT=yadavaja-sandbox
                                 export REGION=us-west1
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-
+stage('Parallel Execution 10'){
+                                        parallel{
+                                            stage('PubSubLite To BigTable') {
+                                                steps{
+                                                    sh '''
+                                                        export SKIP_BUILD=true
+                                                        cd java
+                                                        bin/start.sh \
+                                                        -- --template PUBSUBLITETOBIGTABLE \
+                                                        --templateProperty pubsublite.input.project.id=$GCP_PROJECT \
+                                                        --templateProperty pubsublite.input.subscription=projects/$GCP_PROJECT_NUMBER/locations/us-west1/subscriptions/pubsublitetobigtable-test-subscription2 \
+                                                        --templateProperty pubsublite.checkpoint.location=dataproc-template-test1/checkpointlocation \
+                                                        --templateProperty pubsublite.bigtable.output.project.id=$GCP_PROJECT \
+                                                        --templateProperty pubsublite.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
+                                                        --templateProperty pubsublite.bigtable.output.table=bus-data
+                                                    '''
+                                                
+                                            }
+                                        }
+                                    }
                                 cd java
 
                                 bin/start.sh \

@@ -57,7 +57,8 @@ public interface BaseTemplate {
     GCSTOBIGTABLE,
     TEXTTOBIGQUERY,
     JDBCTOJDBC,
-    PUBSUBLITETOGCS
+    PUBSUBLITETOGCS,
+    PUBSUBLITETOBIGTABLE
   }
 
   default Properties getProperties() {
