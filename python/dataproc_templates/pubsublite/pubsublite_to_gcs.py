@@ -61,11 +61,11 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             f'--{constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT}',
             dest=constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT,
             required=False,
-            default=constants.FORMAT_CSV,
+            default=constants.FORMAT_JSON,
             help=(
                 'Output Format to Cloud Storage '
                 '(one of: json, csv, avro, parquet) '
-                '(Defaults to csv)'
+                '(Defaults to json)'
             ),
             choices=[
                 constants.FORMAT_AVRO,

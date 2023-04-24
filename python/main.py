@@ -44,6 +44,7 @@ from dataproc_templates.s3.s3_to_bigquery import S3ToBigQueryTemplate
 from dataproc_templates.cassandra.cassandra_to_gcs import CassandraToGCSTemplate
 from dataproc_templates.pubsublite.pubsublite_to_gcs import PubSubLiteToGCSTemplate
 from dataproc_templates.azure.azure_blob_storage_to_bigquery import AzureBlobStorageToBigQueryTemplate
+from dataproc_templates.pubsublite.pubsublite_to_bigtable import PubSubLiteToBigtableTemplate
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
 
@@ -73,7 +74,8 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.KAFKATOGCS: KafkaToGCSTemplate,
     TemplateName.KAFKATOBQ: KafkaToBigQueryTemplate,
     TemplateName.S3TOBIGQUERY: S3ToBigQueryTemplate,
-    TemplateName.PUBSUBLITETOGCS: PubSubLiteToGCSTemplate
+    TemplateName.PUBSUBLITETOGCS: PubSubLiteToGCSTemplate,
+    TemplateName.PUBSUBLITETOBIGTABLE: PubSubLiteToBigtableTemplate
 
 }
 
