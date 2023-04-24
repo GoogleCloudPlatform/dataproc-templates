@@ -770,7 +770,7 @@ pipeline {
                 }
             }
             stage('Parallel Execution 9'){
-                parallel{
+                                        parallel{
                                             stage('PubSubLite To BigTable') {
                                                 steps{
                                                     sh '''
@@ -787,48 +787,26 @@ pipeline {
                                                     '''
                                                 }
                                             }
-                                        }
-                    stage('PubSubLite To GCS') {
-                        steps{
-                            sh '''
-                                export GCP_PROJECT=yadavaja-sandbox
-                                export REGION=us-west1
-                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-stage('Parallel Execution 10'){
-                                        parallel{
-                                            stage('PubSubLite To BigTable') {
+
+                                            stage('PubSubLite To GCS') {
                                                 steps{
                                                     sh '''
-                                                        export SKIP_BUILD=true
-                                                        cd java
-                                                        bin/start.sh \
-                                                        -- --template PUBSUBLITETOBIGTABLE \
-                                                        --templateProperty pubsublite.input.project.id=$GCP_PROJECT \
-                                                        --templateProperty pubsublite.input.subscription=projects/$GCP_PROJECT_NUMBER/locations/us-west1/subscriptions/pubsublitetobigtable-test-subscription2 \
-                                                        --templateProperty pubsublite.checkpoint.location=dataproc-template-test1/checkpointlocation \
-                                                        --templateProperty pubsublite.bigtable.output.project.id=$GCP_PROJECT \
-                                                        --templateProperty pubsublite.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
-                                                        --templateProperty pubsublite.bigtable.output.table=bus-data
+                                                    export SKIP_BUILD=true
+                                                    cd java
+                                                    bin/start.sh \
+                                                    -- --template PUBSUBLITETOGCS \
+                                                    --templateProperty pubsublite.to.gcs.input.subscription.url=projects/$GCP_PROJECT/locations/$REGION/subscriptions/psltobt-sub \
+                                                    --templateProperty pubsublite.to.gcs.processing.time.seconds=1 \
+                                                    --templateProperty pubsublite.to.gcs.timeout.ms=120000 \
+                                                    --templateProperty pubsublite.to.gcs.output.location=gs://saumyasinha/pubsublite/output \
+                                                    --templateProperty pubsublite.to.gcs.checkpoint.location=gs://saumyasinha/pubsublite/checkpointLocation
                                                     '''
-                                                
+                                                }
                                             }
                                         }
                                     }
-                                cd java
-
-                                bin/start.sh \
-                                -- --template PUBSUBLITETOGCS \
-                                --templateProperty pubsublite.to.gcs.input.subscription.url=projects/$GCP_PROJECT/locations/$REGION/subscriptions/psltobt-sub \
-                                --templateProperty pubsublite.to.gcs.processing.time.seconds=1 \
-                                --templateProperty pubsublite.to.gcs.timeout.ms=120000 \
-                                --templateProperty pubsublite.to.gcs.output.location=gs://saumyasinha/pubsublite/output \
-                                --templateProperty pubsublite.to.gcs.checkpoint.location=gs://saumyasinha/pubsublite/checkpointLocation
-                            '''
-                        }
-                    }
-                }
-            }
         }
+
     post {
         always{
             script {
