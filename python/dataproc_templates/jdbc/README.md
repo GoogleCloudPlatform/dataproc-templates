@@ -315,7 +315,6 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 Template for reading data from JDBC table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
 
 ## Arguments
-
 * `jdbctogcs.input.url`: JDBC input URL
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
@@ -330,29 +329,132 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 * `jdbctogcs.input.sessioninitstatement` (Optional): Custom SQL statement to execute in each reader database session
 * `jdbctogcs.output.mode` (Optional): Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 * `jdbctogcs.output.partitioncolumn` (Optional): Output partition column name
+#### Optional Arguments
+* `jdbctogcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
+* `jdbctogcs.output.compression`: None
+* `jdbctogcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type
+* `jdbctogcs.output.emptyvalue`: Sets the string representation of an empty value
+* `jdbctogcs.output.encoding`: Decodes the CSV files by the given encoding type
+* `jdbctogcs.output.escape`: Sets a single character used for escaping quotes inside an already quoted value
+* `jdbctogcs.output.escapequotes`: A flag indicating whether values containing quotes should always be enclosed in quotes. Default is to escape all values containing a quote character
+* `jdbctogcs.output.header`: Uses the first line of CSV file as names of columns. Defaults to True
+* `jdbctogcs.output.ignoreleadingwhitespace`: A flag indicating whether or not leading whitespaces from values being read/written should be skipped
+* `jdbctogcs.output.ignoretrailingwhitespace`: A flag indicating whether or not trailing whitespaces from values being read/written should be skipped
+* `jdbctogcs.output.linesep`: Defines the line separator that should be used for parsing. Defaults to \r, \r\n and \n for reading and \n for writing
+* `jdbctogcs.output.nullvalue`: Sets the string representation of a null value
+* `jdbctogcs.output.quote`: Sets a single character used for escaping quoted values where the separator can be part of the value. For reading, if you would like to turn off quotations, you need to set not null but an empty string
+* `jdbctogcs.output.quoteall`: None
+* `jdbctogcs.output.sep`: Sets a separator for each field and value. This separator can be one or more characters
+* `jdbctogcs.output.timestampformat`: Sets the string that indicates a timestamp with timezone format
+* `jdbctogcs.output.timestampntzformat`: Sets the string that indicates a timestamp without timezone format
 
 ## Usage
 
 ```
 $ python main.py --template JDBCTOGCS --help
 
-usage: main.py --template JDBCTOGCS \
-    --jdbctogcs.input.url JDBCTOGCS.INPUT.URL \
-    --jdbctogcs.input.driver JDBCTOGCS.INPUT.DRIVER \
-    --jdbctogcs.input.table JDBCTOGCS.INPUT.TABLE \
-    --jdbctogcs.output.location JDBCTOGCS.OUTPUT.LOCATION \
-    --jdbctogcs.output.format {avro,parquet,csv,json} \
+usage: main.py [-h]
+               --jdbctogcs.input.url JDBCTOGCS.INPUT.URL
+               --jdbctogcs.input.driver JDBCTOGCS.INPUT.DRIVER
+               [--jdbctogcs.input.table JDBCTOGCS.INPUT.TABLE]
+               [--jdbctogcs.input.sql.query JDBCTOGCS.INPUT.SQL.QUERY]
+               [--jdbctogcs.input.partitioncolumn JDBCTOGCS.INPUT.PARTITIONCOLUMN]
+               [--jdbctogcs.input.lowerbound JDBCTOGCS.INPUT.LOWERBOUND]
+               [--jdbctogcs.input.upperbound JDBCTOGCS.INPUT.UPPERBOUND]
+               [--jdbctogcs.numpartitions JDBCTOGCS.NUMPARTITIONS]
+               [--jdbctogcs.input.fetchsize JDBCTOGCS.INPUT.FETCHSIZE]
+               [--jdbctogcs.input.sessioninitstatement JDBCTOGCS.INPUT.SESSIONINITSTATEMENT]
+               --jdbctogcs.output.location JDBCTOGCS.OUTPUT.LOCATION --jdbctogcs.output.format {avro,parquet,csv,json}
+               [--jdbctogcs.output.mode {overwrite,append,ignore,errorifexists}]
+               [--jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN]
+               [--jdbctogcs.temp.view.name JDBCTOGCS.TEMP.VIEW.NAME]
+               [--jdbctogcs.temp.sql.query JDBCTOGCS.TEMP.SQL.QUERY]
+               [--jdbctogcs.output.chartoescapequoteescaping JDBCTOGCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING]
+               [--jdbctogcs.output.compression JDBCTOGCS.OUTPUT.COMPRESSION]
+               [--jdbctogcs.output.dateformat JDBCTOGCS.OUTPUT.DATEFORMAT]
+               [--jdbctogcs.output.emptyvalue JDBCTOGCS.OUTPUT.EMPTYVALUE]
+               [--jdbctogcs.output.encoding JDBCTOGCS.OUTPUT.ENCODING]
+               [--jdbctogcs.output.escape JDBCTOGCS.OUTPUT.ESCAPE]
+               [--jdbctogcs.output.escapequotes JDBCTOGCS.OUTPUT.ESCAPEQUOTES]
+               [--jdbctogcs.output.header JDBCTOGCS.OUTPUT.HEADER]
+               [--jdbctogcs.output.ignoreleadingwhitespace JDBCTOGCS.OUTPUT.IGNORELEADINGWHITESPACE]
+               [--jdbctogcs.output.ignoretrailingwhitespace JDBCTOGCS.OUTPUT.IGNORETRAILINGWHITESPACE]
+               [--jdbctogcs.output.linesep JDBCTOGCS.OUTPUT.LINESEP]
+               [--jdbctogcs.output.nullvalue JDBCTOGCS.OUTPUT.NULLVALUE]
+               [--jdbctogcs.output.quote JDBCTOGCS.OUTPUT.QUOTE]
+               [--jdbctogcs.output.quoteall JDBCTOGCS.OUTPUT.QUOTEALL]
+               [--jdbctogcs.output.sep JDBCTOGCS.OUTPUT.SEP]
+               [--jdbctogcs.output.timestampformat JDBCTOGCS.OUTPUT.TIMESTAMPFORMAT]
+               [--jdbctogcs.output.timestampntzformat JDBCTOGCS.OUTPUT.TIMESTAMPNTZFORMAT]
 
-optional arguments:
-    -h, --help            show this help message and exit
-    --jdbctogcs.input.partitioncolumn JDBCTOGCS.INPUT.PARTITIONCOLUMN \
-    --jdbctogcs.input.lowerbound JDBCTOGCS.INPUT.LOWERBOUND \
-    --jdbctogcs.input.upperbound JDBCTOGCS.INPUT.UPPERBOUND \
-    --jdbctogcs.numpartitions JDBCTOGCS.NUMPARTITIONS \
-    --jdbctogcs.input.fetchsize JDBCTOJDBC.INPUT.FETCHSIZE \
-    --jdbctogcs.input.sessioninitstatement JDBCTOGCS.INPUT.SESSIONINITSTATEMENT \
-    --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists} \
-    --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN \
+options:
+  -h, --help            show this help message and exit
+  --jdbctogcs.input.url JDBCTOGCS.INPUT.URL
+                        JDBC input URL
+  --jdbctogcs.input.driver JDBCTOGCS.INPUT.DRIVER
+                        JDBC input driver name
+  --jdbctogcs.input.table JDBCTOGCS.INPUT.TABLE
+                        JDBC input table name
+  --jdbctogcs.input.sql.query JDBCTOGCS.INPUT.SQL.QUERY
+                        JDBC input SQL query
+  --jdbctogcs.input.partitioncolumn JDBCTOGCS.INPUT.PARTITIONCOLUMN
+                        JDBC input table partition column name
+  --jdbctogcs.input.lowerbound JDBCTOGCS.INPUT.LOWERBOUND
+                        JDBC input table partition column lower bound which is used to decide the partition stride
+  --jdbctogcs.input.upperbound JDBCTOGCS.INPUT.UPPERBOUND
+                        JDBC input table partition column upper bound which is used to decide the partition stride
+  --jdbctogcs.numpartitions JDBCTOGCS.NUMPARTITIONS
+                        The maximum number of partitions that can be used for parallelism in table reading and writing. Default set to 10
+  --jdbctogcs.input.fetchsize JDBCTOGCS.INPUT.FETCHSIZE
+                        Determines how many rows to fetch per round trip
+  --jdbctogcs.input.sessioninitstatement JDBCTOGCS.INPUT.SESSIONINITSTATEMENT
+                        Custom SQL statement to execute in each reader database session
+  --jdbctogcs.output.location JDBCTOGCS.OUTPUT.LOCATION
+                        Cloud Storage location for output files
+  --jdbctogcs.output.format {avro,parquet,csv,json}
+                        Output file format (one of: avro,parquet,csv,json)
+  --jdbctogcs.output.mode {overwrite,append,ignore,errorifexists}
+                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+  --jdbctogcs.output.partitioncolumn JDBCTOGCS.OUTPUT.PARTITIONCOLUMN
+                        Cloud Storage partition column name
+  --jdbctogcs.temp.view.name JDBCTOGCS.TEMP.VIEW.NAME
+                        Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query
+  --jdbctogcs.temp.sql.query JDBCTOGCS.TEMP.SQL.QUERY
+                        SQL query for data transformation. This must use the temp view name as the table to query from.
+  --jdbctogcs.output.chartoescapequoteescaping JDBCTOGCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING
+                        Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
+                        different, \0 otherwise
+  --jdbctogcs.output.compression JDBCTOGCS.OUTPUT.COMPRESSION
+  --jdbctogcs.output.dateformat JDBCTOGCS.OUTPUT.DATEFORMAT
+                        Sets the string that indicates a date format. This applies to date type
+  --jdbctogcs.output.emptyvalue JDBCTOGCS.OUTPUT.EMPTYVALUE
+                        Sets the string representation of an empty value
+  --jdbctogcs.output.encoding JDBCTOGCS.OUTPUT.ENCODING
+                        Decodes the CSV files by the given encoding type
+  --jdbctogcs.output.escape JDBCTOGCS.OUTPUT.ESCAPE
+                        Sets a single character used for escaping quotes inside an already quoted value
+  --jdbctogcs.output.escapequotes JDBCTOGCS.OUTPUT.ESCAPEQUOTES
+                        A flag indicating whether values containing quotes should always be enclosed in quotes. Default is to escape all values containing a quote character
+  --jdbctogcs.output.header JDBCTOGCS.OUTPUT.HEADER
+                        Uses the first line of CSV file as names of columns. Defaults to True
+  --jdbctogcs.output.ignoreleadingwhitespace JDBCTOGCS.OUTPUT.IGNORELEADINGWHITESPACE
+                        A flag indicating whether or not leading whitespaces from values being read/written should be skipped
+  --jdbctogcs.output.ignoretrailingwhitespace JDBCTOGCS.OUTPUT.IGNORETRAILINGWHITESPACE
+                        A flag indicating whether or not trailing whitespaces from values being read/written should be skipped
+  --jdbctogcs.output.linesep JDBCTOGCS.OUTPUT.LINESEP
+                        Defines the line separator that should be used for parsing. Defaults to \r, \r\n and \n for reading and \n for writing
+  --jdbctogcs.output.nullvalue JDBCTOGCS.OUTPUT.NULLVALUE
+                        Sets the string representation of a null value
+  --jdbctogcs.output.quote JDBCTOGCS.OUTPUT.QUOTE
+                        Sets a single character used for escaping quoted values where the separator can be part of the value. For reading, if you would like to turn off quotations, you
+                        need to set not null but an empty string
+  --jdbctogcs.output.quoteall JDBCTOGCS.OUTPUT.QUOTEALL
+  --jdbctogcs.output.sep JDBCTOGCS.OUTPUT.SEP
+                        Sets a separator for each field and value. This separator can be one or more characters
+  --jdbctogcs.output.timestampformat JDBCTOGCS.OUTPUT.TIMESTAMPFORMAT
+                        Sets the string that indicates a timestamp with timezone format
+  --jdbctogcs.output.timestampntzformat JDBCTOGCS.OUTPUT.TIMESTAMPNTZFORMAT
+                        Sets the string that indicates a timestamp without timezone format
 ```
 ## General execution:
 

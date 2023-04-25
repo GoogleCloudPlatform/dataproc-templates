@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
-from pyspark.sql import SparkSession, DataFrame
-from pyspark import SparkContext, SparkConf
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
+
 
 __all__ = ['GCSToMONGOTemplate']
 
@@ -38,20 +40,22 @@ class GCSToMONGOTemplate(BaseTemplate):
             f'--{constants.GCS_MONGO_INPUT_LOCATION}',
             dest=constants.GCS_MONGO_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input files'
+            help='Cloud Storage location of the input files'
         )
         parser.add_argument(
             f'--{constants.GCS_MONGO_INPUT_FORMAT}',
             dest=constants.GCS_MONGO_INPUT_FORMAT,
             required=True,
-            help='Input file format (one of: avro,parquet,csv,json)',
+            help='Input file format (one of: avro,parquet,csv,json,delta)',
             choices=[
                 constants.FORMAT_AVRO,
                 constants.FORMAT_PRQT,
                 constants.FORMAT_CSV,
-                constants.FORMAT_JSON
+                constants.FORMAT_JSON,
+                constants.FORMAT_DELTA
             ]
         )
+        add_spark_options(parser, constants.get_csv_input_spark_options("gcs.mongo.input."))
         parser.add_argument(
             f'--{constants.GCS_MONGO_OUTPUT_URI}',
             dest=constants.GCS_MONGO_OUTPUT_URI,
@@ -105,8 +109,8 @@ class GCSToMONGOTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.GCS_MONGO_INPUT_LOCATION]
-        input_file_format: str = args[constants.GCS_MONGO_INPUT_FORMAT]
+        input_location: str = args[constants.GCS_MONGO_INPUT_LOCATION]
+        input_format: str = args[constants.GCS_MONGO_INPUT_FORMAT]
         output_uri:str = args[constants.GCS_MONGO_OUTPUT_URI]
         output_database:str = args[constants.GCS_MONGO_OUTPUT_DATABASE]
         output_collection:str = args[constants.GCS_MONGO_OUTPUT_COLLECTION]
@@ -121,25 +125,9 @@ class GCSToMONGOTemplate(BaseTemplate):
         )
 
         # Read
-        input_data: DataFrame
+        input_data = ingest_dataframe_from_cloud_storage(spark, args, input_location, input_format, "gcs.mongo.input.")
 
-        if input_file_format == constants.FORMAT_PRQT:
-            input_data = spark.read \
-                .parquet(input_file_location)
-        elif input_file_format == constants.FORMAT_AVRO:
-            input_data = spark.read \
-                .format(constants.FORMAT_AVRO_EXTD) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_CSV:
-            input_data = spark.read \
-                .format(constants.FORMAT_CSV) \
-                .option(constants.HEADER, True) \
-                .option(constants.INFER_SCHEMA, True) \
-                .load(input_file_location)
-        elif input_file_format == constants.FORMAT_JSON:
-            input_data = spark.read \
-                .json(input_file_location)
-
+        # Write
         input_data.write.format(constants.FORMAT_MONGO)\
             .option(constants.MONGO_URL, output_uri) \
             .option(constants.MONGO_DATABASE, output_database) \

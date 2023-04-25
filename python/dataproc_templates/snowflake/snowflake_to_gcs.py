@@ -21,20 +21,23 @@ import sys
 from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_writer_wrappers import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['SnowflakeToGCSTemplate']
 
 
 class SnowflakeToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing loads from Snowflake to GCS
+    Dataproc template implementing loads from Snowflake to Cloud Storage
     """
 
     @staticmethod
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_SF_URL}',
             dest=constants.SNOWFLAKE_TO_GCS_SF_URL,
@@ -48,14 +51,14 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             required=True,
             help='Snowflake user name'
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_SF_PASSWORD}',
             dest=constants.SNOWFLAKE_TO_GCS_SF_PASSWORD,
             required=True,
             help='Snowflake password'
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_SF_DATABASE}',
             dest=constants.SNOWFLAKE_TO_GCS_SF_DATABASE,
@@ -63,7 +66,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             default="",
             help='Snowflake database name'
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_SF_WAREHOUSE}',
             dest=constants.SNOWFLAKE_TO_GCS_SF_WAREHOUSE,
@@ -71,7 +74,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             default="",
             help='Snowflake datawarehouse name'
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_SF_AUTOPUSHDOWN}',
             dest=constants.SNOWFLAKE_TO_GCS_SF_AUTOPUSHDOWN,
@@ -79,7 +82,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             default="on",
             help='Snowflake Autopushdown (on|off)'
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_SF_SCHEMA}',
             dest=constants.SNOWFLAKE_TO_GCS_SF_SCHEMA,
@@ -87,7 +90,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             default="",
             help='Snowflake Schema, the source table belongs to'
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_SF_TABLE}',
             dest=constants.SNOWFLAKE_TO_GCS_SF_TABLE,
@@ -95,7 +98,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             default="",
             help='Snowflake table name'
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_SF_QUERY}',
             dest=constants.SNOWFLAKE_TO_GCS_SF_QUERY,
@@ -104,14 +107,14 @@ class SnowflakeToGCSTemplate(BaseTemplate):
             help='Query to be executed on Snowflake to fetch \
                 the desired dataset for migration'
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_OUTPUT_LOCATION}',
             dest=constants.SNOWFLAKE_TO_GCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS output location where the migrated data will be placed'
+            help='Cloud Storage output location where the migrated data will be placed'
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_OUTPUT_MODE}',
             dest=constants.SNOWFLAKE_TO_GCS_OUTPUT_MODE,
@@ -129,7 +132,7 @@ class SnowflakeToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_OUTPUT_FORMAT}',
             dest=constants.SNOWFLAKE_TO_GCS_OUTPUT_FORMAT,
@@ -147,38 +150,39 @@ class SnowflakeToGCSTemplate(BaseTemplate):
                 constants.FORMAT_JSON
             ]
         )
-        
+
         parser.add_argument(
             f'--{constants.SNOWFLAKE_TO_GCS_PARTITION_COLUMN}',
             dest=constants.SNOWFLAKE_TO_GCS_PARTITION_COLUMN,
             required=False,
             default="",
-            help='Column name to partition data by, in GCS bucket'
+            help='Column name to partition data by, in Cloud Storage bucket'
         )
-        
+        add_spark_options(parser, constants.get_csv_output_spark_options("snowflake.gcs.output."))
+
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
-        
-        if ((not getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_DATABASE) 
-                or not getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_SCHEMA) 
+
+        if ((not getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_DATABASE)
+                or not getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_SCHEMA)
                 or not getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_TABLE))
             and not getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_QUERY)):
 
             sys.exit("ArgumentParser Error: Either of snowflake.to.gcs.sf.database, snowflake.to.gcs.sf.schema and snowflake.to.gcs.sf.table "
                         + "OR snowflake.to.gcs.sf.query needs to be provided as argument to read data from Snowflake")
-            
-        elif ((getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_DATABASE) 
-                or getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_SCHEMA) 
+
+        elif ((getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_DATABASE)
+                or getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_SCHEMA)
                 or getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_TABLE))
             and getattr(known_args, constants.SNOWFLAKE_TO_GCS_SF_QUERY)):
-            
+
             sys.exit("ArgumentParser Error: All three snowflake.to.gcs.sf.database, snowflake.to.gcs.sf.schema and snowflake.to.gcs.sf.table "
                         + "AND snowflake.to.gcs.sf.query cannot be provided as arguments at the same time.")
 
         return vars(known_args)
-    
+
     def get_read_options(self, logger: Logger, args: Dict[str, Any]) -> "tuple[DataFrame, DataFrame]":
-        
+
         # Arguments
         sf_url: str = args[constants.SNOWFLAKE_TO_GCS_SF_URL]
         sf_user: str = args[constants.SNOWFLAKE_TO_GCS_SF_USER]
@@ -193,11 +197,11 @@ class SnowflakeToGCSTemplate(BaseTemplate):
         ignore_keys = {constants.SNOWFLAKE_TO_GCS_SF_USER, constants.SNOWFLAKE_TO_GCS_SF_PASSWORD}
         filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
-            "Starting Snowflake to GCS spark job with parameters:\n"
+            "Starting Snowflake to Cloud Storage Spark job with parameters:\n"
             f"{pprint.pformat(filtered_args)}"
         )
-        
-        sf_options = { 
+
+        sf_options = {
                      "sfURL" : sf_url,
                      "sfUser" : sf_user,
                      "sfPassword" : sf_pwd,
@@ -206,92 +210,77 @@ class SnowflakeToGCSTemplate(BaseTemplate):
                      "sfWarehouse" : sf_warehouse,
                      "autopushdown" : sf_autopushdown
                     }
-        
+
         data_options = {
             "dbtable" : sf_table,
             "query" : sf_query
         }
-        
+
         return sf_options, data_options
-       
+
+
     def read_data(self, logger: Logger, spark: SparkSession, sf_opt: Dict[str,Any], data_opt: Dict[str,Any] ) -> DataFrame:
-        
+
         if not sf_opt or not data_opt:
             sys.exit("There seems to be an issue in fetching read options. Read options cannot be empty \n")
-            
+
         # Read
         logger.info(
             "Starting process of reading data from source \n"
         )
-        
+
         input_data: DataFrame = spark.read.format(constants.FORMAT_SNOWFLAKE) \
             .options(**sf_opt)
-        
+
         if data_opt["dbtable"]:
             input_data = input_data.option("dbtable",data_opt["dbtable"])
         else:
             input_data = input_data.option("query",data_opt["query"])
-            
-        input_data = input_data.load()        
+
+        input_data = input_data.load()
         count = input_data.count()
-        
+
         if not count :
             sys.exit("The input dataframe is empty. The table is either empty or there is no data for the selected filters")
         else:
             logger.info(
             "Data from source has been read successfully \n"
             )
-            
+
         return input_data
-            
-    def write_data(self, logger: Logger, args: Dict[str, Any], input_data: DataFrame) -> None:   
-        
-        gcs_output_format: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_FORMAT]
-        gcs_output_location: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_LOCATION]
-        gcs_output_mode: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_MODE]
-        gcs_partition_col: str = args[constants.SNOWFLAKE_TO_GCS_PARTITION_COLUMN]
-                    
+
+
+    def write_data(self, logger: Logger, args: Dict[str, Any], input_data: DataFrame) -> None:
+
+        output_format: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_FORMAT]
+        output_location: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_LOCATION]
+        output_mode: str = args[constants.SNOWFLAKE_TO_GCS_OUTPUT_MODE]
+        partition_col: str = args[constants.SNOWFLAKE_TO_GCS_PARTITION_COLUMN]
+
         # Write
         logger.info(
-            "Starting process of writing data to GCS \n"
+            "Starting process of writing data to Cloud Storage \n"
         )
-        
-        if gcs_partition_col:
-            writer: DataFrameWriter = input_data.write.mode(gcs_output_mode) \
-                .partitionBy(gcs_partition_col)
+
+        if partition_col:
+            writer: DataFrameWriter = input_data.write.mode(output_mode) \
+                .partitionBy(partition_col)
         else:
-            writer: DataFrameWriter = input_data.write.mode(gcs_output_mode)
+            writer: DataFrameWriter = input_data.write.mode(output_mode)
 
-        if gcs_output_format == constants.FORMAT_PRQT:
-            writer \
-                .parquet(gcs_output_location)
-        elif gcs_output_format == constants.FORMAT_AVRO:
-            writer \
-                .format(constants.FORMAT_AVRO) \
-                .save(gcs_output_location)
-        elif gcs_output_format == constants.FORMAT_CSV:
-            writer \
-                .option(constants.HEADER, True) \
-                .csv(gcs_output_location)
-        elif gcs_output_format == constants.FORMAT_JSON:
-            writer \
-                .json(gcs_output_location)
-                
+        persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "snowflake.gcs.output.")
+
         logger.info(
-            "Data from source has been loaded to GCS successfully"
+            "Data from source has been loaded to Cloud Storage successfully"
         )
 
 
-    def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:  
-        
-        logger: Logger = self.get_logger(spark=spark)  
-        
+    def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
+
+        logger: Logger = self.get_logger(spark=spark)
+
         sf_options, data_options = self.get_read_options(logger, args)
-        
+
         input_data = self.read_data(logger, spark, sf_options, data_options)
-        
+
         self.write_data(logger, args, input_data)
-        
-        
-        
-        
