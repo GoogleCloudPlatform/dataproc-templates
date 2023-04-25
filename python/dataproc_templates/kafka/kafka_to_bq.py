@@ -85,9 +85,11 @@ class KafkaToBigQueryTemplate(BaseTemplate):
 
         logger: Logger = self.get_logger(spark=spark)
 
+        ignore_keys = {constants.KAFKA_BOOTSTRAP_SERVERS}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting Kafka to Bigquery Pyspark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         #arguments
