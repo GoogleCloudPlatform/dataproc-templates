@@ -23,7 +23,30 @@ pipeline {
                     steps {
                             catchError {
                                 sh '''
-                                    
+                                    gcloud pubsub lite-topics publish psltobt \
+                                        --location=us-west1 \
+                                        --message=\'\'\'
+                                        { 
+                                            "rowkey":"rk1",
+                                            "columns": [
+                                                {
+                                                    "columnfamily":"place",
+                                                    "columnname":"city",
+                                                    "columnvalue":"Bangalore"
+                                                },
+                                                {
+                                                    "columnfamily":"place",
+                                                    "columnname":"state",
+                                                    "columnvalue":"Karnataka"
+                                                },
+                                                {
+                                                    "columnfamily":"date",
+                                                    "columnname":"year",
+                                                    "columnvalue":"2023"
+                                                }
+                                            ] 
+                                        }
+                                        \'\'\'
                                 '''
                             }
                     }
@@ -428,6 +451,33 @@ pipeline {
                                         --gcs.to.gcs.output.mode="overwrite" \
                                         --gcs.to.gcs.temp.view.name="dataset" \
                                         --gcs.to.gcs.sql.query="select * from dataset where sal>1500"'''
+                                }
+                            }
+                            stage('PUB/SUB LITE TO BIGTABLE') {
+                                steps{
+                                    sh '''
+                                    
+                                        python3.8 -m pip install --user virtualenv    
+    
+                                        python3.8 -m venv env
+    
+                                        source env/bin/activate
+                                        
+                                        export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                        export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-LATEST-with-dependencies.jar"
+                                        export SKIP_BUILD=true
+    
+                                        cd python
+
+                                        ./bin/start.sh \
+                                        -- --template=PUBSUBLITETOBIGTABLE \
+                                        --pubsublite.bigtable.subscription.path=projects/$GCP_PROJECT/locations/$REGION/subscriptions/psltobt-sub \
+                                        --pubsublite.bigtable.streaming.checkpoint.location="gs://dataproc-templates/integration-testing/psltobt/checkpoint" \
+                                        --pubsublite.bigtable.output.project=$GCP_PROJECT \
+                                        --pubsublite.bigtable.output.instance=$ENV_TEST_BIGTABLE_INSTANCE \
+                                        --pubsublite.bigtable.output.table="output_table" \
+                                        --pubsublite.bigtable.streaming.timeout=20
+                                    '''
                                 }
                             }
 

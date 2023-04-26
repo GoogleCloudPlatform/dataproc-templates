@@ -34,7 +34,7 @@ class TestPubSubLiteToGCSTemplate:
              "--pubsublite.to.gcs.write.mode=append",
              "--pubsublite.to.gcs.output.location=gs://test",
              "--pubsublite.to.gcs.checkpoint.location=gs://test-checkpoint",
-             "--pubsublite.to.gcs.output.format=csv",
+             "--pubsublite.to.gcs.output.format=json",
              "--pubsublite.to.gcs.timeout=120",
              "--pubsublite.to.gcs.processing.time=1"
              ])
@@ -43,7 +43,7 @@ class TestPubSubLiteToGCSTemplate:
         assert parsed_args["pubsublite.to.gcs.write.mode"] == "append"
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
         assert parsed_args["pubsublite.to.gcs.checkpoint.location"] == "gs://test-checkpoint"
-        assert parsed_args["pubsublite.to.gcs.output.format"] == "csv"
+        assert parsed_args["pubsublite.to.gcs.output.format"] == "json"
         assert parsed_args["pubsublite.to.gcs.timeout"] == 120
         assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
 
@@ -64,7 +64,7 @@ class TestPubSubLiteToGCSTemplate:
         assert parsed_args["pubsublite.to.gcs.write.mode"] == "append"
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
         assert parsed_args["pubsublite.to.gcs.checkpoint.location"] == "gs://test-checkpoint"
-        assert parsed_args["pubsublite.to.gcs.output.format"] == "csv"
+        assert parsed_args["pubsublite.to.gcs.output.format"] == "json"
         assert parsed_args["pubsublite.to.gcs.timeout"] == 120
         assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
 
@@ -76,7 +76,7 @@ class TestPubSubLiteToGCSTemplate:
             ["--pubsublite.to.gcs.input.subscription.url=test-sub",
              "--pubsublite.to.gcs.output.location=gs://test",
              "--pubsublite.to.gcs.checkpoint.location=gs://test-checkpoint",
-             "--pubsublite.to.gcs.output.format=csv",
+             "--pubsublite.to.gcs.output.format=json",
              "--pubsublite.to.gcs.timeout=120",
              "--pubsublite.to.gcs.processing.time=1"
              ])
@@ -85,6 +85,6 @@ class TestPubSubLiteToGCSTemplate:
         assert parsed_args["pubsublite.to.gcs.write.mode"] == "append"
         assert parsed_args["pubsublite.to.gcs.output.location"] == "gs://test"
         assert parsed_args["pubsublite.to.gcs.checkpoint.location"] == "gs://test-checkpoint"
-        assert parsed_args["pubsublite.to.gcs.output.format"] == "csv"
+        assert parsed_args["pubsublite.to.gcs.output.format"] == "json"
         assert parsed_args["pubsublite.to.gcs.timeout"] == 120
         assert parsed_args["pubsublite.to.gcs.processing.time"] == "1"
