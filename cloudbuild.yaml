@@ -27,25 +27,33 @@ steps:
     dir: '${_REPO}/python'
     id: build-python-egg
   - name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
     args:
-      - cp
-      - 'gs://${_PUBLIC_BUCKET}/latest/python/*'
-      - 'gs://${_PUBLIC_BUCKET}/${_VERSION}/python/'
-    id: archive-python
+      - '-c'
+      - |
+        gsutil cp ${_REPO}/python/main.py gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/  
+    id: cp-python-main-to-gcs-tag-folder
   - name: gcr.io/cloud-builders/gsutil
     args:
       - cp
       - main.py
-      - 'gs://${_PUBLIC_BUCKET}/latest/python/'
+      - 'gs://${_PUBLIC_BUCKET}/latest_tmp/python/'
     dir: '${_REPO}/python'
-    id: cp-python-main-to-gcs
+    id: cp-python-main-to-gcs-latest-folder
+  - name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gsutil cp ${_REPO}/python/${_BINARY_PREFIX}.egg gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/
+    id: cp-python-egg-to-gcs-tag-folder
   - name: gcr.io/cloud-builders/gsutil
     args:
       - cp
       - '${_BINARY_PREFIX}.egg'
-      - 'gs://${_PUBLIC_BUCKET}/latest/python/'
+      - 'gs://${_PUBLIC_BUCKET}/latest_tmp/python/'
     dir: '${_REPO}/python'
-    id: cp-python-egg-to-gcs
+    id: cp-python-egg-to-gcs-latest-folder
   - name: 'gcr.io/cloud-builders/mvn:3.5.0-jdk-8'
     args:
       - package
@@ -53,15 +61,16 @@ steps:
     dir: '${_REPO}/java'
     id: build-java-jar
   - name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
     args:
-      - cp
-      - 'gs://${_PUBLIC_BUCKET}/latest/java/*'
-      - 'gs://${_PUBLIC_BUCKET}/${_VERSION}/java/'
-    id: archive-java
+      - '-c'
+      - |
+        gsutil cp ${_REPO}/java/target/dataproc-templates-1.0-SNAPSHOT.jar gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/java/
+    id: cp-java-egg-to-gcs-tag-folder
   - name: gcr.io/cloud-builders/gsutil
     args:
       - cp
       - dataproc-templates-1.0-SNAPSHOT.jar
-      - 'gs://${_PUBLIC_BUCKET}/latest/java/${_BINARY_PREFIX}.jar'
+      - 'gs://${_PUBLIC_BUCKET}/latest_tmp/java/${_BINARY_PREFIX}.jar'
     dir: '${_REPO}/java/target'
-    id: cp-java-jar-to-gcs
+    id: cp-java-jar-to-gcs-latest-folder

@@ -194,9 +194,11 @@ class SnowflakeToGCSTemplate(BaseTemplate):
         sf_table: str = args[constants.SNOWFLAKE_TO_GCS_SF_TABLE]
         sf_query: str = args[constants.SNOWFLAKE_TO_GCS_SF_QUERY]
 
+        ignore_keys = {constants.SNOWFLAKE_TO_GCS_SF_USER, constants.SNOWFLAKE_TO_GCS_SF_PASSWORD}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting Snowflake to Cloud Storage Spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         sf_options = {
