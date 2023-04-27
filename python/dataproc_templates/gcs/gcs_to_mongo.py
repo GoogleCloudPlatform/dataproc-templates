@@ -117,9 +117,11 @@ class GCSToMONGOTemplate(BaseTemplate):
         output_mode:str = args[constants.GCS_MONGO_OUTPUT_MODE]
         batch_size:int = args[constants.GCS_MONGO_BATCH_SIZE]
 
+        ignore_keys = {constants.GCS_MONGO_OUTPUT_URI}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting GCS to MONGO spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Read
