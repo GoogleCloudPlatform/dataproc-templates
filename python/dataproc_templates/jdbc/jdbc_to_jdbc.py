@@ -190,9 +190,11 @@ class JDBCToJDBCTemplate(BaseTemplate):
         temp_view: str = args[constants.JDBCTOGCS_TEMP_VIEW_NAME]
         sql_query: str = args[constants.JDBCTOJDBC_SQL_QUERY]
 
+        ignore_keys = {constants.JDBCTOJDBC_INPUT_URL, constants.JDBCTOJDBC_OUTPUT_URL}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting JDBC to JDBC spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Read
