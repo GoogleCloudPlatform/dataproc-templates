@@ -15,12 +15,10 @@
 from abc import ABC as AbstractClass, abstractmethod
 from decimal import Decimal
 import math
-from typing import List, Optional, Tuple, TYPE_CHECKING
+from typing import List, Optional, Tuple
 
 import pandas as pd
-
-if TYPE_CHECKING:
-    import sqlalchemy
+import sqlalchemy
 
 
 SPARK_PARTITION_COLUMN = "partitionColumn"
@@ -175,10 +173,10 @@ class JDBCInputManagerInterface(AbstractClass):
         """Return row count for a table."""
         sql = self._get_count_sql(table)
         if sa_connection:
-            row = sa_connection.execute(sql).fetchone()
+            row = sa_connection.execute(sqlalchemy.text(sql)).fetchone()
         else:
             with self._alchemy_db.connect() as conn:
-                row = conn.execute(sql).fetchone()
+                row = conn.execute(sqlalchemy.text(sql)).fetchone()
         return row[0] if row else row
 
     def _get_table_min(
@@ -190,10 +188,10 @@ class JDBCInputManagerInterface(AbstractClass):
         """Return min(column) for a table."""
         sql = self._get_min_sql(table, column)
         if sa_connection:
-            row = sa_connection.execute(sql).fetchone()
+            row = sa_connection.execute(sqlalchemy.text(sql)).fetchone()
         else:
             with self._alchemy_db.connect() as conn:
-                row = conn.execute(sql).fetchone()
+                row = conn.execute(sqlalchemy.text(sql)).fetchone()
         return row[0] if row else row
 
     def _get_table_max(
@@ -205,10 +203,10 @@ class JDBCInputManagerInterface(AbstractClass):
         """Return max(column) for a table."""
         sql = self._get_max_sql(table, column)
         if sa_connection:
-            row = sa_connection.execute(sql).fetchone()
+            row = sa_connection.execute(sqlalchemy.text(sql)).fetchone()
         else:
             with self._alchemy_db.connect() as conn:
-                row = conn.execute(sql).fetchone()
+                row = conn.execute(sqlalchemy.text(sql)).fetchone()
         return row[0] if row else row
 
     def _read_partitioning_num_partitions(self, row_count: int, stride: int) -> int:

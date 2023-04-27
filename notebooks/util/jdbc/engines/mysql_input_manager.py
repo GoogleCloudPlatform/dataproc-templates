@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import re
 from textwrap import dedent
-from typing import List, Optional, Tuple, TYPE_CHECKING
+from typing import List, Optional, Tuple
+
+import sqlalchemy
 
 from util.jdbc.jdbc_input_manager_interface import (
     JDBCInputManagerInterface,
@@ -25,9 +26,6 @@ from util.jdbc.jdbc_input_manager_interface import (
     SPARK_UPPER_BOUND,
     PARTITION_COMMENT,
 )
-
-if TYPE_CHECKING:
-    import sqlalchemy
 
 
 class MySQLInputManager(JDBCInputManagerInterface):
@@ -45,7 +43,7 @@ class MySQLInputManager(JDBCInputManagerInterface):
         with self._alchemy_db.connect() as conn:
             schema = self._normalise_schema_filter(schema_filter, conn)
             sql = f"show tables;"
-            rows = conn.execute(sql).fetchall()
+            rows = conn.execute(sqlalchemy.text(sql)).fetchall()
             tables = [_[0] for _ in rows] if rows else rows
             return schema, self._filter_table_list(tables, table_filter)
 
@@ -130,10 +128,10 @@ class MySQLInputManager(JDBCInputManagerInterface):
             )
         )
         if sa_connection:
-            row = sa_connection.execute(sql).fetchone()
+            row = sa_connection.execute(sqlalchemy.text(sql)).fetchone()
         else:
             with self._alchemy_db.connect() as conn:
-                row = conn.execute(sql).fetchone()
+                row = conn.execute(sqlalchemy.text(sql)).fetchone()
         return row[0] if row else row
 
     def _get_primary_keys(self) -> dict:
@@ -145,7 +143,7 @@ class MySQLInputManager(JDBCInputManagerInterface):
         with self._alchemy_db.connect() as conn:
             for table in self._table_list:
                 sql = "SHOW KEYS FROM {} WHERE Key_name = 'PRIMARY'".format(table)
-                rows = conn.execute(sql, own=self._schema, tab=table).fetchall()
+                rows = conn.execute(sqlalchemy.text(sql)).fetchall()
                 if rows:
                     pk_dict[table] = [_[4] for _ in rows]
             return pk_dict
@@ -167,10 +165,10 @@ class MySQLInputManager(JDBCInputManagerInterface):
             )
         )
         if sa_connection:
-            row = sa_connection.execute(sql, own=self._schema, tab=table).fetchone()
+            row = sa_connection.execute(sqlalchemy.text(sql)).fetchone()
         else:
             with self._alchemy_db.connect() as conn:
-                row = conn.execute(sql, own=self._schema, tab=table).fetchone()
+                row = conn.execute(sqlalchemy.text(sql)).fetchone()
         return row[0] if row else row
 
     def _normalise_column_name(
@@ -190,7 +188,7 @@ class MySQLInputManager(JDBCInputManagerInterface):
                 self._schema, table, column
             )
         )
-        row = sa_connection.execute(sql).fetchone()
+        row = sa_connection.execute(sqlalchemy.text(sql)).fetchone()
         return row[0] if row else row
 
     def _normalise_schema_filter(
@@ -198,7 +196,7 @@ class MySQLInputManager(JDBCInputManagerInterface):
     ) -> str:
         """Not used for MySQL."""
         sql = "SELECT DATABASE()"
-        row = sa_connection.execute(sql).fetchone()
+        row = sa_connection.execute(sqlalchemy.text(sql)).fetchone()
         if row and schema_filter and schema_filter.upper() != row[0].upper():
             raise JDBCInputManagerException(
                 f"Schema filter does not match connected database: {schema_filter} != {row[0]}"

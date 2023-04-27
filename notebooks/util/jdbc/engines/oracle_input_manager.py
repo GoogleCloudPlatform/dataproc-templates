@@ -14,7 +14,9 @@
 
 import re
 from textwrap import dedent
-from typing import List, Optional, Tuple, TYPE_CHECKING
+from typing import List, Optional, Tuple
+
+import sqlalchemy
 
 from util.jdbc.jdbc_input_manager_interface import (
     JDBCInputManagerInterface,
@@ -25,9 +27,6 @@ from util.jdbc.jdbc_input_manager_interface import (
     SPARK_UPPER_BOUND,
     PARTITION_COMMENT,
 )
-
-if TYPE_CHECKING:
-    import sqlalchemy
 
 
 class OracleInputManager(JDBCInputManagerInterface):
@@ -47,10 +46,10 @@ class OracleInputManager(JDBCInputManagerInterface):
             not_like_filter = "table_name NOT LIKE 'DR$SUP_TEXT_IDX%'"
             if schema_filter:
                 sql = f"SELECT table_name FROM all_tables WHERE owner = :own AND {not_like_filter}"
-                rows = conn.execute(sql, own=schema).fetchall()
+                rows = conn.execute(sqlalchemy.text(sql), {"own": schema}).fetchall()
             else:
                 sql = f"SELECT table_name FROM user_tables WHERE {not_like_filter}"
-                rows = conn.execute(sql).fetchall()
+                rows = conn.execute(sqlalchemy.text(sql)).fetchall()
             tables = [_[0] for _ in rows] if rows else rows
             return schema, self._filter_table_list(tables, table_filter)
 
@@ -136,12 +135,13 @@ class OracleInputManager(JDBCInputManagerInterface):
         )
         if sa_connection:
             row = sa_connection.execute(
-                sql, own=self._schema, tab=table, col=column
+                sqlalchemy.text(sql), {"own": self._schema, "tab": table, "col": column}
             ).fetchone()
         else:
             with self._alchemy_db.connect() as conn:
                 row = conn.execute(
-                    sql, own=self._schema, tab=table, col=column
+                    sqlalchemy.text(sql),
+                    {"own": self._schema, "tab": table, "col": column},
                 ).fetchone()
         return self._normalise_oracle_data_type(row[0]) if row else row
 
@@ -168,7 +168,9 @@ class OracleInputManager(JDBCInputManagerInterface):
         )
         with self._alchemy_db.connect() as conn:
             for table in self._table_list:
-                rows = conn.execute(sql, own=self._schema, tab=table).fetchall()
+                rows = conn.execute(
+                    sqlalchemy.text(sql), {"own": self._schema, "tab": table}
+                ).fetchall()
                 if rows:
                     pk_dict[table] = [_[0] for _ in rows]
             return pk_dict
@@ -188,10 +190,14 @@ class OracleInputManager(JDBCInputManagerInterface):
             """
         )
         if sa_connection:
-            row = sa_connection.execute(sql, own=self._schema, tab=table).fetchone()
+            row = sa_connection.execute(
+                sqlalchemy.text(sql), {"own": self._schema, "tab": table}
+            ).fetchone()
         else:
             with self._alchemy_db.connect() as conn:
-                row = conn.execute(sql, own=self._schema, tab=table).fetchone()
+                row = conn.execute(
+                    sqlalchemy.text(sql), {"own": self._schema, "tab": table}
+                ).fetchone()
         return row[0] if row else row
 
     def _normalise_column_name(
@@ -209,7 +215,7 @@ class OracleInputManager(JDBCInputManagerInterface):
             AND UPPER(column_name) = UPPER(:col)"""
         )
         row = sa_connection.execute(
-            sql, own=self._schema, tab=table, col=column
+            sqlalchemy.text(sql), {"own": self._schema, "tab": table, "col": column}
         ).fetchone()
         return row[0] if row else row
 
@@ -227,14 +233,16 @@ class OracleInputManager(JDBCInputManagerInterface):
         if schema_filter:
             # Assuming there will not be multiple schemas of the same name in different case.
             sql = "SELECT username FROM all_users WHERE UPPER(username) = UPPER(:b1) ORDER BY username"
-            row = sa_connection.execute(sql, b1=schema_filter).fetchone()
+            row = sa_connection.execute(
+                sqlalchemy.text(sql), {"b1": schema_filter}
+            ).fetchone()
             if not row:
                 raise JDBCInputManagerException(
                     f"Schema filter does not match any Oracle schemas: {schema_filter}"
                 )
         else:
             sql = "SELECT USER FROM dual"
-            row = sa_connection.execute(sql).fetchone()
+            row = sa_connection.execute(sqlalchemy.text(sql)).fetchone()
         return row[0] if row else row
 
     # Public methods
