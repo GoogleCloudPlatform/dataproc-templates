@@ -104,9 +104,11 @@ class KafkaToGCSTemplate(BaseTemplate):
         offset:str = args[constants.KAFKA_STARTING_OFFSET]
         checkpoint_loc: str = args[constants.KAFKA_GCS_CHECKPOINT_LOCATION]
 
+        ignore_keys = {constants.KAFKA_GCS_BOOTSTRAP_SERVERS}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting Kafka to GCS Pyspark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
 
