@@ -109,7 +109,7 @@ def parse_args() -> argparse.Namespace:
     return vars(known_args)
 
 
-def get_env_var(known_args) -> argparse.Namespace:
+def get_common_var(known_args) -> argparse.Namespace:
     """
     Get the environment variable.
     """
@@ -118,6 +118,9 @@ def get_env_var(known_args) -> argparse.Namespace:
     known_args[constants.GCS_STAGING_LOCATION] = "gs://" + \
         environ[constants.GCS_STAGING_LOCATION]
     known_args[constants.SUBNET] = environ[constants.SUBNET]
+    known_args[constants.NOT_PARAMETERIZED] = False
+
+    return known_args
 
 
 def run(known_args) -> None:
@@ -146,7 +149,7 @@ def main():
     )
 
     # Get environment variables
-    get_env_var(known_args)
+    known_args = get_common_var(known_args)
 
     # Run the notebook
     run(known_args)
