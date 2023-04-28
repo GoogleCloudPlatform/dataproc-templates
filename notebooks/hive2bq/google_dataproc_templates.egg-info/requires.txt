@@ -1,0 +1,2 @@
+pyspark>=3.2.0
+google-cloud-bigquery>=3.4.0
