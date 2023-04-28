@@ -1,4 +1,9 @@
 # Common
+GCP_PROJECT = "GCP_PROJECT"
+PROJECT = "PROJECT"
+REGION = "REGION"
+GCS_STAGING_LOCATION = "GCS_STAGING_LOCATION"
+SUBNET = "SUBNET"
 
 # max number of tables which will migrated parallelly
 MAX_PARALLELISM = "MAX_PARALLELISM"
