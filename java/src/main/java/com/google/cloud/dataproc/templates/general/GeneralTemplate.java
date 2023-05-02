@@ -66,7 +66,7 @@ public class GeneralTemplate implements BaseTemplate {
    */
   @Override
   public void runTemplate() {
-    validateInput();
+
     try (SparkSession spark = SparkSession.builder().appName("Generic Template").getOrCreate()) {
       this.run(spark);
     }

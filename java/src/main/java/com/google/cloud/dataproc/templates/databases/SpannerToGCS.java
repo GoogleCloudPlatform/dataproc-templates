@@ -53,6 +53,7 @@ public class SpannerToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
+
     JdbcDialects.registerDialect(new SpannerJdbcDialect());
 
     SparkSession spark = SparkSession.builder().appName("DatabaseToGCS Dataproc job").getOrCreate();

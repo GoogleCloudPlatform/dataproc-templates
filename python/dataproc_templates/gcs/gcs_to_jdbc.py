@@ -124,9 +124,11 @@ class GCSToJDBCTemplate(BaseTemplate):
         batch_size: int = args[constants.GCS_JDBC_BATCH_SIZE]
         jdbc_numpartitions: int = args[constants.GCS_JDBC_NUMPARTITIONS]
 
+        ignore_keys = {constants.GCS_JDBC_OUTPUT_URL}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting Cloud Storage to JDBC Spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Read
