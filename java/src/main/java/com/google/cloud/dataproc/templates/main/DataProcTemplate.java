@@ -205,7 +205,6 @@ public class DataProcTemplate {
    * Run spark job for template.
    *
    * @param template the template to run.
-   * @throws Exception
    */
   static void runSparkJob(BaseTemplate template)
       throws IllegalArgumentException, StreamingQueryException, TimeoutException, SQLException,
