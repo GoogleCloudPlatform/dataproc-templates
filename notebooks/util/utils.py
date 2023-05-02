@@ -62,3 +62,33 @@ def get_migration_workflow_status(name):
     response = client.get_migration_workflow(request=request)
     # Return the response
     return response
+
+def get_gcs_file_as_string(bucket,path):
+    import io
+    import os
+    from google.cloud import storage
+    # Create a storage client object.
+    client = storage.Client()
+    # Get the bucket object for the bucket that contains the text file.
+    bucket = client.get_bucket(bucket)
+    # Get the blob object for the text file.
+    blob = bucket.blob(path)
+    # Read the text file into a string.
+    text = blob.download_as_string().decode("utf-8")
+    # Return the text.
+    return text
+
+def run_bq_query(query):
+    # Import the necessary modules.
+    import io
+    import os
+    from google.cloud import bigquery
+    # Create a BigQuery client object.
+    client = bigquery.Client()
+    # Run the SQL query.
+    job = client.query(query)
+    # Wait for the job to finish.
+    job.result()
+    # Print the results of the query.
+    results = job.to_dataframe()
+    return results
