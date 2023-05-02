@@ -148,10 +148,19 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * @throws Exception if values no value is passed for --dataplexEntity
    */
   public void validateInput() {
-    if (sourceEntity != null) {
-      this.sourceEntity = sourceEntity;
-    } else {
-      throw new DataprocTemplateException(String.format("Please specify %s", ENTITY_OPTION));
+    if (sourceEntity == null || projectId == null) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Please specify the %s property",
+              (sourceEntity == null && projectId != null) ? ENTITY_OPTION : PROJECT_ID_PROP));
+    }
+    if (targetDataset == null && targetAsset == null && targetEntity == null) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Please specify one of %s, %s or %s properties",
+              DATAPLEX_GCS_BQ_TARGET_DATASET,
+              DATAPLEX_GCS_BQ_TARGET_ASSET,
+              DATAPLEX_GCS_BQ_TARGET_ENTITY));
     }
   }
 
@@ -448,6 +457,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   }
 
   public void runTemplate() {
+
     try {
       this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
 
@@ -455,7 +465,6 @@ public class DataplexGCStoBQ implements BaseTemplate {
       this.spark.sparkContext().setLogLevel(sparkLogLevel);
 
       this.sqlContext = new SQLContext(spark);
-      validateInput();
 
       this.sourceEntityUtil = new DataplexEntityUtil(this.sourceEntity);
       this.sourceEntityBasePath = sourceEntityUtil.getBasePathEntityData();

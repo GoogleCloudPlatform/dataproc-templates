@@ -45,7 +45,7 @@ public class CassandraToGCS implements BaseTemplate, TemplateConstants {
 
   @Override
   public void runTemplate() throws StreamingQueryException, TimeoutException {
-    validateInput();
+
     Dataset dataset;
     SparkSession spark =
         SparkSession.builder()

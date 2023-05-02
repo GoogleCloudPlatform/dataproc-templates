@@ -58,8 +58,6 @@ public class S3ToBigQuery implements BaseTemplate {
   @Override
   public void runTemplate() {
 
-    validateInput();
-
     SparkSession spark = SparkSession.builder().appName("S3 to Bigquery load").getOrCreate();
 
     // Set log level

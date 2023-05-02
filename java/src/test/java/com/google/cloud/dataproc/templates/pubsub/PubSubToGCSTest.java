@@ -56,7 +56,7 @@ public class PubSubToGCSTest {
     pubSubToGCS = new PubSubToGCS();
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> pubSubToGCS.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> pubSubToGCS.validateInput());
     assertEquals(
         "Required parameters for PubSubToGCS not passed. "
             + "Set mandatory parameter for PubSubToGCS template "
