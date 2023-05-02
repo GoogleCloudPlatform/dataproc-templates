@@ -155,9 +155,11 @@ class JDBCToBigQueryTemplate(BaseTemplate):
         input_jdbc_sessioninitstatement: str = args[constants.JDBC_BQ_SESSIONINITSTATEMENT]
         output_mode: str = args[constants.JDBC_BQ_OUTPUT_MODE]
 
+        ignore_keys = {constants.JDBC_BQ_INPUT_URL}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting JDBC to BigQuery Spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Read
