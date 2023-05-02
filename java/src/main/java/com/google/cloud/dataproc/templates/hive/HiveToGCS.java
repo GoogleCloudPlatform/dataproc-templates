@@ -65,8 +65,6 @@ public class HiveToGCS implements BaseTemplate {
   @Override
   public void runTemplate() {
 
-    validateInput();
-
     // Confiure spark session to read from hive.
     SparkSession spark =
         SparkSession.builder().appName("Spark HiveToGcs Job").enableHiveSupport().getOrCreate();

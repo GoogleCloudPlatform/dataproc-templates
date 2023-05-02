@@ -67,7 +67,6 @@ public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable 
   @Override
   public void runTemplate() throws InterruptedException, TimeoutException, StreamingQueryException {
 
-    validateInput();
     // Initialize the Spark session
     SparkSession spark =
         SparkSession.builder().appName("Spark PubSubLiteToGCS Demo Job").getOrCreate();

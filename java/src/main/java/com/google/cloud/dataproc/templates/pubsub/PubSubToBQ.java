@@ -74,8 +74,6 @@ public class PubSubToBQ implements BaseTemplate {
   @Override
   public void runTemplate() throws InterruptedException {
 
-    validateInput();
-
     JavaStreamingContext jsc;
 
     SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigQuery Dataproc Job");
