@@ -42,10 +42,8 @@ public class JDBCToJDBC implements BaseTemplate {
 
   public static JDBCToJDBC of(String... args) {
     JDBCToJDBCConfig config = JDBCToJDBCConfig.fromProperties(PropertyUtil.getProperties());
-    JDBCToJDBC configObject = new JDBCToJDBC(config);
-    configObject.validateInput();
     LOGGER.info("Config loaded\n{}", config);
-    return configObject;
+    return new JDBCToJDBC(config);
   }
 
   @Override

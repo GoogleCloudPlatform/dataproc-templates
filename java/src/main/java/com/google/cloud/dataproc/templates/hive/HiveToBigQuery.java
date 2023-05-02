@@ -55,8 +55,6 @@ public class HiveToBigQuery implements BaseTemplate {
   @Override
   public void runTemplate() {
 
-    validateInput();
-
     // Initialize Spark session
     SparkSession spark =
         SparkSession.builder()

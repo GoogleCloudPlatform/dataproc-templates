@@ -66,7 +66,8 @@ public class PubSubLiteToBigTableTest {
     pubSubLiteToBigTableTest = new PubSubLiteToBigTable();
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> pubSubLiteToBigTableTest.runTemplate());
+        assertThrows(
+            IllegalArgumentException.class, () -> pubSubLiteToBigTableTest.validateInput());
     assertEquals(
         "Required parameters for PubSubLiteToBigTable not passed. "
             + "Set mandatory parameter for PubSubLiteToBigTable template "

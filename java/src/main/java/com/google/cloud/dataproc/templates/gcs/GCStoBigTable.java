@@ -56,7 +56,6 @@ public class GCStoBigTable implements BaseTemplate, java.io.Serializable {
 
   @Override
   public void runTemplate() {
-    validateInput();
 
     SparkSession spark = null;
     LOGGER.info("input format: {}", inputFileFormat);
