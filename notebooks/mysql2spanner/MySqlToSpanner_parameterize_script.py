@@ -37,8 +37,9 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         parser.add_argument(
             f'--{constants.OUTPUT_NOTEBOOK_ARG}',
             dest=constants.OUTPUT_NOTEBOOK_ARG,
-            required=True,
-            help='Path to save executed notebook (created if it does not exist)'
+            required=False,
+            default=None,
+            help='Path to save executed notebook (Default: None)'
         )
 
         parser.add_argument(
@@ -52,7 +53,7 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             f'--{constants.MYSQL_PORT_ARG}',
             dest=constants.MYSQL_PORT,
             default="3306",
-            required=True,
+            required=False,
             help='MySQL port (Default: 3306)'
         )
 
@@ -164,7 +165,7 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         # Run the notebook
         output_path = args[constants.OUTPUT_NOTEBOOK_ARG]
         pm.execute_notebook(
-            'MySqlToSpanner_notebook.ipynb',
+            'mysql2spanner/MySqlToSpanner_notebook.ipynb',
             output_path,
             nb_parameters
         )
