@@ -100,7 +100,7 @@ def parse_args() -> argparse.Namespace:
         f'--{constants.SPANNER_TABLE_PRIMARY_KEYS_ARG}',
         dest=constants.SPANNER_TABLE_PRIMARY_KEYS,
         required=True,
-        help='Provide table & PK column which do not have PK in MySQL table {"table_name":"primary_key"}'
+        help='Provide table & PK column which do not have PK in MySQL table {\"table_name\":\"primary_key\"}'
     )
 
     parser.add_argument(
