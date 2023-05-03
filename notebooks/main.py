@@ -1,0 +1,61 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+from typing import Dict, Any, Type
+import sys
+
+from parameterize_script import BaseParameterizeScript, ScriptName
+from parameterize_script.util import get_script_name
+from mysql2spanner import MySqlToSpannerScript
+
+# Maps each ScriptName to its corresponding implementation
+# of BaseParameterizeScript
+SCRIPT_IMPLS: Dict[ScriptName, Type[BaseParameterizeScript]] = {
+    ScriptName.MYSQLTOSPANNER: MySqlToSpannerScript,
+}
+
+def run_script(script_name: ScriptName) -> None:
+    """
+    Executes a script given it's script name.
+
+    Args:
+        script_name (ScriptName): The ScriptName of the script
+            that should be run.
+
+    Returns:
+        None
+    """
+
+    script_impl: Type[BaseParameterizeScript] = SCRIPT_IMPLS[script_name]
+
+    script_instance: BaseParameterizeScript = script_impl.build()
+
+    try:
+        args: Dict[str, Any] = script_instance.parse_args()
+
+        script_instance.run(args=args)
+      
+    except Exception:
+        print(
+            'An error occurred while running %s script',
+            script_name
+        )
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+
+    run_script(
+        script_name=get_script_name()
+    )
