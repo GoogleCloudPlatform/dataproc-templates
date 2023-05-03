@@ -18,7 +18,7 @@ MYSQL_USERNAME_ARG = "mysql.username"
 MYSQL_PASSWORD_ARG = "mysql.password"
 MYSQL_DATABASE_ARG = "mysql.database"
 # leave list empty for migrating complete database else provide tables as 'table1,table2'
-MYSQLTABLE_LIST_ARG = "mysql.table_list"
+MYSQLTABLE_LIST_ARG = "mysql.table.list"
 # one of overwrite|append (Use append when schema already exists in Spanner)
 MYSQL_OUTPUT_SPANNER_MODE_ARG = "mysql.output.spanner.mode"
 SPANNER_INSTANCE_ARG = "spanner.instance"
