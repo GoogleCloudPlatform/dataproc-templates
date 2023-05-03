@@ -51,7 +51,7 @@ public class GCStoMongo implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    validateInput();
+
     SparkSession spark = null;
 
     spark = SparkSession.builder().appName("GCS to Mongo load").getOrCreate();

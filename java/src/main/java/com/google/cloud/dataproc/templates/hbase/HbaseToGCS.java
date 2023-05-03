@@ -46,7 +46,7 @@ public class HbaseToGCS implements BaseTemplate, TemplateConstants {
 
   @Override
   public void runTemplate() {
-    validateInput();
+
     SparkSession spark = SparkSession.builder().appName("Spark HbaseToGCS Job").getOrCreate();
 
     // Set log level

@@ -65,7 +65,7 @@ class HiveToGCSTest {
     hiveToGCSTest = new HiveToGCS();
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> hiveToGCSTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> hiveToGCSTest.validateInput());
     assertEquals(
         "Required parameters for HiveToGCS not passed. "
             + "Set mandatory parameter for HiveToGCS template in "

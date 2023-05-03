@@ -72,7 +72,7 @@ public class MongoToGCSTest {
     PropertyUtil.getProperties().setProperty(propKey, "");
     MONGOToGCSTestObj = new MongoToGCS();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> MONGOToGCSTestObj.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> MONGOToGCSTestObj.validateInput());
     assertEquals(
         "Required parameters for Mongo to GCS not passed. "
             + "Set mandatory parameter for Mongo to GCS template "

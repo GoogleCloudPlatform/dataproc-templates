@@ -27,10 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil.ValidationException;
+import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
 
 public class SpannerToGCSTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(SpannerToGCSTest.class);
+
+  final Properties properties = PropertyUtil.getProperties();
 
   @BeforeEach
   void setUp() {
@@ -56,17 +58,20 @@ public class SpannerToGCSTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-
-    assertDoesNotThrow((ThrowingSupplier<SpannerToGCS>) SpannerToGCS::of);
+    SpannerToGCSConfig config = SpannerToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    SpannerToGCS template = new SpannerToGCS(config);
+    assertDoesNotThrow(template::validateInput);
   }
 
   @ParameterizedTest
   @MethodSource("propertyKeys")
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
-    PropertyUtil.getProperties().setProperty(propKey, "");
-
-    ValidationException exception = assertThrows(ValidationException.class, SpannerToGCS::of);
+    properties.setProperty(propKey, "");
+    SpannerToGCSConfig config = SpannerToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    SpannerToGCS template = new SpannerToGCS(config);
+    ValidationException exception =
+        assertThrows(ValidationException.class, template::validateInput);
   }
 
   static Stream<String> propertyKeys() {

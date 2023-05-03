@@ -54,9 +54,6 @@ public class JDBCToGCS implements BaseTemplate {
     // Set log level
     spark.sparkContext().setLogLevel(config.getSparkLogLevel());
 
-    /** Read Input data from JDBC table */
-    validateInput();
-
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
     if (StringUtils.isNotBlank(config.getTempTable())

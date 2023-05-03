@@ -85,8 +85,6 @@ public class JDBCToBigQuery implements BaseTemplate {
   @Override
   public void runTemplate() {
 
-    validateInput();
-
     SparkSession spark = null;
 
     spark =
