@@ -1,1 +1,1 @@
-papermill
+papermill>=2.4.0
