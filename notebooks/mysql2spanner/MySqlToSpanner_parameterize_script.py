@@ -91,6 +91,7 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             f'--{constants.MYSQL_OUTPUT_SPANNER_MODE_ARG}',
             dest=constants.MYSQL_OUTPUT_SPANNER_MODE,
             required=False,
+            default=constants.OUTPUT_MODE_OVERWRITE,
             help='Spanner output write mode (Default: overwrite). '
             'Use append when schema already exists in Spanner',
             choices=[
