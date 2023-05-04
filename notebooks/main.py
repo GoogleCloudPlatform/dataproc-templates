@@ -41,17 +41,12 @@ def run_script(script_name: ScriptName) -> None:
 
     script_instance: BaseParameterizeScript = script_impl.build()
 
-    try:
-        args: Dict[str, Any] = script_instance.parse_args()
 
-        script_instance.run(args=args)
+    args: Dict[str, Any] = script_instance.parse_args()
+
+    script_instance.run(args=args)
       
-    except Exception:
-        print(
-            'An error occurred while running %s script',
-            script_name
-        )
-        sys.exit(1)
+
 
 
 if __name__ == '__main__':
