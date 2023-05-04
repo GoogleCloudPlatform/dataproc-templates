@@ -81,15 +81,22 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         parser.add_argument(
             f'--{constants.MYSQLTABLE_LIST_ARG}',
             dest=constants.MYSQLTABLE_LIST,
-            required=True,
-            help='MySQL table list to migrate'
+            required=False,
+            default='',
+            help='MySQL table list to migrate. '
+            'Leave empty for migrating complete database else provide tables as \"table1,table2\"'
         )
 
         parser.add_argument(
             f'--{constants.MYSQL_OUTPUT_SPANNER_MODE_ARG}',
             dest=constants.MYSQL_OUTPUT_SPANNER_MODE,
-            required=True,
-            help='Spanner output write mode (overwrite|append)'
+            required=False,
+            help='Spanner output write mode (Default: overwrite). '
+            'Use append when schema already exists in Spanner',
+            choices=[
+                constants.OUTPUT_MODE_OVERWRITE,
+                constants.OUTPUT_MODE_APPEND
+            ]
         )
 
         parser.add_argument(
@@ -117,8 +124,9 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             f'--{constants.MAX_PARALLELISM_ARG}',
             dest=constants.MAX_PARALLELISM,
             type=int,
-            required=True,
-            help=''
+            default=5,
+            required=False,
+            help='Maximum number of tables that will migrated parallelly (Default: 5)'
         )
 
         known_args: argparse.Namespace

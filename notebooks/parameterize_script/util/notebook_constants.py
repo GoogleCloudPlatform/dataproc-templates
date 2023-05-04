@@ -5,11 +5,16 @@ REGION = "REGION"
 GCS_STAGING_LOCATION = "GCS_STAGING_LOCATION"
 SUBNET = "SUBNET"
 IS_PARAMETERIZED = "IS_PARAMETERIZED"
+MAX_PARALLELISM =  "MAX_PARALLELISM"
+SERVICE_ACCOUNT = "SERVICE_ACCOUNT"
+
+# Write modes
+OUTPUT_MODE_OVERWRITE = "overwrite"
+OUTPUT_MODE_APPEND = "append"
 
 
-# MySQL to Spanner
-
-## Arguments
+# MYSQL TO SPANNER
+## Command Line Arguments
 OUTPUT_NOTEBOOK_ARG = "output.notebook"
 MAX_PARALLELISM_ARG = "max.parallelism"
 MYSQL_HOST_ARG = "mysql.host"
@@ -17,17 +22,14 @@ MYSQL_PORT_ARG = "mysql.port"
 MYSQL_USERNAME_ARG = "mysql.username"
 MYSQL_PASSWORD_ARG = "mysql.password"
 MYSQL_DATABASE_ARG = "mysql.database"
-# leave list empty for migrating complete database else provide tables as 'table1,table2'
 MYSQLTABLE_LIST_ARG = "mysql.table.list"
-# one of overwrite|append (Use append when schema already exists in Spanner)
 MYSQL_OUTPUT_SPANNER_MODE_ARG = "mysql.output.spanner.mode"
 SPANNER_INSTANCE_ARG = "spanner.instance"
 SPANNER_DATABASE_ARG = "spanner.database"
 # provide table & pk column which do not have PK in MYSQL "{"table_name":"primary_key"}"
 SPANNER_TABLE_PRIMARY_KEYS_ARG = "spanner.table.primary.keys"
 
-## Constants
-MAX_PARALLELISM = "MAX_PARALLELISM"
+## Notebook Arguments
 MYSQL_HOST = "MYSQL_HOST"
 MYSQL_PORT = "MYSQL_PORT"
 MYSQL_USERNAME = "MYSQL_USERNAME"
