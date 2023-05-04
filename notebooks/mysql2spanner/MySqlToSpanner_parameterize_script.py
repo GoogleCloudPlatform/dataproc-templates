@@ -39,7 +39,8 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             dest=constants.OUTPUT_NOTEBOOK_ARG,
             required=False,
             default=None,
-            help='Path to save executed notebook (Default: None)'
+            help='Path to save executed notebook (Default: None). '
+            'If not provided, no notebook is saved'
         )
 
         parser.add_argument(
