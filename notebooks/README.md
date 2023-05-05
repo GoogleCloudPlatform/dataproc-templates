@@ -39,7 +39,7 @@ GitHub repository and run the desired notebook located in the */notebooks* folde
 
 ### Run notebooks programmatically
 
-To allow running notebooks programmatically, with parameters, we developed a "parameterize" script, using the papermill lib.  
+Alternatively to running the notebook manually, we developed a "parameterize" script, using the papermill lib, to allow running notebooks programmatically from a Python script, with parameters.  
 You can see each specific parameters in each notebook type README.  
 
 It is currently available for the following notebooks:
