@@ -13,7 +13,6 @@
 # limitations under the License.
 
 from typing import Dict, Any, Type
-import sys
 
 from parameterize_script import BaseParameterizeScript, ScriptName
 from parameterize_script.util import get_script_name
@@ -28,26 +27,17 @@ SCRIPT_IMPLS: Dict[ScriptName, Type[BaseParameterizeScript]] = {
 def run_script(script_name: ScriptName) -> None:
     """
     Executes a script given it's script name.
-
     Args:
         script_name (ScriptName): The ScriptName of the script
             that should be run.
-
     Returns:
         None
     """
 
     script_impl: Type[BaseParameterizeScript] = SCRIPT_IMPLS[script_name]
-
     script_instance: BaseParameterizeScript = script_impl.build()
-
-
     args: Dict[str, Any] = script_instance.parse_args()
-
     script_instance.run(args=args)
-      
-
-
 
 if __name__ == '__main__':
 
