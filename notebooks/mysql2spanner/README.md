@@ -52,6 +52,27 @@ Below configurations are required before proceeding further.
 * `SPANNER_DATABASE` : Cloud Spanner database name
 * `SPANNER_TABLE_PRIMARY_KEYS` : provide dictionary of format {"table_name":"primary_key"} for tables which do not have primary key in MYSQL
 
+
+### Run programmatically with parameterize script
+
+```
+export GCP_PROJECT=<project>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<bucket-name>
+export SUBNET=<subnet>
+
+python run_notebook.py --script=MYSQLTOSPANNER \
+                        --mysql.host="10.x.x.x" \
+                        --mysql.port="3306" \
+                        --mysql.username="user" \
+                        --mysql.password="password" \
+                        --mysql.database="db" \
+                        --mysql.table.list="employee" \
+                        --spanner.instance="spark-instance" \
+                        --spanner.database="spark-db" \
+                        --spanner.table.primary.keys="{\"employee\":\"empno\"}"
+```
+
 ### Required JAR files
 
 This notebook requires the MYSQL connector jar. Installation information is present in the notebook

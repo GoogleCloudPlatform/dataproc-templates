@@ -36,3 +36,23 @@ GitHub repository and run the desired notebook located in the */notebooks* folde
 
 
    ![clone](generic_notebook/images/clone_repository.png)
+
+### Run notebooks programmatically
+
+To allow running notebooks programmatically, with parameters, we developed a "parameterize" script, using the papermill lib.  
+You can see each specific parameters in each notebook type README.  
+
+It is currently available for the following notebooks:
+* [MySQLToSpanner](/notebooks/mysql2spanner#jupyter-notebook-solution-for-migrating-mysql-database-to-cloud-spanner-using-dataproc-templates)
+
+USAGE:  
+```
+export GCP_PROJECT=<project>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gs://bucket-name>
+export SUBNET=<subnet>
+
+python run_notebook.py --script=<NOTEBOOK_NAME> \
+   --notebook.paramter1="<>" \
+   --notebook.paramter2="<>"
+```
