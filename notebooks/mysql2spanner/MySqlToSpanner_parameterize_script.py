@@ -143,8 +143,7 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         """
         parameters[constants.PROJECT] = environ[constants.GCP_PROJECT]
         parameters[constants.REGION] = environ[constants.REGION]
-        parameters[constants.GCS_STAGING_LOCATION] = "gs://" + \
-            environ[constants.GCS_STAGING_LOCATION]
+        parameters[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
         parameters[constants.SUBNET] = environ[constants.SUBNET]
         parameters[constants.IS_PARAMETERIZED] = True
 
