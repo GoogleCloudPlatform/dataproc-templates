@@ -16,12 +16,11 @@ This notebook is built on top of:
 
 ### Key Benefits
 1) Automatically discovers all the Hive tables.
-2) Can automatically generates table schema in BigQuery, corresponding to each table.
-3) Can automatically extract all the table DDLs using [HIVEDDLEXTRACTOR](/python/dataproc_templates/hive/util/hive_ddl_extractor.py)
-4) Can create partitioned anc clustered tables in Bigquery based on HIVE partitioning and clusering using [BQ Translation API](https://cloud.google.com/bigquery/docs/migration-intro)
-3) Divides the migration into multiple batches and automatically computes metadata.
-4) Parallely migrates mutiple Hive tables to BigQuery.
-5) Simple, easy to use and customizable.
+2) Can automatically extract all the table DDLs using [HIVEDDLEXTRACTOR](/python/dataproc_templates/hive/util#hive-ddl-extractor)
+3) Can create partitioned and clustered tables in Bigquery based on HIVE partitioning and clusering using [BQ Translation API](https://cloud.google.com/bigquery/docs/migration-intro)
+4) Divides the migration into multiple batches and automatically computes metadata.
+5) Parallely migrates mutiple Hive tables to BigQuery.
+6) Simple, easy to use and customizable.
 
 ### Requirements
 
