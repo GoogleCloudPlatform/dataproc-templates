@@ -83,6 +83,9 @@ OPTIONS(
 
 ### Limitations:
 
-* The current version does not generate hive table partitions to Bigquery.
 * The current version does not support incremental load.
 * User has to implement Kerberos authentication themselves if needed.
+
+
+Currently Translation API converts all the TIMESTAMP datatypes to DATETIME, Spark faces difficult copying TIMESTAMP Hive column to DATETIME Bigquery column. Global Typeconvert configuration will convert back all the DATETIME column to TIMESTAMP
+#https://cloud.google.com/bigquery/docs/output-name-mapping
