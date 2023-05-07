@@ -1,1 +1,0 @@
-gs://test-shubu/hiveddl/input/default/04-28-2023 20.12.40/

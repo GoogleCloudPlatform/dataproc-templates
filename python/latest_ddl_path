@@ -1,4 +1,0 @@
-type: experimental_object_rewriter
-global:
-  typeConvert:
-    datetime: TIMESTAMP
