@@ -17,6 +17,8 @@ This notebook is built on top of:
 ### Key Benefits
 1) Automatically discovers all the Hive tables.
 2) Can automatically generates table schema in BigQuery, corresponding to each table.
+3) Can automatically extract all the table DDLs using [HIVEDDLEXTRACTOR](/python/dataproc_templates/hive/util/hive_ddl_extractor.py)
+4) Can create partitioned anc clustered tables in Bigquery based on HIVE partitioning and clusering using [BQ Translation API](https://cloud.google.com/bigquery/docs/migration-intro)
 3) Divides the migration into multiple batches and automatically computes metadata.
 4) Parallely migrates mutiple Hive tables to BigQuery.
 5) Simple, easy to use and customizable.
@@ -34,6 +36,7 @@ Below configurations are used to execute these notebooks.
 * `TEMP_BUCKET`: Temporary GCS bucket to store intermediate files.
 * `HIVE_METASTORE`: Hive metastore URI
 * `MAX_PARALLELISM`: Number of parallel Dataproc Jobs to run (default=10)
+* `BQ_DATASET_REGION`: BQ Dataset Region
 
 ### Required JAR files
 
@@ -46,6 +49,7 @@ Step by Step instructions ar given before each cell in the python notebook.
 
 * Add user configuration in Step 1
 * Run all the cells from Menu->Run->Run All Cells
+* Skip running steps 8-16 to create all HIVE tables(partitioned & non-partitioned) as non partitioned tables in Bigquery
 * Get the status of Dataproc Jobs from VertexAI UI using the link printed after running Step 11
 * Detailed logs can be seen from [Dataproc Batch UI](https://console.cloud.google.com/dataproc/batches)
   * Dataproc Job naming convention: "hive2bq-"+HIVE-TABLE+"-"+ CURRENT_DATETIME
@@ -85,7 +89,3 @@ OPTIONS(
 
 * The current version does not support incremental load.
 * User has to implement Kerberos authentication themselves if needed.
-
-
-Currently Translation API converts all the TIMESTAMP datatypes to DATETIME, Spark faces difficult copying TIMESTAMP Hive column to DATETIME Bigquery column. Global Typeconvert configuration will convert back all the DATETIME column to TIMESTAMP
-#https://cloud.google.com/bigquery/docs/output-name-mapping
