@@ -51,10 +51,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-import org.apache.commons.cli.*;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
+import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 public class DataProcTemplate {
 
@@ -95,40 +97,23 @@ public class DataProcTemplate {
           .put(TemplateName.JDBCTOJDBC, JDBCToJDBC::of)
           .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
           .build();
+
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
 
-  private static final Option TEMPLATE_OPTION =
-      OptionBuilder.withLongOpt(TEMPLATE_NAME_LONG_OPT)
-          .hasArgs(1)
-          .isRequired(true)
-          .withDescription("the name of the template to run")
-          .create();
-  private static final Option PROPERTY_OPTION =
-      OptionBuilder.withValueSeparator()
-          .hasArgs(2)
-          .withArgName("property=value")
-          .withLongOpt(TEMPLATE_PROPERTY_LONG_OPT)
-          .withDescription("Value for given property")
-          .create();
-  private static final Options options =
-      new Options().addOption(TEMPLATE_OPTION).addOption(PROPERTY_OPTION);
+  @Option(
+      names = {"--" + TEMPLATE_NAME_LONG_OPT},
+      required = true,
+      description = "the name of the template to run")
+  private static String templateName;
 
-  /**
-   * Parse command line arguments
-   *
-   * @param args command line arguments
-   * @return parsed arguments
-   */
-  public static CommandLine parseArguments(String... args) {
-    CommandLineParser parser = new DefaultParser();
-    LOGGER.info("Parsing arguments {}", (Object) args);
-    try {
-      return parser.parse(options, args, true);
-    } catch (ParseException e) {
-      throw new IllegalArgumentException(e.getMessage(), e);
-    }
-  }
+  @Option(
+      names = {"--" + TEMPLATE_PROPERTY_LONG_OPT},
+      description = "Value for given property")
+  private static Properties properties;
+
+  @Parameters(description = "Remaining arguments", arity = "0..*")
+  private static String[] remainingArgs;
 
   /**
    * Parse template name enum from template name string
@@ -152,13 +137,13 @@ public class DataProcTemplate {
     runSparkJob(template);
   }
 
-  private static void printHelp() {
-    String header = "Execute dataproc templates\n\n";
-    String footer =
-        "\nPlease report issues at https://github.com/GoogleCloudPlatform/dataproc-templates";
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp("<spark submit> -- ", header, options, footer, true);
-  }
+  // private static void printHelp() {
+  //   String header = "Execute dataproc templates\n\n";
+  //   String footer =
+  //       "\nPlease report issues at https://github.com/GoogleCloudPlatform/dataproc-templates";
+  //   HelpFormatter formatter = new HelpFormatter();
+  //   formatter.printHelp("<spark submit> -- ", header, options, footer, true);
+  // }
 
   /**
    * Get template factory and construct template from command line args and registers any properties
@@ -168,29 +153,26 @@ public class DataProcTemplate {
    * @return the constructed template
    */
   static BaseTemplate createTemplateAndRegisterProperties(String... args) {
-    TemplateName templateName;
-    String[] remainingArgs;
+    CommandLine commandLine = new CommandLine(new DataProcTemplate());
     try {
-      CommandLine cmd = parseArguments(args);
-      templateName = parseTemplateName(cmd.getOptionValue(TEMPLATE_NAME_LONG_OPT));
-      Properties properties = cmd.getOptionProperties(TEMPLATE_PROPERTY_LONG_OPT);
-      remainingArgs = cmd.getArgs();
-      LOGGER.info("Template name: {}", templateName);
-      LOGGER.info("Properties: {}", properties);
-      LOGGER.info("Remaining args: {}", (Object) remainingArgs);
-      PropertyUtil.registerProperties(properties);
-      TemplateUtil.trackTemplateInvocation(templateName);
-    } catch (IllegalArgumentException e) {
+      commandLine.parseArgs(args);
+    } catch (CommandLine.ParameterException e) {
       LOGGER.error(e.getMessage(), e);
-      printHelp();
-      throw e;
+      throw new IllegalArgumentException(e.getMessage(), e);
     }
 
-    if (TEMPLATE_FACTORIES.containsKey(templateName)) {
-      return TEMPLATE_FACTORIES.get(templateName).apply(remainingArgs);
+    TemplateName templateNameEnum = parseTemplateName(templateName);
+    LOGGER.info("Template name: {}", templateNameEnum);
+    LOGGER.info("Properties: {}", properties);
+    LOGGER.info("Remaining args: {}", (Object) remainingArgs);
+    PropertyUtil.registerProperties(properties);
+    TemplateUtil.trackTemplateInvocation(templateNameEnum);
+
+    if (TEMPLATE_FACTORIES.containsKey(templateNameEnum)) {
+      return TEMPLATE_FACTORIES.get(templateNameEnum).apply(remainingArgs);
     } else {
       throw new IllegalArgumentException(
-          String.format("Unexpected template name: %s", templateName));
+          String.format("Unexpected template name: %s", templateNameEnum));
     }
   }
 
