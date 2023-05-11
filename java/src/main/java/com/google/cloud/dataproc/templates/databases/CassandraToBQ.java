@@ -40,9 +40,7 @@ public class CassandraToBQ implements BaseTemplate {
   public static CassandraToBQ of(String... args) {
     CassandraToBqConfig config = CassandraToBqConfig.fromProperties(PropertyUtil.getProperties());
     LOGGER.info("Config loaded\n{}", config);
-    CassandraToBQ cassandraToBQ = new CassandraToBQ(config);
-    cassandraToBQ.validateInput();
-    return cassandraToBQ;
+    return new CassandraToBQ(config);
   }
 
   @Override
@@ -83,6 +81,7 @@ public class CassandraToBQ implements BaseTemplate {
         .save();
   }
 
+  @Override
   public void validateInput() {
     ValidationUtil.validateOrThrow(config);
   }
