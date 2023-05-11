@@ -67,8 +67,6 @@ public class PubSubToBigTable implements BaseTemplate {
   @Override
   public void runTemplate() throws InterruptedException {
 
-    validateInput();
-
     JavaStreamingContext jsc;
 
     SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigTable Dataproc Job");

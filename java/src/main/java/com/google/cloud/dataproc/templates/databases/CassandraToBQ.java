@@ -47,6 +47,7 @@ public class CassandraToBQ implements BaseTemplate {
 
   @Override
   public void runTemplate() throws StreamingQueryException, TimeoutException {
+
     Dataset dataset;
     SparkSession spark =
         SparkSession.builder()

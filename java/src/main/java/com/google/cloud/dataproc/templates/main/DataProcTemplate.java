@@ -39,6 +39,7 @@ import com.google.cloud.dataproc.templates.kafka.KafkaToPubSub;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBigTable;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
+import com.google.cloud.dataproc.templates.pubsublite.PubSubLiteToBigTable;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.snowflake.SnowflakeToGCS;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -50,14 +51,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,11 +68,13 @@ public class DataProcTemplate {
           .put(TemplateName.HIVETOBIGQUERY, (args) -> new HiveToBigQuery())
           .put(TemplateName.PUBSUBTOBQ, (args) -> new PubSubToBQ())
           .put(TemplateName.PUBSUBTOBIGTABLE, (args) -> new PubSubToBigTable())
+          .put(TemplateName.PUBSUBLITETOBIGTABLE, (args) -> new PubSubLiteToBigTable())
           .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
           .put(TemplateName.REDSHIFTTOGCS, RedshiftToGCS::of)
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
           .put(TemplateName.GCSTOBIGTABLE, (args) -> new GCStoBigTable())
           .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
+          .put(TemplateName.GCSTOMONGO, (args) -> new GCStoMongo())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
           .put(TemplateName.SPANNERTOGCS, SpannerToGCS::of)
@@ -204,7 +200,10 @@ public class DataProcTemplate {
    * @param template the template to run.
    */
   static void runSparkJob(BaseTemplate template)
-      throws StreamingQueryException, TimeoutException, SQLException, InterruptedException {
+      throws IllegalArgumentException, StreamingQueryException, TimeoutException, SQLException,
+          InterruptedException {
+    LOGGER.debug("Validating input parameters");
+    template.validateInput();
     LOGGER.debug("Start runSparkJob");
     template.runTemplate();
     LOGGER.debug("End runSparkJob");

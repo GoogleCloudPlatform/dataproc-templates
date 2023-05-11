@@ -65,7 +65,7 @@ public class GCStoBigqueryTest {
     PropertyUtil.getProperties().setProperty(propKey, "");
     gcsCsvToBiqueryTest = new GCStoBigquery();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> gcsCsvToBiqueryTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> gcsCsvToBiqueryTest.validateInput());
     assertEquals(
         "Required parameters for GCStoBQ not passed. "
             + "Set mandatory parameter for GCStoBQ template"
