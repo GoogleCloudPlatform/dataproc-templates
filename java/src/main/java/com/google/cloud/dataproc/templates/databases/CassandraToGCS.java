@@ -78,5 +78,8 @@ public class CassandraToGCS implements BaseTemplate, TemplateConstants {
         .save(config.getOutputpath());
   }
 
-  public void validateInput() {}
+  @Override
+  public void validateInput() {
+    ValidationUtil.validateOrThrow(config);
+  }
 }
