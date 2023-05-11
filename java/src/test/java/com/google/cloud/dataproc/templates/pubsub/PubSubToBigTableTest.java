@@ -45,14 +45,11 @@ public class PubSubToBigTableTest {
   @Test
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_PROJECT_ID_PROP, "yadavaja-sandbox");
-    PropertyUtil.getProperties()
-        .setProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP, "pubsubtobigtable-sub");
-    PropertyUtil.getProperties()
-        .setProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP, "bt-templates-test");
-    PropertyUtil.getProperties()
-        .setProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP, "yadavaja-sandbox");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP, "bus-data");
+    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_PROJECT_ID_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP, "some-value");
+    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP, "some-value");
 
     pubSubToBigTableTest = new PubSubToBigTable();
     assertDoesNotThrow(pubSubToBigTableTest::validateInput);
@@ -66,7 +63,7 @@ public class PubSubToBigTableTest {
     pubSubToBigTableTest = new PubSubToBigTable();
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> pubSubToBigTableTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> pubSubToBigTableTest.validateInput());
     assertEquals(
         "Required parameters for PubSubToBigTable not passed. "
             + "Set mandatory parameter for PubSubToBigTable template "

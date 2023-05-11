@@ -36,6 +36,7 @@ public interface BaseTemplate {
     S3TOBIGQUERY,
     GCSTOBIGQUERY,
     GCSTOGCS,
+    GCSTOMONGO,
     JDBCTOBIGQUERY,
     JDBCTOGCS,
     BIGQUERYTOGCS,
@@ -55,14 +56,17 @@ public interface BaseTemplate {
     PUBSUBTOBIGTABLE,
     GCSTOBIGTABLE,
     TEXTTOBIGQUERY,
-    JDBCTOJDBC
+    JDBCTOJDBC,
+    PUBSUBLITETOBIGTABLE
   }
 
   default Properties getProperties() {
     return PropertyUtil.getProperties();
   }
 
-  void validateInput() throws Exception;
+  /** Validates input parameters. */
+  void validateInput() throws IllegalArgumentException;
+
   /** Executes the template. */
   void runTemplate()
       throws StreamingQueryException, TimeoutException, SQLException, InterruptedException;

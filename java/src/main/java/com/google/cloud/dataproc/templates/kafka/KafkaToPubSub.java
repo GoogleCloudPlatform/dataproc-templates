@@ -57,8 +57,6 @@ public class KafkaToPubSub implements BaseTemplate {
   @Override
   public void runTemplate() throws StreamingQueryException, TimeoutException {
 
-    validateInput();
-
     // Create a Spark session
     SparkSession spark = SparkSession.builder().appName("Spark KafkaToPubSub Job").getOrCreate();
 

@@ -458,8 +458,6 @@ public class DataplexGCStoBQ implements BaseTemplate {
 
   public void runTemplate() {
 
-    validateInput();
-
     try {
       this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
 

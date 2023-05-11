@@ -132,7 +132,6 @@ bin/start.sh \
 ## 5. GCS to GCS
 
 ```
-
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
 GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
@@ -162,7 +161,50 @@ bin/start.sh \
 
 ```
 
-## 6. Text To BigQuery
+## 6. GCS To Mongo:
+
+Download the following MongoDb connectors and copy it to GCS bucket location:
+* [MongoDb Spark Connector](https://mvnrepository.com/artifact/org.mongodb.spark/mongo-spark-connector)
+* [MongoDb Java Driver](https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver)
+
+```
+export GCP_PROJECT=<project-id>\
+export REGION=<region>\
+export SUBNET=<subnet>\
+export GCS_STAGING_LOCATION=<gcs-staging-location-folder>\
+export JARS=<gcs-location-to-mongodb-drivers>\
+
+bin/start.sh \
+-- --template GCSTOMONGO \
+--templateProperty log.level="ERROR" \
+--templateProperty gcs.mongodb.input.format=<csv|avro|parquet|json> \
+--templateProperty gcs.mongodb.input.location=<gcs-input-location> \
+--templateProperty gcs.mongodb.output.uri=<mongodb-output-uri> \
+--templateProperty gcs.mongodb.output.database=<database-name>\
+--templateProperty gcs.mongodb.output.collection=<collection-name> \
+--templateProperty gcs.mongo.output.mode=<Append|Overwrite|ErrorIfExists|Ignore>
+
+```
+Example execution:
+```
+export GCP_PROJECT=mygcpproject
+export REGION=us-west1
+export SUBNET=projects/mygcpproject/regions/us-west1/subnetworks/test-subnet1
+export GCS_STAGING_LOCATION="gs://dataproctemplatesbucket"
+export JARS="gs://dataproctemplatesbucket/mongo_dependencies/mongo-java-driver-3.9.1.jar,gs://dataproctemplatesbucket/mongo_jar/mongo-spark-connector_2.12-2.4.0.jar"
+
+bin/start.sh \
+-- --template GCSTOMONGO \
+--templateProperty log.level="ERROR" \
+--templateProperty gcs.mongodb.input.format=avro \
+--templateProperty gcs.mongodb.input.location="gs://dataproctemplatesbucket/empavro" \
+--templateProperty gcs.mongodb.output.uri="mongodb://1.2.3.4:27017" \
+--templateProperty gcs.mongodb.output.database="demo" \
+--templateProperty gcs.mongodb.output.collection="test" \
+--templateProperty gcs.mongo.output.mode="overwrite"
+```
+
+## 7. Text To BigQuery
 
 General Execution:
 
@@ -192,3 +234,4 @@ There are two optional properties as well with "Text to BigQuery" Template. Plea
 ```
 These properties are responsible for applying some spark sql transformations while loading data into BigQuery.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
+

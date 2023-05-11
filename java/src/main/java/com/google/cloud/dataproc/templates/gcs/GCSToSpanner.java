@@ -48,6 +48,7 @@ public class GCSToSpanner implements BaseTemplate {
 
   @Override
   public void runTemplate() {
+
     try (SparkSession spark = SparkSession.builder().appName("GCS to Spanner").getOrCreate()) {
       // Set log level
       spark.sparkContext().setLogLevel(config.getSparkLogLevel());
