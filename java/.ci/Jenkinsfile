@@ -14,13 +14,6 @@ pipeline {
         
         MAVEN_HOME = "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven"
         PATH = "$PATH:$MAVEN_HOME/bin"
-
-        script {
-            if ( env.GIT_BRANCH_LOCAL == 'main' ) {
-                GCS_STAGING_LOCATION += '/${env.GIT_BRANCH_LOCAL}';
-            }
-        }
-
     }
 
     stages {
@@ -46,6 +39,13 @@ pipeline {
             
             //Deploy one time so that build is copied to GCS location
             stage('JDBC TO BQ'){
+                
+                script {
+                    if ( env.GIT_BRANCH_LOCAL == 'main' ) {
+                        GCS_STAGING_LOCATION += '/${env.GIT_BRANCH_LOCAL}';
+                    }
+                }
+
                 steps {
                     sh '''
                         export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
