@@ -41,7 +41,7 @@ pipeline {
             stage('JDBC TO BQ'){
                 steps {
                     sh '''
-                        if [ ${GIT_BRANCH_LOCAL} == "main" ] 
+                        if [ ${GIT_BRANCH_LOCAL} != "main" ] 
                         then
                             GCS_STAGING_LOCATION+="/${GIT_BRANCH_LOCAL}";
                         fi
