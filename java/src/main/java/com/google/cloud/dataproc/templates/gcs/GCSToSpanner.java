@@ -41,9 +41,7 @@ public class GCSToSpanner implements BaseTemplate {
   public static GCSToSpanner of(String... args) {
     GCSToSpannerConfig config = GCSToSpannerConfig.fromProperties(PropertyUtil.getProperties());
     LOGGER.info("Config loaded\n{}", config);
-    GCSToSpanner gcsToSpanner = new GCSToSpanner(config);
-    gcsToSpanner.validateInput();
-    return gcsToSpanner;
+    return new GCSToSpanner(config);
   }
 
   @Override
@@ -83,6 +81,7 @@ public class GCSToSpanner implements BaseTemplate {
         .save();
   }
 
+  @Override
   public void validateInput() {
     ValidationUtil.validateOrThrow(config);
   }
