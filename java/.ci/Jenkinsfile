@@ -39,12 +39,12 @@ pipeline {
             
             //Deploy one time so that build is copied to GCS location
             stage('JDBC TO BQ'){
-                
-                script {
+
+                sh '''
                     if ( env.GIT_BRANCH_LOCAL == 'main' ) {
                         GCS_STAGING_LOCATION += '/${env.GIT_BRANCH_LOCAL}';
                     }
-                }
+                '''
 
                 steps {
                     sh '''
