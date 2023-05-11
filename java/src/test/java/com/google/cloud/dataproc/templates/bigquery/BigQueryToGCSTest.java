@@ -55,7 +55,7 @@ class BigQueryToGCSTest {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
     BigQueryToGCS template = new BigQueryToGCS();
-    Exception exception = assertThrows(IllegalArgumentException.class, template::runTemplate);
+    Exception exception = assertThrows(IllegalArgumentException.class, template::validateInput);
     assertEquals(
         "Required parameters for BigQueryToGCS not passed. "
             + "Set mandatory parameter for BigQueryToGCS template in "

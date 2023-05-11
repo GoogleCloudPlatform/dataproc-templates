@@ -72,7 +72,7 @@ public class DataplexGCSToBQTest {
     PropertyUtil.getProperties().setProperty(propKey, "");
     dataplexGCStoBQTest = new DataplexGCStoBQ(null, null, null, null, "destination_table");
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> dataplexGCStoBQTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> dataplexGCStoBQTest.validateInput());
     assertEquals("Please specify the dataplexEntity property", exception.getMessage());
   }
 

@@ -69,7 +69,7 @@ public class PubSubToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() throws InterruptedException {
-    validateInput();
+
     JavaStreamingContext jsc;
 
     SparkConf sparkConf = new SparkConf().setAppName("PubSubToGCS Dataproc Job");

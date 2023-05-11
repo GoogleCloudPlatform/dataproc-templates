@@ -59,7 +59,7 @@ public class GCStoMongoTest {
     PropertyUtil.getProperties().setProperty(propKey, "");
     gcstoMongoTestObject = new GCStoMongo();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> gcstoMongoTestObject.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> gcstoMongoTestObject.validateInput());
     assertEquals(
         "Required parameters for GCStoMongo not passed. "
             + "Set mandatory parameter for GCStoMongo template"
