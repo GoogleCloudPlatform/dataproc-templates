@@ -15,6 +15,8 @@
  */
 package com.google.cloud.dataproc.templates.databases;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+
 import com.datastax.spark.connector.CassandraSparkExtensions;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -37,7 +39,6 @@ public class CassandraToBQ implements BaseTemplate {
 
   public static CassandraToBQ of(String... args) {
     CassandraToBqConfig config = CassandraToBqConfig.fromProperties(PropertyUtil.getProperties());
-    ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
     return new CassandraToBQ(config);
   }
@@ -80,5 +81,8 @@ public class CassandraToBQ implements BaseTemplate {
         .save();
   }
 
-  public void validateInput() {}
+  @Override
+  public void validateInput() {
+    ValidationUtil.validateOrThrow(config);
+  }
 }
