@@ -41,9 +41,9 @@ pipeline {
             stage('JDBC TO BQ'){
                 steps {
                     sh '''
-                        if [ ${env.GIT_BRANCH_LOCAL} == "main" ] 
+                        if [ ${GIT_BRANCH_LOCAL} == "main" ] 
                         then
-                            GCS_STAGING_LOCATION+="/${env.GIT_BRANCH_LOCAL}";
+                            GCS_STAGING_LOCATION+="/${GIT_BRANCH_LOCAL}";
                         fi
 
                         export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
