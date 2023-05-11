@@ -67,7 +67,7 @@ public class TextToBigqueryTest {
     PropertyUtil.getProperties().setProperty(propKey, "");
     textToBigquery = new TextToBigquery();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> textToBigquery.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> textToBigquery.validateInput());
     assertEquals(
         "Required parameters for TextToBigquery not passed. "
             + "Set mandatory parameter for TextToBigquery template"

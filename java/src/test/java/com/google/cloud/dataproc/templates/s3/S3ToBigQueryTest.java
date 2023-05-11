@@ -69,7 +69,7 @@ public class S3ToBigQueryTest {
     PropertyUtil.getProperties().setProperty(propKey, "");
     s3ToBigQueryTest = new S3ToBigQuery();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> s3ToBigQueryTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> s3ToBigQueryTest.validateInput());
     assertEquals(
         "Required parameters for S3toBQ not passed. "
             + "Set mandatory parameter for S3toBQ template"

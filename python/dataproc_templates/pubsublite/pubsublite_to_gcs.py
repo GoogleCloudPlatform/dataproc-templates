@@ -4,15 +4,19 @@ import argparse
 import pprint
 
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StringType
+from pyspark.sql.functions import to_json
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options
 import dataproc_templates.util.template_constants as constants
+from dataproc_templates.util.dataframe_writer_wrappers import persist_streaming_dataframe_to_cloud_storage
 
 __all__ = ['PubSubLiteToGCSTemplate']
 
 class PubSubLiteToGCSTemplate(BaseTemplate):
     """
-    Dataproc template implementing exports from PubSubLite to GCS
+    Dataproc template implementing exports from Pub/Sub Lite to Cloud Storage
     """
 
     @staticmethod
@@ -23,7 +27,7 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             f'--{constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL}',
             dest=constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL,
             required=True,
-            help='PubSubLite to GCS Input subscription url'
+            help='Pub/Sub Lite Input subscription url'
         )
         parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_GCS_WRITE_MODE}',
@@ -32,25 +36,24 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             default=constants.OUTPUT_MODE_APPEND,
             help=(
                 'Output write mode '
-                '(one of: append,overwrite,ignore,errorifexists) '
+                '(one of: append, update, complete) '
                 '(Defaults to append)'
             ),
             choices=[
-                constants.OUTPUT_MODE_OVERWRITE,
                 constants.OUTPUT_MODE_APPEND,
-                constants.OUTPUT_MODE_IGNORE,
-                constants.OUTPUT_MODE_ERRORIFEXISTS
+                constants.OUTPUT_MODE_UPDATE,
+                constants.OUTPUT_MODE_COMPLETE
             ]
         )
         parser.add_argument(
             f'--{constants.PUBSUBLITE_TO_GCS_OUTPUT_LOCATION}',
             dest=constants.PUBSUBLITE_TO_GCS_OUTPUT_LOCATION,
             required=True,
-            help='GCS output Bucket URL'
+            help='Cloud Storage output Bucket URL'
         )
         parser.add_argument(
-            f'--{constants.PUBSUBLITE_CHECKPOINT_LOCATION}',
-            dest=constants.PUBSUBLITE_CHECKPOINT_LOCATION,
+            f'--{constants.PUBSUBLITE_TO_GCS_CHECKPOINT_LOCATION}',
+            dest=constants.PUBSUBLITE_TO_GCS_CHECKPOINT_LOCATION,
             required=True,
             help='Temporary folder for checkpoint location'
         )
@@ -58,11 +61,11 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             f'--{constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT}',
             dest=constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT,
             required=False,
-            default=constants.FORMAT_CSV,
+            default=constants.FORMAT_JSON,
             help=(
-                'Output Format to GCS '
+                'Output Format to Cloud Storage '
                 '(one of: json, csv, avro, parquet) '
-                '(Defaults to csv)'
+                '(Defaults to json)'
             ),
             choices=[
                 constants.FORMAT_AVRO,
@@ -84,6 +87,11 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             required=True,
             help=('Time interval at which the query will be triggered to process input data')
         )
+        add_spark_options(
+            parser,
+            constants.get_csv_output_spark_options("pubsublite.to.gcs.output."),
+            read_options=False
+            )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -98,14 +106,16 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
         input_subscription_url: str = args[constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL]
         output_location: str = args[constants.PUBSUBLITE_TO_GCS_OUTPUT_LOCATION]
         output_mode: str = args[constants.PUBSUBLITE_TO_GCS_WRITE_MODE]
-        pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_CHECKPOINT_LOCATION]
+        pubsublite_checkpoint_location: str = args[constants.PUBSUBLITE_TO_GCS_CHECKPOINT_LOCATION]
         output_format: str = args[constants.PUBSUBLITE_TO_GCS_OUTPUT_FORMAT]
         timeout: int = args[constants.PUBSUBLITE_TO_GCS_TIMEOUT]
         processing_time: str = args[constants.PUBSUBLITE_TO_GCS_PROCESSING_TIME]
 
+        ignore_keys = {constants.PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
-            "Starting PubSubLite to GCS spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            "Starting Pub/Sub Lite to Cloud Storage spark job with parameters:\n"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Read
@@ -113,15 +123,19 @@ class PubSubLiteToGCSTemplate(BaseTemplate):
             .format(constants.FORMAT_PUBSUBLITE) \
             .option(f"{constants.FORMAT_PUBSUBLITE}.subscription", input_subscription_url) \
             .load())
+        
+        input_data = input_data.withColumn("data", input_data.data.cast(StringType()))
+        input_data = input_data.withColumn("attributes", to_json(input_data.attributes))
 
         # Write
-        query = (input_data.writeStream \
-            .format(output_format) \
-            .option("checkpointLocation", pubsublite_checkpoint_location) \
-            .option("path", output_location) \
-            .outputMode(output_mode) \
-            .trigger(processingTime=processing_time) \
-            .start())
+        writer = input_data.writeStream \
+            .trigger(processingTime=processing_time)
+
+        writer = persist_streaming_dataframe_to_cloud_storage(
+            writer, args, pubsublite_checkpoint_location, output_location,
+            output_format, output_mode, "pubsublite.to.gcs.output.")
+
+        query = writer.start()
 
         # Wait for some time (must be >= 60 seconds) to start receiving messages.
         query.awaitTermination(timeout)

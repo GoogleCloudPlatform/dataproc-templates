@@ -43,6 +43,7 @@ public class RedshiftToGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
+
     SparkSession spark =
         SparkSession.builder()
             .appName("Spark Template RedshiftToGCS ")

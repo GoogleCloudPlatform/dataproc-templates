@@ -52,8 +52,6 @@ public class SnowflakeToGCS implements BaseTemplate {
     // Set log level
     spark.sparkContext().setLogLevel(config.getSparkLogLevel());
 
-    validateInput();
-
     Dataset<Row> inputData =
         spark.read().format(Utils.SNOWFLAKE_SOURCE_NAME()).options(properties).load();
 

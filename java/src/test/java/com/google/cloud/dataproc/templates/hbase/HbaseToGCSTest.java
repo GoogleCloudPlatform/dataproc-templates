@@ -60,7 +60,7 @@ public class HbaseToGCSTest {
     hbaseToGCSTest = new HbaseToGCS();
 
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> hbaseToGCSTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> hbaseToGCSTest.validateInput());
     assertEquals(
         "Required parameters for HbaseToGCS not passed. "
             + "Set mandatory parameter for HbaseToGCS template in "

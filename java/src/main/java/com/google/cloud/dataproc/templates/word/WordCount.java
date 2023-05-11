@@ -36,8 +36,6 @@ public class WordCount implements BaseTemplate {
     String inputPath = getProperties().getProperty(WORD_COUNT_INPUT_PATH_PROP);
     String outputPath = getProperties().getProperty(WORD_COUNT_OUTPUT_PATH_PROP);
 
-    validateInput();
-
     LOGGER.info("Starting word count spark job, inputPath:{},outputPath:{}", inputPath, outputPath);
 
     JavaSparkContext sparkContext = new JavaSparkContext(new SparkConf().setAppName("Word Count"));

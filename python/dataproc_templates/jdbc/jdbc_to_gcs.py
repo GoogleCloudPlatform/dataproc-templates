@@ -195,9 +195,11 @@ class JDBCToGCSTemplate(BaseTemplate):
         temp_view: str = args[constants.JDBCTOGCS_TEMP_VIEW_NAME]
         temp_sql_query:str = args[constants.JDBCTOGCS_TEMP_SQL_QUERY]
 
+        ignore_keys = {constants.JDBCTOGCS_INPUT_URL}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting JDBC to Cloud Storage Spark job with parameters:\n"
-            f"{pprint.pformat(args)}"
+            f"{pprint.pformat(filtered_args)}"
         )
 
         # Read

@@ -131,7 +131,9 @@ class AzureBlobStorageToBigQueryTemplate(BaseTemplate):
 
         spark.conf.set(f"fs.azure.sas.{container_name}.{storage_account}.blob.core.windows.net", sas_token)
 
-        logger.info(f"Starting Azure to BigQuery spark job with parameters:\n {pprint.pformat(args)}")
+        ignore_keys = {constants.AZ_BLOB_SAS_TOKEN}
+        filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
+        logger.info(f"Starting Azure to BigQuery spark job with parameters:\n {pprint.pformat(filtered_args)}")
 
         # Read
         input_data: DataFrame
