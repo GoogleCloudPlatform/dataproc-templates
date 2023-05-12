@@ -43,7 +43,7 @@ check_required_envvar REGION
 check_required_envvar GCS_STAGING_LOCATION1
 
 # Remove trailing forward slash
-GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION1 | sed 's/\/*$//'`
+GCS_STAGING_LOCATION1=`echo $GCS_STAGING_LOCATION1 | sed 's/\/*$//'`
 
 # Do not rebuild when SKIP_BUILD is specified
 # Usage: export SKIP_BUILD=true
@@ -57,8 +57,8 @@ if [ -z "$SKIP_BUILD" ]; then
   check_status $build_status "\n Code build went successful, thus we are good to go \n" "\n We ran into some issues while building the jar file, seems like mvn clean install is not running fine \n"
  
   #Copy jar file to GCS bucket Staging folder
-  echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_LOCATION}/${JAR_FILE}"
-  gsutil cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_LOCATION}/${JAR_FILE}
+  echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_LOCATION1}/${JAR_FILE}"
+  gsutil cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_LOCATION1}/${JAR_FILE}
   check_status $? "\n Commands to copy the project jar file to GCS Staging location went fine, thus we are good to go \n" "\n It seems like there is some issue in copying the project jar file to GCS Staging location \n"
 
 
@@ -67,9 +67,9 @@ fi
 OPT_SPARK_VERSION="--version=1.1"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
-OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION1}/${JAR_FILE}"
 OPT_LABELS="--labels=job_type=dataproc_template"
-OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
+OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION1}"
 OPT_CLASS="--class=com.google.cloud.dataproc.templates.main.DataProcTemplate"
 
 # Optional arguments
@@ -97,10 +97,10 @@ if [ -n "${CATALOG}" ]; then
   echo "Downloading Hbase jar dependency"
   wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar
   wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar
-  gsutil copy hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
-  gsutil copy hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
+  gsutil copy hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION1}/hbase-client-2.4.12.jar
+  gsutil copy hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION1}/hbase-shaded-mapreduce-2.4.12.jar
   echo "Passing downloaded dependency jars"
-  OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+  OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION1}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION1}/hbase-shaded-mapreduce-2.4.12.jar,file:///usr/lib/spark/external/hbase-spark.jar"
   rm hbase-client-2.4.12.jar
   rm hbase-shaded-mapreduce-2.4.12.jar
 fi
