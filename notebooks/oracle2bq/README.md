@@ -26,7 +26,7 @@ Below configurations are required before proceeding further.
 
 * `PROJECT` : GCP project-id
 * `REGION` : GCP region
-* `GCS_STAGING_LOCATION` : GCS staging location to be used for this notebook to store artifacts
+* `GCS_STAGING_LOCATION` : GCS staging location to be used for this notebook to store artifacts (gs://bucket-name)
 * `SUBNET` : VPC subnet
 * `JARS` : list of jars. For this notebook Oracle driver and BigQuery connector with the Dataproc template jars
 * `MAX_PARALLELISM` : Parameter for number of jobs to run in parallel default value is 2
@@ -55,7 +55,7 @@ Alternatively to running the notebook manually, we developed a "parameterize" sc
 ```shell
 export GCP_PROJECT=<project>
 export REGION=<region>
-export GCS_STAGING_LOCATION=<bucket-name>
+export GCS_STAGING_LOCATION=gs://<bucket-name>
 export SUBNET=<subnet>
 
 python run_notebook.py --script=ORACLETOBIGQUERY \
