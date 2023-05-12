@@ -40,10 +40,10 @@ fi
 
 check_required_envvar GCP_PROJECT
 check_required_envvar REGION
-check_required_envvar GCS_STAGING_LOCATION
+check_required_envvar GCS_STAGING_LOCATION1
 
 # Remove trailing forward slash
-GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION | sed 's/\/*$//'`
+GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION1 | sed 's/\/*$//'`
 
 # Do not rebuild when SKIP_BUILD is specified
 # Usage: export SKIP_BUILD=true

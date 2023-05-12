@@ -15,7 +15,7 @@ pipeline {
         MAVEN_HOME = "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven"
         PATH = "$PATH:$MAVEN_HOME/bin"
 
-        GCS_STAGING_LOCATION = sh (
+        GCS_STAGING_LOCATION1 = sh (
             script: '''if [ $GIT_BRANCH_LOCAL != "main" ] 
                     then
                         echo $GCS_STAGING_LOCATION/$GIT_BRANCH_LOCAL;
