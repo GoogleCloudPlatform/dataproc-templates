@@ -24,7 +24,7 @@ pipeline {
             fi
             '''.stripIndent(),
             returnStdout: true
-        ).trim();
+        ).trim()
     }
 
     stages {
