@@ -1,4 +1,14 @@
+"""
+Notebook constants
+"""
+
 # Common
+## Command Line Arguments
+OUTPUT_NOTEBOOK_ARG = "output.notebook"
+MAX_PARALLELISM_ARG = "max.parallelism"
+SERVICE_ACCOUNT_ARG = "service.account"
+
+## Notebook Arguments
 GCP_PROJECT = "GCP_PROJECT"
 PROJECT = "PROJECT"
 REGION = "REGION"
@@ -8,8 +18,6 @@ IS_PARAMETERIZED = "IS_PARAMETERIZED"
 MAX_PARALLELISM =  "MAX_PARALLELISM"
 SERVICE_ACCOUNT = "SERVICE_ACCOUNT"
 
-OUTPUT_NOTEBOOK_ARG = "output.notebook"
-MAX_PARALLELISM_ARG = "max.parallelism"
 
 # Write modes
 OUTPUT_MODE_OVERWRITE = "overwrite"
