@@ -24,6 +24,7 @@ class ScriptName(Enum):
     """Enumeration of all script types"""
 
     MYSQLTOSPANNER = "MYSQLTOSPANNER"
+    ORACLETOBIGQUERY = "ORACLETOBIGQUERY"
 
 
     @classmethod
