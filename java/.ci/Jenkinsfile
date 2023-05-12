@@ -43,6 +43,7 @@ pipeline {
                                 gsutil rm -r gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
                                 gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
 
+                                gsutil rm -r gs://poojabasker-test/delete-folder 2> /dev/null || true
                             '''
                         }
                 }
