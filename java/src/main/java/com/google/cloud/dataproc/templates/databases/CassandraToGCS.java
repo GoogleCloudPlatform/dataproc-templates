@@ -38,7 +38,6 @@ public class CassandraToGCS implements BaseTemplate, TemplateConstants {
 
   public static CassandraToGCS of(String... args) {
     CassandraToGCSConfig config = CassandraToGCSConfig.fromProperties(PropertyUtil.getProperties());
-    ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
     return new CassandraToGCS(config);
   }
