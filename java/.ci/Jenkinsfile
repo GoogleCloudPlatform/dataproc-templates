@@ -14,17 +14,6 @@ pipeline {
         
         MAVEN_HOME = "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven"
         PATH = "$PATH:$MAVEN_HOME/bin"
-
-         GCS_STAGING_LOCATION = sh (script: '''
-            CURRENT_BRANCH = $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'
-            if [ $CURRENT_BRANCH != "main" ];then
-            echo "$GCS_STAGING_LOCATION/$CURRENT_BRANCH"
-            else
-            echo $GCS_STAGING_LOCATION
-            fi
-            '''.stripIndent(),
-            returnStdout: true
-        ).trim()
     }
 
     stages {
@@ -52,6 +41,11 @@ pipeline {
             stage('JDBC TO BQ'){
                 steps {
                     sh '''
+                        if [ $GIT_BRANCH_LOCAL != "main" ] 
+                        then
+                            env.GCS_STAGING_LOCATION+="/${GIT_BRANCH_LOCAL}";
+                        fi
+
                         export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
                         
                         cd java
