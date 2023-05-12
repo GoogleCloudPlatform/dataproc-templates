@@ -21,12 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
+import com.google.cloud.dataproc.templates.databases.RedshiftToGCSConfig;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil.ValidationException;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -54,7 +54,9 @@ class RedshiftToGCSTest {
   @Test
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    assertDoesNotThrow((ThrowingSupplier<RedshiftToGCS>) RedshiftToGCS::of);
+    RedshiftToGCSConfig config = RedshiftToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    RedshiftToGCS template = new RedshiftToGCS(config);
+    assertDoesNotThrow(template::validateInput);
   }
 
   @ParameterizedTest
@@ -62,7 +64,10 @@ class RedshiftToGCSTest {
   void runTemplateWithMissingRequiredParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    ValidationException exception = assertThrows(ValidationException.class, RedshiftToGCS::of);
+    RedshiftToGCSConfig config = RedshiftToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    RedshiftToGCS template = new RedshiftToGCS(config);
+    ValidationException exception =
+        assertThrows(ValidationException.class, template::validateInput);
   }
 
   static Stream<String> requiredPropertyKeys() {
