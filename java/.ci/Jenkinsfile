@@ -16,12 +16,12 @@ pipeline {
         PATH = "$PATH:$MAVEN_HOME/bin"
 
         GCS_STAGING_LOCATION = sh (
-            script: 'if [ $GIT_BRANCH_LOCAL != "main" ] 
+            script: '''if [ $GIT_BRANCH_LOCAL != "main" ] 
                     then
-                        echo "$GCS_STAGING_LOCATION/$GIT_BRANCH_LOCAL";
+                        echo $GCS_STAGING_LOCATION/$GIT_BRANCH_LOCAL;
                     else
                         echo $GCS_STAGING_LOCATION;
-                    fi',
+                    fi'''.stripIndent(),
             returnStdout: true
         ).trim();
     }
