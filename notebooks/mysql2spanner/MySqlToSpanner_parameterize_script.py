@@ -24,6 +24,7 @@ import parameterize_script.util.notebook_constants as constants
 
 __all__ = ['MySqlToSpannerScript']
 
+
 class MySqlToSpannerScript(BaseParameterizeScript):
 
     """
@@ -136,19 +137,17 @@ class MySqlToSpannerScript(BaseParameterizeScript):
 
         return vars(known_args)
 
-
-    def get_env_var(self, parameters) ->  Dict[str, Any]:
+    def get_env_var(self, parameters) -> Dict[str, Any]:
         """
         Get the environment variables.
         """
         parameters[constants.PROJECT] = environ[constants.GCP_PROJECT]
         parameters[constants.REGION] = environ[constants.REGION]
         parameters[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
-        parameters[constants.SUBNET] = environ[constants.SUBNET]
+        parameters[constants.SUBNET] = environ[constants.SUBNET] if constants.SUBNET in environ else ""
         parameters[constants.IS_PARAMETERIZED] = True
 
         return parameters
-
 
     def run(self, args: Dict[str, Any]) -> None:
         """
