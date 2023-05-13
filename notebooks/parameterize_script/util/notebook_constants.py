@@ -6,7 +6,6 @@ Notebook constants
 ## Command Line Arguments
 OUTPUT_NOTEBOOK_ARG = "output.notebook"
 MAX_PARALLELISM_ARG = "max.parallelism"
-SERVICE_ACCOUNT_ARG = "service.account"
 
 ## Notebook Arguments
 GCP_PROJECT = "GCP_PROJECT"

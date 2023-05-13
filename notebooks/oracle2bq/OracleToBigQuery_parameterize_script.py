@@ -123,14 +123,6 @@ class OracleToBigQueryScript(BaseParameterizeScript):
             help='Maximum number of tables that will migrated parallelly (Default: 5)'
         )
 
-        parser.add_argument(
-            f'--{constants.SERVICE_ACCOUNT_ARG}',
-            dest=constants.SERVICE_ACCOUNT,
-            required=False,
-            default="",
-            help='Service account to be used. If not provided, default service account is used'
-        )
-
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args()
 
@@ -145,6 +137,7 @@ class OracleToBigQueryScript(BaseParameterizeScript):
         parameters[constants.REGION] = environ[constants.REGION]
         parameters[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
         parameters[constants.SUBNET] = environ[constants.SUBNET]
+        parameters[constants.SERVICE_ACCOUNT] = environ[constants.SERVICE_ACCOUNT]
         parameters[constants.IS_PARAMETERIZED] = True
 
         return parameters
