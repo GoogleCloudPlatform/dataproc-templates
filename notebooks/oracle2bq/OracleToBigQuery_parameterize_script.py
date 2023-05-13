@@ -137,7 +137,10 @@ class OracleToBigQueryScript(BaseParameterizeScript):
         parameters[constants.REGION] = environ[constants.REGION]
         parameters[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
         parameters[constants.SUBNET] = environ[constants.SUBNET]
-        parameters[constants.SERVICE_ACCOUNT] = environ[constants.SERVICE_ACCOUNT]
+        if constants.SERVICE_ACCOUNT in environ:
+            parameters[constants.SERVICE_ACCOUNT] = environ[constants.SERVICE_ACCOUNT]
+        else:
+            parameters[constants.SERVICE_ACCOUNT] = ""
         parameters[constants.IS_PARAMETERIZED] = True
 
         return parameters
