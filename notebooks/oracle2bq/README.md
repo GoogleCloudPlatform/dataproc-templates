@@ -57,6 +57,7 @@ export GCP_PROJECT=<project>
 export REGION=<region>
 export GCS_STAGING_LOCATION=gs://<bucket-name>
 export SUBNET=<subnet>
+export SERVICE_ACCOUNT=<service-account>
 
 python run_notebook.py --script=ORACLETOBIGQUERY \
                         --oracle.host="10.x.x.x" \
