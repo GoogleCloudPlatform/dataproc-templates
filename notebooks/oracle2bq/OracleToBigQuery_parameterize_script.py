@@ -133,7 +133,7 @@ class OracleToBigQueryScript(BaseParameterizeScript):
         """
         Get the environment variables.
         """
-        parameters[constants.PROJECT] = environ[constants.GCP_PROJECT]
+        parameters[constants.PROJECT_ID] = environ[constants.GCP_PROJECT]
         parameters[constants.REGION] = environ[constants.REGION]
         parameters[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
         parameters[constants.SUBNET] = environ[constants.SUBNET] if constants.SUBNET in environ else ""
