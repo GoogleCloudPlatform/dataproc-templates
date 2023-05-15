@@ -120,7 +120,6 @@ if [ "${JOB_TYPE}" == "CLUSTER" ]; then
   check_required_envvar CLUSTER
   command=$(cat << EOF
   gcloud dataproc jobs submit spark \
-      ${OPT_SPARK_VERSION} \
       ${OPT_PROJECT} \
       ${OPT_REGION} \
       ${OPT_CLUSTER} \
