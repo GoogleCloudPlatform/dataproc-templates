@@ -23,8 +23,8 @@ __all__ = ['ScriptName']
 class ScriptName(Enum):
     """Enumeration of all script types"""
 
-    MYSQLTOSPANNER = "MYSQLTOSPANNER"
     HIVETOBIGQUERY = "HIVETOBIGQUERY"
+    MYSQLTOSPANNER = "MYSQLTOSPANNER"
 
 
     @classmethod
