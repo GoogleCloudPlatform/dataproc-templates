@@ -399,6 +399,13 @@
                     <!--                    <include>io.grpc.internal.**</include>-->
                   </includes>
                 </relocation>
+                <relocation>
+                  <pattern>org</pattern>
+                  <shadedPattern>repackaged.org</shadedPattern>
+                  <includes>
+                    <include>org.apache.commons.cli.**</include>
+                  </includes>
+                </relocation>
               </relocations>
             </configuration>
           </execution>
