@@ -26,7 +26,7 @@ This notebook is built on top of:
 Below configurations are used to execute these notebooks.
 
 * `REGION`: GCP Region  to unload Hive tables in BQ.
-* `GCS_STAGING_LOCATION`: GCS bucket to store artefacts.
+* `GCS_STAGING_LOCATION`: GCS bucket to store artefacts. (gs://bucket-name)
 * `SUBNET`: VPC Subnet
 * `INPUT_HIVE_DATABASE`: Hive database for input tables
 * `INPUT_HIVE_TABLES`: Comma seperated Hive tablenames to move, in case you want to move all the tables put "*"
@@ -35,13 +35,63 @@ Below configurations are used to execute these notebooks.
 * `HIVE_METASTORE`: Hive metastore URI
 * `MAX_PARALLELISM`: Number of parallel Dataproc Jobs to run (default=10)
 
+### Run programmatically with parameterize script
+
+Alternatively to running the notebook manually, we developed a "parameterize" script, using the papermill lib, to allow running notebooks programmatically from a Python script, with parameters.
+
+**Example submission:**
+
+```shell
+export GCP_PROJECT=<project>
+export REGION=<region>
+export GCS_STAGING_LOCATION=gs://<bucket-name>
+export SUBNET=<subnet>
+export SERVICE_ACCOUNT=<service-account>
+
+python run_notebook.py --script=HIVETOBIGQUERY \
+                        --hive.metastore=thrift://10.0.0.33:9083 \
+                        --input.hive.database="defaultdb" \
+                        --input.hive.table="employee" \
+                        --output.bigquery.dataset="hive_to_bq_ds" \
+                        --temp.bucket="mybucket-temp" \
+                        --hive.output.mode="overwrite"
+```
+
+**Parameters:**
+
+```
+python run_notebook.py --script=HIVETOBIGQUERY --help
+usage: run_notebook.py [-h] [--output.notebook OUTPUT.NOTEBOOK] --hive.metastore HIVE_METASTORE --input.hive.database INPUT_HIVE_DATABASE [--input.hive.tables INPUT_HIVE_TABLES] --output.bigquery.dataset
+                       OUTPUT_BIGQUERY_DATASET --temp.bucket TEMP_BUCKET [--hive.output.mode {overwrite,append}] [--max.parallelism MAX_PARALLELISM]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --output.notebook OUTPUT.NOTEBOOK
+                        Path to save executed notebook (Default: None). If not provided, no notebook is saved
+  --hive.metastore HIVE_METASTORE
+                        Hive metastore URI
+  --input.hive.database INPUT_HIVE_DATABASE
+                        Hive database name
+  --input.hive.tables INPUT_HIVE_TABLES
+                        Comma separated list of Hive tables to be migrated "/table1,table2,.../" (Default: *)
+  --output.bigquery.dataset OUTPUT_BIGQUERY_DATASET
+                        BigQuery dataset name
+  --temp.bucket TEMP_BUCKET
+                        GCS bucket name for temporary staging
+  --hive.output.mode {overwrite,append}
+                        Hive output mode (Default: overwrite)
+  --max.parallelism MAX_PARALLELISM
+                        Maximum number of tables that will migrated parallelly (Default: 5)
+```
+
 ### Required JAR files
 
-This template requires the 
-[Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) 
+This template requires the
+[Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example)
 to be available in the Dataproc cluster.
 
 ### Procedure to load BQ tables from Hive:
+
 Step by Step instructions ar given before each cell in the python notebook.
 
 * Add user configuration in Step 1
@@ -51,18 +101,17 @@ Step by Step instructions ar given before each cell in the python notebook.
   * Dataproc Job naming convention: "hive2bq-"+HIVE-TABLE+"-"+ CURRENT_DATETIME
 
 ### Parallel Jobs
+
 Once the notebook is triggered, you can visualize parallel jobs by either using the link generated after 
 Step 11 or by finding your job in [VertexAI Pipelines](https://console.cloud.google.com/vertex-ai/pipelines/).
 
 ![workbench](images/HiveToBQ_Flow.png)
-
 
 ### Audit Table
 
 The template stores audit data for each load in CSV format in GCS bucket provided.
 
 In order to view the data create an external table pointing to the GCS bucket as below.
-
 
 ```
  CREATE EXTERNAL TABLE `<project-id>.<dataset-name>.hive_bq_audit`
