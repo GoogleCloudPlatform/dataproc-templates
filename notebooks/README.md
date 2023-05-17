@@ -46,6 +46,7 @@ You can see each specific parameters in each notebook type README.
 
 It is currently available for the following notebooks:
 * [MySQLToSpanner](/notebooks/mysql2spanner#jupyter-notebook-solution-for-migrating-mysql-database-to-cloud-spanner-using-dataproc-templates)
+* [HiveToBigQuery](/notebooks/hive2bq#dataproc-template-to-migrate-hive-tables-to-bigquery-using-jupyter-notebooks)
 
 USAGE:  
 ```
