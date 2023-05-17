@@ -70,6 +70,8 @@ python run_notebook.py --script=ORACLETOBIGQUERY \
                         --temp.gcs.bucket="my-bucket"
 ```
 
+**Parameters:**
+
 ```
 python run_notebook.py --script=ORACLETOBIGQUERY --help
 usage: run_notebook.py [-h] [--output.notebook OUTPUT.NOTEBOOK] --oracle.host ORACLE_HOST [--oracle.port ORACLE_PORT] --oracle.username
@@ -102,8 +104,6 @@ optional arguments:
   --max.parallelism MAX_PARALLELISM
                         Maximum number of tables that will migrated parallelly (Default: 5)
 ```
-
-**Parameters:**
 
 ### Required JAR files
 
