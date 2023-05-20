@@ -665,6 +665,7 @@ object JdbcUtils extends Logging {
     val conn = getConnection()
     var committed = false
     logError("################## Shashank's JDBC Save ############# ")
+    println("################## Shashank's JDBC Save 222 ############# ")
     var finalIsolationLevel = Connection.TRANSACTION_NONE
     if (isolationLevel != Connection.TRANSACTION_NONE) {
       try {
