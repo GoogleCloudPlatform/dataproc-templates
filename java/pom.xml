@@ -331,7 +331,34 @@
   </dependencies>
 
   <build>
+
+<!--    <pluginManagement>-->
+<!--      <plugins>-->
+<!--        <plugin>-->
+<!--          <groupId>net.alchim31.maven</groupId>-->
+<!--          <artifactId>scala-maven-plugin</artifactId>-->
+<!--          <version>4.2.0</version>-->
+<!--        </plugin>-->
+<!--        <plugin>-->
+<!--          <groupId>org.apache.maven.plugins</groupId>-->
+<!--          <artifactId>maven-compiler-plugin</artifactId>-->
+<!--          <version>3.8.1</version>-->
+<!--          <configuration>-->
+<!--            <source>11</source>-->
+<!--            <target>11</target>-->
+<!--          </configuration>-->
+<!--        </plugin>-->
+<!--      </plugins>-->
+<!--    </pluginManagement>-->
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <skipMain>true</skipMain> <!-- skip compile -->
+          <skip>true</skip> <!-- skip testCompile -->
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -352,6 +379,61 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>com.google.code.sbt-compiler-maven-plugin</groupId>
+        <artifactId>sbt-compiler-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <configuration>
+          <scalaVersion>${scala.binary.version}.15</scalaVersion>
+        </configuration>
+        <executions>
+          <execution>
+            <id>default-sbt-compile</id>
+            <goals>
+              <goal>compile</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+<!--      <plugin>-->
+<!--        <groupId>net.alchim31.maven</groupId>-->
+<!--        <artifactId>scala-maven-plugin</artifactId>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>scala-compile-first</id>-->
+<!--            <phase>process-resources</phase>-->
+<!--            <goals>-->
+<!--              <goal>add-source</goal>-->
+<!--              <goal>compile</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--          <execution>-->
+<!--            <id>scala-test-compile</id>-->
+<!--            <phase>process-test-resources</phase>-->
+<!--            <goals>-->
+<!--              <goal>testCompile</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-compiler-plugin</artifactId>-->
+<!--        <configuration>-->
+<!--          <source>11</source>-->
+<!--          <target>11</target>-->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <phase>compile</phase>-->
+<!--            <goals>-->
+<!--              <goal>compile</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>

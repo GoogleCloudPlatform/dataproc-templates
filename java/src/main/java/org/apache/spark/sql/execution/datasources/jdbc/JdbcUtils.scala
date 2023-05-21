@@ -666,6 +666,7 @@ object JdbcUtils extends Logging {
     var committed = false
     logError("################## Shashank's JDBC Save ############# ")
     println("################## Shashank's JDBC Save 222 ############# ")
+    throw new RuntimeException("Shashank not liked it")
     var finalIsolationLevel = Connection.TRANSACTION_NONE
     if (isolationLevel != Connection.TRANSACTION_NONE) {
       try {
