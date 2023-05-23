@@ -38,7 +38,7 @@
     <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <spark.version>3.2.0</spark.version>
+    <spark.version>3.3.2</spark.version>
     <scala.binary.version>2.12</scala.binary.version>
     <gcs.version>2.4.5</gcs.version>
     <project.version>3.1</project.version>
@@ -294,6 +294,21 @@
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
+      <artifactId>pubsublite-spark-sql-streaming</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-pubsublite</artifactId>
+      <version>1.9.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+      <version>2.9.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
       <version>${gcs.version}</version>
     </dependency>
@@ -382,6 +397,13 @@
                     <include>com.google.protobuf.**</include>
                     <!--                    <inclde>com.google.common.**</inclde>-->
                     <!--                    <include>io.grpc.internal.**</include>-->
+                  </includes>
+                </relocation>
+                <relocation>
+                  <pattern>org</pattern>
+                  <shadedPattern>repackaged.org</shadedPattern>
+                  <includes>
+                    <include>org.apache.commons.cli.**</include>
                   </includes>
                 </relocation>
               </relocations>

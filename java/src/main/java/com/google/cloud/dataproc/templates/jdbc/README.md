@@ -275,7 +275,7 @@ bin/start.sh \
 --templateProperty jdbctospanner.output.table=<spanner table id> \
 --templateProperty jdbctospanner.output.saveMode=<Append|Overwrite|ErrorIfExists|Ignore> \
 --templateProperty jdbctospanner.output.primaryKey=<column[(,column)*] - primary key columns needed when creating the table> \
---templateProperty jdbctospanner.output.batchInsertSize=<optional integer>
+--templateProperty jdbctospanner.output.batch.size=<optional integer>
 ```
 
 **Note**: Following is example JDBC URL for MySQL database:
@@ -327,7 +327,7 @@ Example execution:
     --templateProperty jdbctospanner.output.table='spanner-table-name' \
     --templateProperty jdbctospanner.output.saveMode=Overwrite \
     --templateProperty jdbctospanner.output.primaryKey='primary-key' \
-    --templateProperty jdbctospanner.output.batchInsertSize=200
+    --templateProperty jdbctospanner.output.batch.size=200
 
 There are two optional properties as well with "JDBC to SPANNER" Template. Please find below the details :-
 

@@ -40,14 +40,13 @@ public class GCSToSpanner implements BaseTemplate {
 
   public static GCSToSpanner of(String... args) {
     GCSToSpannerConfig config = GCSToSpannerConfig.fromProperties(PropertyUtil.getProperties());
-    ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
     return new GCSToSpanner(config);
   }
 
   @Override
   public void runTemplate() {
-    validateInput();
+
     try (SparkSession spark = SparkSession.builder().appName("GCS to Spanner").getOrCreate()) {
       // Set log level
       spark.sparkContext().setLogLevel(config.getSparkLogLevel());
@@ -82,5 +81,8 @@ public class GCSToSpanner implements BaseTemplate {
         .save();
   }
 
-  public void validateInput() {}
+  @Override
+  public void validateInput() {
+    ValidationUtil.validateOrThrow(config);
+  }
 }
