@@ -1,6 +1,0 @@
-README.md
-google_dataproc_templates.egg-info/PKG-INFO
-google_dataproc_templates.egg-info/SOURCES.txt
-google_dataproc_templates.egg-info/dependency_links.txt
-google_dataproc_templates.egg-info/requires.txt
-google_dataproc_templates.egg-info/top_level.txt
