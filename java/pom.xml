@@ -38,7 +38,7 @@
     <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <spark.version>3.3.0</spark.version>
+    <spark.version>3.3.2</spark.version>
     <scala.binary.version>2.12</scala.binary.version>
     <gcs.version>2.4.5</gcs.version>
     <project.version>3.1</project.version>
