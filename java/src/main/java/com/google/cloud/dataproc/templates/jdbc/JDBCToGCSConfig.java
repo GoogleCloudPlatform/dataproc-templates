@@ -86,11 +86,18 @@ public class JDBCToGCSConfig {
   @JsonProperty(value = JDBC_TO_GCS_JDBC_FETCH_SIZE)
   private String jdbcFetchSize;
 
+  @JsonProperty(value = JDBC_TO_GCS_JDBC_SESSION_INIT_STATEMENT)
+  private String jdbcSessionInitStatement;
+
   @JsonProperty(value = JDBC_TO_GCS_TEMP_TABLE)
   private String tempTable;
 
   @JsonProperty(value = JDBC_TO_GCS_TEMP_QUERY)
   private String tempQuery;
+
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
 
   @AssertTrue(
       message =
@@ -143,6 +150,10 @@ public class JDBCToGCSConfig {
     return jdbcFetchSize;
   }
 
+  public String getJdbcSessionInitStatement() {
+    return jdbcSessionInitStatement;
+  }
+
   public String getGcsWriteMode() {
     return gcsWriteMode;
   }
@@ -173,6 +184,10 @@ public class JDBCToGCSConfig {
 
   public String getTempQuery() {
     return tempQuery;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   public String getConcatedPartitionProps() {
@@ -240,6 +255,9 @@ public class JDBCToGCSConfig {
         + "'"
         + ", jdbcFetchSize='"
         + getJdbcFetchSize()
+        + "'"
+        + ", jdbcSessionInitStatement='"
+        + getJdbcSessionInitStatement()
         + "'"
         + "}";
   }

@@ -60,6 +60,10 @@ public class JDBCToBigQuery implements BaseTemplate {
 
     validateInput();
 
+
+    // Set log level
+    spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+
     /** Read Input data from JDBC table */
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
@@ -78,15 +82,15 @@ public class JDBCToBigQuery implements BaseTemplate {
   }
 
   public void validateInput() {
-    jdbcProperties.put(JDBCOptions.JDBC_URL(), config.getJdbcURL());
-    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcDriverClassName());
-    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), config.getSQL());
+	    jdbcProperties.put(JDBCOptions.JDBC_URL(), config.getJdbcURL());
+	    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcDriverClassName());
+	    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), config.getSQL());
 
-    if (StringUtils.isNotBlank(config.getConcatedPartitionProps())) {
-      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), config.getJdbcSQLPartitionColumn());
-      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), config.getJdbcSQLUpperBound());
-      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), config.getJdbcSQLLowerBound());
-      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), config.getJdbcSQLNumPartitions());
-    }
-  }
+	    if (StringUtils.isNotBlank(config.getConcatedPartitionProps())) {
+	      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), config.getJdbcSQLPartitionColumn());
+	      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), config.getJdbcSQLUpperBound());
+	      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), config.getJdbcSQLLowerBound());
+	      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), config.getJdbcSQLNumPartitions());
+	    }
+	  }
 }

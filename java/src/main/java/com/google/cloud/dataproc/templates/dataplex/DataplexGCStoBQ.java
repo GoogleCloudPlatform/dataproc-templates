@@ -103,6 +103,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
   private String bqTempBucket;
   private String sparkSaveMode;
   private String incrementalParittionCopy;
+  private String sparkLogLevel;
 
   public DataplexGCStoBQ(
       String customSqlGCSPath,
@@ -122,6 +123,7 @@ public class DataplexGCStoBQ implements BaseTemplate {
     targetEntity = getProperties().getProperty(DATAPLEX_GCS_BQ_TARGET_ENTITY);
     bqTempBucket = getProperties().getProperty(GCS_BQ_LD_TEMP_BUCKET_NAME);
     sparkSaveMode = getProperties().getProperty(DATAPLEX_GCS_BQ_SAVE_MODE);
+    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
     incrementalParittionCopy =
         getProperties().getProperty(DATAPLEX_GCS_BQ_INCREMENTAL_PARTITION_COPY);
     if (incrementalParittionCopy.equals(INCREMENTAL_PARTITION_COPY_NO)) {
@@ -146,10 +148,19 @@ public class DataplexGCStoBQ implements BaseTemplate {
    * @throws Exception if values no value is passed for --dataplexEntity
    */
   public void validateInput() {
-    if (sourceEntity != null) {
-      this.sourceEntity = sourceEntity;
-    } else {
-      throw new DataprocTemplateException(String.format("Please specify %s", ENTITY_OPTION));
+    if (sourceEntity == null || projectId == null) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Please specify the %s property",
+              (sourceEntity == null && projectId != null) ? ENTITY_OPTION : PROJECT_ID_PROP));
+    }
+    if (targetDataset == null && targetAsset == null && targetEntity == null) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Please specify one of %s, %s or %s properties",
+              DATAPLEX_GCS_BQ_TARGET_DATASET,
+              DATAPLEX_GCS_BQ_TARGET_ASSET,
+              DATAPLEX_GCS_BQ_TARGET_ENTITY));
     }
   }
 
@@ -446,10 +457,16 @@ public class DataplexGCStoBQ implements BaseTemplate {
   }
 
   public void runTemplate() {
+
+    validateInput();
+
     try {
       this.spark = SparkSession.builder().appName("Dataplex GCS to BQ").getOrCreate();
+
+      // Set log level
+      this.spark.sparkContext().setLogLevel(sparkLogLevel);
+
       this.sqlContext = new SQLContext(spark);
-      validateInput();
 
       this.sourceEntityUtil = new DataplexEntityUtil(this.sourceEntity);
       this.sourceEntityBasePath = sourceEntityUtil.getBasePathEntityData();

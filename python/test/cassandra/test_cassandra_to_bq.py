@@ -35,7 +35,6 @@ class TestCassandraToBQTemplate:
              "--cassandratobq.bigquery.location=dataset.table",
              "--cassandratobq.output.mode=append",
              "--cassandratobq.temp.gcs.location=xyz",
-             "--cassandratobq.input.query=select one from sample",
              "--cassandratobq.input.catalog.name=casscon",
              "--cassandratobq.input.keyspace=tk1"
              ])
@@ -45,6 +44,5 @@ class TestCassandraToBQTemplate:
         assert parsed_args["cassandratobq.bigquery.location"] == "dataset.table"
         assert parsed_args["cassandratobq.output.mode"] == "append"
         assert parsed_args["cassandratobq.temp.gcs.location"] == "xyz"
-        assert parsed_args["cassandratobq.input.query"] == "select one from sample"
         assert parsed_args["cassandratobq.input.catalog.name"] == "casscon"
         assert parsed_args["cassandratobq.input.keyspace"] == "tk1"

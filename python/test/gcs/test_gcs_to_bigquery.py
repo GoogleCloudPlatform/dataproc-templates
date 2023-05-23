@@ -72,70 +72,6 @@ class TestGCSToBigQueryTemplate:
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
 
-    @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_avro(self, mock_spark_session):
-        """Tests GCSToBigqueryTemplate runs with parquet avro"""
-
-        gcs_to_bigquery_template = GCSToBigQueryTemplate()
-        mock_parsed_args = gcs_to_bigquery_template.parse_args(
-            ["--gcs.bigquery.input.format=avro",
-             "--gcs.bigquery.output.mode=overwrite",
-             "--gcs.bigquery.input.location=gs://test",
-             "--gcs.bigquery.output.dataset=dataset",
-             "--gcs.bigquery.output.table=table",
-             "--gcs.bigquery.temp.bucket.name=bucket"])
-        mock_spark_session.read.format().load.return_value = mock_spark_session.dataframe.DataFrame
-        gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
-
-        mock_spark_session.read.format.assert_called_with(
-            constants.FORMAT_AVRO_EXTD)
-        mock_spark_session.read.format().load.assert_called_once_with("gs://test")
-        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
-            constants.FORMAT_BIGQUERY)
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
-        mock_spark_session.dataframe.DataFrame.write.format().option(
-        ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode().save.assert_called_once()
-
-    @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_csv(self, mock_spark_session):
-        """Tests GCSToBigqueryTemplate runs with csv format"""
-
-        gcs_to_bigquery_template = GCSToBigQueryTemplate()
-        mock_parsed_args = gcs_to_bigquery_template.parse_args(
-            ["--gcs.bigquery.input.format=csv",
-             "--gcs.bigquery.output.mode=ignore",
-             "--gcs.bigquery.input.location=gs://test",
-             "--gcs.bigquery.output.dataset=dataset",
-             "--gcs.bigquery.output.table=table",
-             "--gcs.bigquery.temp.bucket.name=bucket"])
-        mock_spark_session.read.format().option().option(
-        ).load.return_value = mock_spark_session.dataframe.DataFrame
-        gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
-
-        mock_spark_session.read.format.assert_called_with(
-            constants.FORMAT_CSV)
-        mock_spark_session.read.format().option.assert_called_with(
-            constants.HEADER, True)
-        mock_spark_session.read.format().option().option.assert_called_with(
-            constants.INFER_SCHEMA, True)
-        mock_spark_session.read.format().option().option(
-        ).load.assert_called_once_with("gs://test")
-        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
-            constants.FORMAT_BIGQUERY)
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
-        mock_spark_session.dataframe.DataFrame.write.format().option(
-        ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
-        mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode().save.assert_called_once()
-
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_json(self, mock_spark_session):
@@ -163,3 +99,139 @@ class TestGCSToBigQueryTemplate:
         ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_ERRORIFEXISTS)
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_avro(self, mock_spark_session):
+        """Tests GCSToBigqueryTemplate runs with avro"""
+
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
+        mock_parsed_args = gcs_to_bigquery_template.parse_args(
+            ["--gcs.bigquery.input.format=avro",
+             "--gcs.bigquery.output.mode=overwrite",
+             "--gcs.bigquery.input.location=gs://test",
+             "--gcs.bigquery.output.dataset=dataset",
+             "--gcs.bigquery.output.table=table",
+             "--gcs.bigquery.temp.bucket.name=bucket"])
+        mock_spark_session.read.format().load.return_value = mock_spark_session.dataframe.DataFrame
+        gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
+        mock_spark_session.read.format.assert_called_with(
+            constants.FORMAT_AVRO_EXTD)
+        mock_spark_session.read.format().load.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
+            constants.FORMAT_BIGQUERY)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
+        mock_spark_session.dataframe.DataFrame.write.format().option(
+        ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode().save.assert_called_once()
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_delta(self, mock_spark_session):
+        """Tests GCSToBigqueryTemplate runs with delta format"""
+
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
+        mock_parsed_args = gcs_to_bigquery_template.parse_args(
+            ["--gcs.bigquery.input.format=delta",
+             "--gcs.bigquery.output.mode=overwrite",
+             "--gcs.bigquery.input.location=gs://test",
+             "--gcs.bigquery.output.dataset=dataset",
+             "--gcs.bigquery.output.table=table",
+             "--gcs.bigquery.temp.bucket.name=bucket"])
+        mock_spark_session.read.format().load.return_value = mock_spark_session.dataframe.DataFrame
+        gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
+        mock_spark_session.read.format.assert_called_with(
+            constants.FORMAT_DELTA)
+        mock_spark_session.read.format().load.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
+            constants.FORMAT_BIGQUERY)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
+        mock_spark_session.dataframe.DataFrame.write.format().option(
+        ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode().save.assert_called_once()
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_csv1(self, mock_spark_session):
+        """Tests GCSToBigqueryTemplate runs with csv format"""
+
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
+        mock_parsed_args = gcs_to_bigquery_template.parse_args(
+            ["--gcs.bigquery.input.format=csv",
+             "--gcs.bigquery.output.mode=ignore",
+             "--gcs.bigquery.input.location=gs://test",
+             "--gcs.bigquery.output.dataset=dataset",
+             "--gcs.bigquery.output.table=table",
+             "--gcs.bigquery.temp.bucket.name=bucket"])
+        mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
+        gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
+        mock_spark_session.read.format.assert_called_with(
+            constants.FORMAT_CSV)
+        mock_spark_session.read.format().options.assert_called_with(**{
+            constants.CSV_HEADER: 'true',
+            constants.CSV_INFER_SCHEMA: 'true',
+        })
+        mock_spark_session.read.format().options(
+        ).load.assert_called_once_with("gs://test")
+
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
+            constants.FORMAT_BIGQUERY)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
+        mock_spark_session.dataframe.DataFrame.write.format().option(
+        ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode().save.assert_called_once()
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_csv2(self, mock_spark_session):
+        """Tests GCSToBigqueryTemplate runs with csv format and some optional csv options"""
+
+        gcs_to_bigquery_template = GCSToBigQueryTemplate()
+        mock_parsed_args = gcs_to_bigquery_template.parse_args(
+            ["--gcs.bigquery.input.format=csv",
+             "--gcs.bigquery.output.mode=ignore",
+             "--gcs.bigquery.input.location=gs://test",
+             "--gcs.bigquery.input.inferschema=false",
+             "--gcs.bigquery.input.sep=|",
+             "--gcs.bigquery.input.comment=#",
+             "--gcs.bigquery.input.timestampntzformat=yyyy-MM-dd'T'HH:mm:ss",
+             "--gcs.bigquery.output.dataset=dataset",
+             "--gcs.bigquery.output.table=table",
+             "--gcs.bigquery.temp.bucket.name=bucket"])
+        mock_spark_session.read.format().options(
+        ).load.return_value = mock_spark_session.dataframe.DataFrame
+        gcs_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+
+        mock_spark_session.read.format.assert_called_with(
+            constants.FORMAT_CSV)
+        mock_spark_session.read.format().options.assert_called_with(**{
+            constants.CSV_HEADER: 'true',
+            constants.CSV_INFER_SCHEMA: 'false',
+            constants.CSV_SEP: "|",
+            constants.CSV_COMMENT: "#",
+            constants.CSV_TIMESTAMPNTZFORMAT: "yyyy-MM-dd'T'HH:mm:ss",
+        })
+        mock_spark_session.read.format().options(
+        ).load.assert_called_once_with("gs://test")
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
+            constants.FORMAT_BIGQUERY)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option.assert_called_once_with(constants.TABLE, "dataset.table")
+        mock_spark_session.dataframe.DataFrame.write.format().option(
+        ).option.assert_called_once_with(constants.GCS_BQ_TEMP_BUCKET, "bucket")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_IGNORE)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode().save.assert_called_once()
+

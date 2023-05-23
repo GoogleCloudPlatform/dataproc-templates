@@ -15,7 +15,12 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_AVRO_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_CSV_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_ORC_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_JDBC_PRQT_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,7 +53,15 @@ public class GCSToJDBCConfig {
 
   @JsonProperty(value = GCS_JDBC_INPUT_FORMAT)
   @NotEmpty
-  @Pattern(regexp = "avro|parquet|orc")
+  @Pattern(
+      regexp =
+          GCS_JDBC_AVRO_FORMAT
+              + "|"
+              + GCS_JDBC_CSV_FORMAT
+              + "|"
+              + GCS_JDBC_ORC_FORMAT
+              + "|"
+              + GCS_JDBC_PRQT_FORMAT)
   private String inputFormat;
 
   @JsonProperty(value = PROJECT_ID_PROP)
@@ -70,15 +83,19 @@ public class GCSToJDBCConfig {
   @JsonProperty(value = GCS_JDBC_OUTPUT_SAVE_MODE)
   @NotEmpty
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
-  private String saveModeString = "ErrorIfExists";
+  private String saveModeString;
 
   @JsonProperty(value = GCS_JDBC_OUTPUT_BATCH_INSERT_SIZE)
   @Min(value = 1)
-  private long batchInsertSize = 1000;
+  private long batchInsertSize;
 
   @JsonProperty(value = CUSTOM_SPARK_PARTITIONS)
   @Min(value = 0)
   private String customSparkPartitions;
+
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
 
   public String getInputLocation() {
     return inputLocation;
@@ -119,6 +136,10 @@ public class GCSToJDBCConfig {
 
   public String getCustomSparkPartitions() {
     return customSparkPartitions;
+  }
+
+  public String getSparkLogLevel() {
+    return sparkLogLevel;
   }
 
   @Override

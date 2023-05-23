@@ -28,6 +28,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBC_TO
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBC_TO_BQ_SQL_UPPER_BOUND;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBC_TO_BQ_TEMP_GCS_BUCKET;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.JDBC_TO_BQ_WRITE_MODE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -86,6 +87,10 @@ public class JDBCToBigQueryConfig {
 
   @JsonProperty(value = JDBC_BQ_TEMP_QUERY)
   private String tempQuery;
+  
+  @JsonProperty(value = SPARK_LOG_LEVEL)
+  @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
+  private String sparkLogLevel;
 
   @AssertTrue(
       message =
@@ -166,6 +171,10 @@ public class JDBCToBigQueryConfig {
     return tempQuery;
   }
 
+  public String getSparkLogLevel() {
+	    return sparkLogLevel;
+	  }
+  
   public String getConcatedPartitionProps() {
     return jdbcSQLPartitionColumn + jdbcSQLLowerBound + jdbcSQLUpperBound + jdbcSQLNumPartitions;
   }

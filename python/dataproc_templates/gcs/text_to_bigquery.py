@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,10 +17,13 @@ from logging import Logger
 import argparse
 import pprint
 
-from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
+from dataproc_templates.util.argument_parsing import add_spark_options
+from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
 import dataproc_templates.util.template_constants as constants
+
 
 __all__ = ['TextToBigQueryTemplate']
 
@@ -38,8 +41,9 @@ class TextToBigQueryTemplate(BaseTemplate):
             f'--{constants.TEXT_BQ_INPUT_LOCATION}',
             dest=constants.TEXT_BQ_INPUT_LOCATION,
             required=True,
-            help='GCS location of the input text files'
+            help='Cloud Storage location of the input text files'
         )
+        add_spark_options(parser, constants.get_csv_input_spark_options("text.bigquery.input."))
         parser.add_argument(
             f'--{constants.TEXT_BQ_OUTPUT_DATASET}',
             dest=constants.TEXT_BQ_OUTPUT_DATASET,
@@ -106,32 +110,32 @@ class TextToBigQueryTemplate(BaseTemplate):
         return vars(known_args)
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
-
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_file_location: str = args[constants.TEXT_BQ_INPUT_LOCATION]
+        input_location: str = args[constants.TEXT_BQ_INPUT_LOCATION]
         big_query_dataset: str = args[constants.TEXT_BQ_OUTPUT_DATASET]
         big_query_table: str = args[constants.TEXT_BQ_OUTPUT_TABLE]
         bq_temp_bucket: str = args[constants.TEXT_BQ_LD_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.TEXT_BQ_OUTPUT_MODE]
-        input_delimiter: str = args[constants.TEXT_INPUT_DELIMITER]
-        input_file_codec_format: str = args[constants.TEXT_INPUT_COMPRESSION]
+        # These options are redundant but left in place until this template is removed
+        # via issue https://github.com/GoogleCloudPlatform/dataproc-templates/issues/721
+        # input_delimiter: str = args[constants.TEXT_INPUT_DELIMITER]
+        # input_file_codec_format: str = args[constants.TEXT_INPUT_COMPRESSION]
 
         logger.info(
-            "Starting GCS to Bigquery spark job with parameters:\n"
+            "Starting GCS to Bigquery Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
 
         # Read
-        input_data: DataFrame
-
-        input_data = spark.read\
-            .option(constants.HEADER, True) \
-            .option(constants.INFER_SCHEMA, True) \
-            .option(constants.INPUT_COMPRESSION, input_file_codec_format)\
-            .option(constants.INPUT_DELIMITER, input_delimiter)\
-            .csv(input_file_location)
+        input_data = ingest_dataframe_from_cloud_storage(
+            spark,
+            args,
+            input_location,
+            constants.FORMAT_CSV,
+            "text.bigquery.input.",
+        )
 
         # Write
         input_data.write \
