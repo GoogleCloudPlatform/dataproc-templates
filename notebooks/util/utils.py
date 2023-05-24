@@ -1,3 +1,6 @@
+from google.cloud import bigquery_migration_v2
+import logging
+
 def create_migration_workflow(
     gcs_input_path: str, gcs_output_path: str, project_id: str, 
     bq_dataset: str, default_database: str, source_dilect: str, bq_region: str,
@@ -20,8 +23,8 @@ def create_migration_workflow(
         state (string): Job Run State
 
     """
-    from google.cloud import bigquery_migration_v2
     """Creates a migration workflow of a Batch SQL Translation and prints the response."""
+    LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
     parent = f"projects/{project_id}/locations/{bq_region}"
     # Construct a BigQuery Migration client object.
     client = bigquery_migration_v2.MigrationServiceClient()
@@ -58,10 +61,8 @@ def create_migration_workflow(
         parent=parent,
         migration_workflow=workflow,)
     response = client.create_migration_workflow(request=request)
-    print("Created workflow:")
-    print(response.display_name)
-    print("Current state:")
-    print(response.State(response.state))
+    LOGGER.info("Created workflow: "+str(response.display_name))
+    LOGGER.info("Current state: "+str(response.State(response.state)))
     return response.name, response.state
        
 
@@ -75,8 +76,9 @@ def get_migration_workflow_status(name):
         state (string): Job Run State
 
     """
+    LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
+    
     # Create a client
-    from google.cloud import bigquery_migration_v2
     client = bigquery_migration_v2.MigrationServiceClient()
     # Initialize request argument(s)
     request = bigquery_migration_v2.GetMigrationWorkflowRequest(
@@ -84,5 +86,6 @@ def get_migration_workflow_status(name):
     )
     # Make the request
     response = client.get_migration_workflow(request=request)
+    LOGGER.info(str(response.state))
     # Return the response
     return response
