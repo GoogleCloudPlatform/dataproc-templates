@@ -61,8 +61,6 @@ public class BigQueryToGCS implements BaseTemplate {
   @Override
   public void runTemplate() {
 
-    validateInput();
-
     SparkSession spark = SparkSession.builder().appName("BigQuery to GCS").getOrCreate();
 
     // Set log level

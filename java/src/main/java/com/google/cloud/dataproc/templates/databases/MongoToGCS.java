@@ -56,8 +56,6 @@ public class MongoToGCS implements BaseTemplate {
   @Override
   public void runTemplate() {
 
-    validateInput();
-
     // Initialize Spark Session
 
     SparkSession spark = null;

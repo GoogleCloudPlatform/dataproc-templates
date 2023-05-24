@@ -35,14 +35,13 @@ public class RedshiftToGCS implements BaseTemplate {
 
   public static com.google.cloud.dataproc.templates.databases.RedshiftToGCS of(String... args) {
     RedshiftToGCSConfig config = RedshiftToGCSConfig.fromProperties(PropertyUtil.getProperties());
-    ValidationUtil.validateOrThrow(config);
     LOGGER.info("Config loaded\n{}", config);
-    return new com.google.cloud.dataproc.templates.databases.RedshiftToGCS(config);
+    return new RedshiftToGCS(config);
   }
 
   @Override
   public void runTemplate() {
-    validateInput();
+
     SparkSession spark =
         SparkSession.builder()
             .appName("Spark Template RedshiftToGCS ")
@@ -82,5 +81,8 @@ public class RedshiftToGCS implements BaseTemplate {
     spark.stop();
   }
 
-  public void validateInput() {}
+  @Override
+  public void validateInput() {
+    ValidationUtil.validateOrThrow(config);
+  }
 }
