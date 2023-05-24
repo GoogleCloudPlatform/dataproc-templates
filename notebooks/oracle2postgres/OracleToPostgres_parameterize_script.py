@@ -125,13 +125,6 @@ class OracleToPostgresScript(BaseParameterizeScript):
                 help='Postgres Schema name where we want to migrate'
             )
         parser.add_argument(
-                f'--{constants.POSTGRES_SCHEMA_ARG}',
-                dest=constants.POSTGRES_SCHEMA,
-                required=True,
-                help='Postgres Schema name where we want to migrate'
-            )        
-        
-        parser.add_argument(
             f'--{constants.MAX_PARALLELISM_ARG}',
             dest=constants.MAX_PARALLELISM,
             type=int,
@@ -154,7 +147,7 @@ class OracleToPostgresScript(BaseParameterizeScript):
             f'--{constants.BATCH_SIZE_ARG}',
             dest=constants.BATCH_SIZE,
             required=False,
-            default=constants.DEFAULT_BATCH_SIZE,
+            default=5,
             help='JDBC output batch size (Default: 1000).'
         )
 
