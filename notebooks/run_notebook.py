@@ -17,11 +17,13 @@ from typing import Dict, Any, Type
 from parameterize_script import BaseParameterizeScript, ScriptName
 from parameterize_script.util import get_script_name
 from mysql2spanner import MySqlToSpannerScript
+from oracle2postgres import OracleToPostgresScript
 
 # Maps each ScriptName to its corresponding implementation
 # of BaseParameterizeScript
 SCRIPT_IMPLS: Dict[ScriptName, Type[BaseParameterizeScript]] = {
     ScriptName.MYSQLTOSPANNER: MySqlToSpannerScript,
+    ScriptName.ORACLETOPOSTGRES: OracleToPostgresScript
 }
 
 def run_script(script_name: ScriptName) -> None:
