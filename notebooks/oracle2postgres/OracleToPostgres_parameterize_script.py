@@ -146,7 +146,7 @@ class OracleToPostgresScript(BaseParameterizeScript):
             f'--{constants.BATCH_SIZE_ARG}',
             dest=constants.BATCH_SIZE,
             required=False,
-            default=5,
+            default=1000,
             help='JDBC output batch size (Default: 1000).'
         )
 
