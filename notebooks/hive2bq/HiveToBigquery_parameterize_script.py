@@ -98,6 +98,14 @@ class HiveToBigQueryScript(BaseParameterizeScript):
             help='Maximum number of tables that will migrated parallelly (Default: 5)'
         )
 
+        parser.add_argument(
+            f'--{constants.BQ_DATASET_REGION_ARG}',
+            dest=constants.BQ_DATASET_REGION,
+            required=False,
+            default="us",
+            help='BigQuery dataset region (Default: us)'
+        )
+
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args()
 
