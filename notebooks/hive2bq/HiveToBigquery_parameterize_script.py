@@ -140,5 +140,6 @@ class HiveToBigQueryScript(BaseParameterizeScript):
         pm.execute_notebook(
             'hive2bq/HiveToBigquery_notebook.ipynb',
             output_path,
-            nb_parameters
+            parameters=nb_parameters,
+            log_output=True
         )

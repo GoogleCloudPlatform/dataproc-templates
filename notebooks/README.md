@@ -57,6 +57,7 @@ export GCS_STAGING_LOCATION=<gs://bucket-name>
 export SUBNET=<subnet>
 
 python run_notebook.py --script=<NOTEBOOK_NAME> \
+   --log_level=<LOG_LEVEL> \
    --notebook.paramter1="<>" \
    --notebook.paramter2="<>"
 ```
