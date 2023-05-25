@@ -166,5 +166,6 @@ class OracleToBigQueryScript(BaseParameterizeScript):
         pm.execute_notebook(
             'oracle2bq/OracleToBigQuery_notebook.ipynb',
             output_path,
-            nb_parameters
+            parameters=nb_parameters,
+            log_output=True
         )
