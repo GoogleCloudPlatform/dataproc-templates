@@ -72,7 +72,10 @@ public class GeneralTemplate implements BaseTemplate {
     }
   }
 
-  public void validateInput() {}
+  @Override
+  public void validateInput() {
+    ValidationUtil.validateOrThrow(config);
+  }
 
   public static GeneralTemplate of(String... args) {
     CommandLine cmd = parseArguments(args);
@@ -85,7 +88,6 @@ public class GeneralTemplate implements BaseTemplate {
       throw new IllegalArgumentException("Could not load config yaml", e);
     }
     LOGGER.info("Config loaded\n{}", config);
-    ValidationUtil.validateOrThrow(config);
     return new GeneralTemplate(config);
   }
 
