@@ -814,6 +814,13 @@ pipeline {
     				notifyBackToNormal: 'true'
                 }
             }
+            catchError {
+                sh '''
+                if [ $GIT_BRANCH_LOCAL != "main" ];then
+                    echo $GCS_STAGING_LOCATION
+                fi
+                '''
+            }
         }
     }
 }
