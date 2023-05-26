@@ -87,7 +87,7 @@ usage: run_notebook.py [-h]
         --mysql.username MYSQL_USERNAME
         --mysql.password MYSQL_PASSWORD
         --mysql.database MYSQL_DATABASE
-        [--mysql.table.list MYSQLTABLE_LIST]
+        [--mysql.table.list MYSQL_TABLE_LIST]
         [--mysql.output.spanner.mode {overwrite,append}]
         --spanner.instance SPANNER_INSTANCE
         --spanner.database SPANNER_DATABASE
@@ -109,7 +109,7 @@ optional arguments:
         MySQL password
     --mysql.database MYSQL_DATABASE
         MySQL database name
-    --mysql.table.list MYSQLTABLE_LIST
+    --mysql.table.list MYSQL_TABLE_LIST
         MySQL table list to migrate. Leave empty for migrating complete database else provide tables as "table1,table2"
     --mysql.output.spanner.mode {overwrite,append}
         Spanner output write mode (Default: overwrite). Use append when schema already exists in Spanner

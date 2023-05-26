@@ -36,7 +36,7 @@ Below configurations are required before proceeding further.
 * `ORACLE_USERNAME` : Oracle username
 * `ORACLE_PASSWORD` : Oracle password
 * `ORACLE_DATABASE` : Name of database/service for Oracle connection
-* `ORACLETABLE_LIST` : List of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : []
+* `ORACLE_TABLE_LIST` : List of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : []
 
 #### BigQuery Parameters
 * `BIGQUERY_DATASET` : BigQuery Target Dataset

@@ -80,8 +80,8 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         )
 
         parser.add_argument(
-            f'--{constants.MYSQLTABLE_LIST_ARG}',
-            dest=constants.MYSQLTABLE_LIST,
+            f'--{constants.MYSQL_TABLE_LIST_ARG}',
+            dest=constants.MYSQL_TABLE_LIST,
             required=False,
             default='',
             help='MySQL table list to migrate. '
@@ -156,8 +156,8 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         """
 
         # Convert comma separated string to list
-        args[constants.MYSQLTABLE_LIST] = list(
-            map(str.strip, args[constants.MYSQLTABLE_LIST].split(","))
+        args[constants.MYSQL_TABLE_LIST] = list(
+            map(str.strip, args[constants.MYSQL_TABLE_LIST].split(","))
         )
         # Convert JSON string to object
         args[constants.SPANNER_TABLE_PRIMARY_KEYS] = json.loads(
