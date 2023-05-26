@@ -817,7 +817,7 @@ pipeline {
             catchError {
                 sh '''
                 if [ $GIT_BRANCH_LOCAL != "main" ];then
-                    echo $GCS_STAGING_LOCATION
+                    gsutil rm -r $GCS_STAGING_LOCATION 2> /dev/null || true
                 fi
                 '''
             }
