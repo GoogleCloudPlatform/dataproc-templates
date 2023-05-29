@@ -16,12 +16,15 @@
 package com.google.cloud.dataproc.templates.jdbc;
 
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
+import com.google.cloud.dataproc.jdbc.writer.LenientJdbcWriter;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.HashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.spark.sql.*;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
 import org.apache.spark.sql.jdbc.JdbcDialects;
 import org.slf4j.Logger;
@@ -77,7 +80,8 @@ public class JDBCToSpanner implements BaseTemplate {
     JdbcDialects.registerDialect(new SpannerJdbcDialect());
     dataset
         .write()
-        .format("jdbc")
+        .format(LenientJdbcWriter.class.getCanonicalName())
+        // .format("jdbc")
         .option(JDBCOptions.JDBC_URL(), spannerUrl)
         .option(JDBCOptions.JDBC_TABLE_NAME(), config.getTable())
         .option(

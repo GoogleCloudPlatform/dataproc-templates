@@ -15,6 +15,8 @@
  */
 package com.google.cloud.dataproc.templates.jdbc;
 
+import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
+import com.google.cloud.dataproc.jdbc.writer.LenientJdbcWriter;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
@@ -28,6 +30,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
+import org.apache.spark.sql.jdbc.JdbcDialects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +59,7 @@ public class JDBCToJDBC implements BaseTemplate {
     SparkSession spark = SparkSession.builder().appName("JDBC to JDBC").getOrCreate();
     // Set log level
     spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+    JdbcDialects.registerDialect(new SpannerJdbcDialect());
     Dataset<Row> inputData = load(spark);
     write(inputData);
 
@@ -80,7 +84,7 @@ public class JDBCToJDBC implements BaseTemplate {
     if (StringUtils.isNotBlank(config.getJdbcNumPartitions())) {
       inputData
           .write()
-          .format("jdbc")
+          .format(LenientJdbcWriter.class.getCanonicalName())
           .option(JDBCOptions.JDBC_URL(), config.getJdbcOutputURL())
           .option(JDBCOptions.JDBC_TABLE_NAME(), config.getJdbcOutputTable())
           .option(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcOutputDriver())
@@ -92,7 +96,8 @@ public class JDBCToJDBC implements BaseTemplate {
     } else {
       inputData
           .write()
-          .format("jdbc")
+          // .format(JdbcSource.class.getCanonicalName())
+          .format(LenientJdbcWriter.class.getCanonicalName())
           .option(JDBCOptions.JDBC_URL(), config.getJdbcOutputURL())
           .option(JDBCOptions.JDBC_TABLE_NAME(), config.getJdbcOutputTable())
           .option(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcOutputDriver())
