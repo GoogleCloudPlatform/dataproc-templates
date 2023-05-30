@@ -49,9 +49,6 @@ public class LenientJdbcWriter implements CreatableRelationProvider {
     boolean isCaseSensitive = SparkSession.active().sessionState().conf().caseSensitiveAnalysis();
     JdbcDialect dialect = JdbcDialects.get(options.url());
     Connection conn = dialect.createConnectionFactory(options).apply(-1);
-
-    System.out.println("###################3 FINNALLLYYYYYYY SHASHANK $$$$$$$$$");
-
     try {
       boolean tableExists = JdbcUtils.tableExists(conn, options);
       if (tableExists) {

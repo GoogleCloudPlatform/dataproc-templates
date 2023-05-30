@@ -61,10 +61,6 @@ public class SavePartitionLenient implements VoidFunction<Iterator<Row>>, Serial
     scala.collection.Iterator<Row> scalaRows = JavaConverters.asScalaIterator(rowIterator);
 
     try {
-      // rowIterator.
-      LOGGER.info(
-          String.format(
-              "############### saving partition of size: %d ***************", scalaRows.size()));
       JdbcUtils.savePartition(
           table, scalaRows, rddSchema, insertStmt, batchSize, dialect, isolationLevel, options);
     } catch (Exception e) {
