@@ -23,7 +23,6 @@ import com.google.cloud.dataproc.templates.util.ValidationUtil.ValidationExcepti
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -47,7 +46,9 @@ public class CassandraToBQTest {
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_INPUT_HOST, "host");
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_INPUT_TABLE, "table");
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_BQ_INPUT_KEYSPACE, "keyspace");
-    assertDoesNotThrow((ThrowingSupplier<CassandraToBQ>) CassandraToBQ::of);
+    CassandraToBqConfig config = CassandraToBqConfig.fromProperties(PropertyUtil.getProperties());
+    CassandraToBQ template = new CassandraToBQ(config);
+    assertDoesNotThrow(template::validateInput);
   }
 
   @ParameterizedTest
@@ -55,7 +56,10 @@ public class CassandraToBQTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    ValidationException exception = assertThrows(ValidationException.class, CassandraToBQ::of);
+    CassandraToBqConfig config = CassandraToBqConfig.fromProperties(PropertyUtil.getProperties());
+    CassandraToBQ template = new CassandraToBQ(config);
+    ValidationException exception =
+        assertThrows(ValidationException.class, template::validateInput);
   }
 
   static Stream<String> propertyKeys() {

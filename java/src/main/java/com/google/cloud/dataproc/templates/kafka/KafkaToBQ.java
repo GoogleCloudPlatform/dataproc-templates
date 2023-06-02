@@ -61,7 +61,6 @@ public class KafkaToBQ implements BaseTemplate {
 
   @Override
   public void runTemplate() throws StreamingQueryException, TimeoutException {
-    validateInput();
 
     // Initialize the Spark session
     SparkSession spark = SparkSession.builder().appName("Spark KafkaToBQ Job").getOrCreate();

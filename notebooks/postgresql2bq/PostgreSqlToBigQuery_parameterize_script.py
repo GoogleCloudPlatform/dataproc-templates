@@ -22,9 +22,9 @@ import papermill as pm
 from parameterize_script import BaseParameterizeScript
 import parameterize_script.util.notebook_constants as constants
 
-__all__ = ['PoatgreSqlToBigQueryScript']
+__all__ = ['PostgreSqlToBigQueryScript']
 
-class PoatgreSqlToBigQueryScript(BaseParameterizeScript):
+class PostgreSqlToBigQueryScript(BaseParameterizeScript):
 
     """
     Script to parameterize PostgreSql to Big Query notebook.
@@ -80,8 +80,8 @@ class PoatgreSqlToBigQueryScript(BaseParameterizeScript):
         )
 
         parser.add_argument(
-            f'--{constants.POSTGRESQL_LIST_ARG}',
-            dest=constants.POSTGRESQL_LIST,
+            f'--{constants.POSTGRESQL_TABLE_LIST_ARG}',
+            dest=constants.POSTGRESQL_TABLE_LIST,
             required=False,
             default='',
             help='POSTGRESQL table list to migrate. '
@@ -89,37 +89,28 @@ class PoatgreSqlToBigQueryScript(BaseParameterizeScript):
         )
 
         parser.add_argument(
-            f'--{constants.POSTGRESQL_OUTPUT_ BIGQUERY_MODE_ARG}',
-            dest=constants.POSTGRESQL_OUTPUT_ BIGQUERY_MODE,
+            f'--{constants.POSTGRESQL_SCHEMA_LIST_ARG}',
+            dest=constants.POSTGRESQL_SCHEMA_LIST,
             required=False,
-            default=constants.OUTPUT_MODE_OVERWRITE,
-            help=' BIGQUERY output write mode (Default: overwrite). '
-            'Use append when schema already exists in  BIGQUERY',
-            choices=[
-                constants.OUTPUT_MODE_OVERWRITE,
-                constants.OUTPUT_MODE_APPEND
-            ]
+            default='',
+            help='POSTGRESQL schema list to migrate. '
+            'Only Migrate tables associated with the provided schema list'
+        )
+
+       
+        parser.add_argument(
+            f'--{constants. BIGQUERY_DATASET_ARG}',
+            dest=constants. BIGQUERY_DATASET,
+            required=True,
+            help=' BIGQUERY dataset name'
         )
 
         parser.add_argument(
-            f'--{constants.BIGQUERY_INSTANCE_ARG}',
-            dest=constants. BIGQUERY_INSTANCE,
+            f'--{constants. BIGQUERY_MODE_ARG}',
+            dest=constants. BIGQUERY_MODE,
+            default='overwrite',
             required=True,
-            help=' BIGQUERY instance name'
-        )
-
-        parser.add_argument(
-            f'--{constants. BIGQUERY_DATABASE_ARG}',
-            dest=constants. BIGQUERY_DATABASE,
-            required=True,
-            help=' BIGQUERY database name'
-        )
-
-        parser.add_argument(
-            f'--{constants. BIGQUERY_TABLE_PRIMARY_KEYS_ARG}',
-            dest=constants. BIGQUERY_TABLE_PRIMARY_KEYS,
-            required=True,
-            help='Provide table & PK column which do not have PK in POSTGRESQL table {\"table_name\":\"primary_key\"}'
+            help='output write mode (Default: overwrite)'
         )
 
         parser.add_argument(
@@ -141,11 +132,14 @@ class PoatgreSqlToBigQueryScript(BaseParameterizeScript):
         """
         Get the environment variables.
         """
+      
         parameters[constants.PROJECT] = environ[constants.GCP_PROJECT]
         parameters[constants.REGION] = environ[constants.REGION]
         parameters[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
-        parameters[constants.SUBNET] = environ[constants.SUBNET]
+        parameters[constants.SUBNET] = environ[constants.SUBNET] if constants.SUBNET in environ else ""
+        parameters[constants.SERVICE_ACCOUNT] = environ[constants.SERVICE_ACCOUNT] if constants.SERVICE_ACCOUNT in environ else ""
         parameters[constants.IS_PARAMETERIZED] = True
+        
 
         return parameters
 
@@ -156,14 +150,9 @@ class PoatgreSqlToBigQueryScript(BaseParameterizeScript):
         """
 
         # Convert comma separated string to list
-        args[constants.POSTGRESQLTABLE_LIST] = list(
-            map(str.strip, args[constants.POSTGRESQLTABLE_LIST].split(","))
+        args[constants.POSTGRESQL_TABLE_LIST] = list(
+            map(str.strip, args[constants.POSTGRESQL_TABLE_LIST].split(","))
         )
-        # Convert JSON string to object
-        args[constants. BIGQUERY_TABLE_PRIMARY_KEYS] = json.loads(
-            args[constants. BIGQUERY_TABLE_PRIMARY_KEYS]
-        )
-
         # Exclude arguments that are not needed to be passed to the notebook
         ignore_keys = {constants.OUTPUT_NOTEBOOK_ARG}
         nb_parameters = {key:val for key,val in args.items() if key not in ignore_keys}

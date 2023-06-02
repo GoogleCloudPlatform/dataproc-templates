@@ -15,15 +15,21 @@
  */
 package com.google.cloud.dataproc.templates.databases;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.CASSANDRA_TO_GSC_INPUT_HOST;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.CASSANDRA_TO_GSC_INPUT_KEYSPACE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.CASSANDRA_TO_GSC_INPUT_TABLE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.CASSANDRA_TO_GSC_OUTPUT_FORMAT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.CASSANDRA_TO_GSC_OUTPUT_PATH;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil.ValidationException;
+import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -31,16 +37,12 @@ import org.slf4j.LoggerFactory;
 
 public class CassandraToGCSTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(CassandraToGCSTest.class);
+  final Properties properties = PropertyUtil.getProperties();
 
   @BeforeEach
   void setUp() {
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
-  }
 
-  @ParameterizedTest
-  @MethodSource("propertyKeys")
-  void runTemplateWithValidParameters(String propKey) {
-    LOGGER.info("Running test: runTemplateWithValidParameters");
     PropertyUtil.getProperties()
         .setProperty(CASSANDRA_TO_GSC_OUTPUT_PATH, "gs://test-bucket/output");
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_GSC_OUTPUT_SAVE_MODE, "Append");
@@ -48,15 +50,27 @@ public class CassandraToGCSTest {
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_GSC_INPUT_HOST, "host");
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_GSC_INPUT_TABLE, "table");
     PropertyUtil.getProperties().setProperty(CASSANDRA_TO_GSC_INPUT_KEYSPACE, "keyspace");
-    assertDoesNotThrow((ThrowingSupplier<CassandraToGCS>) CassandraToGCS::of);
+  }
+
+  @ParameterizedTest
+  @MethodSource("propertyKeys")
+  void runTemplateWithValidParameters(String propKey) {
+    LOGGER.info("Running test: runTemplateWithValidParameters");
+
+    CassandraToGCSConfig config = CassandraToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    CassandraToGCS template = new CassandraToGCS(config);
+    assertDoesNotThrow(template::validateInput);
   }
 
   @ParameterizedTest
   @MethodSource("propertyKeys")
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
-    PropertyUtil.getProperties().setProperty(propKey, "");
-    ValidationException exception = assertThrows(ValidationException.class, CassandraToGCS::of);
+    properties.setProperty(propKey, "");
+    CassandraToGCSConfig config = CassandraToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    CassandraToGCS template = new CassandraToGCS(config);
+    ValidationException exception =
+        assertThrows(ValidationException.class, template::validateInput);
   }
 
   static Stream<String> propertyKeys() {

@@ -70,7 +70,7 @@ public class GCStoGCSTest {
     PropertyUtil.getProperties().setProperty(propKey, "");
     GCScsvToGCSTest = new GCStoGCS();
     Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> GCScsvToGCSTest.runTemplate());
+        assertThrows(IllegalArgumentException.class, () -> GCScsvToGCSTest.validateInput());
     assertEquals(
         "Required parameters for GCStoGCS not passed. "
             + "Set mandatory parameter for GCStoGCS template"

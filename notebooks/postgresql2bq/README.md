@@ -66,73 +66,65 @@ export REGION=<region>
 export GCS_STAGING_LOCATION=<bucket-name>
 export SUBNET=<subnet>
 
-python run_notebook.py --script=MYSQLTOSPANNER \
-                        --mysql.host="10.x.x.x" \
-                        --mysql.port="3306" \
-                        --mysql.username="user" \
-                        --mysql.password="password" \
-                        --mysql.database="db" \
-                        --mysql.table.list="employee" \
-                        --spanner.instance="spark-instance" \
-                        --spanner.database="spark-db" \
-                        --spanner.table.primary.keys="{\"employee\":\"empno\"}"
+python run_notebook.py --script=POSTGRESQLTOBIGQUERY \
+                        --postgresql.host="10.x.x.x" \
+                        --postgresql.port="3306" \
+                        --postgresql.username="user" \
+                        --postgresql.password="password" \
+                        --postgresql.database="db" \
+                        --postgresql.table.list="employee" \
+                        --postgresql.schema.list="" \
+
+                        --bigquery.dataset="templates" \
+                        --bigquery.mode.="overwrite"
 ```
 
 **Parameters:**
 ```
-python run_notebook.py --script=MYSQLTOSPANNER --help
+python run_notebook.py --script=POSTGRESQLTOBIGQUERY --help
 
 usage: run_notebook.py [-h]
         [--output.notebook OUTPUT.NOTEBOOK]
-        --mysql.host MYSQL_HOST
-        [--mysql.port MYSQL_PORT]
-        --mysql.username MYSQL_USERNAME
-        --mysql.password MYSQL_PASSWORD
-        --mysql.database MYSQL_DATABASE
-        [--mysql.table.list MYSQLTABLE_LIST]
-        [--mysql.output.spanner.mode {overwrite,append}]
-        --spanner.instance SPANNER_INSTANCE
-        --spanner.database SPANNER_DATABASE
-        --spanner.table.primary.keys SPANNER_TABLE_PRIMARY_KEYS
-        [--max.parallelism MAX_PARALLELISM]
+        --postgresql.host POSTGRESQL_HOST
+        [--postgresql.port POSTGRESQL_PORT]
+        --postgresql.username POSTGRESQL_USERNAME
+        --postgresql.password POSTGRESQL_PASSWORD
+        --postgresql.database POSTGRESQL_DATABASE
+        [--postgresql.table.list POSTGRESQL_TABLE_LIST]
+        [--postgresql.schema.list POSTGRESQL_SCHEMA_LIST]
+        --bigquery.dataset BIGQUERY_DATASET
+        --bigquery.mode BIGQUERY_MODE
 
 optional arguments:
     -h, --help            
         show this help message and exit
     --output.notebook OUTPUT.NOTEBOOK
         Path to save executed notebook (Default: None). If not provided, no notebook is saved
-    --mysql.host MYSQL_HOST
-        MySQL host or IP address
-    --mysql.port MYSQL_PORT
-        MySQL port (Default: 3306)
-    --mysql.username MYSQL_USERNAME
-        MySQL username
-    --mysql.password MYSQL_PASSWORD
-        MySQL password
-    --mysql.database MYSQL_DATABASE
-        MySQL database name
-    --mysql.table.list MYSQLTABLE_LIST
-        MySQL table list to migrate. Leave empty for migrating complete database else provide tables as "table1,table2"
-    --mysql.output.spanner.mode {overwrite,append}
-        Spanner output write mode (Default: overwrite). Use append when schema already exists in Spanner
-    --spanner.instance SPANNER_INSTANCE
-        Spanner instance name
-    --spanner.database SPANNER_DATABASE
-        Spanner database name
-    --spanner.table.primary.keys SPANNER_TABLE_PRIMARY_KEYS
-        Provide table & PK column which do not have PK in MySQL table {"table_name":"primary_key"}
-    --max.parallelism MAX_PARALLELISM
-        Maximum number of tables that will migrated parallelly (Default: 5)
+    --postgresql.host POSTGRESQL_HOST
+        POSTGRESQL host or IP address
+    --postgresql.port POSTGRESQL_PORT
+        POSTGRESQL port (Default: 3306)
+    --postgresql.username POSTGRESQL_USERNAME
+        POSTGRESQL username
+    --postgresql.password POSTGRESQL_PASSWORD
+        POSTGRESQL password
+    --postgresql.database POSTGRESQL_DATABASE
+        POSTGRESQL database name
+    --postgresql.table.list POSTGRESQL_TABLE_LIST
+        POSTGRESQL table list to migrate. Leave empty for migrating complete database else provide tables as "table1,table2"
+    --postgresql.table.list POSTGRESQL_SCHEMA_LIST
+        POSTGRESQL schema list to migrate. Only Migrate tables associated with the provided schema list
+    --bigquery.dataset BIGQUERY_DATASET
+        BIGQUERY dataset name
+    --bigquery.dataset BIGQUERY_MODE
+        BIGQUERY output write mode (Default: overwrite)
+
 ```
 
 ### Required JAR files
 
 This notebook requires the POSTGRESSQL connector jars. Installation information is present in the notebook
 
-
-### Limitations:
-
-* Does not work with Cloud Spanner's Postgresql Interface
 
 
 

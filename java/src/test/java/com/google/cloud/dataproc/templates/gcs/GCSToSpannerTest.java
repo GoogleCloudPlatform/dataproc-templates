@@ -34,7 +34,6 @@ import java.util.stream.Stream;
 import org.apache.spark.sql.SaveMode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -59,7 +58,9 @@ class GCSToSpannerTest {
   @Test
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    assertDoesNotThrow((ThrowingSupplier<GCSToSpanner>) GCSToSpanner::of);
+    GCSToSpannerConfig config = GCSToSpannerConfig.fromProperties(PropertyUtil.getProperties());
+    GCSToSpanner template = new GCSToSpanner(config);
+    assertDoesNotThrow(template::validateInput);
   }
 
   @ParameterizedTest
@@ -67,7 +68,10 @@ class GCSToSpannerTest {
   void runTemplateWithMissingRequiredParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    ValidationException exception = assertThrows(ValidationException.class, GCSToSpanner::of);
+    GCSToSpannerConfig config = GCSToSpannerConfig.fromProperties(PropertyUtil.getProperties());
+    GCSToSpanner template = new GCSToSpanner(config);
+    ValidationException exception =
+        assertThrows(ValidationException.class, template::validateInput);
     assertEquals(1, exception.getViolations().size());
     ConstraintViolation<?> violation = exception.getViolations().get(0);
     assertEquals("must not be empty", violation.getMessage());
@@ -83,7 +87,10 @@ class GCSToSpannerTest {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_SAVE_MODE, saveMode);
     PropertyUtil.getProperties().setProperty(GCS_SPANNER_OUTPUT_PRIMARY_KEY, "");
-    ValidationException exception = assertThrows(ValidationException.class, GCSToSpanner::of);
+    GCSToSpannerConfig config = GCSToSpannerConfig.fromProperties(PropertyUtil.getProperties());
+    GCSToSpanner template = new GCSToSpanner(config);
+    ValidationException exception =
+        assertThrows(ValidationException.class, template::validateInput);
     assertEquals(1, exception.getViolations().size());
     ConstraintViolation<?> violation = exception.getViolations().get(0);
     assertEquals("primaryKey", violation.getPropertyPath().toString());

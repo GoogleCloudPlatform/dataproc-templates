@@ -1,5 +1,78 @@
 # Changelog
 
+## [0.3.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.2.0-beta...v0.3.0-beta) (2023-05-12)
+
+
+### Features
+
+* 655 pubsublitetobigtable java template - Fixes for changes requested ([aa591d8](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/aa591d85489a1a5add19dbf450a215c8b2e5e8eb))
+* 655 pubsublitetobigtable java template - Fixes for changes requested ([1000dde](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/1000ddeefd7111bdce5fc13b5aac7112df85769b))
+* 655 pubsublitetobigtable java template - Fixes for changes requested ([656b485](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/656b485f86b2b957c989172931205b2b12ffa4a7))
+* 655 pubsublitetobigtable java template - Fixes for Jenkins file and other changes requested ([f187870](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/f187870995ee0c485130ca800a2e66ced6608d43))
+* add init to util ([42e0019](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/42e0019add707dbb70b990b0b65707739cf2ce85))
+* add parameterize_script ([2d11bcc](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/2d11bcc0775f6c9b34ca121e2ac817948044da66))
+* added not_parameterized flag ([713be50](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/713be50a3dd12e695c41f65fc50d6c3f91804faa))
+* added papermill script ([987cd21](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/987cd2164f8094417830c3ef889b956cbdb858fa))
+* added template constants ([bfca34d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/bfca34d84b19f758304486055e7f015d36bc638b))
+* argument parsing commit ([7c682a9](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7c682a90b2d7b0afdc9b8d07bc71abc51e4f67a9))
+* correct args ([39cda79](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/39cda79445b34c423e433c6f44b56c4733535274))
+* created the new notebook Oracle to Postgres along with readme file ([#561](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/561)) ([15b7cc6](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/15b7cc648dcdf1ee0c0b84109ba08a6ac0715268))
+* formatting ([d736ae6](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/d736ae680c4da374006b3ec8361e01cc769754df))
+* moved files ([dbfded2](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/dbfded2804a80a715e932b97c5a1b89fba87f715))
+* remove try exception ([abb7e33](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/abb7e33c29db6729a7f9acc8ef092036901d3917))
+* update arg description ([41728fe](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/41728fef3e71a8036c05511ebb9a5dbfc879f7b0))
+* update arguments and description ([01d2b57](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/01d2b57db5c911fa873f806862423f0456279e62))
+* update parameter variable ([fa5ba31](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/fa5ba31e18d75ba573270f97623b8b6484a78621))
+* update requirements ([5af1c8d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5af1c8da38aec51f87bed92c0c2cbeba259a4c92))
+* update requirements.txt ([35f5cd3](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/35f5cd3321d4c0b95f1bdb7927980cc911f66149))
+* update requirements.txt and change constants ([95e3b14](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/95e3b14c54bb3f38bbc49fe2b44535bc4280a74c))
+* update write mode ([27ca094](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/27ca094196884f29e1e04af679413927cfa18a94))
+* updated constants ([4e5ae31](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/4e5ae3158ce46ca9792d63885d179da545b3937a))
+* updated notebook to be parameterized ([c6578ee](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c6578eeb85bd29a6d7dd6d297f96edfbc42539ca))
+* updated parameterize_script ([aa3bf83](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/aa3bf8309031fe4267473bcd097eff85be2ae818))
+* updated script ([f46c711](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/f46c711186cf74127e60ba48800dc6e82e100571))
+
+
+### Bug Fixes
+
+* correct output mode ([cf7c864](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/cf7c864955ef7b88e7c717972e018c66703ca319))
+* Exclude GRPC jar file from Spanner notebooks ([60a27c5](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/60a27c5ddc5b5e0a241c207ed5b282bd0e748863))
+* execute validateInput from main ([f403fad](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/f403fad1a7aeb35ccd6346706e09933e33aead0e))
+* formatting ([5b7cf0e](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5b7cf0e1eca25af15f146ed7379383a8f5a77d91))
+* formatting ([c6f86e1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c6f86e1c2b7a60268706f0306405e942a1ffdf8e))
+* improved usage of validateInput ([49b55d6](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/49b55d604259428fc9b0aa402db7e54f12655625))
+* improved usage of validateInput for CassandraToBQ ([77f54f1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/77f54f141e75cec852b381060e39530288471837))
+* improved usage of validateInput for GCSToSpanner ([ae24e62](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/ae24e626c1e84ea6673aeab9bb5d80765eab3f63))
+* included output mode in function ([11e0b97](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/11e0b97b496a3e37dd255981d5b8bf35b5cda983))
+* KAFKA to GCS changes ([a50a634](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a50a63444cb3fb529d31c69b5f370290ea55bf4e))
+* Patch to handle tags in cloudbuild.yaml ([#751](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/751)) ([d757278](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/d7572787ecfba888754fe2ffbd9c1eaa8aebe388))
+* remove validateInput call from templates ([dc8a407](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/dc8a407aec0268523d6a042f4a666d1c89c106c7))
+* remove validateInput call in psl2bt & fix ut ([38f11c8](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/38f11c80941eb72a4a088d0b06b9068474201d36))
+* remove validateOrThrow call from of() ([beb3d9d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/beb3d9d9a3a74cfcfbf096412cfe15baf33da594))
+* update KAFKA to GCS ([ddc174b](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/ddc174b2b5df1503af4a48de5aeee44aece70c03))
+* update parameter parsing ([cde18e9](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/cde18e9d6c53bfc279e5c2ccebb71e845134ffb5))
+* update README.md ([eae609e](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/eae609e756be73dfde2f0f17479ff47cbec562fe))
+* update README.md ([c88b041](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c88b041e056f63233c1ab0c5ebce0ad15f7d938b))
+* update README.md ([a42a177](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a42a177323cc8ef1e20841de0e2869ccdaba0e3b))
+* update README.md ([0349419](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/0349419e9f5e9d64422c4500ecbeff874cd8b29b))
+* update template constants ([a66b82e](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a66b82e820856cc137a651410870cdd04e6cba84))
+* update unit tests ([c280eda](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c280edad7a1564df0d49ec259b9c6c8f6b01a478))
+* update validateInput() and unit test ([20b9991](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/20b999143ec162f8d19cce8e21329b4ecb5048c5))
+* update working directory based on execution ([99b0cc7](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/99b0cc75f8ba42c83c58d18379f3b13d66348001))
+* updated grpc version, corrected working directory and fixed sqlalchemy breaking changes ([3ee71cd](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3ee71cd9d2abbe5bb31c93342725a471305c862a))
+* updated unit test cases for CassandraToBQ ([c1b2ef7](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c1b2ef792e8ee6e4f00922b4a96ad87f2e792c8e))
+* updated unit test cases for GCSToSpanner ([19a052b](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/19a052b7df193dd7cc239037b53a940d001f18f5))
+* updated unit test cases for RedshiftToGCS ([038e5e8](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/038e5e824fb9b8150897d9f428a86c70b78e1199))
+* updated validateInput method in CassandaToGCS ([601910a](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/601910a35c8fa9a469d1fa5067ead11ca45deead))
+* updating the link of notebook oracle to postgres in read me files ([7a37457](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7a374573e393029e0feeb50b32258a11c3b08730))
+
+
+### Documentation
+
+* added CassandratoGCS blogpost link to README files ([766b789](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/766b789a6980b4f1989ff44d01a9398c8ee807f7))
+* added integration test badges ([2fd5108](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/2fd510826ecc81a29c0ed2ba3f4cfdf14a04f021))
+* fix JDBC To Spanner property name ([fcde248](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/fcde2480623c2cc62d3a541356fc50ea772d85d6))
+
 ## [0.2.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.1.0-beta...v0.2.0-beta) (2023-04-11)
 
 

@@ -60,7 +60,6 @@ public class GCStoGCS implements BaseTemplate {
 
   @Override
   public void runTemplate() {
-    validateInput();
 
     SparkSession spark = null;
 

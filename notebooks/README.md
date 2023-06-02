@@ -5,6 +5,8 @@
 * [MySQLToSpanner](/notebooks/mysql2spanner#jupyter-notebook-solution-for-migrating-mysql-database-to-cloud-spanner-using-dataproc-templates) (blogpost [link](https://medium.com/google-cloud/mysql-to-cloud-spanner-migrate-mysql-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-ad7d2ed8a317))
 * [SQLServerToPostgres](/notebooks/mssql2postgresql#jupyter-notebook-solution-for-migrating-mssql-sql-server-to-postgres-database-using-dataproc-templates)
 * [OracleToBigQuery](/notebooks/oracle2bq#jupyter-notebook-solution-for-migrating-oracle-database-to-bigquery-using-dataproc-templates)
+* [OracleToPostgres](/notebooks/oracle2postgres#jupyter-notebook-solution-for-migrating-oracle-database-to-postgres-using-dataproc-templates)
+(blogpost [Link](https://medium.com/google-cloud/oracle-to-postgresql-migrate-oracle-to-postgresql-using-vertex-ai-notebooks-and-gcp-dataproc-9924f3f5c51f))
 * [OracleToSpanner](/notebooks/oracle2spanner#jupyter-notebook-solution-for-migrating-oracle-database-to-cloud-spanner-using-dataproc-templates) (blogpost [Link](https://medium.com/@surjitsh/oracle-to-cloud-spanner-migrate-oracle-database-to-cloud-spanner-using-vertex-ai-notebooks-and-gcp-49152ce7f4e8))
 
 ## Getting Started
@@ -36,3 +38,23 @@ GitHub repository and run the desired notebook located in the */notebooks* folde
 
 
    ![clone](generic_notebook/images/clone_repository.png)
+
+### Run notebooks programmatically
+
+Alternatively to running the notebook manually, we developed a "parameterize" script, using the papermill lib, to allow running notebooks programmatically from a Python script, with parameters.  
+You can see each specific parameters in each notebook type README.  
+
+It is currently available for the following notebooks:
+* [MySQLToSpanner](/notebooks/mysql2spanner#jupyter-notebook-solution-for-migrating-mysql-database-to-cloud-spanner-using-dataproc-templates)
+
+USAGE:  
+```
+export GCP_PROJECT=<project>
+export REGION=<region>
+export GCS_STAGING_LOCATION=<gs://bucket-name>
+export SUBNET=<subnet>
+
+python run_notebook.py --script=<NOTEBOOK_NAME> \
+   --notebook.paramter1="<>" \
+   --notebook.paramter2="<>"
+```
