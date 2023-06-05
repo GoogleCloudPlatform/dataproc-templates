@@ -14,8 +14,10 @@
 
 from __future__ import annotations
 
+from os import environ
 from typing import Dict, Sequence, Optional, Any
 from abc import ABC as AbstractClass, abstractmethod
+import parameterize_script.util.notebook_constants as constants
 
 __all__ = ['BaseParameterizeScript']
 
@@ -43,6 +45,21 @@ class BaseParameterizeScript(AbstractClass):
             args (Optional[Sequence[str]]): The script arguments.
                 By default, command line arguments are used.
         """
+
+    @staticmethod
+    def get_env_vars() ->  Dict[str, Any]:
+        """
+        Gets the environment variables.
+        """
+        env_vars = {}
+        env_vars[constants.PROJECT] = environ[constants.GCP_PROJECT]
+        env_vars[constants.REGION] = environ[constants.REGION]
+        env_vars[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
+        env_vars[constants.SUBNET] = environ[constants.SUBNET] if constants.SUBNET in environ else ""
+        env_vars[constants.SERVICE_ACCOUNT] = environ[constants.SERVICE_ACCOUNT] if constants.SERVICE_ACCOUNT in environ else ""
+        env_vars[constants.IS_PARAMETERIZED] = True
+
+        return env_vars
 
     @abstractmethod
     def run(self, args: Dict[str, Any]) -> None:
