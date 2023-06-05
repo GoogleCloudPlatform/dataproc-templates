@@ -137,19 +137,6 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         return vars(known_args)
 
 
-    def get_env_var(self, parameters) ->  Dict[str, Any]:
-        """
-        Get the environment variables.
-        """
-        parameters[constants.PROJECT] = environ[constants.GCP_PROJECT]
-        parameters[constants.REGION] = environ[constants.REGION]
-        parameters[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
-        parameters[constants.SUBNET] = environ[constants.SUBNET]
-        parameters[constants.IS_PARAMETERIZED] = True
-
-        return parameters
-
-
     def run(self, args: Dict[str, Any]) -> None:
         """
         Run the notebook.
@@ -169,7 +156,8 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         nb_parameters = {key:val for key,val in args.items() if key not in ignore_keys}
 
         # Get environment variables
-        nb_parameters = self.get_env_var(nb_parameters)
+        env_vars = MySqlToSpannerScript.get_env_vars()
+        nb_parameters.update(env_vars)
 
         # Run the notebook
         output_path = args[constants.OUTPUT_NOTEBOOK_ARG]
