@@ -17,7 +17,7 @@ from __future__ import annotations
 from typing import List
 from enum import Enum
 
-__all__ = ['ScriptName']
+__all__ = ["ScriptName"]
 
 
 class ScriptName(Enum):
@@ -25,7 +25,6 @@ class ScriptName(Enum):
 
     HIVETOBIGQUERY = "HIVETOBIGQUERY"
     MYSQLTOSPANNER = "MYSQLTOSPANNER"
-
 
     @classmethod
     def from_string(cls, script_name: str) -> ScriptName:
@@ -49,7 +48,7 @@ class ScriptName(Enum):
         try:
             return cls[script_name.upper()]
         except KeyError as err:
-            raise ValueError(f'Invalid script name {script_name}') from err
+            raise ValueError(f"Invalid script name {script_name}") from err
 
     @classmethod
     def choices(cls) -> List[str]:
@@ -60,6 +59,4 @@ class ScriptName(Enum):
             List[str]: All available ScriptName options
         """
 
-        return [
-            script_name.value for script_name in cls
-        ]
+        return [script_name.value for script_name in cls]

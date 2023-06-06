@@ -15,8 +15,8 @@
 from typing import Dict, Any, Type
 
 from parameterize_script import BaseParameterizeScript, ScriptName
-from parameterize_script.util import get_script_name, get_log_level
-from hive2bq import HiveToBigQueryScript
+import parameterize_script.util.notebook_constants as constants
+from parameterize_script.util import get_script_name
 from mysql2spanner import MySqlToSpannerScript
 import logging
 
@@ -41,7 +41,7 @@ def run_script(script_name: ScriptName) -> None:
     script_impl: Type[BaseParameterizeScript] = SCRIPT_IMPLS[script_name]
     script_instance: BaseParameterizeScript = script_impl.build()
     args: Dict[str, Any] = script_instance.parse_args()
-    logging.basicConfig(level=get_log_level(), format="%(message)s")
+    logging.basicConfig(level=args[constants.LOG_LEVEL_ARG], format="%(message)s")
     script_instance.run(args=args)
 
 if __name__ == '__main__':
