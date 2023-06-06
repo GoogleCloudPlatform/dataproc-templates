@@ -34,18 +34,16 @@ def get_script_name(args: Optional[Sequence[str]] = None) -> ScriptName:
         str: The value of the --script argument
     """
 
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(
-        add_help=False
-    )
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument(
-        '--script',
-        dest='script_name',
+        "--script",
+        dest="script_name",
         type=str,
         required=False,
         default=None,
         choices=ScriptName.choices(),
-        help='The name of the script to run'
+        help="The name of the script to run",
     )
 
     known_args: argparse.Namespace
@@ -64,33 +62,33 @@ def get_common_args(parser: argparse.ArgumentParser) -> str:
 
     # Parses the output notebook option from the arguments.
     parser.add_argument(
-        f'--{constants.OUTPUT_NOTEBOOK_ARG}',
+        f"--{constants.OUTPUT_NOTEBOOK_ARG}",
         dest=constants.OUTPUT_NOTEBOOK_ARG,
         required=False,
         default=None,
-        help='Path to save executed notebook (Default: None). '
-        'If not provided, no notebook is saved'
+        help="Path to save executed notebook (Default: None). "
+        "If not provided, no notebook is saved",
     )
 
     # Parses the max parallelism option from the arguments.
     parser.add_argument(
-            f'--{constants.MAX_PARALLELISM_ARG}',
-            dest=constants.MAX_PARALLELISM,
-            type=int,
-            default=5,
-            required=False,
-            help='Maximum number of tables that will migrated parallelly (Default: 5)'
-        )
-    
+        f"--{constants.MAX_PARALLELISM_ARG}",
+        dest=constants.MAX_PARALLELISM,
+        type=int,
+        default=5,
+        required=False,
+        help="Maximum number of tables that will migrated parallelly (Default: 5)",
+    )
+
     # Parses the log level option from the arguments.
     parser.add_argument(
-        f'--{constants.LOG_LEVEL_ARG}',
+        f"--{constants.LOG_LEVEL_ARG}",
         dest=constants.LOG_LEVEL_ARG,
         type=str,
         required=False,
         default="INFO",
         choices=["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        help='Papermill\'s Execute Notebook log level (Default: INFO)'
+        help="Papermill's Execute Notebook log level (Default: INFO)",
     )
 
     return parser
