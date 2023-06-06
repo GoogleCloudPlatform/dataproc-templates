@@ -17,6 +17,7 @@ from typing import Dict, Any, Type
 from parameterize_script import BaseParameterizeScript, ScriptName
 import parameterize_script.util.notebook_constants as constants
 from parameterize_script.util import get_script_name
+from hive2bq import HiveToBigQueryScript
 from mysql2spanner import MySqlToSpannerScript
 import logging
 

@@ -20,6 +20,7 @@ import papermill as pm
 
 from parameterize_script import BaseParameterizeScript
 import parameterize_script.util.notebook_constants as constants
+from parameterize_script.util import get_common_args
 
 __all__ = ['HiveToBigQueryScript']
 
@@ -33,15 +34,6 @@ class HiveToBigQueryScript(BaseParameterizeScript):
     @staticmethod
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         parser = argparse.ArgumentParser()
-
-        parser.add_argument(
-            f'--{constants.OUTPUT_NOTEBOOK_ARG}',
-            dest=constants.OUTPUT_NOTEBOOK_ARG,
-            required=False,
-            default=None,
-            help='Path to save executed notebook (Default: None). '
-            'If not provided, no notebook is saved'
-        )
 
         parser.add_argument(
             f'--{constants.HIVE_METASTORE_ARG}',
@@ -106,22 +98,12 @@ class HiveToBigQueryScript(BaseParameterizeScript):
             help='BigQuery dataset region (Default: us)'
         )
 
+        parser = get_common_args(parser)
+
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args()
 
         return vars(known_args)
-
-    def get_env_var(self, parameters) -> Dict[str, Any]:
-        """
-        Get the environment variables.
-        """
-        parameters[constants.PROJECT_ID] = environ[constants.GCP_PROJECT]
-        parameters[constants.REGION] = environ[constants.REGION]
-        parameters[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
-        parameters[constants.SUBNET] = environ[constants.SUBNET] if constants.SUBNET in environ else ""
-        parameters[constants.IS_PARAMETERIZED] = True
-
-        return parameters
 
     def run(self, args: Dict[str, Any]) -> None:
         """
@@ -133,7 +115,8 @@ class HiveToBigQueryScript(BaseParameterizeScript):
         nb_parameters = {key:val for key,val in args.items() if key not in ignore_keys}
 
         # Get environment variables
-        nb_parameters = self.get_env_var(nb_parameters)
+        env_vars = HiveToBigQueryScript.get_env_vars()
+        nb_parameters.update(env_vars)
 
         # Run the notebook
         output_path = args[constants.OUTPUT_NOTEBOOK_ARG]
