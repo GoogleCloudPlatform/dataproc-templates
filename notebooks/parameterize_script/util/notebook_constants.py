@@ -1,4 +1,10 @@
 # Common
+## Command Line Arguments
+OUTPUT_NOTEBOOK_ARG = "output.notebook"
+MAX_PARALLELISM_ARG = "max.parallelism"
+LOG_LEVEL_ARG = "log_level"
+
+## Notebook Arguments
 GCP_PROJECT = "GCP_PROJECT"
 PROJECT = "PROJECT"
 REGION = "REGION"
@@ -15,8 +21,6 @@ OUTPUT_MODE_APPEND = "append"
 
 # MYSQL TO SPANNER
 ## Command Line Arguments
-OUTPUT_NOTEBOOK_ARG = "output.notebook"
-MAX_PARALLELISM_ARG = "max.parallelism"
 MYSQL_HOST_ARG = "mysql.host"
 MYSQL_PORT_ARG = "mysql.port"
 MYSQL_USERNAME_ARG = "mysql.username"
