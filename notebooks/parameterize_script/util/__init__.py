@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .argument_parsing import get_script_name, get_log_level
+from .argument_parsing import get_script_name, get_common_args

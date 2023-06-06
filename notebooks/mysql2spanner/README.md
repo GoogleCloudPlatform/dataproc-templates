@@ -87,7 +87,6 @@ python run_notebook.py --script=MYSQLTOSPANNER \
 python run_notebook.py --script=MYSQLTOSPANNER --help
 
 usage: run_notebook.py [-h]
-        [--output.notebook OUTPUT.NOTEBOOK]
         --mysql.host MYSQL_HOST
         [--mysql.port MYSQL_PORT]
         --mysql.username MYSQL_USERNAME
@@ -99,12 +98,12 @@ usage: run_notebook.py [-h]
         --spanner.database SPANNER_DATABASE
         --spanner.table.primary.keys SPANNER_TABLE_PRIMARY_KEYS
         [--max.parallelism MAX_PARALLELISM]
+        [--output.notebook OUTPUT.NOTEBOOK]
+        [--log_level {NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL}]
 
 optional arguments:
     -h, --help            
         show this help message and exit
-    --output.notebook OUTPUT.NOTEBOOK
-        Path to save executed notebook (Default: None). If not provided, no notebook is saved
     --mysql.host MYSQL_HOST
         MySQL host or IP address
     --mysql.port MYSQL_PORT
@@ -127,6 +126,10 @@ optional arguments:
         Provide table & PK column which do not have PK in MySQL table {"table_name":"primary_key"}
     --max.parallelism MAX_PARALLELISM
         Maximum number of tables that will migrated parallelly (Default: 5)
+    --output.notebook OUTPUT.NOTEBOOK
+        Path to save executed notebook (Default: None). If not provided, no notebook is saved
+    --log_level {NOTSET,DEBUG,INFO,WARNING,ERROR,CRITICAL}
+        Papermill's Execute Notebook log level (Default: INFO)
 ```
 
 ### Required JAR files

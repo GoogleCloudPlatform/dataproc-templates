@@ -16,6 +16,7 @@ from typing import Optional, Sequence
 import argparse
 
 from parameterize_script.script_name import ScriptName
+import parameterize_script.util.notebook_constants as constants
 
 
 def get_script_name(args: Optional[Sequence[str]] = None) -> ScriptName:
@@ -33,18 +34,16 @@ def get_script_name(args: Optional[Sequence[str]] = None) -> ScriptName:
         str: The value of the --script argument
     """
 
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(
-        add_help=False
-    )
+    parser: argparse.ArgumentParser = argparse.ArgumentParser(add_help=False)
 
     parser.add_argument(
-        '--script',
-        dest='script_name',
+        "--script",
+        dest="script_name",
         type=str,
         required=False,
         default=None,
         choices=ScriptName.choices(),
-        help='The name of the script to run'
+        help="The name of the script to run",
     )
 
     known_args: argparse.Namespace
@@ -56,33 +55,30 @@ def get_script_name(args: Optional[Sequence[str]] = None) -> ScriptName:
 
     return ScriptName.from_string(known_args.script_name)
 
-def get_log_level(args: Optional[Sequence[str]] = None) -> str:
+def get_common_args(parser: argparse.ArgumentParser) -> str:
     """
-    Parses the log level option from the program arguments.
-    INFO is the default log level
-    This will exit if the log level in an invalid choice.
-    Args:
-        args (Optional[Sequence[str]]): The program arguments.
-            By default, command line arguments will be used.
-    Returns:
-        str: The value of the --log_level argument
+    Adds common arguments to the parser.
     """
 
-    parser: argparse.ArgumentParser = argparse.ArgumentParser(
-        add_help=False
+    # Parses the output notebook option from the arguments.
+    parser.add_argument(
+        f"--{constants.OUTPUT_NOTEBOOK_ARG}",
+        dest=constants.OUTPUT_NOTEBOOK_ARG,
+        required=False,
+        default=None,
+        help="Path to save executed notebook (Default: None). "
+        "If not provided, no notebook is saved",
     )
 
+    # Parses the log level option from the arguments.
     parser.add_argument(
-        '--log_level',
-        dest='log_level',
+        f"--{constants.LOG_LEVEL_ARG}",
+        dest=constants.LOG_LEVEL_ARG,
         type=str,
         required=False,
         default="INFO",
-        choices=["NOTSET","DEBUG","INFO","WARNING","ERROR","CRITICAL"],
-        help='Papermill Execute Notebook Log Level'
+        choices=["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
+        help="Papermill's Execute Notebook log level (Default: INFO)",
     )
 
-    known_args: argparse.Namespace
-    known_args, _ = parser.parse_known_args(args=args)
-
-    return known_args.log_level
+    return parser
