@@ -111,6 +111,15 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             help='Provide table & PK column which do not have PK in MySQL table {"table_name":"primary_key"}',
         )
 
+        parser.add_argument(
+            f"--{constants.MAX_PARALLELISM_ARG}",
+            dest=constants.MAX_PARALLELISM,
+            type=int,
+            default=5,
+            required=False,
+            help="Maximum number of tables that will migrated parallelly (Default: 5)",
+        )
+
         parser = get_common_args(parser)
 
         known_args: argparse.Namespace
@@ -133,7 +142,7 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         )
 
         # Exclude arguments that are not needed to be passed to the notebook
-        ignore_keys = {constants.OUTPUT_NOTEBOOK_ARG}
+        ignore_keys = {constants.LOG_LEVEL_ARG, constants.OUTPUT_NOTEBOOK_ARG}
         nb_parameters = {
             key: val for key, val in args.items() if key not in ignore_keys
         }

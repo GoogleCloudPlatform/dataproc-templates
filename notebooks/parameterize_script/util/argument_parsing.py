@@ -70,16 +70,6 @@ def get_common_args(parser: argparse.ArgumentParser) -> str:
         "If not provided, no notebook is saved",
     )
 
-    # Parses the max parallelism option from the arguments.
-    parser.add_argument(
-        f"--{constants.MAX_PARALLELISM_ARG}",
-        dest=constants.MAX_PARALLELISM,
-        type=int,
-        default=5,
-        required=False,
-        help="Maximum number of tables that will migrated parallelly (Default: 5)",
-    )
-
     # Parses the log level option from the arguments.
     parser.add_argument(
         f"--{constants.LOG_LEVEL_ARG}",
