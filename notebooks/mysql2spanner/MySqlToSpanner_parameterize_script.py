@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os import environ
 from typing import Dict, Sequence, Optional, Any
 import argparse
 import json
@@ -21,6 +20,7 @@ import papermill as pm
 
 from parameterize_script import BaseParameterizeScript
 import parameterize_script.util.notebook_constants as constants
+from parameterize_script.util import get_common_args
 
 __all__ = ['MySqlToSpannerScript']
 
@@ -33,15 +33,6 @@ class MySqlToSpannerScript(BaseParameterizeScript):
     @staticmethod
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         parser = argparse.ArgumentParser()
-
-        parser.add_argument(
-            f'--{constants.OUTPUT_NOTEBOOK_ARG}',
-            dest=constants.OUTPUT_NOTEBOOK_ARG,
-            required=False,
-            default=None,
-            help='Path to save executed notebook (Default: None). '
-            'If not provided, no notebook is saved'
-        )
 
         parser.add_argument(
             f'--{constants.MYSQL_HOST_ARG}',
@@ -122,14 +113,7 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             help='Provide table & PK column which do not have PK in MySQL table {\"table_name\":\"primary_key\"}'
         )
 
-        parser.add_argument(
-            f'--{constants.MAX_PARALLELISM_ARG}',
-            dest=constants.MAX_PARALLELISM,
-            type=int,
-            default=5,
-            required=False,
-            help='Maximum number of tables that will migrated parallelly (Default: 5)'
-        )
+        parser = get_common_args(parser)
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args()
