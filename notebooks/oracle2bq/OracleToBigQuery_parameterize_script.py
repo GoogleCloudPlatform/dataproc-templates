@@ -138,7 +138,7 @@ class OracleToBigQueryScript(BaseParameterizeScript):
             args[constants.ORACLETABLE_LIST] = []
 
         # Exclude arguments that are not needed to be passed to the notebook
-        ignore_keys = {constants.OUTPUT_NOTEBOOK_ARG}
+        ignore_keys = {constants.LOG_LEVEL_ARG, constants.OUTPUT_NOTEBOOK_ARG}
         nb_parameters = {key:val for key,val in args.items() if key not in ignore_keys}
 
         # Get environment variables
