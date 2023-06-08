@@ -11,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-from os import environ
 from typing import Dict, Sequence, Optional, Any
 import argparse
 import json
@@ -21,6 +19,8 @@ import papermill as pm
 
 from parameterize_script import BaseParameterizeScript
 import parameterize_script.util.notebook_constants as constants
+from parameterize_script.util import get_common_args
+
 
 __all__ = ['PostgreSqlToBigQueryScript']
 
@@ -33,15 +33,6 @@ class PostgreSqlToBigQueryScript(BaseParameterizeScript):
     @staticmethod
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         parser = argparse.ArgumentParser()
-
-        parser.add_argument(
-            f'--{constants.OUTPUT_NOTEBOOK_ARG}',
-            dest=constants.OUTPUT_NOTEBOOK_ARG,
-            required=False,
-            default=None,
-            help='Path to save executed notebook (Default: None). '
-            'If not provided, no notebook is saved'
-        )
 
         parser.add_argument(
             f'--{constants.POSTGRESQL_HOST_ARG}',
@@ -94,7 +85,7 @@ class PostgreSqlToBigQueryScript(BaseParameterizeScript):
             required=False,
             default='',
             help='POSTGRESQL schema list to migrate. '
-            'Only Migrate tables associated with the provided schema list'
+            'Only Migrate tables associated with the provided schema list. Provide schema as \"schema1,schema2\" '
         )
 
        
@@ -122,26 +113,10 @@ class PostgreSqlToBigQueryScript(BaseParameterizeScript):
             help='Maximum number of tables that will migrated parallelly (Default: 5)'
         )
 
+        parser = get_common_args(parser)
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args()
-
         return vars(known_args)
-
-
-    def get_env_var(self, parameters) ->  Dict[str, Any]:
-        """
-        Get the environment variables.
-        """
-      
-        parameters[constants.PROJECT] = environ[constants.GCP_PROJECT]
-        parameters[constants.REGION] = environ[constants.REGION]
-        parameters[constants.GCS_STAGING_LOCATION] = environ[constants.GCS_STAGING_LOCATION]
-        parameters[constants.SUBNET] = environ[constants.SUBNET] if constants.SUBNET in environ else ""
-        parameters[constants.SERVICE_ACCOUNT] = environ[constants.SERVICE_ACCOUNT] if constants.SERVICE_ACCOUNT in environ else ""
-        parameters[constants.IS_PARAMETERIZED] = True
-        
-
-        return parameters
 
 
     def run(self, args: Dict[str, Any]) -> None:
@@ -153,12 +128,17 @@ class PostgreSqlToBigQueryScript(BaseParameterizeScript):
         args[constants.POSTGRESQL_TABLE_LIST] = list(
             map(str.strip, args[constants.POSTGRESQL_TABLE_LIST].split(","))
         )
+        args[constants.POSTGRESQL_SCHEMA_LIST] = list(
+            map(str.strip, args[constants.POSTGRESQL_SCHEMA_LIST].split(","))
+        )
         # Exclude arguments that are not needed to be passed to the notebook
-        ignore_keys = {constants.OUTPUT_NOTEBOOK_ARG}
+        ignore_keys = {constants.LOG_LEVEL_ARG, constants.OUTPUT_NOTEBOOK_ARG}
         nb_parameters = {key:val for key,val in args.items() if key not in ignore_keys}
 
         # Get environment variables
-        nb_parameters = self.get_env_var(nb_parameters)
+        env_vars = PostgreSqlToBigQueryScript.get_env_vars()
+        nb_parameters.update(env_vars)
+
 
         # Run the notebook
         output_path = args[constants.OUTPUT_NOTEBOOK_ARG]
