@@ -174,4 +174,5 @@ class OracleToPostgresScript(BaseParameterizeScript):
             "oracle2postgres/OracleToPostgres_notebook.ipynb",
             output_path,
             nb_parameters,
+            log_output=True,
         )
