@@ -145,5 +145,7 @@ class PostgreSqlToBigQueryScript(BaseParameterizeScript):
         pm.execute_notebook(
             'postgresql2bq/postgresql-to-bigquery-notebook.ipynb',
             output_path,
-            nb_parameters
+            nb_parameters,
+            log_output=True
+
         )
