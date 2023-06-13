@@ -437,7 +437,7 @@ pipeline {
                                 export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
                                 
                                 bin/start.sh \
-                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.0 \
+                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.1 \
                                 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
                                 -- --template=HBASETOGCS \
                                 --templateProperty hbasetogcs.output.fileformat=csv \
@@ -455,7 +455,7 @@ pipeline {
                                 gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
                                 gcloud auth configure-docker
                                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs-java-automated:1.0.0
+                                export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.1
                                 export HBASE_SITE_PATH=../hbase-site.xml
                                 export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
                                 export SKIP_IMAGE_BUILD=TRUE
@@ -688,7 +688,7 @@ pipeline {
                                 export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
                                 
                                 bin/start.sh \
-                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.0 \
+                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.1 \
                                 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
                                 -- --template=HBASETOGCS \
                                 --templateProperty hbasetogcs.output.fileformat=avro \
