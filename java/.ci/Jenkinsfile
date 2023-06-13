@@ -688,7 +688,7 @@ pipeline {
                                 export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
                                 
                                 bin/start.sh \
-                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.0 \
+                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.1 \
                                 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
                                 -- --template=HBASETOGCS \
                                 --templateProperty hbasetogcs.output.fileformat=avro \
