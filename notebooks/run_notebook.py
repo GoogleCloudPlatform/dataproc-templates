@@ -18,12 +18,14 @@ from parameterize_script import BaseParameterizeScript, ScriptName
 import parameterize_script.util.notebook_constants as constants
 from parameterize_script.util import get_script_name
 from mysql2spanner import MySqlToSpannerScript
+from postgresql2bq import PostgreSqlToBigQueryScript
 import logging
 
 # Maps each ScriptName to its corresponding implementation
 # of BaseParameterizeScript
 SCRIPT_IMPLS: Dict[ScriptName, Type[BaseParameterizeScript]] = {
     ScriptName.MYSQLTOSPANNER: MySqlToSpannerScript,
+    ScriptName.POSTGRESTOBIGQUERY:PostgreSqlToBigQueryScript
 }
 
 def run_script(script_name: ScriptName) -> None:
