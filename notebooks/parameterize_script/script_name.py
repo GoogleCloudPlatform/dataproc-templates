@@ -24,6 +24,7 @@ class ScriptName(Enum):
     """Enumeration of all script types"""
 
     MYSQLTOSPANNER = "MYSQLTOSPANNER"
+    POSTGRESTOBIGQUERY = "POSTGRESTOBIGQUERY"
 
     @classmethod
     def from_string(cls, script_name: str) -> ScriptName:
