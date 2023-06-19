@@ -25,6 +25,7 @@ class ScriptName(Enum):
 
     HIVETOBIGQUERY = "HIVETOBIGQUERY"
     MYSQLTOSPANNER = "MYSQLTOSPANNER"
+    POSTGRESTOBIGQUERY = "POSTGRESTOBIGQUERY"
 
     @classmethod
     def from_string(cls, script_name: str) -> ScriptName:
