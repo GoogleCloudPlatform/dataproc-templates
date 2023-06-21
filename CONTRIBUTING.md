@@ -1,7 +1,7 @@
 # Contributing
 
 Thanks for your interest in contributing to the Google Cloud Dataproc Templates
- repo!
+repo!
 
 To get started contributing:
 
