@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in contributing to the Google Cloud Dataflow Templates
+Thanks for your interest in contributing to the Google Cloud Dataproc Templates
 repo!
 
 To get started contributing:
