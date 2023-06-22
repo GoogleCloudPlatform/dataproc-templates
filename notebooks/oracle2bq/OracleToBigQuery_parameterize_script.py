@@ -35,7 +35,6 @@ class OracleToBigQueryScript(BaseParameterizeScript):
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         parser = argparse.ArgumentParser()
 
-
         parser.add_argument(
             f'--{constants.ORACLE_HOST_ARG}',
             dest=constants.ORACLE_HOST,
@@ -70,6 +69,13 @@ class OracleToBigQueryScript(BaseParameterizeScript):
             dest=constants.ORACLE_DATABASE,
             required=True,
             help='Oracle database name'
+        )
+
+        parser.add_argument(
+            f'--{constants.ORACLE_SCHEMA_ARG}',
+            dest=constants.ORACLE_SCHEMA,
+            required=False,
+            help='Schema to be exported, leave blank to export tables owned by ORACLE_USERNAME'
         )
 
         parser.add_argument(
