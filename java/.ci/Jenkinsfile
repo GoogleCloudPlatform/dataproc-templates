@@ -317,184 +317,184 @@ pipeline {
             //         }
             //     }
 
-            stage('Parallel Execution 4'){
-                parallel{
-                        stage('JDBC TO SPANNER'){
-                            steps {
-                                sh '''
+            // stage('Parallel Execution 4'){
+            //     parallel{
+            //             stage('JDBC TO SPANNER'){
+            //                 steps {
+            //                     sh '''
         
-                                    export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
-                                    export SKIP_BUILD=true
+            //                         export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+            //                         export SKIP_BUILD=true
                                     
-                                    cd java
+            //                         cd java
                                     
-                                    bin/start.sh \
-                                    -- --template JDBCTOSPANNER \
-                                    --templateProperty project.id=$GCP_PROJECT \
-                                    --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
-                                    --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
-                                    --templateProperty jdbctospanner.sql="select * from test.employee" \
-                                    --templateProperty jdbctospanner.output.instance=$ENV_TEST_SPANNER_ID \
-                                    --templateProperty jdbctospanner.output.database=spark-ci-db \
-                                    --templateProperty jdbctospanner.output.table=employee \
-                                    --templateProperty jdbctospanner.output.saveMode=Overwrite \
-                                    --templateProperty jdbctospanner.output.primaryKey='empno'
-                                '''
-                            }
-                        }
-                        stage('CASSANDRA TO GCS'){
-                            steps {
-                                sh '''
+            //                         bin/start.sh \
+            //                         -- --template JDBCTOSPANNER \
+            //                         --templateProperty project.id=$GCP_PROJECT \
+            //                         --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
+            //                         --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+            //                         --templateProperty jdbctospanner.sql="select * from test.employee" \
+            //                         --templateProperty jdbctospanner.output.instance=$ENV_TEST_SPANNER_ID \
+            //                         --templateProperty jdbctospanner.output.database=spark-ci-db \
+            //                         --templateProperty jdbctospanner.output.table=employee \
+            //                         --templateProperty jdbctospanner.output.saveMode=Overwrite \
+            //                         --templateProperty jdbctospanner.output.primaryKey='empno'
+            //                     '''
+            //                 }
+            //             }
+            //             stage('CASSANDRA TO GCS'){
+            //                 steps {
+            //                     sh '''
                                     
-                                    export SKIP_BUILD=true
+            //                         export SKIP_BUILD=true
                                     
-                                    cd java
+            //                         cd java
                                     
-                                    bin/start.sh \
-                                    -- --template CASSANDRATOGCS \
-                                    --templateProperty project.id=$GCP_PROJECT \
-                                    --templateProperty cassandratogcs.input.keyspace=testkeyspace \
-                                    --templateProperty cassandratogcs.input.table=emp \
-                                    --templateProperty cassandratogcs.input.host=$ENV_TEST_CASSANDRA_HOST \
-                                    --templateProperty cassandratogcs.output.format=csv \
-                                    --templateProperty cassandratogcs.output.savemode=Overwrite \
-                                    --templateProperty cassandratogcs.output.path=gs://dataproc-templates/integration-testing/output/CASSANDRATOGCS/csv
-                                '''
-                            }
-                        }
-                        stage('CASSANDRA TO BigQuery'){
-                            steps {
-                                sh '''
+            //                         bin/start.sh \
+            //                         -- --template CASSANDRATOGCS \
+            //                         --templateProperty project.id=$GCP_PROJECT \
+            //                         --templateProperty cassandratogcs.input.keyspace=testkeyspace \
+            //                         --templateProperty cassandratogcs.input.table=emp \
+            //                         --templateProperty cassandratogcs.input.host=$ENV_TEST_CASSANDRA_HOST \
+            //                         --templateProperty cassandratogcs.output.format=csv \
+            //                         --templateProperty cassandratogcs.output.savemode=Overwrite \
+            //                         --templateProperty cassandratogcs.output.path=gs://dataproc-templates/integration-testing/output/CASSANDRATOGCS/csv
+            //                     '''
+            //                 }
+            //             }
+            //             stage('CASSANDRA TO BigQuery'){
+            //                 steps {
+            //                     sh '''
                                     
-                                    export SKIP_BUILD=true
+            //                         export SKIP_BUILD=true
                                     
-                                    cd java
+            //                         cd java
                                     
-                                    bin/start.sh \
-                                    -- --template CASSANDRATOBQ \
-                                    --templateProperty project.id=$GCP_PROJECT \
-                                    --templateProperty cassandratobq.input.keyspace=testkeyspace \
-                                    --templateProperty cassandratobq.input.table=emp \
-                                    --templateProperty cassandratobq.input.host=$ENV_TEST_CASSANDRA_HOST \
-                                    --templateProperty cassandratobq.bigquery.location=dataproc_templates.cassandra_bq_emp_table \
-                                    --templateProperty cassandratobq.output.mode=Overwrite \
-                                    --templateProperty cassandratobq.temp.gcs.location=temp-bucket-for-files
-                                '''
-                            }
-                        }
-                        stage('DATAPLEX GCS TO BIGQUERY'){
-                            steps {
-                                sh '''
+            //                         bin/start.sh \
+            //                         -- --template CASSANDRATOBQ \
+            //                         --templateProperty project.id=$GCP_PROJECT \
+            //                         --templateProperty cassandratobq.input.keyspace=testkeyspace \
+            //                         --templateProperty cassandratobq.input.table=emp \
+            //                         --templateProperty cassandratobq.input.host=$ENV_TEST_CASSANDRA_HOST \
+            //                         --templateProperty cassandratobq.bigquery.location=dataproc_templates.cassandra_bq_emp_table \
+            //                         --templateProperty cassandratobq.output.mode=Overwrite \
+            //                         --templateProperty cassandratobq.temp.gcs.location=temp-bucket-for-files
+            //                     '''
+            //                 }
+            //             }
+            //             stage('DATAPLEX GCS TO BIGQUERY'){
+            //                 steps {
+            //                     sh '''
                                     
-                                    export SKIP_BUILD=true
+            //                         export SKIP_BUILD=true
                                     
-                                    cd java
+            //                         cd java
                                     
-                                    bin/start.sh \
-                                    -- --template DATAPLEXGCSTOBQ \
-                                    --templateProperty=project.id=$GCP_PROJECT \
-                                    --templateProperty=dataplex.gcs.bq.target.entity=projects/$GCP_PROJECT/locations/us-west1/lakes/dataproc-templates-test-lake/zones/dataplex-gcs-to-bq/entities/dataplex_gcs_to_bq \
-                                    --templateProperty=gcs.bigquery.temp.bucket.name=dataplex-gcs-to-bq \
-                                    --templateProperty=dataplex.gcs.bq.save.mode=overwrite \
-                                    --templateProperty=dataplex.gcs.bq.incremental.partition.copy=no \
-                                    --dataplexEntity=projects/$GCP_PROJECT/locations/us-west1/lakes/dataproc-templates-test-lake/zones/dataplex-gcs-to-bq/entities/trips_parquet
-                                '''
-                            }
-                        }
-                    }
-                }
-            stage('Parallel Execution 5'){
-                parallel{
-                    stage('KAFKA TO GCS'){
-                        steps {
-                            sh '''
-                                export SKIP_BUILD=true
+            //                         bin/start.sh \
+            //                         -- --template DATAPLEXGCSTOBQ \
+            //                         --templateProperty=project.id=$GCP_PROJECT \
+            //                         --templateProperty=dataplex.gcs.bq.target.entity=projects/$GCP_PROJECT/locations/us-west1/lakes/dataproc-templates-test-lake/zones/dataplex-gcs-to-bq/entities/dataplex_gcs_to_bq \
+            //                         --templateProperty=gcs.bigquery.temp.bucket.name=dataplex-gcs-to-bq \
+            //                         --templateProperty=dataplex.gcs.bq.save.mode=overwrite \
+            //                         --templateProperty=dataplex.gcs.bq.incremental.partition.copy=no \
+            //                         --dataplexEntity=projects/$GCP_PROJECT/locations/us-west1/lakes/dataproc-templates-test-lake/zones/dataplex-gcs-to-bq/entities/trips_parquet
+            //                     '''
+            //                 }
+            //             }
+            //         }
+            //     }
+            // stage('Parallel Execution 5'){
+            //     parallel{
+                    // stage('KAFKA TO GCS'){
+                    //     steps {
+                    //         sh '''
+                    //             export SKIP_BUILD=true
                                     
-                                cd java
+                    //             cd java
 
-                                bin/start.sh \
-                                -- --template KAFKATOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS/csv \
-                                --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
-                                --templateProperty kafka.topic=integration-test \
-                                --templateProperty kafka.starting.offset=earliest \
-                                --templateProperty kafka.gcs.output.format=csv \
-                                --templateProperty kafka.message.format=bytes \
-                                --templateProperty kafka.gcs.await.termination.timeout.ms=60000
-                            '''
-                        }
-                    }
-                    stage('HBASE TO GCS (Manual)') {
-                        steps{
+                    //             bin/start.sh \
+                    //             -- --template KAFKATOGCS \
+                    //             --templateProperty project.id=$GCP_PROJECT \
+                    //             --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS/csv \
+                    //             --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+                    //             --templateProperty kafka.topic=integration-test \
+                    //             --templateProperty kafka.starting.offset=earliest \
+                    //             --templateProperty kafka.gcs.output.format=csv \
+                    //             --templateProperty kafka.message.format=bytes \
+                    //             --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+                    //         '''
+                    //     }
+                    // }
+                    // stage('HBASE TO GCS (Manual)') {
+                    //     steps{
                             
-                            sh '''
-                                export SKIP_BUILD=true
+                    //         sh '''
+                    //             export SKIP_BUILD=true
                                 
-                                cd java
+                    //             cd java
                                 
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+                    //             export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                    //             export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
                                 
-                                bin/start.sh \
-                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.0 \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
-                                -- --template=HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=csv \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/csv  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
-                                '''
-                        }
-                    }
-                    stage('HBASE TO GCS (Automated)') {
-                        steps{
+                    //             bin/start.sh \
+                    //             --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.0 \
+                    //             --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
+                    //             -- --template=HBASETOGCS \
+                    //             --templateProperty hbasetogcs.output.fileformat=csv \
+                    //             --templateProperty hbasetogcs.output.savemode=overwrite \
+                    //             --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/csv  \
+                    //             --templateProperty hbasetogcs.table.catalog=$CATALOG
+                    //             '''
+                    //     }
+                    // }
+                    // stage('HBASE TO GCS (Automated)') {
+                    //     steps{
                             
-                            sh '''
+                    //         sh '''
                             
-                                gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
-                                gcloud auth configure-docker
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs-java-automated:1.0.0
-                                export HBASE_SITE_PATH=../hbase-site.xml
-                                export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
-                                export SKIP_IMAGE_BUILD=TRUE
+                    //             gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
+                    //             gcloud auth configure-docker
+                    //             export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                    //             export IMAGE_NAME_VERSION=hbase-to-gcs-java-automated:1.0.0
+                    //             export HBASE_SITE_PATH=../hbase-site.xml
+                    //             export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
+                    //             export SKIP_IMAGE_BUILD=TRUE
                                 
-                                cd java
+                    //             cd java
                                 
-                                bin/start.sh \
-                                --container-image=$IMAGE \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
-                                -- --template HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=csv \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/csv  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
+                    //             bin/start.sh \
+                    //             --container-image=$IMAGE \
+                    //             --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
+                    //             -- --template HBASETOGCS \
+                    //             --templateProperty hbasetogcs.output.fileformat=csv \
+                    //             --templateProperty hbasetogcs.output.savemode=overwrite \
+                    //             --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/csv  \
+                    //             --templateProperty hbasetogcs.table.catalog=$CATALOG
                                 
-                                '''
-                        }
-                    }
-                        stage('GCS TO GCS (csv)'){
-                            steps {
-                                sh '''
+                    //             '''
+                    //     }
+                    // }
+            //             stage('GCS TO GCS (csv)'){
+            //                 steps {
+            //                     sh '''
                                     
-                                    export SKIP_BUILD=true
+            //                         export SKIP_BUILD=true
                                     
-                                    cd java
+            //                         cd java
                                     
-                                    bin/start.sh \
-                                    -- --template GCSTOGCS \
-                                    --templateProperty project.id=$GCP_PROJECT \
-                                    --templateProperty gcs.gcs.input.location=gs://dataproc-templates/integration-testing/gcstogcs/csvtoavro/csv/cities.csv \
-                                    --templateProperty gcs.gcs.input.format=csv \
-                                    --templateProperty gcs.gcs.output.location=gs://dataproc-templates/integration-testing/output/GCSTOGCS/avro \
-                                    --templateProperty gcs.gcs.output.format=avro \
-                                    --templateProperty gcs.gcs.write.mode=overwrite
-                                '''
-                            }
-                        }
-                }
-            }
+            //                         bin/start.sh \
+            //                         -- --template GCSTOGCS \
+            //                         --templateProperty project.id=$GCP_PROJECT \
+            //                         --templateProperty gcs.gcs.input.location=gs://dataproc-templates/integration-testing/gcstogcs/csvtoavro/csv/cities.csv \
+            //                         --templateProperty gcs.gcs.input.format=csv \
+            //                         --templateProperty gcs.gcs.output.location=gs://dataproc-templates/integration-testing/output/GCSTOGCS/avro \
+            //                         --templateProperty gcs.gcs.output.format=avro \
+            //                         --templateProperty gcs.gcs.write.mode=overwrite
+            //                     '''
+            //                 }
+            //             }
+            //     }
+            // }
             stage('Parallel Execution 6'){
                 parallel{
                     stage('GCS TO BIGTABLE'){
