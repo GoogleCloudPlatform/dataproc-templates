@@ -73,8 +73,8 @@ class OracleToBigQueryScript(BaseParameterizeScript):
         )
 
         parser.add_argument(
-            f'--{constants.ORACLETABLE_LIST_ARG}',
-            dest=constants.ORACLETABLE_LIST,
+            f'--{constants.ORACLE_TABLE_LIST_ARG}',
+            dest=constants.ORACLE_TABLE_LIST,
             required=False,
             help='Oracle table list to migrate. '
             'Leave empty for migrating complete database else provide tables as \"table1,table2\"'
@@ -130,12 +130,12 @@ class OracleToBigQueryScript(BaseParameterizeScript):
         """
 
         # Convert comma separated string to list
-        if args[constants.ORACLETABLE_LIST]:
-            args[constants.ORACLETABLE_LIST] = list(
-                map(str.strip, args[constants.ORACLETABLE_LIST].split(","))
+        if args[constants.ORACLE_TABLE_LIST]:
+            args[constants.ORACLE_TABLE_LIST] = list(
+                map(str.strip, args[constants.ORACLE_TABLE_LIST].split(","))
             )
         else:
-            args[constants.ORACLETABLE_LIST] = []
+            args[constants.ORACLE_TABLE_LIST] = []
 
         # Exclude arguments that are not needed to be passed to the notebook
         ignore_keys = {constants.LOG_LEVEL_ARG, constants.OUTPUT_NOTEBOOK_ARG}
