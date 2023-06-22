@@ -597,26 +597,26 @@ pipeline {
                             '''
                         }
                     }
-                    stage('KAFKA TO GCS (avro)'){
-                        steps {
-                            sh '''
-                                export SKIP_BUILD=true
+                    // stage('KAFKA TO GCS (avro)'){
+                    //     steps {
+                    //         sh '''
+                    //             export SKIP_BUILD=true
                                     
-                                cd java
+                    //             cd java
 
-                                bin/start.sh \
-                                -- --template KAFKATOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS/avro \
-                                --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
-                                --templateProperty kafka.topic=integration-test \
-                                --templateProperty kafka.starting.offset=earliest \
-                                --templateProperty kafka.gcs.output.format=avro \
-                                --templateProperty kafka.message.format=bytes \
-                                --templateProperty kafka.gcs.await.termination.timeout.ms=60000
-                            '''
-                        }
-                    }
+                    //             bin/start.sh \
+                    //             -- --template KAFKATOGCS \
+                    //             --templateProperty project.id=$GCP_PROJECT \
+                    //             --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS/avro \
+                    //             --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+                    //             --templateProperty kafka.topic=integration-test \
+                    //             --templateProperty kafka.starting.offset=earliest \
+                    //             --templateProperty kafka.gcs.output.format=avro \
+                    //             --templateProperty kafka.message.format=bytes \
+                    //             --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+                    //         '''
+                    //     }
+                    // }
                     stage('BIGQUERY TO GCS (avro)'){
                         steps {
                             sh '''
@@ -676,55 +676,55 @@ pipeline {
                             '''
                         }
                     }
-                    stage('HBASE TO GCS (Manual)(avro)') {
-                        steps{
+                    // stage('HBASE TO GCS (Manual)(avro)') {
+                    //     steps{
                             
-                            sh '''
-                                export SKIP_BUILD=true
+                    //         sh '''
+                    //             export SKIP_BUILD=true
                                 
-                                cd java
+                    //             cd java
                                 
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+                    //             export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                    //             export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
                                 
-                                bin/start.sh \
-                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.0 \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
-                                -- --template=HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=avro \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/avro  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
-                                '''
-                        }
-                    }
-                    stage('HBASE TO GCS (Automated)(avro)') {
-                        steps{
+                    //             bin/start.sh \
+                    //             --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.0 \
+                    //             --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
+                    //             -- --template=HBASETOGCS \
+                    //             --templateProperty hbasetogcs.output.fileformat=avro \
+                    //             --templateProperty hbasetogcs.output.savemode=overwrite \
+                    //             --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/avro  \
+                    //             --templateProperty hbasetogcs.table.catalog=$CATALOG
+                    //             '''
+                    //     }
+                    // }
+                    // stage('HBASE TO GCS (Automated)(avro)') {
+                    //     steps{
                             
-                            sh '''
+                    //         sh '''
                             
-                                gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
-                                gcloud auth configure-docker
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs-java-automated:1.0.0
-                                export HBASE_SITE_PATH=../hbase-site.xml
-                                export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
-                                export SKIP_IMAGE_BUILD=TRUE
+                    //             gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
+                    //             gcloud auth configure-docker
+                    //             export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                    //             export IMAGE_NAME_VERSION=hbase-to-gcs-java-automated:1.0.0
+                    //             export HBASE_SITE_PATH=../hbase-site.xml
+                    //             export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
+                    //             export SKIP_IMAGE_BUILD=TRUE
                                 
-                                cd java
+                    //             cd java
                                 
-                                bin/start.sh \
-                                --container-image=$IMAGE \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
-                                -- --template HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=avro \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/avro  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
+                    //             bin/start.sh \
+                    //             --container-image=$IMAGE \
+                    //             --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
+                    //             -- --template HBASETOGCS \
+                    //             --templateProperty hbasetogcs.output.fileformat=avro \
+                    //             --templateProperty hbasetogcs.output.savemode=overwrite \
+                    //             --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/avro  \
+                    //             --templateProperty hbasetogcs.table.catalog=$CATALOG
                                 
-                                '''
-                        }
-                    }
+                    //             '''
+                    //     }
+                    // }
                     stage('JDBC To JDBC'){
                         steps {
                             sh '''
