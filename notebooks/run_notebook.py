@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,13 +15,19 @@
 from typing import Dict, Any, Type
 
 from parameterize_script import BaseParameterizeScript, ScriptName
+import parameterize_script.util.notebook_constants as constants
 from parameterize_script.util import get_script_name
 from mysql2spanner import MySqlToSpannerScript
+from oracle2bq import OracleToBigQueryScript
+from postgresql2bq import PostgreSqlToBigQueryScript
+import logging
 
 # Maps each ScriptName to its corresponding implementation
 # of BaseParameterizeScript
 SCRIPT_IMPLS: Dict[ScriptName, Type[BaseParameterizeScript]] = {
     ScriptName.MYSQLTOSPANNER: MySqlToSpannerScript,
+    ScriptName.ORACLETOBIGQUERY: OracleToBigQueryScript,
+    ScriptName.POSTGRESTOBIGQUERY:PostgreSqlToBigQueryScript
 }
 
 def run_script(script_name: ScriptName) -> None:
@@ -37,6 +43,7 @@ def run_script(script_name: ScriptName) -> None:
     script_impl: Type[BaseParameterizeScript] = SCRIPT_IMPLS[script_name]
     script_instance: BaseParameterizeScript = script_impl.build()
     args: Dict[str, Any] = script_instance.parse_args()
+    logging.basicConfig(level=args[constants.LOG_LEVEL_ARG], format="%(message)s")
     script_instance.run(args=args)
 
 if __name__ == '__main__':
