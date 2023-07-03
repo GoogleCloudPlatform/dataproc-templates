@@ -27,12 +27,12 @@ This notebook is built on top of:
 Below configurations are used to execute these notebooks.
 
 * `REGION`: GCP Region  to unload Hive tables in BQ.
-* `GCS_STAGING_LOCATION`: GCS bucket to store artefacts. (gs://bucket-name)
+* `GCS_STAGING_LOCATION`: Cloud Storage bucket to store artefacts. (gs://bucket-name)
 * `SUBNET`: VPC Subnet
 * `INPUT_HIVE_DATABASE`: Hive database for input tables
 * `INPUT_HIVE_TABLES`: Comma seperated Hive tablenames to move, in case you want to move all the tables put "*"
 * `OUTPUT_BIGQUERY_DATASET`: BigQuery dataset for the output tables
-* `TEMP_BUCKET`: Temporary GCS bucket to store intermediate files.
+* `TEMP_BUCKET`: Temporary Cloud Storage bucket to store intermediate files.
 * `HIVE_METASTORE`: Hive metastore URI
 * `MAX_PARALLELISM`: Number of parallel Dataproc Jobs to run (default=10)
 * `BQ_DATASET_REGION`: BQ Dataset Region
@@ -79,7 +79,7 @@ optional arguments:
   --output.bigquery.dataset OUTPUT_BIGQUERY_DATASET
                         BigQuery dataset name
   --temp.bucket TEMP_BUCKET
-                        GCS bucket name for temporary staging
+                        Cloud Storage bucket name for temporary staging
   --hive.output.mode {overwrite,append}
                         Hive output mode (Default: overwrite)
   --max.parallelism MAX_PARALLELISM
@@ -112,9 +112,9 @@ Step 11 or by finding your job in [VertexAI Pipelines](https://console.cloud.goo
 
 ### Audit Table
 
-The template stores audit data for each load in CSV format in GCS bucket provided.
+The template stores audit data for each load in CSV format in Cloud Storage bucket provided.
 
-In order to view the data create an external table pointing to the GCS bucket as below.
+In order to view the data create an external table pointing to the Cloud Storage bucket as below.
 
 ```
  CREATE EXTERNAL TABLE `<project-id>.<dataset-name>.hive_bq_audit`

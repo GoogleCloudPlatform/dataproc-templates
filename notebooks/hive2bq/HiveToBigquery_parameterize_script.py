@@ -68,7 +68,7 @@ class HiveToBigQueryScript(BaseParameterizeScript):
             f'--{constants.TEMP_BUCKET_ARG}',
             dest=constants.TEMP_BUCKET,
             required=True,
-            help='GCS bucket name for temporary staging'
+            help='Cloud Storage bucket name for temporary staging'
         )
 
         parser.add_argument(
