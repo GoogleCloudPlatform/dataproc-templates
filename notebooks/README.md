@@ -45,8 +45,11 @@ Alternatively to running the notebook manually, we developed a "parameterize" sc
 You can see each specific parameters in each notebook type README.  
 
 It is currently available for the following notebooks:
+
 * [MySQLToSpanner](/notebooks/mysql2spanner#jupyter-notebook-solution-for-migrating-mysql-database-to-cloud-spanner-using-dataproc-templates)
 * [OracleToPostgres](/notebooks/oracle2postgres#jupyter-notebook-solution-for-migrating-oracle-database-to-postgres-using-dataproc-templates)
+* [OracleToBigQuery](/notebooks/oracle2bq#jupyter-notebook-solution-for-migrating-oracle-database-to-bigquery-using-dataproc-templates)
+* [PostgreSQLToBigQuery](/notebooks/postgresql2bq#jupyter-notebook-solution-for-migrating-postgresql-to-bigquery-dwh-using-dataproc-templates)
 
 USAGE:  
 ```
@@ -56,6 +59,7 @@ export GCS_STAGING_LOCATION=<gs://bucket-name>
 export SUBNET=<subnet>
 
 python run_notebook.py --script=<NOTEBOOK_NAME> \
+   --log_level=<LOG_LEVEL> \
    --notebook.paramter1="<>" \
    --notebook.paramter2="<>"
 ```
