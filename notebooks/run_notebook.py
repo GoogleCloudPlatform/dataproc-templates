@@ -22,6 +22,7 @@ from mysql2spanner import MySqlToSpannerScript
 from oracle2bq import OracleToBigQueryScript
 from postgresql2bq import PostgreSqlToBigQueryScript
 import logging
+from oracle2postgres import OracleToPostgresScript
 
 # Maps each ScriptName to its corresponding implementation
 # of BaseParameterizeScript
@@ -29,6 +30,7 @@ SCRIPT_IMPLS: Dict[ScriptName, Type[BaseParameterizeScript]] = {
     ScriptName.HIVETOBIGQUERY: HiveToBigQueryScript,
     ScriptName.MYSQLTOSPANNER: MySqlToSpannerScript,
     ScriptName.ORACLETOBIGQUERY: OracleToBigQueryScript,
+    ScriptName.ORACLETOPOSTGRES: OracleToPostgresScript,
     ScriptName.POSTGRESTOBIGQUERY:PostgreSqlToBigQueryScript
 
 }

@@ -47,6 +47,7 @@ It is currently available for the following notebooks:
 
 * [HiveToBigQuery](/notebooks/hive2bq#dataproc-template-to-migrate-hive-tables-to-bigquery-using-jupyter-notebooks)
 * [MySQLToSpanner](/notebooks/mysql2spanner#jupyter-notebook-solution-for-migrating-mysql-database-to-cloud-spanner-using-dataproc-templates)
+* [OracleToPostgres](/notebooks/oracle2postgres#jupyter-notebook-solution-for-migrating-oracle-database-to-postgres-using-dataproc-templates)
 * [OracleToBigQuery](/notebooks/oracle2bq#jupyter-notebook-solution-for-migrating-oracle-database-to-bigquery-using-dataproc-templates)
 * [PostgreSQLToBigQuery](/notebooks/postgresql2bq#jupyter-notebook-solution-for-migrating-postgresql-to-bigquery-dwh-using-dataproc-templates)
 
