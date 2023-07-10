@@ -23,6 +23,7 @@ __all__ = ["ScriptName"]
 class ScriptName(Enum):
     """Enumeration of all script types"""
 
+    HIVETOBIGQUERY = "HIVETOBIGQUERY"
     MYSQLTOSPANNER = "MYSQLTOSPANNER"
     ORACLETOPOSTGRES = "ORACLETOPOSTGRES"
     ORACLETOBIGQUERY = "ORACLETOBIGQUERY"

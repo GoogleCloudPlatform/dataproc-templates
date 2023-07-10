@@ -3,7 +3,7 @@
 Notebook solution utilizing dataproc templates for migrating databases from MySQL to Cloud Spanner.  
 It contains step by step process for migrating MySQL database to Cloud Spanner.  
 The migration is done in 2 steps. Firstly data is exported from MySQL to GCS.  
-Finally, data is read from GCS to Cloud Spanner.
+Finally, data is read from Cloud Storage to Cloud Spanner.
 
 Refer [Setup Vertex AI - PySpark](../generic_notebook/README.md) to setup new Jupyter notebook in vertexAI.
 Once the setup is done navigate to `/notebooks/mysql2spanner` folder and open
@@ -34,12 +34,12 @@ Below configurations are required before proceeding further.
 
 * `PROJECT` : GCP project-id
 * `REGION` : GCP region
-* `GCS_STAGING_LOCATION` : GCS staging location to be used for this notebook to store artifacts (eg: gs://bucket-name)
+* `GCS_STAGING_LOCATION` : Cloud Storage staging location to be used for this notebook to store artifacts (eg: gs://bucket-name)
 * `SUBNET` : VPC subnet
 * `JARS` : list of jars. For this notebook mysql connector and avro jar is required in addition with the dataproc template jars
 * `MAX_PARALLELISM` : Parameter for number of jobs to run in parallel default value is 2
 
-#### MYSQL to GCS Parameters
+#### MYSQL to Cloud Storage Parameters
 
 * `MYSQL_HOST` : MYSQL instance ip address
 * `MYSQL_PORT` : MySQL instance port
@@ -47,11 +47,11 @@ Below configurations are required before proceeding further.
 * `MYSQL_PASSWORD` : MYSQL password
 * `MYSQL_DATABASE` : name of database that you want to migrate
 * `MYSQLTABLE_LIST` : list of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : [] 
-* `MYSQL_OUTPUT_GCS_LOCATION` : gcs location where mysql output will be writtes eg :"gs://bucket/[folder]"
+* `MYSQL_OUTPUT_GCS_LOCATION` : Cloud Storage location where mysql output will be writtes eg :"gs://bucket/[folder]"
 * `MYSQL_OUTPUT_GCS_MODE` : output mode for MYSQL data one of (overwrite|append)
 * `MYSQL_OUTPUT_GCS_FORMAT` : output file formate for MYSQL data one of (avro|parquet|orc)
 
-#### GCS to Cloud Spanner Parameters
+#### Cloud Storage to Cloud Spanner Parameters
 
 * `SPANNER_INSTANCE` : Cloud Spanner instance name
 * `SPANNER_DATABASE` : Cloud Spanner database name
