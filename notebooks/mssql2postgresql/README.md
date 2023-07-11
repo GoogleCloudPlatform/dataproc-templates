@@ -28,7 +28,7 @@ Below configurations are required before proceeding further.
 
 * `PROJECT` : GCP project-id
 * `REGION` : GCP region
-* `GCS_STAGING_LOCATION` : GCS staging location to be used for this notebook to store artifacts
+* `GCS_STAGING_LOCATION` : Cloud Storage staging location to be used for this notebook to store artifacts
 * `SUBNET` : VPC subnet
 * `JARS` : list of jars. For this notebook mssql and postgres connector jars are required in addition with the dataproc template jars
 * `MAX_PARALLELISM` : Parameter for number of jobs to run in parallel default value is 2
