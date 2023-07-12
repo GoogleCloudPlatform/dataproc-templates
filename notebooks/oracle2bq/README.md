@@ -26,7 +26,7 @@ Below configurations are required before proceeding further.
 
 * `PROJECT` : GCP project-id
 * `REGION` : GCP region
-* `GCS_STAGING_LOCATION` : GCS staging location to be used for this notebook to store artifacts (gs://bucket-name)
+* `GCS_STAGING_LOCATION` : Cloud Storage staging location to be used for this notebook to store artifacts (gs://bucket-name)
 * `SUBNET` : VPC subnet
 * `JARS` : list of jars. For this notebook Oracle driver and BigQuery connector with the Dataproc template jars
 * `MAX_PARALLELISM` : Parameter for number of jobs to run in parallel default value is 2
@@ -45,7 +45,7 @@ Below configurations are required before proceeding further.
 
 * `BIGQUERY_DATASET` : BigQuery Target Dataset
 * `BIGQUERY_MODE` : Mode of operation at target append/overwrite
-* `TEMP_GCS_BUCKET` : GCS bucket to be used for temporary staging
+* `TEMP_GCS_BUCKET` : Cloud Storage bucket to be used for temporary staging
 
 ### Run programmatically with parameterize script
 
