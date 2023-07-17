@@ -137,7 +137,7 @@
     <dependency>
       <groupId>com.datastax.spark</groupId>
       <artifactId>spark-cassandra-connector_${scala.binary.version}</artifactId>
-      <version>3.3</version>
+      <version>3.3.0</version>
     </dependency>
     <dependency>
       <groupId>com.github.jnr</groupId>
