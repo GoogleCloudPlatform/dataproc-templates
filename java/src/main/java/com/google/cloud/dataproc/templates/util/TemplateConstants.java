@@ -348,8 +348,6 @@ public interface TemplateConstants {
   String PUBSUB_GCS_STREAMING_DURATION_SECONDS_PROP = "pubsubtogcs.streaming.duration.seconds";
   // Number of receivers
   String PUBSUB_GCS_TOTAL_RECEIVERS_PROP = "pubsubtogcs.total.receivers";
-  // Project that contains the GCS output
-  String PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP = "pubsubtogcs.gcs.output.project.id";
   // GCS bucket URL
   String PUBSUB_GCS_BUCKET_NAME = "pubsubtogcs.gcs.bucket.name";
   // Number of records to be written per message to GCS
