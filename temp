@@ -1,0 +1,157 @@
+[
+  {
+    "fields": [
+      {
+        "fields": [
+          {
+            "fields": [
+              {
+                "name": "max_recent_hive_partitions",
+                "type": "INTEGER"
+              },
+              {
+                "name": "metadata_store",
+                "type": "STRING"
+              },
+              {
+                "name": "persist_ddls",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "use_extracted_ddls",
+                "type": "BOOLEAN"
+              }
+            ],
+            "name": "properties",
+            "type": "RECORD"
+          },
+          {
+            "mode": "REPEATED",
+            "name": "dataset_list",
+            "type": "STRING"
+          }
+        ],
+        "name": "hive",
+        "type": "RECORD"
+      },
+      {
+        "fields": [
+          {
+            "fields": [
+              {
+                "name": "use_dalm_application_test_project",
+                "type": "BOOLEAN"
+              }
+            ],
+            "name": "properties",
+            "type": "RECORD"
+          },
+          {
+            "mode": "REPEATED",
+            "name": "dataset_list",
+            "type": "STRING"
+          }
+        ],
+        "name": "big_query",
+        "type": "RECORD"
+      }
+    ],
+    "name": "source_datasets",
+    "type": "RECORD"
+  },
+  {
+    "fields": [
+      {
+        "fields": [
+          {
+            "fields": [
+              {
+                "name": "overwrite",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "target_data_precopy",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "max_recent_hive_partitions",
+                "type": "INTEGER"
+              },
+              {
+                "name": "metadata_store",
+                "type": "STRING"
+              },
+              {
+                "name": "persist_ddls",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "persist_ddls_gcs_path",
+                "type": "STRING"
+              },
+              {
+                "name": "persist_datafiles",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "persist_table",
+                "type": "BOOLEAN"
+              },
+              {
+                "name": "use_extracted_ddls",
+                "type": "BOOLEAN"
+              }
+            ],
+            "name": "properties",
+            "type": "RECORD"
+          },
+          {
+            "mode": "REPEATED",
+            "name": "dataset_list",
+            "type": "STRING"
+          }
+        ],
+        "name": "hive",
+        "type": "RECORD"
+      },
+      {
+        "fields": [
+          {
+            "fields": [
+              {
+                "name": "persist_ddls",
+                "type": "BOOLEAN"
+              }
+            ],
+            "name": "properties",
+            "type": "RECORD"
+          },
+          {
+            "mode": "REPEATED",
+            "name": "dataset_list",
+            "type": "STRING"
+          }
+        ],
+        "name": "big_query",
+        "type": "RECORD"
+      }
+    ],
+    "name": "target_datasets",
+    "type": "RECORD"
+  },
+  {
+    "fields": [
+      {
+        "mode": "REPEATED",
+        "name": "source_target_schema_table",
+        "type": "STRING"
+      },
+      {
+        "name": "validation_type",
+        "type": "STRING"
+      }
+    ],
+    "name": "data_validation",
+    "type": "RECORD"
+  }
+]
