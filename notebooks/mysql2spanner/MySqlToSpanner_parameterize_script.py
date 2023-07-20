@@ -25,6 +25,7 @@ from parameterize_script.util import get_common_args
 __all__ = ["MySqlToSpannerScript"]
 
 
+
 class MySqlToSpannerScript(BaseParameterizeScript):
 
     """

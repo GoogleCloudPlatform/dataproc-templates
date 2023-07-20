@@ -9,8 +9,8 @@ def create_migration_workflow(
     This function uses BQ translation API to convert DDLs/SQLs from different sources to BQ
 
     Args:
-        gcs_input_path (string): GCS location where source DDLs are available
-        gcs_output_path (string): Output GCS location
+        gcs_input_path (string): Cloud Storage location where source DDLs are available
+        gcs_output_path (string): Output Cloud Storage location
         project_id (string): Project ID
         bq_dataset (string): BQ Dataset ID to be added in the final DDL
         default_database (string): Project ID to be added in the final DDL
