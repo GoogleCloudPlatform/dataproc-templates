@@ -684,6 +684,10 @@ pipeline {
                         }
                     }
                     stage('HBASE TO GCS (Manual)(avro)') {
+                        when {
+                            // Run this stage only if JOB_TYPE is not set to CLUSTER
+                            expression { env.JOB_TYPE != "CLUSTER" }
+                        }
                         steps{
                             
                             sh '''
@@ -706,6 +710,10 @@ pipeline {
                         }
                     }
                     stage('HBASE TO GCS (Automated)(avro)') {
+                        when {
+                            // Run this stage only if JOB_TYPE is not set to CLUSTER
+                            expression { env.JOB_TYPE != "CLUSTER" }
+                        }
                         steps{
                             
                             sh '''
