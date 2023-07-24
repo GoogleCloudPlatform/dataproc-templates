@@ -15,8 +15,18 @@
  */
 package com.google.cloud.dataproc.jdbc.writer;
 
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.BlobInfo;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.BucketInfo;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.execution.datasources.jdbc.JdbcOptionsInWrite;
@@ -58,13 +68,67 @@ public class SavePartitionLenient implements VoidFunction<Iterator<Row>>, Serial
 
   @Override
   public void call(Iterator<Row> rowIterator) {
+
+    // Setup GCS bucket for exception handling
+    Storage storage = StorageOptions.getDefaultInstance().getService();
+
+    Pattern pattern = Pattern.compile("projects/(.*)/instances");
+    Matcher matcher = pattern.matcher(options.url());
+    String projectId = "";
+    if (matcher.find()) {
+      projectId = matcher.group(1);
+    } else {
+      //TODO: eenclona@ need to handle this case
+    }
+
+    String bucketName = projectId + "-exceptions-bucket";
+
+    Bucket bucket = storage.get(bucketName);
+
+    if (bucket == null) {
+      storage.create(BucketInfo.of(bucketName));
+    }
+
     scala.collection.Iterator<Row> scalaRows = JavaConverters.asScalaIterator(rowIterator);
 
     try {
       JdbcUtils.savePartition(
           table, scalaRows, rddSchema, insertStmt, batchSize, dialect, isolationLevel, options);
+
     } catch (Exception e) {
       e.printStackTrace();
+
+      String message =
+          "Migration information: \n"
+              + "table: "
+              + table
+              + "\n"
+              + "rddSchema: "
+              + rddSchema
+              + " \n"
+              + "insertStmt: "
+              + insertStmt
+              + " \n"
+              + "batchSize: "
+              + batchSize
+              + " \n"
+              + "dialect: "
+              + dialect
+              + " \n"
+              + "isolationLevel: "
+              + isolationLevel
+              + " \n"
+              + "Options: "
+              + options
+              + " \n\n------------------------"
+              + "Exception thrown is: "
+              + e;
+
+      Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+      BlobId blobId = BlobId.of(bucketName, table + "/" + timestamp);
+      BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType("text/plain").build();
+      storage.create(blobInfo, message.getBytes(StandardCharsets.UTF_8));
     }
   }
 }
