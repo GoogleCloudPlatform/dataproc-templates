@@ -46,7 +46,7 @@ Below configurations are required before proceeding further.
 * `MYSQL_USERNAME` : MYSQL username
 * `MYSQL_PASSWORD` : MYSQL password
 * `MYSQL_DATABASE` : name of database that you want to migrate
-* `MYSQLTABLE_LIST` : list of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : [] 
+* `MYSQL_TABLE_LIST` : list of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : [] 
 * `MYSQL_OUTPUT_GCS_LOCATION` : Cloud Storage location where mysql output will be writtes eg :"gs://bucket/[folder]"
 * `MYSQL_OUTPUT_GCS_MODE` : output mode for MYSQL data one of (overwrite|append)
 * `MYSQL_OUTPUT_GCS_FORMAT` : output file formate for MYSQL data one of (avro|parquet|orc)
@@ -92,7 +92,7 @@ usage: run_notebook.py [-h]
         --mysql.username MYSQL_USERNAME
         --mysql.password MYSQL_PASSWORD
         --mysql.database MYSQL_DATABASE
-        [--mysql.table.list MYSQLTABLE_LIST]
+        [--mysql.table.list MYSQL_TABLE_LIST]
         [--mysql.output.spanner.mode {overwrite,append}]
         --spanner.instance SPANNER_INSTANCE
         --spanner.database SPANNER_DATABASE
@@ -114,7 +114,7 @@ optional arguments:
         MySQL password
     --mysql.database MYSQL_DATABASE
         MySQL database name
-    --mysql.table.list MYSQLTABLE_LIST
+    --mysql.table.list MYSQL_TABLE_LIST
         MySQL table list to migrate. Leave empty for migrating complete database else provide tables as "table1,table2"
     --mysql.output.spanner.mode {overwrite,append}
         Spanner output write mode (Default: overwrite). Use append when schema already exists in Spanner
