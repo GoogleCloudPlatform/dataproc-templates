@@ -14,6 +14,17 @@ pipeline {
         
         MAVEN_HOME = "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven"
         PATH = "$PATH:$MAVEN_HOME/bin"
+
+        GCS_STAGING_LOCATION = sh (script: '''
+            CURRENT_BRANCH=`echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'`
+            if [ $CURRENT_BRANCH != "main" ];then
+            echo "$GCS_STAGING_LOCATION/$(uuidgen)"
+            else
+            echo $GCS_STAGING_LOCATION
+            fi
+            '''.stripIndent(),
+            returnStdout: true
+        ).trim()
     }
 
     stages {
@@ -801,6 +812,13 @@ pipeline {
     				notifyNotBuilt: 'true',
     				notifyBackToNormal: 'true'
                 }
+            }
+            catchError {
+                sh '''
+                if [ $GIT_BRANCH_LOCAL != "main" ];then
+                    gsutil rm -r $GCS_STAGING_LOCATION 2> /dev/null || true
+                fi
+                '''
             }
         }
     }
