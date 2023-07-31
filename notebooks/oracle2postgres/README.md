@@ -39,7 +39,7 @@ Below configurations are required before proceeding further.
 * `ORACLE_USERNAME` : Oracle username
 * `ORACLE_PASSWORD` : Oracle password
 * `ORACLE_DATABASE` : Name of database/service for Oracle connection
-* `ORACLETABLE_LIST` : List of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : []
+* `ORACLE_TABLE_LIST` : List of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : []
 
 #### POSTGRES Parameters
 * `POSTGRES_HOST` : Postgres instance ip address
@@ -84,7 +84,7 @@ python run_notebook.py --script=ORACLETOPOSTGRES \
 ```
 python run_notebook.py --script=ORACLETOPOSTGRES --help
 usage: run_notebook.py [-h] [--output.notebook OUTPUT.NOTEBOOK] --oracle.host ORACLE_HOST [--oracle.port ORACLE_PORT] --oracle.username
-                       ORACLE_USERNAME --oracle.password ORACLE_PASSWORD --oracle.database ORACLE_DATABASE [--oracle.table.list ORACLETABLE_LIST]
+                       ORACLE_USERNAME --oracle.password ORACLE_PASSWORD --oracle.database ORACLE_DATABASE [--oracle.table.list ORACLE_TABLE_LIST]
                        [--jdbctojdbc.output.output.mode {overwrite,append}] --postgres.host POSTGRES_HOST --postgres.port POSTGRES_PORT --postgres.username  POSTGRES_USERNAME --postgres.password  POSTGRES_PASSWORD--postgres.database POSTGRES_DATABASE --postgres.schema POSTGRES_SCHEMA [--jdbctojdbc.output.batch.size BATCH_SIZE]
                        [--jdbctojdbc.output.batch.size BATCH_SIZE]
                        [--max.parallelism MAX_PARALLELISM]
@@ -102,7 +102,7 @@ optional arguments:
                         Oracle password
   --oracle.database ORACLE_DATABASE
                         Oracle database name
-  --oracle.table.list ORACLETABLE_LIST
+  --oracle.table.list ORACLE_TABLE_LIST
                         Oracle table list to migrate. Leave empty for migrating complete database else provide tables as "table1,table2"
   --postgres.host POSTGRES_HOST
                         Postgres host 

@@ -62,7 +62,6 @@ bin/start.sh \
 --template PUBSUBTOGCS \
 --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
 --templateProperty pubsubtogcs.input.subscription=<pubsub-topic-subscription-name> \
---templateProperty pubsubtogcs.gcs.output.project.id=$GCP_PROJECT \
 --templateProperty pubsubtogcs.gcs.bucket.name=<gcs-bucket-name> \
 --templateProperty pubsubtogcs.gcs.output.data.format=AVRO or JSON (based on pubsub topic configuration) \
 ```
@@ -82,8 +81,6 @@ pubsubtogcs.timeout.ms=60000
 pubsubtogcs.streaming.duration.seconds=15
 ## Number of streams that will read from Pub/Sub subscription in parallel
 pubsubtogcs.total.receivers=5
-## Project that contains the GCS output
-pubsubtogcs.gcs.output.project.id=
 ## GCS bucket URL
 pubsubtogcs.gcs.bucket.name=
 ## Number of records to be written per message to GCS

@@ -192,7 +192,6 @@ pipeline {
                                     -- --template PUBSUBTOGCS \
                                     --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
                                     --templateProperty pubsubtogcs.input.subscription=pubsubtogcsv3-sub \
-                                    --templateProperty pubsubtogcs.gcs.output.project.id=$GCP_PROJECT \
                                     --templateProperty pubsubtogcs.gcs.bucket.name=pubsubtogcs_dev \
                                     --templateProperty pubsubtogcs.gcs.output.data.format=JSON \
                                     --templateProperty pubsubtogcs.batch.size=50
