@@ -24,7 +24,7 @@ bin/start.sh \
     --snowflake.to.gcs.output.format=<csv|avro|orc|json|parquet> \
     --snowflake.to.gcs.output.mode=<Overwrite|ErrorIfExists|Append|Ignore> \
     --snowflake.to.gcs.partition.column=<gcs-output-partitionby-columnname> \
-    --snowflake.gcs.sf.autopushdown=<on|off>
+    --snowflake.to.gcs.sf.autopushdown=<on|off>
 ```
 
 ### Usage
@@ -149,7 +149,7 @@ Download the above mentioned jars and place them in a GCS bucket.
 ```
 export GCP_PROJECT="sample-project"
 export REGION="us-central1"
-export SUBNET="default"
+export SUBNET="projects/sample-project/regions/europe-west2/subnetworks/test-subnet"
 export GCS_STAGING_LOCATION="gs://test-bucket"
 export JARS="gs://test_bucket/spark-snowflake_2.12-2.10.0-spark_3.1.jar,gs://test_bucket/dependencies/snowflake-jdbc-3.13.14.jar"
 bin/start.sh \
