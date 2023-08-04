@@ -151,10 +151,10 @@ export GCP_PROJECT="sample-project"
 export REGION="us-central1"
 export SUBNET="default"
 export GCS_STAGING_LOCATION="gs://test-bucket"
-export JARS="gs:test_bucket/spark-snowflake_2.12-2.10.0-spark_3.1.jar,gs://test_bucket/dependencies/snowflake-jdbc-3.13.14.jar"
+export JARS="gs://test_bucket/spark-snowflake_2.12-2.10.0-spark_3.1.jar,gs://test_bucket/dependencies/snowflake-jdbc-3.13.14.jar"
 bin/start.sh \
 -- \
--- --template=SNOWFLAKETOGCS \
+--template=SNOWFLAKETOGCS \
 --snowflake.to.gcs.sf.url="https://yqnnxfk.snowflakecomputing.com" \
 --snowflake.to.gcs.sf.user="test" \
 --snowflake.to.gcs.sf.password="pwd1234" \
