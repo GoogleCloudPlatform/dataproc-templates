@@ -52,7 +52,7 @@ pipeline {
                     stage('Cluster Creation'){
                         when {
                             // Run this stage only if JOB_TYPE is not set to CLUSTER
-                            expression { env.JOB_TYPE != "CLUSTER" }
+                            expression { env.JOB_TYPE == "CLUSTER" }
                         }
                         steps{
                             sh '''
