@@ -56,6 +56,10 @@ pipeline {
                         }
                         steps{
                             sh '''
+                            if gcloud dataproc clusters list --region=$REGION --project=$GCP_PROJECT | grep -q $CLUSTER; then
+                                echo "Cluster $CLUSTER already exists."
+                            else
+                                echo "Cluster $CLUSTER does not exist. Creating now..."
                                 gcloud dataproc clusters create $CLUSTER \
                                 --region $REGION \
                                 --subnet $SUBNET \
@@ -67,8 +71,9 @@ pipeline {
                                 --worker-boot-disk-size 500 \
                                 --image-version 2.1-debian11 \
                                 --optional-components ZOOKEEPER \
-                                --max-idle 3600s \
+                                --max-idle 1800s \
                                 --project $GCP_PROJECT
+                            fi
                             '''
                         }
                     }
