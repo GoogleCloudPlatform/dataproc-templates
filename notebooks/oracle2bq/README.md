@@ -38,7 +38,8 @@ Below configurations are required before proceeding further.
 * `ORACLE_USERNAME` : Oracle username
 * `ORACLE_PASSWORD` : Oracle password
 * `ORACLE_DATABASE` : Name of database/service for Oracle connection
-* `ORACLETABLE_LIST` : List of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : []
+* `ORACLE_SCHEMA` : Schema to be exported, leave blank to export tables owned by ORACLE_USERNAME
+* `ORACLE_TABLE_LIST` : List of tables you want to migrate eg: ['table1','table2'] else provide empty list for migration whole database eg : []
 
 #### BigQuery Parameters
 
@@ -74,10 +75,10 @@ python run_notebook.py --script=ORACLETOBIGQUERY \
 
 ```
 python run_notebook.py --script=ORACLETOBIGQUERY --help
-usage: run_notebook.py [-h] [--output.notebook OUTPUT.NOTEBOOK] --oracle.host ORACLE_HOST [--oracle.port ORACLE_PORT] --oracle.username
-                       ORACLE_USERNAME --oracle.password ORACLE_PASSWORD --oracle.database ORACLE_DATABASE [--oracle.table.list ORACLETABLE_LIST]
+usage: run_notebook.py [-h] --oracle.host ORACLE_HOST [--oracle.port ORACLE_PORT] --oracle.username ORACLE_USERNAME --oracle.password
+                       ORACLE_PASSWORD --oracle.database ORACLE_DATABASE [--oracle.schema ORACLE_SCHEMA] [--oracle.table.list ORACLE_TABLE_LIST]
                        [--bigquery.mode {overwrite,append}] --bigquery.dataset BIGQUERY_DATASET --temp.gcs.bucket TEMP_GCS_BUCKET
-                       [--max.parallelism MAX_PARALLELISM]
+                       [--max.parallelism MAX_PARALLELISM] [--output.notebook OUTPUT.NOTEBOOK]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -93,7 +94,9 @@ optional arguments:
                         Oracle password
   --oracle.database ORACLE_DATABASE
                         Oracle database name
-  --oracle.table.list ORACLETABLE_LIST
+  --oracle.schema ORACLE_SCHEMA
+                        Schema to be exported, leave blank to export tables owned by ORACLE_USERNAME
+  --oracle.table.list ORACLE_TABLE_LIST
                         Oracle table list to migrate. Leave empty for migrating complete database else provide tables as "table1,table2"
   --bigquery.mode {overwrite,append}
                         BigQuery output write mode (Default: overwrite). Use append when schema already exists in BigQuery
