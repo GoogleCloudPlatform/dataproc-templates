@@ -28,23 +28,55 @@ pipeline {
     }
 
     stages {
-            stage('Checkout') {
-                steps{
-                    git branch: "${GIT_BRANCH_LOCAL}", changelog: false, poll: false, url: 'https://github.com/GoogleCloudPlatform/dataproc-templates/'    
-                }
-            }
-            stage('Reset Resources'){
-                steps {
-                        catchError {
+            stage('Prepare Environment'){
+                parallel{
+                    stage('Checkout') {
+                        steps{
+                            git branch: "${GIT_BRANCH_LOCAL}", changelog: false, poll: false, url: 'https://github.com/GoogleCloudPlatform/dataproc-templates/'    
+                        }
+                    }
+                    stage('Reset Resources'){
+                        steps {
+                                catchError {
+                                    sh '''
+                                        gcloud pubsub topics publish pubsubtogcsv3 --message='{"Name": "NewMsg", "Age": 10}'
+                                        gcloud pubsub topics publish test-pubsub-bq --message='{"Name": "Another message", "Age": 18}' 2> /dev/null || true
+
+                                        gsutil rm -r gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
+                                        gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
+
+                                    '''
+                                }
+                        }
+                    }
+                    stage('Cluster Creation'){
+                        when {
+                            // Run this stage only if JOB_TYPE is not set to CLUSTER
+                            expression { env.JOB_TYPE == "CLUSTER" }
+                        }
+                        steps{
                             sh '''
-                                gcloud pubsub topics publish pubsubtogcsv3 --message='{"Name": "NewMsg", "Age": 10}'
-                                gcloud pubsub topics publish test-pubsub-bq --message='{"Name": "Another message", "Age": 18}' 2> /dev/null || true
-
-                                gsutil rm -r gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
-                                gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
-
+                            if gcloud dataproc clusters list --region=$REGION --project=$GCP_PROJECT | grep -q $CLUSTER; then
+                                echo "Cluster $CLUSTER already exists."
+                            else
+                                echo "Cluster $CLUSTER does not exist. Creating now..."
+                                gcloud dataproc clusters create $CLUSTER \
+                                --region $REGION \
+                                --subnet $SUBNET \
+                                --no-address \
+                                --master-machine-type n1-standard-2 \
+                                --master-boot-disk-size 500 \
+                                --num-workers 2 \
+                                --worker-machine-type n1-standard-2 \
+                                --worker-boot-disk-size 500 \
+                                --image-version 2.1-debian11 \
+                                --optional-components ZOOKEEPER \
+                                --max-idle 1800s \
+                                --project $GCP_PROJECT
+                            fi
                             '''
                         }
+                    }
                 }
             }
             
@@ -436,6 +468,10 @@ pipeline {
                         }
                     }
                     stage('HBASE TO GCS (Manual)') {
+                        when {
+                            // Run this stage only if JOB_TYPE is not set to CLUSTER
+                            expression { env.JOB_TYPE != "CLUSTER" }
+                        }
                         steps{
                             
                             sh '''
@@ -458,6 +494,10 @@ pipeline {
                         }
                     }
                     stage('HBASE TO GCS (Automated)') {
+                        when {
+                            // Run this stage only if JOB_TYPE is not set to CLUSTER
+                            expression { env.JOB_TYPE != "CLUSTER" }
+                        }
                         steps{
                             
                             sh '''
@@ -687,6 +727,10 @@ pipeline {
                         }
                     }
                     stage('HBASE TO GCS (Manual)(avro)') {
+                        when {
+                            // Run this stage only if JOB_TYPE is not set to CLUSTER
+                            expression { env.JOB_TYPE != "CLUSTER" }
+                        }
                         steps{
                             
                             sh '''
@@ -709,6 +753,10 @@ pipeline {
                         }
                     }
                     stage('HBASE TO GCS (Automated)(avro)') {
+                        when {
+                            // Run this stage only if JOB_TYPE is not set to CLUSTER
+                            expression { env.JOB_TYPE != "CLUSTER" }
+                        }
                         steps{
                             
                             sh '''
