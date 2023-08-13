@@ -194,3 +194,5 @@ To run the templates against existing cluster you must specify the `JOB_TYPE=CLU
     export CLUSTER=${DATA_PROC_CLUSTER_NAME}
     bin/start.sh \
     -- --template HIVETOBIGQUERY
+
+Keep in mind that certain streaming templates may require a newer version of the Dataproc image. Ensure that your cluster meets the image version requirements pertaining to the pom.xml before running the template.

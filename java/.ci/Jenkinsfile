@@ -28,7 +28,7 @@ pipeline {
     }
 
     stages {
-            stage('Prepare Environmenrt'){
+            stage('Prepare Environment'){
                 parallel{
                     stage('Checkout') {
                         steps{
