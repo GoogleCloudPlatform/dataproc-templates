@@ -55,19 +55,21 @@ pipeline {
                             expression { env.JOB_TYPE != "CLUSTER" }
                         }
                         steps{
-                            gcloud dataproc clusters create $CLUSTER \
-                            --region $REGION \
-                            --subnet $SUBNET \
-                            --no-address \
-                            --master-machine-type n1-standard-2 \
-                            --master-boot-disk-size 500 \
-                            --num-workers 2 \
-                            --worker-machine-type n1-standard-2 \
-                            --worker-boot-disk-size 500 \
-                            --image-version 2.1-debian11 \
-                            --optional-components ZOOKEEPER \
-                            --max-idle 3600s \
-                            --project $GCP_PROJECT
+                            sh '''
+                                gcloud dataproc clusters create $CLUSTER \
+                                --region $REGION \
+                                --subnet $SUBNET \
+                                --no-address \
+                                --master-machine-type n1-standard-2 \
+                                --master-boot-disk-size 500 \
+                                --num-workers 2 \
+                                --worker-machine-type n1-standard-2 \
+                                --worker-boot-disk-size 500 \
+                                --image-version 2.1-debian11 \
+                                --optional-components ZOOKEEPER \
+                                --max-idle 3600s \
+                                --project $GCP_PROJECT
+                            '''
                         }
                     }
                 }
