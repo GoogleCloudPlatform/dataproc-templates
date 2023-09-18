@@ -15,6 +15,7 @@ bin/start.sh \
 --templateProperty bigquery.gcs.input.table=<projectId:datasetId.tableName> \
 --templateProperty bigquery.gcs.output.format=<csv|parquet|avro|json> \
 --templateProperty bigquery.gcs.output.location=<gcs path> \
+--templateProperty bigquery.gcs.output.partition.col=<field name> \
 --templateProperty bigquery.gcs.output.mode=<Append|Overwrite|ErrorIfExists|Ignore>
 ```
 
@@ -31,6 +32,7 @@ bin/start.sh \
 --templateProperty project.id=myproject \
 --templateProperty bigquery.gcs.input.table=myproject:myDataset.empTable \
 --templateProperty bigquery.gcs.output.format=csv \
+--templateProperty bigquery.gcs.output.partition.col=name \
 --templateProperty bigquery.gcs.output.location=gs://output/csv \
 --templateProperty bigquery.gcs.output.mode=Overwrite
 ```
