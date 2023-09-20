@@ -32,7 +32,7 @@ bin/start.sh \
 --templateProperty project.id=myproject \
 --templateProperty bigquery.gcs.input.table=myproject:myDataset.empTable \
 --templateProperty bigquery.gcs.output.format=csv \
---templateProperty bigquery.gcs.output.partition.col=name \
+--templateProperty bigquery.gcs.output.partition.col=emp_city \
 --templateProperty bigquery.gcs.output.location=gs://output/csv \
 --templateProperty bigquery.gcs.output.mode=Overwrite
 ```
