@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,14 +17,17 @@ from __future__ import annotations
 from typing import List
 from enum import Enum
 
-__all__ = ['ScriptName']
+__all__ = ["ScriptName"]
 
 
 class ScriptName(Enum):
     """Enumeration of all script types"""
 
+    HIVETOBIGQUERY = "HIVETOBIGQUERY"
     MYSQLTOSPANNER = "MYSQLTOSPANNER"
-
+    ORACLETOPOSTGRES = "ORACLETOPOSTGRES"
+    ORACLETOBIGQUERY = "ORACLETOBIGQUERY"
+    POSTGRESTOBIGQUERY = "POSTGRESTOBIGQUERY"
 
     @classmethod
     def from_string(cls, script_name: str) -> ScriptName:
@@ -48,7 +51,7 @@ class ScriptName(Enum):
         try:
             return cls[script_name.upper()]
         except KeyError as err:
-            raise ValueError(f'Invalid script name {script_name}') from err
+            raise ValueError(f"Invalid script name {script_name}") from err
 
     @classmethod
     def choices(cls) -> List[str]:
@@ -59,6 +62,4 @@ class ScriptName(Enum):
             List[str]: All available ScriptName options
         """
 
-        return [
-            script_name.value for script_name in cls
-        ]
+        return [script_name.value for script_name in cls]

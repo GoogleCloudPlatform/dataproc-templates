@@ -47,7 +47,6 @@ public class PubSubToGCS implements BaseTemplate {
   private long timeoutMs;
   private int streamingDuration;
   private int totalReceivers;
-  private String outputProjectID;
   private String gcsBucketName;
   private int batchSize;
   private String outputDataFormat;
@@ -60,7 +59,6 @@ public class PubSubToGCS implements BaseTemplate {
     streamingDuration =
         Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_STREAMING_DURATION_SECONDS_PROP));
     totalReceivers = Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_TOTAL_RECEIVERS_PROP));
-    outputProjectID = getProperties().getProperty(PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP);
     gcsBucketName = getProperties().getProperty(PUBSUB_GCS_BUCKET_NAME);
     batchSize = Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_BATCH_SIZE_PROP));
     outputDataFormat = getProperties().getProperty(PUBSUB_GCS_OUTPUT_DATA_FORMAT);
@@ -97,7 +95,7 @@ public class PubSubToGCS implements BaseTemplate {
     LOGGER.info("Writing data to output GCS Bucket: {}", gcsBucketName);
     Storage storage = StorageOptions.getDefaultInstance().getService();
     Bucket bucket = storage.get(gcsBucketName);
-    writeToGCS(stream, outputProjectID, gcsBucketName, batchSize, outputDataFormat, bucket);
+    writeToGCS(stream, gcsBucketName, batchSize, outputDataFormat, bucket);
 
     jsc.start();
     jsc.awaitTerminationOrTimeout(timeoutMs);
@@ -109,14 +107,12 @@ public class PubSubToGCS implements BaseTemplate {
   public void validateInput() {
     if (StringUtils.isAllBlank(inputProjectID)
         || StringUtils.isAllBlank(pubsubInputSubscription)
-        || StringUtils.isAllBlank(outputProjectID)
         || StringUtils.isAllBlank(gcsBucketName)
         || StringUtils.isAllBlank(outputDataFormat)) {
       LOGGER.error(
           "{},{},{},{},{} are required parameter. ",
           PUBSUB_GCS_INPUT_PROJECT_ID_PROP,
           PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP,
-          PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP,
           PUBSUB_GCS_BUCKET_NAME,
           PUBSUB_GCS_OUTPUT_DATA_FORMAT);
       throw new IllegalArgumentException(
@@ -145,8 +141,6 @@ public class PubSubToGCS implements BaseTemplate {
         streamingDuration,
         PUBSUB_GCS_TOTAL_RECEIVERS_PROP,
         totalReceivers,
-        PUBSUB_GCS_OUTPUT_PROJECT_ID_PROP,
-        outputProjectID,
         PUBSUB_GCS_BUCKET_NAME,
         gcsBucketName,
         PUBSUB_GCS_BATCH_SIZE_PROP,
@@ -157,7 +151,6 @@ public class PubSubToGCS implements BaseTemplate {
 
   public static void writeToGCS(
       JavaDStream<SparkPubsubMessage> pubSubStream,
-      String outputProjectID,
       String gcsBucketName,
       Integer batchSize,
       String outputDataFormat,
