@@ -64,6 +64,10 @@ export JOB_TYPE=CLUSTER
 export CLUSTER=${DATAPROC_CLUSTER_NAME}
 ```
 
+**Note:** Certain templates may require a newer version of the Dataproc image. Before running a template, make sure your cluster's dataproc image version includes the supported dependencies version listed in the [pom.xml](pom.xml).
+
+Some HBase templates that require a custom image to execute are not yet supported in CLUSTER mode.
+
 ## Submit templates
 
 1) Format Code [Optional]
