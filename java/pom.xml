@@ -38,7 +38,7 @@
     <java.version>1.8</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <spark.version>3.3.2</spark.version>
+    <spark.version>3.3.3</spark.version>
     <scala.binary.version>2.12</scala.binary.version>
     <gcs.version>2.4.5</gcs.version>
     <project.version>3.1</project.version>
@@ -138,7 +138,7 @@
     <dependency>
       <groupId>com.datastax.spark</groupId>
       <artifactId>spark-cassandra-connector_${scala.binary.version}</artifactId>
-      <version>3.1.0</version>
+      <version>3.3.0</version>
     </dependency>
     <dependency>
       <groupId>com.github.jnr</groupId>
@@ -149,12 +149,6 @@
         <groupId>net.snowflake</groupId>
         <artifactId>spark-snowflake_2.12</artifactId>
         <version>2.10.0-spark_3.2</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector -->
-    <dependency>
-      <groupId>com.datastax.spark</groupId>
-      <artifactId>spark-cassandra-connector_2.12</artifactId>
-      <version>3.1.0</version>
     </dependency>
     <dependency>
       <groupId>com.github.jnr</groupId>
