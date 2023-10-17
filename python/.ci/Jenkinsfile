@@ -14,7 +14,6 @@ pipeline {
     }
     
     stages {
-        stage('Prepare Environment'){
                     stage('Checkout') {
                         steps{
                             git branch: "${GIT_BRANCH_LOCAL}", changelog: false, poll: false, url: 'https://github.com/GoogleCloudPlatform/dataproc-templates/'    
@@ -96,8 +95,6 @@ pipeline {
                                 '''
                             }
                     }
-                }
-        }
     
                 stage('Parallel Execution 1'){
                     parallel{ 
