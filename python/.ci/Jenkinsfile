@@ -513,6 +513,10 @@ pipeline {
         stage('Parallel Execution 6'){
                 parallel{
                         stage('Hbase TO GCS (Manual)') {
+                            when {
+                                // Run this stage only if JOB_TYPE is not set to CLUSTER
+                                expression { env.JOB_TYPE != "CLUSTER" }
+                            }
                             steps{
                                 sh '''
                                 
@@ -544,6 +548,10 @@ pipeline {
                         }
                         
                         stage('Hbase TO GCS (Automated)') {
+                             when {
+                                // Run this stage only if JOB_TYPE is not set to CLUSTER
+                                expression { env.JOB_TYPE != "CLUSTER" }
+                            }
                             steps{
                                 sh '''
                                     whoami
