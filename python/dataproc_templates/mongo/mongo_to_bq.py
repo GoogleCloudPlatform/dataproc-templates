@@ -35,26 +35,62 @@ class MongoToBigQueryTemplate(BaseTemplate):
 
     @staticmethod
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
-        # parser: argparse.ArgumentParser = argparse.ArgumentParser()
+        parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
-        # parser.add_argument(
-        #     f'--{constants.MONGO_GCS_INPUT_URI}',
-        #     dest=constants.MONGO_GCS_INPUT_URI,
-        #     required=True,
-        #     help='MONGO Cloud Storage Input Connection Uri'
-        # )
-        # parser.add_argument(
-        #     f'--{constants.MONGO_GCS_INPUT_DATABASE}',
-        #     dest=constants.MONGO_GCS_INPUT_DATABASE,
-        #     required=True,
-        #     help='MONGO Cloud Storage Input Database Name'
-        # )
-        # parser.add_argument(
-        #     f'--{constants.MONGO_GCS_INPUT_COLLECTION}',
-        #     dest=constants.MONGO_GCS_INPUT_COLLECTION,
-        #     required=True,
-        #     help='MONGO Cloud Storage Input Collection Name'
-        # )
+        parser.add_argument(
+            f'--{constants.MONGO_BQ_INPUT_URI}',
+            dest=constants.MONGO_BQ_INPUT_URI,
+            required=True,
+            help='Mongo Input Connection Uri'
+        )
+        parser.add_argument(
+            f'--{constants.MONGO_BQ_INPUT_DATABASE}',
+            dest=constants.MONGO_BQ_INPUT_DATABASE,
+            required=True,
+            help='Mongo Input Database Name'
+        )
+        parser.add_argument(
+            f'--{constants.MONGO_BQ_INPUT_COLLECTION}',
+            dest=constants.MONGO_BQ_INPUT_COLLECTION,
+            required=True,
+            help='Mongo Input Collection Name'
+        )
+
+        parser.add_argument(
+            f'--{constants.MONGO_BQ_OUTPUT_DATASET}',
+            dest=constants.MONGO_BQ_OUTPUT_DATASET,
+            required=True,
+            help='BigQuery Output Dataset Name'
+        )
+
+        parser.add_argument(
+            f'--{constants.MONGO_BQ_OUTPUT_TABLE}',
+            dest=constants.MONGO_BQ_OUTPUT_TABLE,
+            required=True,
+            help='BigQuery Output Table Name'
+        )
+
+        parser.add_argument(
+            f'--{constants.MONGO_BQ_OUTPUT_MODE}',
+            dest=constants.MONGO_BQ_OUTPUT_MODE,
+            required=True,
+            help='BigQuery Output Mode (append , complete, update)'
+        )
+
+        parser.add_argument(
+            f'--{constants.MONGO_BQ_TEMP_BUCKET_NAME}',
+            dest=constants.MONGO_BQ_TEMP_BUCKET_NAME,
+            required=True,
+            help='GCS Temp Bucket Name'
+        )
+
+        parser.add_argument(
+            f'--{constants.MONGO_BQ_CHECKPOINT_LOCATION}',
+            dest=constants.MONGO_BQ_CHECKPOINT_LOCATION,
+            required=True,
+            help='GCS bucket for checkpoint'
+        )
+
         # parser.add_argument(
         #     f'--{constants.MONGO_GCS_OUTPUT_FORMAT}',
         #     dest=constants.MONGO_GCS_OUTPUT_FORMAT,
@@ -93,11 +129,10 @@ class MongoToBigQueryTemplate(BaseTemplate):
         # add_spark_options(
         #     parser, constants.get_csv_output_spark_options("mongo.gcs.output."))
 
-        # known_args: argparse.Namespace
-        # known_args, _ = parser.parse_known_args(args)
+        known_args: argparse.Namespace
+        known_args, _ = parser.parse_known_args(args)
 
-        # return vars(known_args)
-        return
+        return vars(known_args)
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 

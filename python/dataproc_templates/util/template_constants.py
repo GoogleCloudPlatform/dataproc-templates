@@ -32,7 +32,7 @@ FORMAT_PRQT = "parquet"
 FORMAT_AVRO_EXTD = "com.databricks.spark.avro"
 FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery"
 FORMAT_JDBC = "jdbc"
-FORMAT_PUBSUBLITE="pubsublite"
+FORMAT_PUBSUBLITE = "pubsublite"
 FORMAT_REDSHIFT = "io.github.spark_redshift_community.spark.redshift"
 JDBC_URL = "url"
 JDBC_TABLE = "dbtable"
@@ -79,7 +79,7 @@ CSV_TIMESTAMPNTZFORMAT = "timestampNTZFormat"
 CSV_UNESCAPEDQUOTEHANDLING = "unescapedQuoteHandling"
 FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
-TEMP_GCS_BUCKET="temporaryGcsBucket"
+TEMP_GCS_BUCKET = "temporaryGcsBucket"
 MONGO_URL = "spark.mongodb.output.uri"
 MONGO_INPUT_URI = "spark.mongodb.input.uri"
 MONGO_DATABASE = "database"
@@ -93,9 +93,9 @@ REDSHIFT_IAMROLE = "aws_iam_role"
 AWS_S3ACCESSKEY = "fs.s3a.access.key"
 AWS_S3SECRETKEY = "fs.s3a.secret.key"
 AWS_S3ENDPOINT = "fs.s3a.endpoint"
-SQL_EXTENSION= "spark.sql.extensions"
-CASSANDRA_EXTENSION= "com.datastax.spark.connector.CassandraSparkExtensions"
-CASSANDRA_CATALOG= "com.datastax.spark.connector.datasource.CassandraCatalog"
+SQL_EXTENSION = "spark.sql.extensions"
+CASSANDRA_EXTENSION = "com.datastax.spark.connector.CassandraSparkExtensions"
+CASSANDRA_CATALOG = "com.datastax.spark.connector.datasource.CassandraCatalog"
 FORMAT_PUBSUBLITE = "pubsublite"
 PUBSUBLITE_SUBSCRIPTION = "pubsublite.subscription"
 PUBSUBLITE_CHECKPOINT_LOCATION = "checkpointLocation"
@@ -201,6 +201,8 @@ SPARK_OPTIONS = {
 }
 
 # Helper functions for applying SPARK_OPTIONS to templates
+
+
 def get_csv_input_spark_options(prefix):
     input_options = [
         CSV_CHARTOESCAPEQUOTEESCAPING,
@@ -235,6 +237,7 @@ def get_csv_input_spark_options(prefix):
     spark_options = {(prefix + _).lower(): _ for _ in input_options}
     return spark_options
 
+
 def get_csv_output_spark_options(prefix):
     output_options = {
         CSV_CHARTOESCAPEQUOTEESCAPING,
@@ -257,6 +260,7 @@ def get_csv_output_spark_options(prefix):
     }
     spark_options = {(prefix + _).lower(): _ for _ in output_options}
     return spark_options
+
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -285,7 +289,7 @@ GCS_JDBC_OUTPUT_DRIVER = "gcs.jdbc.output.driver"
 GCS_JDBC_BATCH_SIZE = "gcs.jdbc.batch.size"
 GCS_JDBC_NUMPARTITIONS = "gcs.jdbc.numpartitions"
 
-#GCS to Mongo
+# GCS to Mongo
 GCS_MONGO_INPUT_LOCATION = "gcs.mongo.input.location"
 GCS_MONGO_INPUT_FORMAT = "gcs.mongo.input.format"
 GCS_MONGO_OUTPUT_URI = "gcs.mongo.output.uri"
@@ -302,7 +306,17 @@ MONGO_GCS_INPUT_URI = "mongo.gcs.input.uri"
 MONGO_GCS_INPUT_DATABASE = "mongo.gcs.input.database"
 MONGO_GCS_INPUT_COLLECTION = "mongo.gcs.input.collection"
 
-#Cassandra to BQ
+# Mongo to BQ
+MONGO_BQ_INPUT_URI = "mongo.bq.input.uri"
+MONGO_BQ_INPUT_DATABASE = "mongo.bq.input.database"
+MONGO_BQ_INPUT_COLLECTION = "mongo.bq.input.collection"
+MONGO_BQ_OUTPUT_DATASET = "mongo.bq.output.dataset"
+MONGO_BQ_OUTPUT_TABLE = "mongo.bq.output.table"
+MONGO_BQ_OUTPUT_MODE = "mongo.bq.output.mode"
+MONGO_BQ_TEMP_BUCKET_NAME = "mongo.bq.temp.bucket.name"
+MONGO_BQ_CHECKPOINT_LOCATION = "mongo.bq.checkpoint.location"
+
+# Cassandra to BQ
 CASSANDRA_TO_BQ_INPUT_TABLE = "cassandratobq.input.table"
 CASSANDRA_TO_BQ_INPUT_HOST = "cassandratobq.input.host"
 CASSANDRA_TO_BQ_BIGQUERY_LOCATION = "cassandratobq.bigquery.location"
@@ -344,7 +358,7 @@ HIVE_BQ_TEMP_VIEW_NAME = "hive.bigquery.temp.view.name"
 HIVE_BQ_SQL_QUERY = "hive.bigquery.sql.query"
 
 # Hive to GCS
-HIVE_GCS_INPUT_DATABASE="hive.gcs.input.database"
+HIVE_GCS_INPUT_DATABASE = "hive.gcs.input.database"
 HIVE_GCS_INPUT_TABLE = "hive.gcs.input.table"
 HIVE_GCS_OUTPUT_LOCATION = "hive.gcs.output.location"
 HIVE_GCS_OUTPUT_FORMAT = "hive.gcs.output.format"
@@ -422,7 +436,7 @@ JDBC_BQ_OUTPUT_MODE = "jdbc.bigquery.output.mode"
 JDBC_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 JDBC_BQ_LD_TEMP_BUCKET_NAME = "jdbc.bigquery.temp.bucket.name"
 
-#REDSHIFT to GCS
+# REDSHIFT to GCS
 REDSHIFTTOGCS_INPUT_URL = "redshifttogcs.input.url"
 REDSHIFTTOGCS_S3_TEMPDIR = "redshifttogcs.s3.tempdir"
 REDSHIFTTOGCS_INPUT_TABLE = "redshifttogcs.input.table"
@@ -477,31 +491,31 @@ S3_BQ_OUTPUT_MODE = "s3.bq.output.mode"
 S3_BQ_ENDPOINT_VALUE = "s3.amazonaws.com"
 
 
-#Kafka To Bq
-KAFKA_BQ_CHECKPOINT_LOCATION='kafka.to.bq.checkpoint.location'
-KAFKA_BOOTSTRAP_SERVERS='kafka.to.bq.bootstrap.servers'
-KAFKA_BQ_TOPIC='kafka.to.bq.topic'
-KAFKA_BQ_STARTING_OFFSET='kafka.to.bq.starting.offset'
-KAFKA_BQ_DATASET='kafka.to.bq.dataset'
-KAFKA_BQ_TABLE_NAME='kafka.to.bq.table'
-KAFKA_BQ_TEMP_BUCKET_NAME='kafka.to.bq.temp.bucket.name'
-KAFKA_BQ_TERMINATION_TIMEOUT='kafka.to.bq.termination.timeout'
-KAFKA_INPUT_FORMAT='kafka'
-KAFKA_BQ_OUTPUT_MODE='kafka.to.bq.output.mode'
+# Kafka To Bq
+KAFKA_BQ_CHECKPOINT_LOCATION = 'kafka.to.bq.checkpoint.location'
+KAFKA_BOOTSTRAP_SERVERS = 'kafka.to.bq.bootstrap.servers'
+KAFKA_BQ_TOPIC = 'kafka.to.bq.topic'
+KAFKA_BQ_STARTING_OFFSET = 'kafka.to.bq.starting.offset'
+KAFKA_BQ_DATASET = 'kafka.to.bq.dataset'
+KAFKA_BQ_TABLE_NAME = 'kafka.to.bq.table'
+KAFKA_BQ_TEMP_BUCKET_NAME = 'kafka.to.bq.temp.bucket.name'
+KAFKA_BQ_TERMINATION_TIMEOUT = 'kafka.to.bq.termination.timeout'
+KAFKA_INPUT_FORMAT = 'kafka'
+KAFKA_BQ_OUTPUT_MODE = 'kafka.to.bq.output.mode'
 
-KAFKA_INPUT_FORMAT='kafka'
+KAFKA_INPUT_FORMAT = 'kafka'
 
-#Kafka To GCS
-KAFKA_GCS_BOOTSTRAP_SERVERS='kafka.gcs.bootstrap.servers'
-KAFKA_GCS_OUTPUT_LOCATION='kafka.gcs.output.location.gcs.path'
-KAFKA_TOPIC='kafka.gcs.topic'
-KAFKA_GCS_OUTPUT_FORMAT='kafka.gcs.output.format'
-KAFKA_GCS_OUPUT_MODE='kafka.gcs.output.mode'
-KAFKA_GCS_TERMINATION_TIMEOUT='kafka.gcs.termination.timeout'
-KAFKA_STARTING_OFFSET='kafka.gcs.starting.offset'
-KAFKA_GCS_CHECKPOINT_LOCATION='kafka.gcs.checkpoint.location'
+# Kafka To GCS
+KAFKA_GCS_BOOTSTRAP_SERVERS = 'kafka.gcs.bootstrap.servers'
+KAFKA_GCS_OUTPUT_LOCATION = 'kafka.gcs.output.location.gcs.path'
+KAFKA_TOPIC = 'kafka.gcs.topic'
+KAFKA_GCS_OUTPUT_FORMAT = 'kafka.gcs.output.format'
+KAFKA_GCS_OUPUT_MODE = 'kafka.gcs.output.mode'
+KAFKA_GCS_TERMINATION_TIMEOUT = 'kafka.gcs.termination.timeout'
+KAFKA_STARTING_OFFSET = 'kafka.gcs.starting.offset'
+KAFKA_GCS_CHECKPOINT_LOCATION = 'kafka.gcs.checkpoint.location'
 
-#Pubsublite To GCS
+# Pubsublite To GCS
 PUBSUBLITE_TO_GCS_INPUT_SUBSCRIPTION_URL = "pubsublite.to.gcs.input.subscription.url"
 PUBSUBLITE_TO_GCS_WRITE_MODE = "pubsublite.to.gcs.write.mode"
 PUBSUBLITE_TO_GCS_OUTPUT_LOCATION = "pubsublite.to.gcs.output.location"
