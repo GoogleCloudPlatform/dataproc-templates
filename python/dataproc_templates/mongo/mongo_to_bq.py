@@ -137,31 +137,34 @@ class MongoToBigQueryTemplate(BaseTemplate):
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
         print("Run function called inside of Mong to BQ file.")
-        # logger: Logger = self.get_logger(spark=spark)
+        logger: Logger = self.get_logger(spark=spark)
 
-        # # Arguments
-        # input_uri: str = args[constants.MONGO_GCS_INPUT_URI]
-        # input_database: str = args[constants.MONGO_GCS_INPUT_DATABASE]
-        # input_collection: str = args[constants.MONGO_GCS_INPUT_COLLECTION]
+        # Arguments
+        input_uri: str = args[constants.MONGO_BQ_INPUT_URI]
+        input_database: str = args[constants.MONGO_BQ_INPUT_DATABASE]
+        input_collection: str = args[constants.MONGO_BQ_INPUT_COLLECTION]
         # output_format: str = args[constants.MONGO_GCS_OUTPUT_FORMAT]
-        # output_mode: str = args[constants.MONGO_GCS_OUTPUT_MODE]
-        # output_location: str = args[constants.MONGO_GCS_OUTPUT_LOCATION]
+        output_mode: str = args[constants.MONGO_BQ_OUTPUT_MODE]
+        output_dataset: str = args[constants.MONGO_BQ_OUTPUT_DATASET]
+        output_table: str = args[constants.MONGO_BQ_OUTPUT_TABLE]
 
-        # ignore_keys = {constants.MONGO_GCS_INPUT_URI}
-        # filtered_args = {key: val for key,
-        #                  val in args.items() if key not in ignore_keys}
-        # logger.info(
-        #     "Starting Mongo to Cloud Storage Spark job with parameters:\n"
-        #     f"{pprint.pformat(filtered_args)}"
-        # )
+        ignore_keys = {constants.MONGO_BQ_INPUT_URI}
+        filtered_args = {key: val for key,
+                         val in args.items() if key not in ignore_keys}
+        logger.info(
+            "Starting Mongo to Cloud Storage Spark job with parameters:\n"
+            f"{pprint.pformat(filtered_args)}"
+        )
 
-        # # Read
-        # input_data = spark.read \
-        #     .format(constants.FORMAT_MONGO) \
-        #     .option(constants.MONGO_INPUT_URI, input_uri) \
-        #     .option(constants.MONGO_DATABASE, input_database) \
-        #     .option(constants.MONGO_COLLECTION, input_collection) \
-        #     .load()
+        # Read
+        input_data = spark.read \
+            .format(constants.FORMAT_MONGO) \
+            .option(constants.MONGO_INPUT_URI, input_uri) \
+            .option(constants.MONGO_DATABASE, input_database) \
+            .option(constants.MONGO_COLLECTION, input_collection) \
+            .load()
+
+        print("The input data is ", input_data)
 
         # # Write
         # writer: DataFrameWriter = input_data.write.mode(output_mode)
