@@ -53,6 +53,9 @@ OPT_PY_FILES="--py-files=${PROJECT_ROOT_DIR}/${PACKAGE_EGG_FILE}"
 if [ -n "${SUBNET}" ]; then
   OPT_SUBNET="--subnet=${SUBNET}"
 fi
+if [ -n "${CLUSTER}" ]; then
+  OPT_CLUSTER="--cluster=${CLUSTER}"
+fi
 if [ -n "${HISTORY_SERVER_CLUSTER}" ]; then
   OPT_HISTORY_SERVER_CLUSTER="--history-server-cluster=${HISTORY_SERVER_CLUSTER}"
 fi
@@ -71,6 +74,10 @@ fi
 if [ -n "${SPARK_PROPERTIES}" ]; then
   OPT_PROPERTIES="--properties=${SPARK_PROPERTIES}"
 fi
+if [ -z "${JOB_TYPE}" ]; then
+  JOB_TYPE=SERVERLESS
+fi
+
 #if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
 if [ -n "${CATALOG}" ]; then
   echo "Downloading Hbase jar dependency"
@@ -100,23 +107,46 @@ if [ -n "${HBASE_SITE_PATH}" ]; then
   fi
 fi
 
-command=$(cat << EOF
-gcloud beta dataproc batches submit pyspark \
-    ${PROJECT_ROOT_DIR}/main.py \
-    ${OPT_SPARK_VERSION} \
-    ${OPT_PROJECT} \
-    ${OPT_REGION} \
-    ${OPT_JARS} \
-    ${OPT_LABELS} \
-    ${OPT_DEPS_BUCKET} \
-    ${OPT_FILES} \
-    ${OPT_PY_FILES} \
-    ${OPT_PROPERTIES} \
-    ${OPT_SUBNET} \
-    ${OPT_HISTORY_SERVER_CLUSTER} \
-    ${OPT_METASTORE_SERVICE}
+# Construct the command based on JOB_TYPE
+if [ "${JOB_TYPE}" == "CLUSTER" ]; then
+  echo "JOB_TYPE is CLUSTER, so will submit on an existing Dataproc cluster"
+  check_required_envvar CLUSTER
+  command=$(cat << EOF
+  gcloud dataproc jobs submit pyspark \
+      ${PROJECT_ROOT_DIR}/main.py \
+      ${OPT_PROJECT} \
+      ${OPT_REGION} \
+      ${OPT_CLUSTER} \
+      ${OPT_JARS} \
+      ${OPT_LABELS} \
+      ${OPT_FILES} \
+      ${OPT_PY_FILES} \
+      ${OPT_PROPERTIES}
 EOF
 )
+elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
+  echo "JOB_TYPE is SERVERLESS, so will submit on serverless Spark"
+  command=$(cat << EOF
+  gcloud beta dataproc batches submit pyspark \
+      ${PROJECT_ROOT_DIR}/main.py \
+      ${OPT_SPARK_VERSION} \
+      ${OPT_PROJECT} \
+      ${OPT_REGION} \
+      ${OPT_JARS} \
+      ${OPT_LABELS} \
+      ${OPT_DEPS_BUCKET} \
+      ${OPT_FILES} \
+      ${OPT_PY_FILES} \
+      ${OPT_PROPERTIES} \
+      ${OPT_SUBNET} \
+      ${OPT_HISTORY_SERVER_CLUSTER} \
+      ${OPT_METASTORE_SERVICE}
+EOF
+)
+else
+  echo "Unknown JOB_TYPE \"${JOB_TYPE}\""
+  exit 1
+fi
 
 echo "Triggering Spark Submit job"
 echo ${command} "$@"
