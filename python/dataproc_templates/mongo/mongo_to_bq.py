@@ -73,8 +73,20 @@ class MongoToBigQueryTemplate(BaseTemplate):
         parser.add_argument(
             f'--{constants.MONGO_BQ_OUTPUT_MODE}',
             dest=constants.MONGO_BQ_OUTPUT_MODE,
-            required=True,
-            help='BigQuery Output Mode (append , complete, update)'
+            required=False,
+            default=constants.OUTPUT_MODE_APPEND,
+            help=(
+                'BigQuery Output write mode '
+                '(one of: append,overwrite,ignore,errorifexists) '
+                '(Defaults to append)'
+            ),
+            choices=[
+                constants.OUTPUT_MODE_OVERWRITE,
+                constants.OUTPUT_MODE_APPEND,
+                constants.OUTPUT_MODE_IGNORE,
+                constants.OUTPUT_MODE_ERRORIFEXISTS
+            ]
+
         )
 
         parser.add_argument(
@@ -84,51 +96,6 @@ class MongoToBigQueryTemplate(BaseTemplate):
             help='GCS Temp Bucket Name'
         )
 
-        parser.add_argument(
-            f'--{constants.MONGO_BQ_CHECKPOINT_LOCATION}',
-            dest=constants.MONGO_BQ_CHECKPOINT_LOCATION,
-            required=True,
-            help='GCS bucket for checkpoint'
-        )
-
-        # parser.add_argument(
-        #     f'--{constants.MONGO_GCS_OUTPUT_FORMAT}',
-        #     dest=constants.MONGO_GCS_OUTPUT_FORMAT,
-        #     required=True,
-        #     help='Output file format (one of: avro,parquet,csv,json)',
-        #     choices=[
-        #         constants.FORMAT_AVRO,
-        #         constants.FORMAT_PRQT,
-        #         constants.FORMAT_CSV,
-        #         constants.FORMAT_JSON
-        #     ]
-        # )
-        # parser.add_argument(
-        #     f'--{constants.MONGO_GCS_OUTPUT_LOCATION}',
-        #     dest=constants.MONGO_GCS_OUTPUT_LOCATION,
-        #     required=True,
-        #     help='Cloud Storage location for output files'
-        # )
-        # parser.add_argument(
-        #     f'--{constants.MONGO_GCS_OUTPUT_MODE}',
-        #     dest=constants.MONGO_GCS_OUTPUT_MODE,
-        #     required=False,
-        #     default=constants.OUTPUT_MODE_APPEND,
-        #     help=(
-        #         'Output write mode '
-        #         '(one of: append,overwrite,ignore,errorifexists) '
-        #         '(Defaults to append)'
-        #     ),
-        #     choices=[
-        #         constants.OUTPUT_MODE_OVERWRITE,
-        #         constants.OUTPUT_MODE_APPEND,
-        #         constants.OUTPUT_MODE_IGNORE,
-        #         constants.OUTPUT_MODE_ERRORIFEXISTS
-        #     ]
-        # )
-        # add_spark_options(
-        #     parser, constants.get_csv_output_spark_options("mongo.gcs.output."))
-
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
@@ -136,23 +103,22 @@ class MongoToBigQueryTemplate(BaseTemplate):
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
-        print("Run function called inside of Mong to BQ file.")
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
         input_uri: str = args[constants.MONGO_BQ_INPUT_URI]
         input_database: str = args[constants.MONGO_BQ_INPUT_DATABASE]
         input_collection: str = args[constants.MONGO_BQ_INPUT_COLLECTION]
-        # output_format: str = args[constants.MONGO_GCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.MONGO_BQ_OUTPUT_MODE]
-        output_dataset: str = args[constants.MONGO_BQ_OUTPUT_DATASET]
-        output_table: str = args[constants.MONGO_BQ_OUTPUT_TABLE]
+        big_query_output_dataset: str = args[constants.MONGO_BQ_OUTPUT_DATASET]
+        big_query_output_table: str = args[constants.MONGO_BQ_OUTPUT_TABLE]
+        big_query_temp_bucket: str = args[constants.MONGO_BQ_TEMP_BUCKET_NAME]
 
         ignore_keys = {constants.MONGO_BQ_INPUT_URI}
         filtered_args = {key: val for key,
                          val in args.items() if key not in ignore_keys}
         logger.info(
-            "Starting Mongo to Cloud Storage Spark job with parameters:\n"
+            "Starting Mongo to Big Query Spark job with parameters:\n"
             f"{pprint.pformat(filtered_args)}"
         )
 
@@ -164,9 +130,11 @@ class MongoToBigQueryTemplate(BaseTemplate):
             .option(constants.MONGO_COLLECTION, input_collection) \
             .load()
 
-        print("The input data is ", input_data)
 
-        # # Write
-        # writer: DataFrameWriter = input_data.write.mode(output_mode)
-        # persist_dataframe_to_cloud_storage(
-        #     writer, args, output_location, output_format, "mongo.gcs.output.")
+        # Write
+        input_data.write \
+                .format(constants.FORMAT_BIGQUERY) \
+                .option(constants.TABLE, big_query_output_dataset + "." + big_query_output_table) \
+                .option(constants.TEMP_GCS_BUCKET, big_query_temp_bucket) \
+                .mode(output_mode) \
+                .save()

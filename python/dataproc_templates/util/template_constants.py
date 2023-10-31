@@ -314,7 +314,6 @@ MONGO_BQ_OUTPUT_DATASET = "mongo.bq.output.dataset"
 MONGO_BQ_OUTPUT_TABLE = "mongo.bq.output.table"
 MONGO_BQ_OUTPUT_MODE = "mongo.bq.output.mode"
 MONGO_BQ_TEMP_BUCKET_NAME = "mongo.bq.temp.bucket.name"
-MONGO_BQ_CHECKPOINT_LOCATION = "mongo.bq.checkpoint.location"
 
 # Cassandra to BQ
 CASSANDRA_TO_BQ_INPUT_TABLE = "cassandratobq.input.table"
