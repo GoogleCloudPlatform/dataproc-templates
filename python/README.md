@@ -28,11 +28,11 @@
 * [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery)
 
 
-Dataproc Templates (Python - PySpark) submit jobs to Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark).
+Dataproc Templates (Python - PySpark) supports submitting jobs to both Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark) and Dataproc Cluster using [jobs submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs/submit/pyspark)
 
 ## Run using PyPi package
 
-In this README, you see instructions on how to submit Dataproc Serverless template jobs.  
+In this README, you see instructions on how to run the templates.  
 Currently, 3 options are described:
 - Using bin/start.sh
 - Using gcloud CLI
@@ -110,7 +110,33 @@ coverage run \
 coverage report --show-missing
 ```
 
-## Submitting templates to Dataproc Serverless
+
+## Running Templates
+
+The Dataproc Templates (Python - PySpark) support both serverless and cluster modes. By default, serverless mode is used. To run these templates use the `gcloud` CLI directly or the provided `start.sh` shell script.
+
+### Serverless Mode (Default)
+
+Submits job to Dataproc Serverless using the [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark) command.
+
+### Cluster Mode
+
+Submits job to a Dataproc Standard cluster using the [jobs submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs/submit/pyspark) command.
+
+To run the templates on an existing cluster, you must additionally specify the `JOB_TYPE=CLUSTER` and `CLUSTER=<full clusterId>` environment variables. For example:
+
+```sh
+export GCP_PROJECT=my-gcp-project
+export REGION=gcp-region
+export GCS_STAGING_LOCATION=gs://my-bucket/temp
+export JOB_TYPE=CLUSTER
+export CLUSTER=${DATAPROC_CLUSTER_NAME}
+./bin/start.sh \
+-- --template HIVETOBIGQUERY
+```
+
+
+## Submitting templates
 
 A shell script is provided to:
 - Build the python package
@@ -125,10 +151,6 @@ When submitting, there are 3 types of properties/parameters for the user to prov
 - **Common arguments**: --template_name and --log_level
   - The **--log_level** parameter is optional, it defaults to INFO.
     - Possible choices are the Spark log levels: ["ALL", "DEBUG", "ERROR", "FATAL", "INFO", "OFF", "TRACE", "WARN"].
-
-
-
-
 
 <hr>
 
