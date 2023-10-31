@@ -134,7 +134,7 @@ export CLUSTER=${DATAPROC_CLUSTER_NAME}
 ./bin/start.sh \
 -- --template HIVETOBIGQUERY
 ```
-
+**Note:** Some HBase templates that require a custom image to execute are not yet supported in CLUSTER mode.
 
 ## Submitting templates
 
