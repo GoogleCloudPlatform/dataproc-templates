@@ -163,6 +163,37 @@ This template has been tested with the following versions of the above mentioned
 
 ## Usage
 
+```
+$ python main.py --template MONGOTOBIGQUERY --help
+usage: main.py [-h] --mongo.bq.input.uri MONGO.BQ.INPUT.URI
+               --mongo.bq.input.database MONGO.BQ.INPUT.DATABASE
+               --mongo.bq.input.collection MONGO.BQ.INPUT.COLLECTION
+               --mongo.bq.output.dataset MONGO.BQ.OUTPUT.DATASET
+               --mongo.bq.output.table MONGO.BQ.OUTPUT.TABLE
+               --mongo.bq.output.mode {overwrite,append,ignore,errorifexists}
+               --mongo.bq.temp.bucket.name MONGO.BQ.TEMP.BUCKET.NAME
+
+options:
+  -h, --help            show this help message and exit
+  --mongo.bq.input.uri MONGO.BQ.INPUT.URI
+                        Mongo Input Connection Uri
+  --mongo.bq.input.database MONGO.BQ.INPUT.DATABASE
+                        Mongo Input Database Name
+  --mongo.bq.input.collection MONGO.BQ.INPUT.COLLECTION
+                        Mongo Input Collection Name
+  --mongo.bq.output.dataset MONGO.BQ.OUTPUT.DATASET
+                        BigQuery Output Dataset Name
+  --mongo.bq.output.table MONGO.BQ.OUTPUT.TABLE
+                        BigQuery Output Table Name
+  --mongo.bq.output.mode {overwrite,append,ignore,errorifexists}
+                        BigQuery Output write mode (one of:
+                        append,overwrite,ignore,errorifexists) (Defaults to
+                        append)
+  --mongo.bq.temp.bucket.name MONGO.BQ.TEMP.BUCKET.NAME
+                        GCS Temp Bucket Name
+
+```
+
 ## Example submission
 
 ```
