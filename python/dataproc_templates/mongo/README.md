@@ -5,30 +5,33 @@ Template for exporting a MongoDB Collection to files in Google Cloud Storage. It
 It uses the [MongoDB Spark Connector](https://www.mongodb.com/products/spark-connector) and [MongoDB Java Driver](https://jar-download.com/?search_box=mongo-java-driver) for reading data from MongoDB Collections.
 
 ## Arguments
-* `mongo.gcs.input.uri`: MongoDB Connection String as an Input URI (format: `mongodb://host_name:port_no`)
-* `mongo.gcs.input.database`: MongoDB Database Name (format: Database_name)
-* `mongo.gcs.input.collection`: MongoDB Input Collection Name (format: Collection_name)
-* `mongo.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json)
-* `mongo.gcs.output.location`: GCS Location to put Output Files (format: `gs://BUCKET/...`)
-* `mongo.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+
+- `mongo.gcs.input.uri`: MongoDB Connection String as an Input URI (format: `mongodb://host_name:port_no`)
+- `mongo.gcs.input.database`: MongoDB Database Name (format: Database_name)
+- `mongo.gcs.input.collection`: MongoDB Input Collection Name (format: Collection_name)
+- `mongo.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json)
+- `mongo.gcs.output.location`: GCS Location to put Output Files (format: `gs://BUCKET/...`)
+- `mongo.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+
 #### Optional Arguments
-* `mongo.gcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
-* `mongo.gcs.output.compression`: None
-* `mongo.gcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type
-* `mongo.gcs.output.emptyvalue`: Sets the string representation of an empty value
-* `mongo.gcs.output.encoding`: Decodes the CSV files by the given encoding type
-* `mongo.gcs.output.escape`: Sets a single character used for escaping quotes inside an already quoted value
-* `mongo.gcs.output.escapequotes`: A flag indicating whether values containing quotes should always be enclosed in quotes. Default is to escape all values containing a quote character
-* `mongo.gcs.output.header`: Uses the first line of CSV file as names of columns. Defaults to True
-* `mongo.gcs.output.ignoreleadingwhitespace`: A flag indicating whether or not leading whitespaces from values being read/written should be skipped
-* `mongo.gcs.output.ignoretrailingwhitespace`: A flag indicating whether or not trailing whitespaces from values being read/written should be skipped
-* `mongo.gcs.output.linesep`: Defines the line separator that should be used for parsing. Defaults to \r, \r\n and \n for reading and \n for writing
-* `mongo.gcs.output.nullvalue`: Sets the string representation of a null value
-* `mongo.gcs.output.quote`: Sets a single character used for escaping quoted values where the separator can be part of the value. For reading, if you would like to turn off quotations, you need to set not null but an empty string
-* `mongo.gcs.output.quoteall`: None
-* `mongo.gcs.output.sep`: Sets a separator for each field and value. This separator can be one or more characters
-* `mongo.gcs.output.timestampformat`: Sets the string that indicates a timestamp with timezone format
-* `mongo.gcs.output.timestampntzformat`: Sets the string that indicates a timestamp without timezone format
+
+- `mongo.gcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
+- `mongo.gcs.output.compression`: None
+- `mongo.gcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type
+- `mongo.gcs.output.emptyvalue`: Sets the string representation of an empty value
+- `mongo.gcs.output.encoding`: Decodes the CSV files by the given encoding type
+- `mongo.gcs.output.escape`: Sets a single character used for escaping quotes inside an already quoted value
+- `mongo.gcs.output.escapequotes`: A flag indicating whether values containing quotes should always be enclosed in quotes. Default is to escape all values containing a quote character
+- `mongo.gcs.output.header`: Uses the first line of CSV file as names of columns. Defaults to True
+- `mongo.gcs.output.ignoreleadingwhitespace`: A flag indicating whether or not leading whitespaces from values being read/written should be skipped
+- `mongo.gcs.output.ignoretrailingwhitespace`: A flag indicating whether or not trailing whitespaces from values being read/written should be skipped
+- `mongo.gcs.output.linesep`: Defines the line separator that should be used for parsing. Defaults to \r, \r\n and \n for reading and \n for writing
+- `mongo.gcs.output.nullvalue`: Sets the string representation of a null value
+- `mongo.gcs.output.quote`: Sets a single character used for escaping quoted values where the separator can be part of the value. For reading, if you would like to turn off quotations, you need to set not null but an empty string
+- `mongo.gcs.output.quoteall`: None
+- `mongo.gcs.output.sep`: Sets a separator for each field and value. This separator can be one or more characters
+- `mongo.gcs.output.timestampformat`: Sets the string that indicates a timestamp with timezone format
+- `mongo.gcs.output.timestampntzformat`: Sets the string that indicates a timestamp without timezone format
 
 ## Usage
 
@@ -111,7 +114,7 @@ options:
 
 ## Required JAR files
 
-This template requires the [MongoDB Spark Connector](https://www.mongodb.com/products/spark-connector) and [MongoDB Java Driver](https://jar-download.com/?search_box=mongo-java-driver) to be available in the Dataproc cluster.
+This template requires the [MongoDB Spark Connector](https://www.mongodb.com/products/spark-connector) and [MongoDB Java Driver](https://jar-download.com/?search_box=mongo-java-driver) to be available in the Dataproc cluster. The recommended versions for Mongo Java Driver is 3.9.1 and for Mongo Spark Connector is 2.12-2.4.0.
 
 ## Example submission
 
