@@ -133,7 +133,7 @@ def run_template(template_name: TemplateName) -> None:
 
     try:
         args: Dict[str, Any] = template_instance.parse_args()
-        print("[INFO]: The args passed are ", args)
+        
         spark: SparkSession = create_spark_session(template_name=template_name)
 
         track_template_invocation(spark=spark, template_name=template_name)
@@ -148,9 +148,6 @@ def run_template(template_name: TemplateName) -> None:
 
 
 if __name__ == '__main__':
-    print("Hello worlsddd")
-    print("[INFO]:The template name is ", get_template_name())
-    print("HELLOs WORLD")
 
     run_template(
         template_name=get_template_name()
