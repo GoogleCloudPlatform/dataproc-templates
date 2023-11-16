@@ -1010,7 +1010,7 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --text.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
     --text.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
-# GCS To GCS - SQL Transformation
+# Cloud Storage To Cloud Storage - SQL Transformation
 
 Template for reading files from Cloud Storage, applying data transformations using Spark SQL and then writing the transformed data back to Cloud Storage. It supports reading and writing JSON, CSV, Parquet and Avro formats. Additionally, it can read Delta format.
 

@@ -11,7 +11,7 @@ Following databases are supported via Spark JDBC by default:
 ## Required JAR files
 
 These templates requires the JDBC jar file to be available in the Dataproc cluster.
-User has to download the required jar file and host it inside a GCS Bucket, so that it could be referred during the execution of code.
+User has to download the required jar file and host it inside a Cloud Storage Bucket, so that it could be referred during the execution of code.
 
 wget command to download JDBC jar file is as follows :-
 
@@ -32,7 +32,7 @@ wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/6.4.0.jre
 wget https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/21.7.0.0/ojdbc8-21.7.0.0.jar
 ```
 
-Once the jar file gets downloaded, please upload the file into a GCS Bucket and export the below variable
+Once the jar file gets downloaded, please upload the file into a Cloud Storage Bucket and export the below variable
 
 ```
 export JARS=<gcs-bucket-location-containing-jar-file>
@@ -310,7 +310,7 @@ These properties are responsible for applying some spark sql transformations bef
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
 
-# 2. JDBC To GCS
+# 2. JDBC To Cloud Storage
 
 Template for reading data from JDBC table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
 
@@ -319,7 +319,7 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
 * `jdbctogcs.input.sql.query`: JDBC input SQL query
-* `jdbctogcs.output.location`: GCS location for output files (format: `gs://BUCKET/...`)
+* `jdbctogcs.output.location`: Cloud Storage location for output files (format: `gs://BUCKET/...`)
 * `jdbctogcs.output.format`: Output file format (one of: avro,parquet,csv,json)
 * `jdbctogcs.input.partitioncolumn` (Optional): JDBC input table partition column name
 * `jdbctogcs.input.lowerbound` (Optional): JDBC input table partition column lower bound which is used to decide the partition stride
@@ -497,7 +497,7 @@ export GCS_STAGING_LOCATION=gs://my-gcp-proj/staging
 export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default
 export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-proj/jars/postgresql-42.2.6.jar,gs://my-gcp-proj/jars/mssql-jdbc-6.4.0.jre8.jar"
 ```
-* MySQL to GCS
+* MySQL to Cloud Storage
 ```
 ./bin/start.sh \
 -- --template=JDBCTOGCS \
@@ -514,7 +514,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.output.partitioncolumn="department_id"
 ```
 
-* PostgreSQL to GCS
+* PostgreSQL to Cloud Storage
 ```
 ./bin/start.sh \
 -- --template=JDBCTOGCS \
@@ -531,7 +531,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.output.partitioncolumn="department_id"
 ```
 
-* Microsoft SQL Server to GCS
+* Microsoft SQL Server to Cloud Storage
 ```
 ./bin/start.sh \
 -- --template=JDBCTOGCS \
@@ -548,7 +548,7 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.output.partitioncolumn="department_id"
 ```
 
-* Oracle to GCS
+* Oracle to Cloud Storage
 ```
 ./bin/start.sh \
 -- --template=JDBCTOGCS \
@@ -567,13 +567,13 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctogcs.output.partitioncolumn="department_id"
 ```
 
-There are two optional properties as well with "JDBC to GCS" Template. Please find below the details :-
+There are two optional properties as well with "JDBC to Cloud Storage" Template. Please find below the details :-
 
 ```
 --templateProperty jdbctogcs.temp.view.name='temporary_view_name'
 --templateProperty jdbctogcs.temp.sql.query='select * from global_temp.temporary_view_name'
 ```
-These properties are responsible for applying some spark sql transformations before loading data into GCS.
+These properties are responsible for applying some spark sql transformations before loading data into Cloud Storage.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
 # 3. JDBC To BigQuery

@@ -1,4 +1,4 @@
-## Mongo to GCS
+## Mongo to Cloud Storage
 
 Template for exporting a MongoDB Collection to files in Google Cloud Storage. It supports writing JSON, CSV, Parquet and Avro formats.
 
@@ -9,8 +9,8 @@ It uses the [MongoDB Spark Connector](https://www.mongodb.com/products/spark-con
 - `mongo.gcs.input.uri`: MongoDB Connection String as an Input URI (format: `mongodb://host_name:port_no`)
 - `mongo.gcs.input.database`: MongoDB Database Name (format: Database_name)
 - `mongo.gcs.input.collection`: MongoDB Input Collection Name (format: Collection_name)
-- `mongo.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json)
-- `mongo.gcs.output.location`: GCS Location to put Output Files (format: `gs://BUCKET/...`)
+- `mongo.gcs.output.format`: Cloud Storage Output File Format (one of: avro,parquet,csv,json)
+- `mongo.gcs.output.location`: Cloud Storage Location to put Output Files (format: `gs://BUCKET/...`)
 - `mongo.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 
 #### Optional Arguments
@@ -155,7 +155,7 @@ This template has been tested with the following versions of the above mentioned
 - `mongo.bq.input.collection`: MongoDB Input Collection Name (format: Collection_name)
 - `mongo.bq.output.dataset`: BigQuery dataset id (format: Dataset_id)
 - `mongo.bq.output.table`: BigQuery table name (format: Table_name)
-- `mongo.bq.temp.bucket.name`: GCS bucket name to store temporary files (format: Bucket_name)
+- `mongo.bq.temp.bucket.name`: Cloud Storage bucket name to store temporary files (format: Bucket_name)
 
 #### Optional Arguments
 
