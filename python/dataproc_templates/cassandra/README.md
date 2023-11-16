@@ -6,7 +6,7 @@ Template for exporting a Cassandra table to Bigquery
 ## Arguments
 * `cassandratobq.input.host`: Cassandra Host IP
 * `cassandratobq.bigquery.location`: Dataset and Table name
-* `cassandratobq.temp.gcs.location`: Temp GCS location for staging
+* `cassandratobq.temp.gcs.location`: Temp Cloud Storage location for staging
 #### Optional Arguments
 * `cassandratobq.input.keyspace`: Input keyspace name for cassandra
 * `cassandratobq.input.table`: Input table name of cassandra
@@ -84,9 +84,9 @@ export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,g
 ```
 
 
-## Cassandra to GCS
+## Cassandra to Cloud Storage
 
-Template for exporting a Cassandra table to GCS
+Template for exporting a Cassandra table to Cloud Storage
 
 
 ## Arguments
@@ -94,8 +94,8 @@ Template for exporting a Cassandra table to GCS
 * `cassandratogcs.input.table`: Input table name of cassandra (not required when query is present)
 * `cassandratogcs.input.host`: Cassandra Host IP
 * `cassandratogcs.output.format`: Output File Format
-* `cassandratogcs.output.path`: GCS Bucket Path
-* `cassandratogcs.output.savemode`: Output mode of Cassandra to GCS
+* `cassandratogcs.output.path`: Cloud Storage Bucket Path
+* `cassandratogcs.output.savemode`: Output mode of Cassandra to Cloud Storage
 #### Optional Arguments
 * `cassandratobq.input.query`: Customised query for selective migration
 * `cassandratogcs.input.catalog.name`: Connection name, defaults to casscon
