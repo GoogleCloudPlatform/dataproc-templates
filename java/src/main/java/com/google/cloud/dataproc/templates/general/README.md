@@ -63,7 +63,7 @@ export GCS_STAGING_LOCATION=<gcs path>
 export SUBNET=projects/<project id>/regions/<region name>/subnetworks/<subnetwork name>
 ```
 
-Create a config file and upload it to GCS:
+Create a config file and upload it to Cloud Storage:
 
 ```
 gsutil cp config.yaml gs://bucket/path/config.yaml
@@ -101,7 +101,7 @@ bin/start.sh \
 
 # Example config files:
 
-GCS to BigQuery config.yaml
+Cloud Storage to BigQuery config.yaml
 
 ```yaml
 input:
@@ -116,7 +116,7 @@ output:
     mode: Overwrite
 ```
 
-BigQuery to GCS config.yaml
+BigQuery to Cloud Storage config.yaml
 
 ```yaml
 input:
@@ -131,7 +131,7 @@ output:
     mode: Overwrite
 ```
 
-GCS Avro to GCS CSV
+Cloud Storage Avro to Cloud Storage CSV
 
 ```yaml
 input:

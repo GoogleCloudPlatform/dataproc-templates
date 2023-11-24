@@ -1,4 +1,4 @@
-## 1. GCS To BigQuery
+## 1. Cloud Storage To BigQuery
 
 General Execution:
 
@@ -19,7 +19,7 @@ bin/start.sh \
 --templateProperty gcs.bigquery.temp.bucket.name=<bigquery temp bucket name>
 ```
 
-There are two optional properties as well with "GCS to BigQuery" Template. Please find below the details :-
+There are two optional properties as well with "Cloud Storage to BigQuery" Template. Please find below the details :-
 
 ```
 --templateProperty gcs.bigquery.temp.table='temporary_view_name'
@@ -28,7 +28,7 @@ There are two optional properties as well with "GCS to BigQuery" Template. Pleas
 These properties are responsible for applying some spark sql transformations while loading data into BigQuery.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
-## 2. GCS To BigTable
+## 2. Cloud Storage To BigTable
 
 General Execution:
 
@@ -63,7 +63,7 @@ bin/start.sh \
 (Please note that the table in Bigtable should exist with the above given column family before executing the template)
 ```
 
-## 3. GCS to Spanner
+## 3. Cloud Storage to Spanner
 ```
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
@@ -82,7 +82,7 @@ bin/start.sh \
 ```
 
 
-## 4. GCS to JDBC
+## 4. Cloud Storage to JDBC
 
 ```
 Please download the JDBC Driver of respective database and copy it to GCS bucket location.
@@ -129,7 +129,7 @@ bin/start.sh \
 
 ```
 
-## 5. GCS to GCS
+## 5. Cloud Storage to Cloud Storage
 
 ```
 GCP_PROJECT=<gcp-project-id> \
@@ -161,9 +161,9 @@ bin/start.sh \
 
 ```
 
-## 6. GCS To Mongo:
+## 6. Cloud Storage To Mongo:
 
-Download the following MongoDb connectors and copy it to GCS bucket location:
+Download the following MongoDb connectors and copy it to Cloud Storage bucket location:
 * [MongoDb Spark Connector](https://mvnrepository.com/artifact/org.mongodb.spark/mongo-spark-connector)
 * [MongoDb Java Driver](https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver)
 

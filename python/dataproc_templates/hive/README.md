@@ -77,7 +77,7 @@ These properties are responsible for applying some spark sql transformations bef
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
 
-# Hive To GCS
+# Hive To Cloud Storage
 
 Template for reading data from Hive and writing to a Cloud Storage location. It supports reading from Hive table.
 
@@ -214,5 +214,5 @@ There are two optional properties as well with "Hive to GCS" Template. Please fi
 --templateProperty hive.gcs.temp.view.name='temporary_view_name'
 --templateProperty hive.gcs.sql.query='select * from global_temp.temporary_view_name'
 ```
-These properties are responsible for applying some spark sql transformations before loading data into GCS.
+These properties are responsible for applying some spark sql transformations before loading data into Cloud Storage.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"

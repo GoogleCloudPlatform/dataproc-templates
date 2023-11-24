@@ -1,10 +1,10 @@
-## Dataplex GCS to BigQuery
+## Dataplex Cloud Storage to BigQuery
 
-This template will incrementally move data from a Dataplex GCS tables to BigQuery.
-It will identify new partitions in Dataplex GCS and load them to BigQuery.
+This template will incrementally move data from a Dataplex Cloud Storage tables to BigQuery.
+It will identify new partitions in Dataplex Cloud Storage and load them to BigQuery.
 
-Note: if the Dataplex GCS table has no partitions, the whole table will be read
-from GCS and the target BQ table will be overwritten.
+Note: if the Dataplex Cloud Storage table has no partitions, the whole table will be read
+from Cloud Storage and the target BQ table will be overwritten.
 
 ### General Execution:
 
@@ -46,9 +46,9 @@ gcloud dataplex tasks create <task-id> \
 SQL file should be located
 
 `dataplex.gcs.bq.target.dataset` name of the target BigQuery dataset where the
-Dataplex GCS asset will be migrated to
+Dataplex Cloud Storage asset will be migrated to
 
-`gcs.bigquery.temp.bucket.name` the GCS bucket that temporarily holds the data
+`gcs.bigquery.temp.bucket.name` the Cloud Storage bucket that temporarily holds the data
 before it is loaded to BigQuery
 
 `dataplex.gcs.bq.save.mode` specifies how to handle existing data in BigQuery
@@ -71,7 +71,7 @@ over any other property or argument specifying target output of the data.
 
 
 ### Arguments
-`--dataplexEntity` Dataplex GCS table to load in BigQuery \
+`--dataplexEntity` Dataplex Cloud Storage table to load in BigQuery \
 Example: `--dataplexEntityList "projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entity_id_1}"`
 
 `--partitionField` if field is specified together with `partitionType`, the
@@ -87,7 +87,7 @@ argument is not specified the name of the entity will be used as table name
 
 Optionally a custom SQL can be provided to filter the data that will be copied
 to BigQuery. \
-The template will read from a GCS file with the custom sql string.
+The template will read from a Cloud Storage file with the custom sql string.
 
 The path to this file must be provided with the option `--customSqlGcsPath`.
 

@@ -40,11 +40,11 @@ kafka.bq.dataset=<output bigquery dataset>
 # BigQuery output table
 kafka.bq.table=<output bigquery table>
 
-# GCS bucket name, for storing temporary files
-kafka.bq.temp.gcs.bucket=<gcs bucket name>
+# Cloud Storage bucket name, for storing temporary files
+kafka.bq.temp.gcs.bucket=<cloud storage bucket name>
 
-# GCS location for maintaining checkpoint
-kafka.bq.checkpoint.location=<gcs bucket location maintains checkpoint>
+# Cloud Storage location for maintaining checkpoint
+kafka.bq.checkpoint.location=<cloud storage bucket location maintains checkpoint>
 
 # Offset to start reading from. Accepted values: "earliest", "latest" (streaming only), or json string """ {"topicA":{"0":23,"1":-1},"topicB":{"0":-2}} """
 kafka.bq.starting.offset=<kafka-starting-offset>
@@ -128,7 +128,7 @@ bin/start.sh \
 ```
 
 
-## 2. Kafka To GCS
+## 2. Kafka To Cloud Storage
 
 General Execution:
 
@@ -208,7 +208,7 @@ kafka.pubsub.input.topic=
 # PubSub topic
 kafka.pubsub.output.topic=
 
-# GCS location for maintaining checkpoint
+# Cloud Storage location for maintaining checkpoint
 kafka.pubsub.checkpoint.location=
 
 # Offset to start reading from. Accepted values: "earliest", "latest" (streaming only), or json string """ {"topicA":{"0":23,"1":-1},"topicB":{"0":-2}} """

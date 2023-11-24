@@ -1,4 +1,4 @@
-## 1. HBase To GCS
+## 1. HBase To Cloud Storage
 ### Required JAR files
 
 Some HBase dependencies are required to be passed when submitting the job. These dependencies are automatically set by script when CATALOG environment variable is set for hbase table configuration. If not, 

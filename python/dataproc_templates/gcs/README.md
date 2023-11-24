@@ -1,4 +1,4 @@
-# GCS To BigQuery
+# Cloud Storage To BigQuery
 
 Template for reading files from Cloud Storage and writing them to a BigQuery table. It supports reading JSON, CSV, Parquet, Avro and Delta formats.
 
@@ -183,7 +183,7 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, <gs://{your
     --gcs.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
 
-# GCS To Bigtable
+# Cloud Storage To Bigtable
 
 Template for reading files from Cloud Storage and writing them to a Bigtable table. It supports reading JSON, CSV, Parquet, Avro and Delta formats.
 
@@ -237,7 +237,7 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
 
 Some HBase and Bigtable dependencies are required to be passed when submitting the job.
 These dependencies need to be passed by using the --jars flag, or, in the case of Dataproc Templates, using the JARS environment variable.
-Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrepository.com/) and stored your GCS bucket (create one to store the dependencies).
+Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrepository.com/) and stored your Cloud Storage bucket (create one to store the dependencies).
 
 - **[Apache HBase Spark Connector](https://mvnrepository.com/artifact/org.apache.hbase.connectors.spark/hbase-spark) dependencies (already mounted in Dataproc Serverless, so you refer to them using file://):**
    - file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar
@@ -428,7 +428,7 @@ export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-
 ```
 
 
-# GCS To JDBC
+# Cloud Storage To JDBC
 
 Template for reading files from Cloud Storage and writing them to a JDBC table. It supports reading JSON, CSV, Parquet, Avro and Delta formats.
 
@@ -626,7 +626,7 @@ export JARS=<gcs-bucket-location-containing-jar-file>
     --gcs.jdbc.output.url="jdbc:mysql://12.345.678.9:3306/test?user=root&password=root"
 ```
 
-# GCS To MongoDB
+# Cloud Storage To MongoDB
 
 Template for reading files from Cloud Storage and writing them to a MongoDB Collection. It supports reading JSON, CSV, Parquet, Avro and Delta formats.
 
@@ -1010,7 +1010,7 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
     --text.bigquery.output.mode=<append|overwrite|ignore|errorifexists> \
     --text.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
 ```
-# GCS To GCS - SQL Transformation
+# Cloud Storage To Cloud Storage - SQL Transformation
 
 Template for reading files from Cloud Storage, applying data transformations using Spark SQL and then writing the transformed data back to Cloud Storage. It supports reading and writing JSON, CSV, Parquet and Avro formats. Additionally, it can read Delta format.
 

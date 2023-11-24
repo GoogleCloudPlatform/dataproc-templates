@@ -1,4 +1,4 @@
-# Pub/Sub Lite to GCS
+# Pub/Sub Lite to Cloud Storage
 
 Template for reading files from Pub/Sub Lite and writing them to Google Cloud Storage.
 
@@ -6,9 +6,9 @@ Template for reading files from Pub/Sub Lite and writing them to Google Cloud St
 
 * `pubsublite.to.gcs.input.subscription.url`: PubSubLite Input Subscription Url
 * `pubsublite.to.gcs.write.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
-* `pubsublite.to.gcs.output.location`: GCS Location to put Output Files (format: `gs://BUCKET/...`)
-* `pubsublite.to.gcs.checkpoint.location`: GCS Checkpoint Folder Location
-* `pubsublite.to.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json) (Defaults to json)
+* `pubsublite.to.gcs.output.location`: Cloud Storage Location to put Output Files (format: `gs://BUCKET/...`)
+* `pubsublite.to.gcs.checkpoint.location`: Cloud Storage Checkpoint Folder Location
+* `pubsublite.to.gcs.output.format`: Cloud Storage Output File Format (one of: avro,parquet,csv,json) (Defaults to json)
 * `pubsublite.to.gcs.timeout`: Time for which the subscription will be read (measured in seconds)
 * `pubsublite.to.gcs.processing.time`: Time at which the query will be triggered to process input data (measured in seconds) (format: `"1 second"`)
 
