@@ -1,4 +1,4 @@
-## 1. Snowflake To GCS
+## 1. Snowflake To Cloud Storage
 
 General Execution:
 
@@ -57,17 +57,17 @@ snowflake.gcs.table=
 # Optional property: Snowflake select query
 snowflake.gcs.query=
 
-# GCS output location. Format: gs://<bucket-name>/<dir>
+# Cloud Storage output location. Format: gs://<bucket-name>/<dir>
 snowflake.gcs.output.location=
 
-# GCS ouput file format. Accepted values: csv, avro, orc, json or parquet
+# Cloud Storage ouput file format. Accepted values: csv, avro, orc, json or parquet
 snowflake.gcs.output.format= 
 
-# Optional property: GCS ouput write mode. Accepted values: Overwrite, ErrorIfExists, Append or Ignore
+# Optional property: Cloud Storage ouput write mode. Accepted values: Overwrite, ErrorIfExists, Append or Ignore
 snowflake.gcs.output.mode=overwrite
 Note: If not specified explicitly through execution command, the default value is Overwrite.
 
-# Optional property: GCS output data partiton by column name
+# Optional property: Cloud Storage output data partiton by column name
 snowflake.gcs.output.partitionColumn=
 ```
 

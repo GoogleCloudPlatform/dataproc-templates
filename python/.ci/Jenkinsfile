@@ -462,12 +462,54 @@ pipeline {
                                     python3.8 -m venv env
 
                                     source env/bin/activate
-                                    
+     
                                     export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                    export JARS="gs://python-dataproc-templates-temp/jars/mongo-java-driver-3.9.1.jar,gs://python-dataproc-templates-temp/jars/mongo-spark-connector_2.12-2.4.0.jar"
                                     export SKIP_BUILD=true
 
                                     cd python
+
+                                    ./bin/start.sh \
+                                    -- --template=MONGOTOGCS \
+                                    --mongo.gcs.output.format="avro" \
+                                    --mongo.gcs.output.location="gs://python-dataproc-templates-temp/integration-testing/output/MONGOTOGCS" \
+                                    --mongo.gcs.output.mode="overwrite" \
+                                    --mongo.gcs.input.uri="$ENV_TEST_MONGO_DB_URI" \
+                                    --mongo.gcs.input.database="demo" \
+                                    --mongo.gcs.input.collection="analysis"'''
+                                }
+                            }
+                            stage('MONGO TO BIGQUERY') {
+                                steps{
+                                    sh '''
                                     
+                                        python3.8 -m pip install --user virtualenv    
+    
+                                        python3.8 -m venv env
+    
+                                        source env/bin/activate
+                                        
+                                        export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                        export JARS="gs://python-dataproc-templates-temp/jars/mongo-java-driver-3.9.1.jar,gs://python-dataproc-templates-temp/jars/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                        export SKIP_BUILD=true
+    
+                                        cd python
+                                        
+                                        ./bin/start.sh \
+                                        -- --template=MONGOTOBIGQUERY \
+                                        --mongo.bq.input.uri="$ENV_TEST_MONGO_DB_URI" \
+                                        --mongo.bq.input.database="demo" \
+                                        --mongo.bq.input.collection="dummyusers" \
+                                        --mongo.bq.output.dataset="dataproc_templates" \
+                                        --mongo.bq.output.table="mongotobq" \
+                                        --mongo.bq.output.mode="overwrite" \
+                                        --mongo.bq.temp.bucket.name="dataproc-templates/integration-testing/mongotobigquery"
+                                        '''
+                                }
+                            }
+                            stage('JDBC TO BIGQUERY') {
+                                steps{
+                                    sh '''
                                     ./bin/start.sh \
                                     -- --template=GCSTOGCS \
                                     --gcs.to.gcs.input.location="gs://dataproc-templates/data/avro/empavro" \

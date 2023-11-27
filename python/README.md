@@ -1,32 +1,32 @@
 ![Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build)
 ![Python Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-python&&subject=python-integration-tests)
 
-
 # Dataproc Templates (Python - PySpark)
-* [AzureBlobStorageToBigQuery](/python/dataproc_templates/azure#azure-blob-storage-to-bigquery)
-* [BigQueryToGCS](/python/dataproc_templates/bigquery#bigquery-to-gcs) (blogpost [link](https://medium.com/google-cloud/moving-data-from-bigquery-to-gcs-using-gcp-dataproc-serverless-and-pyspark-f6481b86bcd1))
-* [CassandraToBigquery](/python/dataproc_templates/cassandra#cassandra-to-bigquery)
-* [CassandraToGCS](/python/dataproc_templates/cassandra#cassandra-to-gcs) (blogpost [link](https://medium.com/google-cloud/export-data-from-cassandra-to-google-cloud-storage-using-dataproc-serverless-2569a00e17fe))
-* [GCSToBigQuery](/python/dataproc_templates/gcs#gcs-to-bigquery) (blogpost [link](https://medium.com/@ppaglilla/getting-started-with-dataproc-serverless-pyspark-templates-e32278a6a06e))
-* [GCSToBigTable](/python/dataproc_templates/gcs#gcs-to-bigtable) (blogpost [link](https://medium.com/google-cloud/pyspark-load-data-from-gcs-to-bigtable-using-gcp-dataproc-serverless-c373430fe157))
-* [GCSToGCS](/python/dataproc_templates/gcs#gcs-to-gcs---sql-transformation)(blogpost [link](https://medium.com/@ankuljain/migrate-gcs-to-gcs-using-dataproc-serverless-3b7b0f6ad6b9))
-* [GCSToJDBC](/python/dataproc_templates/gcs#gcs-to-jdbc) (blogpost [link](https://medium.com/google-cloud/import-data-from-gcs-to-jdbc-databases-using-dataproc-serverless-c7154b242430))
-* [GCSToMongo](/python/dataproc_templates/gcs#gcs-to-mongodb) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-mongodb-using-dataproc-serverless-fed58904633a))
-* [HbaseToGCS](/python/dataproc_templates/hbase#hbase-to-gcs)
-* [HiveToBigQuery](/python/dataproc_templates/hive#hive-to-bigquery) (blogpost [link](https://medium.com/google-cloud/processing-data-from-hive-to-bigquery-using-pyspark-and-dataproc-serverless-217c7cb9e4f8))
-* [HiveToGCS](/python/dataproc_templates/hive#hive-to-gcs)(blogpost [link](https://medium.com/@surjitsh/processing-large-data-tables-from-hive-to-gcs-using-pyspark-and-dataproc-serverless-35d3d16daaf))
-* [JDBCToBigQuery](/python/dataproc_templates/jdbc#3-jdbc-to-bigquery) (blogpost [link](https://medium.com/@sjlva/python-fast-export-large-database-tables-using-gcp-serverless-dataproc-bfe77a132485))
-* [JDBCToGCS](/python/dataproc_templates/jdbc#2-jdbc-to-gcs) (blogpost [link](https://medium.com/google-cloud/importing-data-from-databases-into-gcs-via-jdbc-using-dataproc-serverless-f330cb0160f0))
-* [JDBCToJDBC](/python/dataproc_templates/jdbc#1-jdbc-to-jdbc) (blogpost [link](https://medium.com/google-cloud/migrating-data-from-one-databases-into-another-via-jdbc-using-dataproc-serverless-c5336c409b18))
-* [KafkaToGCS](/python/dataproc_templates/kafka/#kafka-to-gcs)
-* [KafkaToBigQuery](/python/dataproc_templates/kafka/#kafka-to-bigquery)
-* [MongoToGCS](/python/dataproc_templates/mongo#mongo-to-gcs)(blogpost [link](https://medium.com/google-cloud/exporting-data-from-mongodb-to-gcs-buckets-using-dataproc-serverless-64830fb15b51))
-* [PubSubLiteToBigtable](/python/dataproc_templates/pubsublite#pubsublite-to-bigtable)
-* [RedshiftToGCS](/python/dataproc_templates/redshift#redshift-to-gcs)(blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
-* [S3ToBigQuery](/python/dataproc_templates/s3#amazon-s3-to-bigquery)
-* [SnowflakeToGCS](/python/dataproc_templates/snowflake#1-snowflake-to-gcs)(blogpost [link](https://medium.com/@varunikagupta96/exporting-data-from-snowflake-to-gcs-using-pyspark-on-dataproc-serverless-363d3bed551b))
-* [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery)
 
+- [AzureBlobStorageToBigQuery](/python/dataproc_templates/azure#azure-blob-storage-to-bigquery)
+- [BigQueryToGCS](/python/dataproc_templates/bigquery#bigquery-to-gcs) (blogpost [link](https://medium.com/google-cloud/moving-data-from-bigquery-to-gcs-using-gcp-dataproc-serverless-and-pyspark-f6481b86bcd1))
+- [CassandraToBigquery](/python/dataproc_templates/cassandra#cassandra-to-bigquery)
+- [CassandraToGCS](/python/dataproc_templates/cassandra#cassandra-to-gcs) (blogpost [link](https://medium.com/google-cloud/export-data-from-cassandra-to-google-cloud-storage-using-dataproc-serverless-2569a00e17fe))
+- [GCSToBigQuery](/python/dataproc_templates/gcs#gcs-to-bigquery) (blogpost [link](https://medium.com/@ppaglilla/getting-started-with-dataproc-serverless-pyspark-templates-e32278a6a06e))
+- [GCSToBigTable](/python/dataproc_templates/gcs#gcs-to-bigtable) (blogpost [link](https://medium.com/google-cloud/pyspark-load-data-from-gcs-to-bigtable-using-gcp-dataproc-serverless-c373430fe157))
+- [GCSToGCS](/python/dataproc_templates/gcs#gcs-to-gcs---sql-transformation)(blogpost [link](https://medium.com/@ankuljain/migrate-gcs-to-gcs-using-dataproc-serverless-3b7b0f6ad6b9))
+- [GCSToJDBC](/python/dataproc_templates/gcs#gcs-to-jdbc) (blogpost [link](https://medium.com/google-cloud/import-data-from-gcs-to-jdbc-databases-using-dataproc-serverless-c7154b242430))
+- [GCSToMongo](/python/dataproc_templates/gcs#gcs-to-mongodb) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-mongodb-using-dataproc-serverless-fed58904633a))
+- [HbaseToGCS](/python/dataproc_templates/hbase#hbase-to-gcs)
+- [HiveToBigQuery](/python/dataproc_templates/hive#hive-to-bigquery) (blogpost [link](https://medium.com/google-cloud/processing-data-from-hive-to-bigquery-using-pyspark-and-dataproc-serverless-217c7cb9e4f8))
+- [HiveToGCS](/python/dataproc_templates/hive#hive-to-gcs)(blogpost [link](https://medium.com/@surjitsh/processing-large-data-tables-from-hive-to-gcs-using-pyspark-and-dataproc-serverless-35d3d16daaf))
+- [JDBCToBigQuery](/python/dataproc_templates/jdbc#3-jdbc-to-bigquery) (blogpost [link](https://medium.com/@sjlva/python-fast-export-large-database-tables-using-gcp-serverless-dataproc-bfe77a132485))
+- [JDBCToGCS](/python/dataproc_templates/jdbc#2-jdbc-to-gcs) (blogpost [link](https://medium.com/google-cloud/importing-data-from-databases-into-gcs-via-jdbc-using-dataproc-serverless-f330cb0160f0))
+- [JDBCToJDBC](/python/dataproc_templates/jdbc#1-jdbc-to-jdbc) (blogpost [link](https://medium.com/google-cloud/migrating-data-from-one-databases-into-another-via-jdbc-using-dataproc-serverless-c5336c409b18))
+- [KafkaToGCS](/python/dataproc_templates/kafka/#kafka-to-gcs)
+- [KafkaToBigQuery](/python/dataproc_templates/kafka/#kafka-to-bigquery)
+- [MongoToGCS](/python/dataproc_templates/mongo#mongo-to-gcs)(blogpost [link](https://medium.com/google-cloud/exporting-data-from-mongodb-to-gcs-buckets-using-dataproc-serverless-64830fb15b51))
+- [MongoToBigQuery](/python/dataproc_templates/mongo#mongot-to-bq)
+- [PubSubLiteToBigtable](/python/dataproc_templates/pubsublite#pubsublite-to-bigtable)
+- [RedshiftToGCS](/python/dataproc_templates/redshift#redshift-to-gcs)(blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
+- [S3ToBigQuery](/python/dataproc_templates/s3#amazon-s3-to-bigquery)
+- [SnowflakeToGCS](/python/dataproc_templates/snowflake#1-snowflake-to-gcs)(blogpost [link](https://medium.com/@varunikagupta96/exporting-data-from-snowflake-to-gcs-using-pyspark-on-dataproc-serverless-363d3bed551b))
+- [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery)
 
 Dataproc Templates (Python - PySpark) supports submitting jobs to both Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark) and Dataproc Cluster using [jobs submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs/submit/pyspark)
 
@@ -34,13 +34,14 @@ Dataproc Templates (Python - PySpark) supports submitting jobs to both Dataproc 
 
 In this README, you see instructions on how to run the templates.  
 Currently, 3 options are described:
+
 - Using bin/start.sh
 - Using gcloud CLI
 - Using Vertex AI
 
 Those 3 options require you to clone this repo and start running the templates.  
 The [Dataproc Templates PyPi package](https://pypi.org/project/google-dataproc-templates) is a **4th option** to run templates from a PySpark environment directly (Dataproc or local/another).  
-Example:  
+Example:
 
 ```
 !pip3 install --user google-dataproc-templates==0.0.3
@@ -80,7 +81,7 @@ spark = SparkSession.builder \
 
 It is recommended to use a [virtual environment](https://docs.python.org/3/library/venv.html) when setting up the local environment. This setup is not required for submitting templates, only for running and developing locally.
 
-``` bash
+```bash
 # Create a virtual environment, activate it and install requirements
 mkdir venv
 python -m venv venv/
@@ -94,13 +95,13 @@ Unit tests are developed using [`pytest`](https://docs.pytest.org/en/7.1.x/).
 
 To run all unit tests, simply run pytest:
 
-``` bash
+```bash
 pytest
 ```
 
 To generate a coverage report, run the tests using coverage
 
-``` bash
+```bash
 coverage run \
   --source=dataproc_templates \
   --module pytest \
@@ -109,7 +110,6 @@ coverage run \
 
 coverage report --show-missing
 ```
-
 
 ## Running Templates
 
@@ -139,13 +139,15 @@ export CLUSTER=${DATAPROC_CLUSTER_NAME}
 ## Submitting templates
 
 A shell script is provided to:
+
 - Build the python package
 - Set Dataproc parameters based on environment variables
 - Submit the desired template to Dataproc with the provided template parameters
 
 <hr>
 
-When submitting, there are 3 types of properties/parameters for the user to provide.  
+When submitting, there are 3 types of properties/parameters for the user to provide.
+
 - **Spark properties**: Refer to this [documentation](https://cloud.google.com/dataproc-serverless/docs/concepts/properties) to see the available spark properties.
 - **Each template's specific parameters**: refer to each template's README.
 - **Common arguments**: --template_name and --log_level
@@ -183,14 +185,15 @@ It is also possible to submit jobs using the `gcloud` CLI directly. That can be 
 
 1. Building the `dataproc_templates` package into an `.egg`
 
-``` bash
+```bash
 PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
 python setup.py bdist_egg --output=${PACKAGE_EGG_FILE}
 ```
 
 2. Submitting the job
-  * The `main.py` file should be the main python script
-  * The `.egg` file for the package must be bundled using the `--py-files` flag
+
+- The `main.py` file should be the main python script
+- The `.egg` file for the package must be bundled using the `--py-files` flag
 
 ```
 gcloud dataproc batches submit pyspark \

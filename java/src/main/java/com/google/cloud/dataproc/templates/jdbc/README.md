@@ -19,7 +19,7 @@ Following databases are supported via Spark JDBC by default:
 ## Required JAR files
 
 These templates requires the JDBC jar file to be available in the Dataproc cluster.
-User has to download the required jar file and host it inside a GCS Bucket, so that it could be referred during the execution of code.
+User has to download the required jar file and host it inside a Cloud Storage Bucket, so that it could be referred during the execution of code.
 
 wget command to download JDBC jar file is as follows :-
 
@@ -40,7 +40,7 @@ wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/6.4.0.jre
 wget https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc8/21.7.0.0/ojdbc8-21.7.0.0.jar
 ```
 
-Once the jar file gets downloaded, please upload the file into a GCS Bucket and export the below variable
+Once the jar file gets downloaded, please upload the file into a Cloud Storage Bucket and export the below variable
 
 ```
 export JARS=<gcs-bucket-location-containing-jar-file>
@@ -116,7 +116,7 @@ bin/start.sh \
 --templateProperty jdbctobq.sql.upperBound=<optional-partition-end-value> \
 --templateProperty jdbctobq.sql.numPartitions=<optional-partition--number> \
 --templateProperty jdbctobq.write.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
---templateProperty jdbctobq.temp.gcs.bucket=<temp gcs bucket name>
+--templateProperty jdbctobq.temp.gcs.bucket=<temp cloud storage bucket name>
 ```
 
 **Note**: Following is example JDBC URL for MySQL database:
@@ -152,9 +152,11 @@ jdbctobq.jdbc.sessioninitstatement="BEGIN DBMS_APPLICATION_INFO.SET_MODULE('Data
 
 ***
 
-## 2. JDBC To GCS
+## 2. JDBC To Cloud Storage
 
 Note - Add dependency jars specific to database in JARS variable.
+
+
 
 Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 
@@ -232,13 +234,13 @@ Example execution:
     --templateProperty jdbctogcs.write.mode=OVERWRITE \
     --templateProperty 'jdbctogcs.sql=SELECT * FROM MyCloudSQLDB.table1'
 
-There are two optional properties as well with "JDBC to GCS" Template. Please find below the details :-
+There are two optional properties as well with "JDBC to Cloud Storage" Template. Please find below the details :-
 
 ```
 --templateProperty jdbctogcs.temp.table='temporary_view_name'
 --templateProperty jdbctogcs.temp.query='select * from global_temp.temporary_view_name'
 ```
-These properties are responsible for applying some spark sql transformations before loading data into GCS.
+These properties are responsible for applying some spark sql transformations before loading data into Cloud Storage.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
 ***
@@ -335,7 +337,7 @@ There are two optional properties as well with "JDBC to SPANNER" Template. Pleas
 --templateProperty jdbctospanner.temp.table='temporary_view_name'
 --templateProperty jdbctospanner.temp.query='select * from global_temp.temporary_view_name'
 ```
-These properties are responsible for applying some spark sql transformations before loading data into GCS.
+These properties are responsible for applying some spark sql transformations before loading data into Cloud Storage.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
 # 4. JDBC To JDBC

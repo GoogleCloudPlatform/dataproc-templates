@@ -1,13 +1,13 @@
-# Redshift To GCS
+# Redshift To Cloud Storage
 
-Template for reading data from Redshift table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
+Template for reading data from Redshift table and writing into files in Google Cloud Storage. It supports reading partition tables and supports writing in JSON, CSV, Parquet and Avro formats.
 
 # Prerequisites
 
 ## Required JAR files
 
 These templates requires the jar file to be available in the Dataproc cluster.
-User has to download the required jar file and host it inside a GCS Bucket, so that it could be referred during the execution of code.
+User has to download the required jar file and host it inside a Cloud Storage Bucket, so that it could be referred during the execution of code.
 
 * spark-redshift.jar
 ```
@@ -26,7 +26,7 @@ wget https://repo1.maven.org/maven2/com/amazon/redshift/redshift-jdbc42/2.1.0.9/
 wget https://repo1.maven.org/maven2/com/eclipsesource/minimal-json/minimal-json/0.9.5/minimal-json-0.9.5.jar
 ```
 
-Once the jar file gets downloaded, please upload the file into a GCS Bucket and export the below variable
+Once the jar file gets downloaded, please upload the file into a Cloud Storage Bucket and export the below variable
 
 ```
 export JARS=<comma-seperated-gcs-bucket-location-containing-jar-file>
@@ -71,7 +71,7 @@ redshifttogcs.input.table="employees"
 * `redshifttogcs.input.url`: Redshift JDBC input URL
 * `redshifttogcs.s3.tempdir`: S3 temporary bucket location
 * `redshifttogcs.input.table`: Redshift input table name
-* `redshifttogcs.output.location`: GCS location for output files (format: `gs://BUCKET/...`)
+* `redshifttogcs.output.location`: Cloud Storage location for output files (format: `gs://BUCKET/...`)
 * `redshifttogcs.output.format`: Output file format (one of: avro,parquet,csv,json)
 * `redshifttogcs.iam.rolearn` : IAM Role with S3 Access
 * `redshifttogcs.s3.accesskey` : AWS Access Key for S3 Access
