@@ -12,7 +12,7 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `s3.bq.input.format` : Input file format in Amazon S3 bucket (one of : avro, parquet, csv, json)
 * `s3.bq.output.dataset.name` : BigQuery dataset for the output table
 * `s3.bq.output.table.name` : BigQuery output table name
-* `s3.bq.temp.bucket.name` : Pre existing GCS bucket name where temporary files are staged
+* `s3.bq.temp.bucket.name` : Pre existing Cloud Storage bucket name where temporary files are staged
 * `s3.bq.output.mode` : (Optional) Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 
 ## Usage

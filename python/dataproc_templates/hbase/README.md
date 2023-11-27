@@ -1,4 +1,4 @@
-## Hbase To GCS
+## Hbase To Cloud Storage
 
 Template for reading files from Hbase and writing to Google Cloud Storage. It supports writing in JSON, CSV, Parquet and Avro formats.
 
@@ -49,7 +49,7 @@ Template for reading files from Hbase and writing to Google Cloud Storage. It su
 Some HBase dependencies are required to be passed when submitting the job. In order to avoid additional manual steps, startup script has **automated this process**. Just by setting **CATALOG** environment variable, script will automatically download and pass required dependency. Example: ```export CATALOG=<your-hbase-table-catalog>``` .
 Or else manual steps has to be followed as discussed below-:
 These dependencies need to be passed by using the --jars flag, or, in the case of Dataproc Templates, using the JARS environment variable.
-Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrepository.com/) and stored your GCS bucket (create one to store the dependencies).
+Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrepository.com/) and stored your Cloud Storage bucket (create one to store the dependencies).
 
 - **[Apache HBase Spark Connector](https://mvnrepository.com/artifact/org.apache.hbase.connectors.spark/hbase-spark) dependencies (already mounted in Dataproc Serverless, so you refer to them using file://):**
    - file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar
@@ -67,7 +67,7 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
 
 ## Arguments
 
-* `hbase.gcs.output.location`: GCS location for output files (format: `gs://<bucket>/...`)
+* `hbase.gcs.output.location`: Cloud Storage location for output files (format: `gs://<bucket>/...`)
 * `hbase.gcs.output.format`: Output file format (one of: avro,parquet,csv,json)
 * `hbase.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 * `hbase.gcs.catalog.json`: Catalog schema file for Hbase table

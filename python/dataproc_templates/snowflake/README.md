@@ -1,4 +1,4 @@
-## 1. Snowflake To GCS
+## 1. Snowflake To Cloud Storage
 
 Template for reading data from a Snowflake table or custom query and writing to Google Cloud Storage. It supports writing JSON, CSV, Parquet and Avro formats.
 
@@ -143,7 +143,7 @@ optional arguments:
 1. Snowflake Connector for Spark : [Maven Repo Download Link](https://mvnrepository.com/artifact/net.snowflake/spark-snowflake)
 2. Snowflake JDBC Driver : [Maven Repo Download Link](https://mvnrepository.com/artifact/net.snowflake/snowflake-jdbc) Please ensure that jdbc driver version is compatible with the snowflake-spark connector version.
 
-Download the above mentioned jars and place them in a GCS bucket.
+Download the above mentioned jars and place them in a Cloud Storage bucket.
 
 ### Example submission
 ```
