@@ -50,7 +50,35 @@ pipeline {
                                 '''
                             }
                     }
-                }
+            }
+        stage('Cluster Creation'){
+            when {
+                // Run this stage only if JOB_TYPE is not set to CLUSTER
+                expression { env.JOB_TYPE == "CLUSTER" }
+            }
+            steps{
+                sh '''
+                if gcloud dataproc clusters list --region=$REGION --project=$GCP_PROJECT | grep -q $CLUSTER; then
+                    echo "Cluster $CLUSTER already exists."
+                else
+                    echo "Cluster $CLUSTER does not exist. Creating now..."
+                    gcloud dataproc clusters create $CLUSTER \
+                    --region $REGION \
+                    --subnet $SUBNET \
+                    --no-address \
+                    --master-machine-type n1-standard-2 \
+                    --master-boot-disk-size 500 \
+                    --num-workers 2 \
+                    --worker-machine-type n1-standard-2 \
+                    --worker-boot-disk-size 500 \
+                    --image-version 2.1-debian11 \
+                    --optional-components ZOOKEEPER \
+                    --max-idle 1800s \
+                    --project $GCP_PROJECT
+                fi
+                '''
+            }
+        }
                 stage('Build'){
                     steps {
                             catchError {
@@ -68,8 +96,7 @@ pipeline {
                             }
                     }
                 }
-    
-                stage('Parallel Execution 1'){
+                    stage('Parallel Execution 1'){
                     parallel{ 
                             stage('Hive TO GCS') {
                                 steps{
@@ -225,8 +252,7 @@ pipeline {
                             } 
                     }
                 }
-    
-                stage('Parallel Execution 3'){
+                    stage('Parallel Execution 3'){
                     parallel{
                             
                             stage('GCS TO BIGQUERY') {
@@ -514,7 +540,11 @@ pipeline {
                     }  
             stage('Parallel Execution 6'){
                     parallel{
-                            stage('Hbase TO GCS (Manual)') {
+                            stage('Hbase TO GCS (Manual)') {    
+                            when {
+                                // Run this stage only if JOB_TYPE is not set to CLUSTER
+                                expression { env.JOB_TYPE != "CLUSTER" }
+                            }
                                 steps{
                                     sh '''
                                     
@@ -546,6 +576,10 @@ pipeline {
                             }
                             
                             stage('Hbase TO GCS (Automated)') {
+                                when {
+                                    // Run this stage only if JOB_TYPE is not set to CLUSTER
+                                    expression { env.JOB_TYPE != "CLUSTER" }
+                                }
                                 steps{
                                     sh '''
                                         whoami
@@ -576,6 +610,10 @@ pipeline {
                             }
 
                             stage('GCS TO Bigtable') {
+                                when {
+                                    // Run this stage only if JOB_TYPE is not set to CLUSTER
+                                    expression { env.JOB_TYPE != "CLUSTER" }
+                                }
                                     steps{
                                         sh '''
                                         
