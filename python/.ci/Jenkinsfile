@@ -1,3 +1,5 @@
+def stageRetryCount = 3
+
 pipeline {
     
     agent any
@@ -100,7 +102,7 @@ pipeline {
             parallel{ 
                 stage('Hive TO GCS') {
                     steps{
-                        retry(count: 3) {
+                        retry(count: stageRetryCount) {
                             sh '''
                             
                                 python3.8 -m pip install --user virtualenv    
