@@ -100,7 +100,8 @@ pipeline {
             parallel{ 
                 stage('Hive TO GCS') {
                     retry(count: 3) {
-                        steps{
+                    steps{
+                        retry(count: 3) {
                             sh '''
                             
                                 python3.8 -m pip install --user virtualenv    
@@ -121,7 +122,8 @@ pipeline {
                                     --hive.gcs.input.table="employee" \
                                     --hive.gcs.output.location="gs://python-dataproc-templates/hive-gcs-output" \
                                     --hive.gcs.output.format="csv" \
-                                    --hive.gcs.output.mode="overwrite"'''
+                                    --hive.gcs.output.mode="overwrite"
+                            '''
                         }
                     }
                 }  
