@@ -1,19 +1,22 @@
-![Java Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=java-build)
-![Java Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-java&&subject=java-integration-tests)
-![Python Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=python-build)
-![Python Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-python&&subject=python-integration-tests)
+![Java Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-java&&subject=build-java)
+![Java Dataproc Serverless Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-java&&subject=java-serverless-integration-tests)
+![Java Dataproc Cluster Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fcluster-integration-tests-java&&subject=java-cluster-integration-tests)
+
+
+![Python Build Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fbuild-job-python&&subject=build-python)
+![Python Dataproc Serverless Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-python&&subject=python-serverless-integration-tests)
+![Python Dataproc Cluster Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fcluster-integration-tests-python&&subject=python-cluster-integration-tests)
 
 
 # Dataproc Templates
-Dataproc templates are an effort to solve simple, but large, in-Cloud data tasks, including data import/export/backup/restore and bulk API operations. The technology under the hood which makes these operations possible is the serverless spark functionality based on [Google Cloud's Dataproc](https://cloud.google.com/dataproc/).
+Dataproc templates are designed to address various in-cloud data tasks, including data import/export/backup/restore and bulk API operations. These templates leverage the power of [Google Cloud's Dataproc](https://cloud.google.com/dataproc/), supporting both Dataproc Serverless and Dataproc clusters.
 
-Google is providing this collection of pre-implemented Dataproc templates as a reference and to provide easy customization for developers wanting to extend their functionality. (Video [Link](https://www.youtube.com/watch?v=ZQIaY0pNlmI))
+Google provides this collection of pre-implemented Dataproc templates as a reference and for easy customization. (Video [Link](https://www.youtube.com/watch?v=ZQIaY0pNlmI))
 
 [![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/editor)
 
-
 ## Dataproc Templates (Java - Spark)
-Please refer to the [Dataproc Templates (Java - Spark) README](/java)  for more information
+Please refer to the [Dataproc Templates (Java - Spark) README](/java) for more information
 
 * [BigQueryToGCS](java/src/main/java/com/google/cloud/dataproc/templates/bigquery#BigQuery-To-GCS)
 * [CassandraToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-bigquery-template)
@@ -129,7 +132,7 @@ All solutions within this repository are provided under the [Apache 2.0](https:/
 This repository and its contents are not an official Google Product.
 
 ## Contact
-Share you feedback, ideas, thoughts [feedback-form](https://forms.gle/XXCJeWeCJJ9fNLQS6)
+Share your feedback, ideas, thoughts [feedback-form](https://forms.gle/XXCJeWeCJJ9fNLQS6)
 
 Questions, issues, and comments should be directed to dataproc-templates-support-external@googlegroups.com
 
