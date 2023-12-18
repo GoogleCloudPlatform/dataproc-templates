@@ -498,4 +498,9 @@ public interface TemplateConstants {
   String TEXT_BIGQUERY_DELIMITER_OPTION = "delimiter";
   String TEXT_BIGQUERY_INFERSCHEMA_OPTION = "inferSchema";
   String TEXT_BIGQUERY_HEADER_OPTION = "header";
+
+  /** Kafka To BQ - Direct stream properties */
+  String KAFKA_BQ_CONSUMER_GROUP_ID = "kafka.bq.consumer.group.id";
+
+  String KAFKA_BQ_BATCH_INTERVAL = "kafka.bq.batch.interval";
 }

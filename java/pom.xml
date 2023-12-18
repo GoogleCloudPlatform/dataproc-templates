@@ -322,6 +322,13 @@
       <version>2.1.0</version>
     </dependency>
 
+    <!-- Spark kafka Direct stream-->
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-kafka-0-10_2.12</artifactId>
+      <version>${spark.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
