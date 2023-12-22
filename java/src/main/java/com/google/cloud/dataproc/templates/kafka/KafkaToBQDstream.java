@@ -41,10 +41,9 @@ import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 
 /**
- * Spark job to move data or/and schema from Kafka topic to BQ via spark Direct Stream. This
- * template can be configured to run in few different modes. In default mode kafka.gcs.write.mode is
- * set to "append". For detailed list of properties refer "KafkaToBQDstream Template properties"
- * section in resources/template.properties file.
+ * Spark job to move data or/and schema from Kafka topic to BQ via spark Direct Stream. For detailed
+ * list of properties refer "KafkaToBQDstream Template properties" section in
+ * resources/template.properties file.
  */
 public class KafkaToBQDstream implements BaseTemplate {
 
@@ -84,7 +83,7 @@ public class KafkaToBQDstream implements BaseTemplate {
   public void runTemplate() throws TimeoutException, SQLException, InterruptedException {
 
     SparkSession spark =
-        SparkSession.builder().appName("Kafka to GCS via Direct stream").getOrCreate();
+        SparkSession.builder().appName("Kafka to BQ via Direct stream").getOrCreate();
 
     spark.sparkContext().setLogLevel(sparkLogLevel);
 
