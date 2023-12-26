@@ -1,4 +1,4 @@
-## Executing Spanner to GCS template
+## Executing Spanner to Cloud Storage template
 
 General Execution:
 
@@ -30,7 +30,7 @@ Update`spanner.gcs.input.table.id` property as follows:
 ```
 "spanner.gcs.input.table.id=(select name, age, phone from employee where designation = 'engineer')"
 ```
-There are two optional properties as well with "Spanner to GCS" Template. Please find below the details :-
+There are two optional properties as well with "Spanner to Cloud Storage" Template. Please find below the details :-
 
 ```
 --templateProperty spanner.gcs.temp.table='temporary_view_name' 
@@ -41,7 +41,7 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 
 **NOTE** It is required to surround your custom query with parenthesis and parameter name with double quotes.
 
-## Executing Cassandra to GCS Template
+## Executing Cassandra to Cloud Storage Template
 ### General Execution
 
 ```
@@ -146,7 +146,7 @@ You can replace the ```casscon``` with your catalog name if it is passed. This i
 Make sure that either ```cassandratobq.input.query``` or both ```cassandratobq.input.keyspace``` and ```cassandratobq.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
 
 
-## Executing Redshift to GCS template
+## Executing Redshift to Cloud Storage template
 
 General Execution:
 
@@ -171,16 +171,16 @@ bin/start.sh \
 --templateProperty redshift.gcs.output.mode=<Output-GCS-Save-mode>
 ```
 
-There are two optional properties as well with "Redshift to GCS" Template. Please find below the details :-
+There are two optional properties as well with "Redshift to Cloud Storage" Template. Please find below the details :-
 
 ```
 --templateProperty redshift.gcs.temp.table='temporary_view_name' 
 --templateProperty redshift.gcs.temp.query='select * from global_temp.temporary_view_name'
 ```
-These properties are responsible for applying some spark sql transformations while loading data into GCS.
+These properties are responsible for applying some spark sql transformations while loading data into Cloud Storage.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
-## Executing Mongo to GCS template
+## Executing Mongo to Cloud Storage template
 
 Template for exporting a MongoDB Collection to files in Google Cloud Storage. It supports writing JSON, CSV, Parquet and Avro formats.
 
@@ -212,8 +212,8 @@ Arguments:
 * `templateProperty mongo.gcs.input.uri`: MongoDB Connection String as an Input URI (format: `mongodb://host_name:port_no`)
 * `templateProperty mongo.gcs.input.database`: MongoDB Database Name (format: Database_name)
 * `templateProperty mongo.gcs.input.collection`: MongoDB Input Collection Name (format: Collection_name)
-* `templateProperty mongo.gcs.output.format`: GCS Output File Format (one of: avro,parquet,csv,json)
-* `templateProperty mongo.gcs.output.location`: GCS Location to put Output Files (format: `gs://BUCKET/...`)
+* `templateProperty mongo.gcs.output.format`: Cloud Storage Output File Format (one of: avro,parquet,csv,json)
+* `templateProperty mongo.gcs.output.location`: Cloud Storage Location to put Output Files (format: `gs://BUCKET/...`)
 * `templateProperty mongo.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 
 Example Submission:

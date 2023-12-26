@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from typing import Dict, Any, Type
+
 import logging
 import sys
 
@@ -21,6 +22,7 @@ from pyspark.sql import SparkSession
 from dataproc_templates import BaseTemplate, TemplateName
 from dataproc_templates.gcs.gcs_to_jdbc import GCSToJDBCTemplate
 from dataproc_templates.mongo.mongo_to_gcs import MongoToGCSTemplate
+from dataproc_templates.mongo.mongo_to_bq import MongoToBigQueryTemplate
 from dataproc_templates.util import get_template_name, get_log_level, track_template_invocation
 from dataproc_templates.gcs.gcs_to_bigquery import GCSToBigQueryTemplate
 from dataproc_templates.gcs.gcs_to_gcs import GCSToGCSTemplate
@@ -65,6 +67,7 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.JDBCTOGCS: JDBCToGCSTemplate,
     TemplateName.JDBCTOBIGQUERY: JDBCToBigQueryTemplate,
     TemplateName.MONGOTOGCS: MongoToGCSTemplate,
+    TemplateName.MONGOTOBIGQUERY: MongoToBigQueryTemplate,
     TemplateName.SNOWFLAKETOGCS: SnowflakeToGCSTemplate,
     TemplateName.REDSHIFTTOGCS: RedshiftToGCSTemplate,
     TemplateName.CASSANDRATOBQ: CassandraToBQTemplate,
@@ -78,6 +81,7 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.PUBSUBLITETOBIGTABLE: PubSubLiteToBigtableTemplate
 
 }
+
 
 def create_spark_session(template_name: TemplateName) -> SparkSession:
     """
@@ -108,6 +112,7 @@ def create_spark_session(template_name: TemplateName) -> SparkSession:
 
     return spark
 
+
 def run_template(template_name: TemplateName) -> None:
     """
     Executes a template given it's template name.
@@ -128,7 +133,7 @@ def run_template(template_name: TemplateName) -> None:
 
     try:
         args: Dict[str, Any] = template_instance.parse_args()
-
+        
         spark: SparkSession = create_spark_session(template_name=template_name)
 
         track_template_invocation(spark=spark, template_name=template_name)

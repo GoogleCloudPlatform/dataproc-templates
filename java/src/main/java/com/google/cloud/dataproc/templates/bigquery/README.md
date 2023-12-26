@@ -1,4 +1,4 @@
-## BigQuery To GCS 
+## BigQuery To Cloud Storage 
 
 General Execution:
 
