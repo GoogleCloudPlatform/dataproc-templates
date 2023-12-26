@@ -155,15 +155,17 @@ public class KafkaToBQDstream implements BaseTemplate {
         || StringUtils.isAllBlank(bigQueryDataset)
         || StringUtils.isAllBlank(bigQueryTable)
         || StringUtils.isAllBlank(projectId)
-        || StringUtils.isAllBlank(tempGcsBucket)) {
+        || StringUtils.isAllBlank(tempGcsBucket)
+        || StringUtils.isAllBlank(kafkaGroupId)) {
       LOGGER.error(
-          "{},{},{},{},{},{} is required parameter. ",
+          "{},{},{},{},{},{},{} is required parameter. ",
           PROJECT_ID_PROP,
           KAFKA_BOOTSTRAP_SERVERS,
           KAFKA_TOPIC,
           KAFKA_BQ_DATASET,
           KAFKA_BQ_TABLE,
-          KAFKA_BQ_TEMP_GCS_BUCKET);
+          KAFKA_BQ_TEMP_GCS_BUCKET,
+          KAFKA_BQ_CONSUMER_GROUP_ID);
       throw new IllegalArgumentException(
           "Required parameters for KafkaToBQDstream not passed. "
               + "Set mandatory parameter for KafkaToBQDstream template "
@@ -171,7 +173,7 @@ public class KafkaToBQDstream implements BaseTemplate {
     }
 
     LOGGER.info(
-        "Starting Kafka to BQ spark job with following parameters:"
+        "Starting Kafka to BQ via DStream spark job with following parameters:"
             + "1. {}:{} "
             + "2. {}:{} "
             + "3. {}:{} "
@@ -179,7 +181,8 @@ public class KafkaToBQDstream implements BaseTemplate {
             + "5. {},{} "
             + "6. {},{} "
             + "7. {},{} "
-            + "8. {},{} ",
+            + "8. {},{} "
+            + "9. {},{} ",
         KAFKA_BOOTSTRAP_SERVERS,
         kafkaBootstrapServers,
         KAFKA_TOPIC,
@@ -195,6 +198,8 @@ public class KafkaToBQDstream implements BaseTemplate {
         KAFKA_BQ_TEMP_GCS_BUCKET,
         tempGcsBucket,
         KAFKA_BQ_BATCH_INTERVAL,
-        batchInterval);
+        batchInterval,
+        KAFKA_BQ_CONSUMER_GROUP_ID,
+        kafkaGroupId);
   }
 }

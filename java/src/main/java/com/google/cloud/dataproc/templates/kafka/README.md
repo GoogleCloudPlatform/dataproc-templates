@@ -57,6 +57,12 @@ kafka.bq.fail.on.dataloss=<spark-config-fail-on-dataloss>
 
 # Ouptut mode for writing data. Accepted values: 'append', 'complete', 'update'
 kafka.bq.stream.output.mode=<output-mode>
+
+# Time in seconds how long data will be collected before dispatching processing on it.
+kafka.bq.batch.interval==<kafka.bq.batch.interval>
+
+# The Group ID determines which consumers belong to which group.
+kafka.bq.consumer.group.id==<kafka.bq.consumer.group.id>
 ```
 
 ### Important properties
@@ -313,6 +319,6 @@ bin/start.sh \
 --templateProperty kafka.bq.consumer.group.id=test.group.id \
 --templateProperty kafka.bq.dataset=kafkatobq \
 --templateProperty kafka.bq.table=kafkaevents \
---templateProperty kafka.bq.temp.gcs.bucket=<gcs-bucket-name> \
---templateProperty kafka.bq.await.termination.timeout=<stream-await-termination-timeout>
+--templateProperty kafka.bq.temp.gcs.bucket=templates-demo-kafkatobq-stream \
+--templateProperty kafka.bq.await.termination.timeout=12000
 ```
