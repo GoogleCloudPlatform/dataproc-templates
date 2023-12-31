@@ -49,6 +49,7 @@ public class KafkaTOGCSDstreamTest {
     PropertyUtil.getProperties().setProperty(KAFKA_SCHEMA_URL, "");
     PropertyUtil.getProperties().setProperty(KAFKA_GCS_WRITE_MODE, "append");
     PropertyUtil.getProperties().setProperty(KAFKA_MESSAGE_FORMAT, "bytes");
+    PropertyUtil.getProperties().setProperty(KAFKA_CONSUMER_GROUP_ID, "123");
 
     kafkaTOGCSDstream = new KafkaToGCSDstream();
     assertDoesNotThrow(kafkaTOGCSDstream::validateInput);

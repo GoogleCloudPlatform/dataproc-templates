@@ -147,15 +147,17 @@ public class KafkaToGCSDstream implements BaseTemplate {
         || StringUtils.isAllBlank(gcsWriteMode)
         || StringUtils.isAllBlank(kafkaBootstrapServers)
         || StringUtils.isAllBlank(kafkaTopic)
-        || StringUtils.isAllBlank(kafkaMessageFormat)) {
+        || StringUtils.isAllBlank(kafkaMessageFormat)
+        || StringUtils.isAllBlank(kafkaGroupId)) {
       LOGGER.error(
-          "{},{},{},{},{},{} are required parameter. ",
+          "{},{},{},{},{},{},{} are required parameter. ",
           KAFKA_GCS_OUTPUT_LOCATION,
           KAFKA_GCS_OUTPUT_FORMAT,
           KAFKA_GCS_WRITE_MODE,
           KAFKA_BOOTSTRAP_SERVERS,
           KAFKA_TOPIC,
-          KAFKA_MESSAGE_FORMAT);
+          KAFKA_MESSAGE_FORMAT,
+          KAFKA_CONSUMER_GROUP_ID);
       throw new IllegalArgumentException(
           "Required parameters for KafkaTOGCSDstream not passed. "
               + "Set mandatory parameter for KafkaTOGCSDstream template "
@@ -168,7 +170,7 @@ public class KafkaToGCSDstream implements BaseTemplate {
     }
 
     LOGGER.info(
-        "Starting GCS to GCS spark job with following parameters:"
+        "Starting kafka to GCS via DStream spark job with following parameters:"
             + "1. {}:{} "
             + "2. {}:{} "
             + "3. {}:{} "
@@ -176,7 +178,8 @@ public class KafkaToGCSDstream implements BaseTemplate {
             + "5. {}:{} "
             + "6. {}:{} "
             + "7. {}:{} "
-            + "8. {}:{} ",
+            + "8. {}:{} "
+            + "9. {}:{} ",
         KAFKA_MESSAGE_FORMAT,
         kafkaMessageFormat,
         KAFKA_GCS_OUTPUT_LOCATION,
@@ -192,6 +195,8 @@ public class KafkaToGCSDstream implements BaseTemplate {
         KAFKA_BATCH_INTERVAL,
         batchInterval,
         KAFKA_SCHEMA_URL,
-        kafkaSchemaUrl);
+        kafkaSchemaUrl,
+        KAFKA_CONSUMER_GROUP_ID,
+        kafkaGroupId);
   }
 }
