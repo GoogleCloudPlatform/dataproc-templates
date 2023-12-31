@@ -905,7 +905,7 @@ pipeline {
                                   -- \
                                   --template KafkaToBQDstream \
                                   --templateProperty project.id=$GCP_PROJECT \
-                                  --templateProperty kafka.bq.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+                                  --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
                                   --templateProperty kafka.topic=integration-test \
                                   --templateProperty kafka.bq.dataset=kafkatobq \
                                   --templateProperty kafka.starting.offset=latest \
