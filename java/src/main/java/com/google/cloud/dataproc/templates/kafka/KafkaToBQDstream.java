@@ -156,16 +156,19 @@ public class KafkaToBQDstream implements BaseTemplate {
         || StringUtils.isAllBlank(bigQueryTable)
         || StringUtils.isAllBlank(projectId)
         || StringUtils.isAllBlank(tempGcsBucket)
-        || StringUtils.isAllBlank(kafkaGroupId)) {
+        || StringUtils.isAllBlank(kafkaGroupId)
+        || StringUtils.isAllBlank(bqWriteMode)) {
       LOGGER.error(
-          "{},{},{},{},{},{},{} is required parameter. ",
+          "{},{},{},{},{},{},{},{} is required parameter. ",
           PROJECT_ID_PROP,
           KAFKA_BOOTSTRAP_SERVERS,
           KAFKA_TOPIC,
           KAFKA_BQ_DATASET,
           KAFKA_BQ_TABLE,
           KAFKA_BQ_TEMP_GCS_BUCKET,
-          KAFKA_BQ_CONSUMER_GROUP_ID);
+          KAFKA_BQ_CONSUMER_GROUP_ID,
+          KAFKA_BQ_STREAM_OUTPUT_MODE);
+
       throw new IllegalArgumentException(
           "Required parameters for KafkaToBQDstream not passed. "
               + "Set mandatory parameter for KafkaToBQDstream template "
@@ -182,7 +185,8 @@ public class KafkaToBQDstream implements BaseTemplate {
             + "6. {},{} "
             + "7. {},{} "
             + "8. {},{} "
-            + "9. {},{} ",
+            + "9. {},{} "
+            + "10. {},{} ",
         KAFKA_BOOTSTRAP_SERVERS,
         kafkaBootstrapServers,
         KAFKA_TOPIC,
@@ -200,6 +204,8 @@ public class KafkaToBQDstream implements BaseTemplate {
         KAFKA_BQ_BATCH_INTERVAL,
         batchInterval,
         KAFKA_BQ_CONSUMER_GROUP_ID,
-        kafkaGroupId);
+        kafkaGroupId,
+        KAFKA_BQ_STREAM_OUTPUT_MODE,
+        bqWriteMode);
   }
 }

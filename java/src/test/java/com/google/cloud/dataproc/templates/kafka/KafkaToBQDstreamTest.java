@@ -40,6 +40,7 @@ public class KafkaToBQDstreamTest {
     PropertyUtil.getProperties().setProperty(KAFKA_BQ_TABLE, "some_value");
     PropertyUtil.getProperties().setProperty(KAFKA_BQ_TEMP_GCS_BUCKET, "some_value");
     PropertyUtil.getProperties().setProperty(KAFKA_BQ_CONSUMER_GROUP_ID, "some_value");
+    PropertyUtil.getProperties().setProperty(KAFKA_BQ_STREAM_OUTPUT_MODE, "append");
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
 
