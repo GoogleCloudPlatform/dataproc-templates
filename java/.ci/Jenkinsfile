@@ -894,6 +894,31 @@ pipeline {
                         }
                     }
                 }
+                stage('KAFKA TO BQ via Dstream'){
+                     steps {
+                         retry(count: stageRetryCount) {
+                             sh '''
+
+                                  export SKIP_BUILD=true
+                                  cd java
+                                  bin/start.sh \
+                                  -- \
+                                  --template KafkaToBQDstream \
+                                  --templateProperty project.id=$GCP_PROJECT \
+                                  --templateProperty kafka.bq.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+                                  --templateProperty kafka.topic=integration-test \
+                                  --templateProperty kafka.bq.dataset=kafkatobq \
+                                  --templateProperty kafka.starting.offset=latest \
+                                  --templateProperty kafka.bq.batch.interval=60000 \
+                                  --templateProperty kafka.bq.consumer.group.id=testgroup \
+                                  --templateProperty kafka.bq.stream.output.mode=append \
+                                  --templateProperty kafka.bq.table=integration-test \
+                                  --templateProperty kafka.bq.temp.gcs.bucket=dataproc-templates-kafkatobq \
+                                  --templateProperty kafka.bq.await.termination.timeout=60000
+                              '''
+                         }
+                     }
+                }
             }
         }
     }
