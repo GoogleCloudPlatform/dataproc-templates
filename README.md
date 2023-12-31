@@ -20,7 +20,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java) for more i
 
 * [BigQueryToGCS](java/src/main/java/com/google/cloud/dataproc/templates/bigquery#BigQuery-To-GCS)
 * [CassandraToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-bigquery-template)
-* [CassandraToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-gcs-template)
+* [CassandraToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/migrate-data-from-cassandra-to-gcs-using-java-and-dataproc-serverless-5358ef498f6b))
 * [DataplexGCStoBQ](/java/src/main//java/com/google/cloud/dataproc/templates/dataplex#dataplex-gcs-to-bigquery)(blogpost [link](https://medium.com/google-cloud/using-dataproc-serverless-to-migrate-your-dataplex-gcs-data-to-bigquery-1e47bc8de74c))
 * [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#1-gcs-to-bigquery) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-bigquery-via-spark-bq-connector-using-dataproc-serverless-25e29f84888d))
 * [GCSToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#1-gcs-to-bigquery) (blogpost [link](https://medium.com/google-cloud/load-data-from-gcs-to-bigtable-using-gcp-dataproc-serverless-5c43d773e615)) (Video [link](https://www.youtube.com/watch?v=JwO72i2nVPU))
