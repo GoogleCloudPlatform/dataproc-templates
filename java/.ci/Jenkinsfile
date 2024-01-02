@@ -919,6 +919,30 @@ pipeline {
                          }
                      }
                 }
+                stage('KAFKA TO GCS via Dstream (bytes)'){
+                     steps {
+                         retry(count: stageRetryCount) {
+                             sh '''
+
+                                  export SKIP_BUILD=true
+                                  cd java
+                                  bin/start.sh \
+                                  -- \
+                                  --template KafkaToGCSDstream \
+                                  --templateProperty project.id=$GCP_PROJECT \
+                                  --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+                                  --templateProperty kafka.topic=integration-test \
+                                  --templateProperty kafka.starting.offset=latest \
+                                  --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS/bytes \
+                                  --templateProperty kafka.gcs.batch.interval=60000 \
+                                  --templateProperty kafka.gcs.consumer.group.id=testgroupgcs \
+                                  --templateProperty kafka.gcs.write.mode=append \
+                                  --templateProperty kafka.message.format=bytes \
+                                  --templateProperty kafka.gcs.output.format=parquet
+                             '''
+                         }
+                     }
+                }
             }
         }
     }
