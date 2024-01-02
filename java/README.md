@@ -38,6 +38,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md) f
 * [TextToBigquery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#7-text-to-bigquery)
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [KafkaToBQDstream](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#4-kafka-to-bq-via-spark-direct-stream)
+* [KafkaToGCSDstream](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#5-kafka-to-gcs-via-spark-direct-stream)
 
 ...
 

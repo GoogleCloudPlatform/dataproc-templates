@@ -506,6 +506,7 @@ public interface TemplateConstants {
 
   /** Kafka To GCS - Direct stream properties */
   String KAFKA_CONSUMER_GROUP_ID = "kafka.gcs.consumer.group.id";
+
   String KAFKA_BATCH_INTERVAL = "kafka.gcs.batch.interval";
   String KAFKA_GCS_WRITE_MODE = "kafka.gcs.write.mode";
 }
