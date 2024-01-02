@@ -7,7 +7,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md) f
 
 * [BigQueryToGCS](src/main/java/com/google/cloud/dataproc/templates/bigquery#BigQuery-To-GCS)
 * [CassandraToBigQuery](src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-bigquery-template)
-* [CassandraToGCS](src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-gcs-template)
+* [CassandraToGCS](src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/migrate-data-from-cassandra-to-gcs-using-java-and-dataproc-serverless-5358ef498f6b))
 * [DataplexGCStoBQ](/java/src/main//java/com/google/cloud/dataproc/templates/dataplex#dataplex-gcs-to-bigquery) (blogpost [link](https://medium.com/google-cloud/using-dataproc-serverless-to-migrate-your-dataplex-gcs-data-to-bigquery-1e47bc8de74c))
 * [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#1-gcs-to-bigquery) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-bigquery-via-spark-bq-connector-using-dataproc-serverless-25e29f84888d))
 * [GCSToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#2-gcs-to-bigtable) (blogpost [link](https://medium.com/google-cloud/load-data-from-gcs-to-bigtable-using-gcp-dataproc-serverless-5c43d773e615)) (Video [link](https://www.youtube.com/watch?v=JwO72i2nVPU))
@@ -37,6 +37,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md) f
 * [SpannerToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-spanner-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/cloud-spanner-export-query-results-using-dataproc-serverless-6f2f65b583a4))
 * [TextToBigquery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#7-text-to-bigquery)
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
+* [KafkaToBQDstream](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#4-kafka-to-bq-via-spark-direct-stream)
 
 ...
 

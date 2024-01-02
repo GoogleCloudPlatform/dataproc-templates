@@ -34,6 +34,7 @@ import com.google.cloud.dataproc.templates.jdbc.JDBCToGCS;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToJDBC;
 import com.google.cloud.dataproc.templates.jdbc.JDBCToSpanner;
 import com.google.cloud.dataproc.templates.kafka.KafkaToBQ;
+import com.google.cloud.dataproc.templates.kafka.KafkaToBQDstream;
 import com.google.cloud.dataproc.templates.kafka.KafkaToGCS;
 import com.google.cloud.dataproc.templates.kafka.KafkaToGCSDstream;
 import com.google.cloud.dataproc.templates.kafka.KafkaToPubSub;
@@ -102,6 +103,7 @@ public class DataProcTemplate {
           .put(TemplateName.SNOWFLAKETOGCS, SnowflakeToGCS::of)
           .put(TemplateName.JDBCTOJDBC, JDBCToJDBC::of)
           .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
+          .put(TemplateName.KAFKATOBQDSTREAM, (args) -> new KafkaToBQDstream())
           .put(TemplateName.KAFKATOGCSDSTREAM, (args) -> new KafkaToGCSDstream())
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
