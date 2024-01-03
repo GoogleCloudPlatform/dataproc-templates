@@ -938,7 +938,8 @@ pipeline {
                                   --templateProperty kafka.gcs.consumer.group.id=testgroupgcs \
                                   --templateProperty kafka.gcs.write.mode=append \
                                   --templateProperty kafka.message.format=bytes \
-                                  --templateProperty kafka.gcs.output.format=parquet
+                                  --templateProperty kafka.gcs.output.format=parquet \
+                                  --templateProperty kafka.gcs.await.termination.timeout.ms=60000
                              '''
                          }
                      }

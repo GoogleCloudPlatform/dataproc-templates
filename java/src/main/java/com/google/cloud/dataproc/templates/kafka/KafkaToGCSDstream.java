@@ -61,6 +61,7 @@ public class KafkaToGCSDstream implements BaseTemplate {
   private String kafkaTopic;
   private final String sparkLogLevel;
   private final String kafkaSchemaUrl;
+  private Long kafkaAwaitTerminationTimeout;
 
   public KafkaToGCSDstream() {
 
@@ -75,6 +76,8 @@ public class KafkaToGCSDstream implements BaseTemplate {
     gcsWriteMode = getProperties().getProperty(KAFKA_GCS_WRITE_MODE);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
     kafkaSchemaUrl = getProperties().getProperty(KAFKA_SCHEMA_URL);
+    kafkaAwaitTerminationTimeout =
+        Long.valueOf(getProperties().getProperty(KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT));
   }
 
   @Override
@@ -137,7 +140,7 @@ public class KafkaToGCSDstream implements BaseTemplate {
             });
 
     ssc.start();
-    ssc.awaitTermination();
+    ssc.awaitTerminationOrTimeout(kafkaAwaitTerminationTimeout);
   }
 
   @Override
@@ -179,7 +182,8 @@ public class KafkaToGCSDstream implements BaseTemplate {
             + "6. {}:{} "
             + "7. {}:{} "
             + "8. {}:{} "
-            + "9. {}:{} ",
+            + "9. {}:{} "
+            + "10. {}:{} ",
         KAFKA_MESSAGE_FORMAT,
         kafkaMessageFormat,
         KAFKA_GCS_OUTPUT_LOCATION,
@@ -197,6 +201,8 @@ public class KafkaToGCSDstream implements BaseTemplate {
         KAFKA_SCHEMA_URL,
         kafkaSchemaUrl,
         KAFKA_CONSUMER_GROUP_ID,
-        kafkaGroupId);
+        kafkaGroupId,
+        KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT,
+        kafkaAwaitTerminationTimeout);
   }
 }
