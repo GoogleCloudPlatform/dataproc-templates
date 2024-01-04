@@ -28,9 +28,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KafkaTOGCSDstreamTest {
+public class KafkaToGCSDstreamTest {
   private KafkaToGCSDstream kafkaTOGCSDstream;
-  private static final Logger LOGGER = LoggerFactory.getLogger(KafkaTOGCSDstreamTest.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(KafkaToGCSDstreamTest.class);
 
   @BeforeEach
   void setup() {
@@ -49,7 +49,7 @@ public class KafkaTOGCSDstreamTest {
     PropertyUtil.getProperties().setProperty(KAFKA_SCHEMA_URL, "");
     PropertyUtil.getProperties().setProperty(KAFKA_GCS_WRITE_MODE, "append");
     PropertyUtil.getProperties().setProperty(KAFKA_MESSAGE_FORMAT, "bytes");
-    PropertyUtil.getProperties().setProperty(KAFKA_CONSUMER_GROUP_ID, "123");
+    PropertyUtil.getProperties().setProperty(KAFKA_GCS_CONSUMER_GROUP_ID, "123");
 
     kafkaTOGCSDstream = new KafkaToGCSDstream();
     assertDoesNotThrow(kafkaTOGCSDstream::validateInput);

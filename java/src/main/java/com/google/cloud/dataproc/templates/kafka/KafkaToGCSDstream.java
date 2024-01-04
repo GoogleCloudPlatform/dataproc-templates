@@ -71,8 +71,8 @@ public class KafkaToGCSDstream implements BaseTemplate {
     gcsOutputLocation = getProperties().getProperty(KAFKA_GCS_OUTPUT_LOCATION);
     gcsOutputFormat = getProperties().getProperty(KAFKA_GCS_OUTPUT_FORMAT);
     kafkaStartingOffsets = getProperties().getProperty(KAFKA_STARTING_OFFSET);
-    kafkaGroupId = getProperties().getProperty(KAFKA_CONSUMER_GROUP_ID);
-    batchInterval = Long.parseLong(getProperties().getProperty(KAFKA_BATCH_INTERVAL));
+    kafkaGroupId = getProperties().getProperty(KAFKA_GCS_CONSUMER_GROUP_ID);
+    batchInterval = Long.parseLong(getProperties().getProperty(KAFKA_GCS_BATCH_INTERVAL));
     gcsWriteMode = getProperties().getProperty(KAFKA_GCS_WRITE_MODE);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
     kafkaSchemaUrl = getProperties().getProperty(KAFKA_SCHEMA_URL);
@@ -160,7 +160,7 @@ public class KafkaToGCSDstream implements BaseTemplate {
           KAFKA_BOOTSTRAP_SERVERS,
           KAFKA_TOPIC,
           KAFKA_MESSAGE_FORMAT,
-          KAFKA_CONSUMER_GROUP_ID);
+          KAFKA_GCS_CONSUMER_GROUP_ID);
       throw new IllegalArgumentException(
           "Required parameters for KafkaTOGCSDstream not passed. "
               + "Set mandatory parameter for KafkaTOGCSDstream template "
@@ -169,7 +169,7 @@ public class KafkaToGCSDstream implements BaseTemplate {
 
     if (kafkaMessageFormat.equals("json") & StringUtils.isAllBlank(kafkaSchemaUrl)) {
       LOGGER.error("{} is a required parameter for JSON format messages", KAFKA_SCHEMA_URL);
-      throw new IllegalArgumentException("Required parameters for KafkaTOGCSDstream not passed.");
+      throw new IllegalArgumentException("Required parameters for KafkaToGCSDstream not passed.");
     }
 
     LOGGER.info(
@@ -196,11 +196,11 @@ public class KafkaToGCSDstream implements BaseTemplate {
         kafkaBootstrapServers,
         KAFKA_TOPIC,
         kafkaTopic,
-        KAFKA_BATCH_INTERVAL,
+        KAFKA_GCS_BATCH_INTERVAL,
         batchInterval,
         KAFKA_SCHEMA_URL,
         kafkaSchemaUrl,
-        KAFKA_CONSUMER_GROUP_ID,
+        KAFKA_GCS_CONSUMER_GROUP_ID,
         kafkaGroupId,
         KAFKA_GCS_AWAIT_TERMINATION_TIMEOUT,
         kafkaAwaitTerminationTimeout);
