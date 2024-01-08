@@ -45,6 +45,7 @@ pipeline {
 
                                     gsutil rm -r gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
+                                    gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream 2> /dev/null || true
 
                                 '''
                             }
@@ -918,6 +919,57 @@ pipeline {
                               '''
                          }
                      }
+                }
+                stage('KAFKA TO GCS via Dstream (bytes)'){
+                     steps {
+                         retry(count: stageRetryCount) {
+                             sh '''
+
+                                  export SKIP_BUILD=true
+                                  cd java
+                                  bin/start.sh \
+                                  -- \
+                                  --template KafkaToGCSDstream \
+                                  --templateProperty project.id=$GCP_PROJECT \
+                                  --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+                                  --templateProperty kafka.topic=integration-test \
+                                  --templateProperty kafka.starting.offset=latest \
+                                  --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream/bytes \
+                                  --templateProperty kafka.gcs.batch.interval=60000 \
+                                  --templateProperty kafka.gcs.consumer.group.id=testgroupgcs \
+                                  --templateProperty kafka.gcs.write.mode=append \
+                                  --templateProperty kafka.message.format=bytes \
+                                  --templateProperty kafka.gcs.output.format=parquet \
+                                  --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+                             '''
+                         }
+                     }
+                }
+                stage('KAFKA TO GCS via Dstream (json)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                 export SKIP_BUILD=true
+                                 cd java
+                                 bin/start.sh \
+                                 -- \
+                                 --template KafkaToGCSDstream \
+                                 --templateProperty project.id=$GCP_PROJECT \
+                                 --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+                                 --templateProperty kafka.topic=integration-test-json \
+                                 --templateProperty kafka.starting.offset=latest \
+                                 --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream/json \
+                                 --templateProperty kafka.gcs.batch.interval=60000 \
+                                 --templateProperty kafka.gcs.consumer.group.id=testgroupjson \
+                                 --templateProperty kafka.gcs.write.mode=append \
+                                 --templateProperty kafka.message.format=json \
+                                 --templateProperty kafka.schema.url=gs://dataproc-templates/integration-testing/schema.json \
+                                 --templateProperty kafka.gcs.output.format=parquet \
+                                 --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+                            '''
+                        }
+                    }
                 }
             }
         }
