@@ -10,7 +10,7 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `bigquery.gcs.output.location`: Cloud Storage location for output files (format: `gs://BUCKET/...`)
 * `bigquery.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 #### Optional Arguments
-* `bigquery.gcs.output.partition.column`: Partition column name to partition the final output in destination bucket'
+* `bigquery.gcs.output.partition.column`: Partition column name to partition the final output in destination bucket
 * `bigquery.gcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `bigquery.gcs.output.compression`: None
 * `bigquery.gcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type
