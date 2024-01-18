@@ -10,6 +10,7 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `bigquery.gcs.output.location`: Cloud Storage location for output files (format: `gs://BUCKET/...`)
 * `bigquery.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 #### Optional Arguments
+* `bigquery.gcs.output.partition.column`: Partition column name to partition the final output in destination bucket'
 * `bigquery.gcs.output.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `bigquery.gcs.output.compression`: None
 * `bigquery.gcs.output.dateformat`: Sets the string that indicates a date format. This applies to date type
@@ -38,6 +39,7 @@ usage: main.py [-h]
                --bigquery.gcs.output.format {avro,parquet,csv,json}
                --bigquery.gcs.output.location BIGQUERY.GCS.OUTPUT.LOCATION
                [--bigquery.gcs.output.mode {overwrite,append,ignore,errorifexists}]
+               [--bigquery.gcs.output.partition.column BIGQUERY.GCS.OUTPUT.PARTITION.COLUMN]
                [--bigquery.gcs.output.chartoescapequoteescaping BIGQUERY.GCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING]
                [--bigquery.gcs.output.compression BIGQUERY.GCS.OUTPUT.COMPRESSION]
                [--bigquery.gcs.output.dateformat BIGQUERY.GCS.OUTPUT.DATEFORMAT]
@@ -66,6 +68,8 @@ options:
                         Cloud Storage location for output files
   --bigquery.gcs.output.mode {overwrite,append,ignore,errorifexists}
                         Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+  --bigquery.gcs.output.partition.column BIGQUERY.GCS.OUTPUT.PARTITION.COLUMN
+                        Partition column name to partition the final output in destination bucket
   --bigquery.gcs.output.chartoescapequoteescaping BIGQUERY.GCS.OUTPUT.CHARTOESCAPEQUOTEESCAPING
                         Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
                         different, \0 otherwise
