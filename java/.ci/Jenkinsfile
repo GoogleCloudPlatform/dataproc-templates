@@ -134,7 +134,7 @@ pipeline {
                                   --template KafkaToBQDstream \
                                   --templateProperty project.id=$GCP_PROJECT \
                                   --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
-                                  --templateProperty kafka.topic=integration-test \
+                                  --templateProperty kafka.topic=integration-test-kafka-bq-dstream \
                                   --templateProperty kafka.bq.dataset=kafkatobq \
                                   --templateProperty kafka.starting.offset=latest \
                                   --templateProperty kafka.bq.batch.interval=60000 \
@@ -159,7 +159,7 @@ pipeline {
                                   --template KafkaToGCSDstream \
                                   --templateProperty project.id=$GCP_PROJECT \
                                   --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
-                                  --templateProperty kafka.topic=integration-test \
+                                  --templateProperty kafka.topic=integration-test-kafka-gcs-dstream \
                                   --templateProperty kafka.starting.offset=latest \
                                   --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream/bytes \
                                   --templateProperty kafka.gcs.batch.interval=60000 \
@@ -184,7 +184,7 @@ pipeline {
                                  --template KafkaToGCSDstream \
                                  --templateProperty project.id=$GCP_PROJECT \
                                  --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
-                                 --templateProperty kafka.topic=integration-test-json \
+                                 --templateProperty kafka.topic=integration-test-json-kafka-gcs-dstream \
                                  --templateProperty kafka.starting.offset=latest \
                                  --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream/json \
                                  --templateProperty kafka.gcs.batch.interval=60000 \
