@@ -89,6 +89,7 @@ pipeline {
                             sh '''
                                 gcloud dataproc batches submit spark \
                                 --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                --version="1.1" \
                                 --project="yadavaja-sandbox" \
                                 --region="us-west1" \
                                 --jars="file:///usr/lib/spark/external/spark-avro.jar,gs://python-deps-bucket/dataproc-templates-1.0-SNAPSHOT.jar" \
@@ -100,7 +101,7 @@ pipeline {
                                 --templateProperty gcs.bigquery.output.dataset="hive_to_bq_py" \
                                 --templateProperty gcs.bigquery.output.table="pq_output_using_gcs_bq_template" \
                                 --templateProperty gcs.bigquery.temp.bucket.name="python-dataproc-templates-temp-bq"
-                                
+
                             '''
                         }
                     }
