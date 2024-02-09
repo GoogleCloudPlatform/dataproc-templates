@@ -1,0 +1,133 @@
+def stageRetryCount = 3
+
+pipeline {
+    
+    agent any
+
+    environment {
+        DATAPROC_TELEPORT_WEBHOOK_URL = credentials('dataproc-teleport-webhook-url')
+
+        TEST_JDBC_URL = credentials('env-test-jdbc-url')
+
+        // GIT_BRANCH_LOCAL = sh (
+        //     script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
+        //     returnStdout: true
+        // ).trim()
+        
+        //MAVEN_HOME = "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven"
+        //PATH = "$PATH:$MAVEN_HOME/bin"
+
+        // GCS_STAGING_LOCATION = sh (script: '''
+        //     CURRENT_BRANCH=`echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'`
+        //     if [ $CURRENT_BRANCH != "main" ];then
+        //     echo "$GCS_STAGING_LOCATION/$(uuidgen)"
+        //     else
+        //     echo $GCS_STAGING_LOCATION
+        //     fi
+        //     '''.stripIndent(),
+        //     returnStdout: true
+        // ).trim()
+    }
+    stages {
+        stage('Prepare Environment'){
+            parallel{
+                // stage('Checkout') {
+                //     steps{
+                //         git branch: "${GIT_BRANCH_LOCAL}", changelog: false, poll: false, url: 'https://github.com/GoogleCloudPlatform/dataproc-templates/'    
+                //     }
+                // }
+                stage('Reset Resources'){
+                    steps {
+                            catchError {
+                                sh '''
+                                    gcloud pubsub topics publish pubsubtogcsv3 --message='{"Name": "NewMsg", "Age": 10}'
+                                    gcloud pubsub topics publish test-pubsub-bq --message='{"Name": "Another message", "Age": 18}' 2> /dev/null || true
+
+                                    gsutil rm -r gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
+                                    gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
+                                    gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream 2> /dev/null || true
+
+                                '''
+                            }
+                    }
+                }
+                stage('Cluster Creation'){
+                    when {
+                        // Run this stage only if JOB_TYPE is not set to CLUSTER
+                        expression { env.JOB_TYPE == "CLUSTER" }
+                    }
+                    steps{
+                        sh '''
+                            if gcloud dataproc clusters list --region=$REGION --project=$GCP_PROJECT | grep -q $CLUSTER; then
+                                echo "Cluster $CLUSTER already exists."
+                            else
+                                echo "Cluster $CLUSTER does not exist. Creating now..."
+                                gcloud dataproc clusters create $CLUSTER \
+                                --region $REGION \
+                                --subnet $SUBNET \
+                                --no-address \
+                                --master-machine-type n1-standard-2 \
+                                --master-boot-disk-size 500 \
+                                --num-workers 2 \
+                                --worker-machine-type n1-standard-2 \
+                                --worker-boot-disk-size 500 \
+                                --image-version 2.1-debian11 \
+                                --optional-components ZOOKEEPER \
+                                --max-idle 1800s \
+                                --project $GCP_PROJECT
+                            fi
+                        '''
+                    }
+                }
+            }
+        }   
+        stage('Parallel Execution 1'){
+            parallel{
+                stage('GCS TO BIGQUERY') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                --project="yadavaja-sandbox" \
+                                --region="us-west1" \
+                                --jars="file:///usr/lib/spark/external/spark-avro.jar,gs://python-deps-bucket/dataproc-templates-1.0-SNAPSHOT.jar" \
+                                --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                -- --template GCSTOBIGQUERY \
+                                --templateProperty project.id="yadavaja-sandbox" \
+                                --templateProperty gcs.bigquery.input.location="gs://python-dataproc-templates/gcs-bq-input/date_partition=2022-01-28/" \
+                                --templateProperty gcs.bigquery.input.format="parquet" \
+                                --templateProperty gcs.bigquery.output.dataset="hive_to_bq_py" \
+                                --templateProperty gcs.bigquery.output.table="pq_output_using_gcs_bq_template" \
+                                --templateProperty gcs.bigquery.temp.bucket.name="python-dataproc-templates-temp-bq"
+                                
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always{
+            script {
+                if( env.GIT_BRANCH_LOCAL == 'main' ){
+                    googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
+    				message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
+    				notifyFailure: 'true',
+    				notifyAborted: 'true',
+    				notifyUnstable: 'true',
+    				notifyNotBuilt: 'true',
+    				notifyBackToNormal: 'true'
+                }
+            }
+            catchError {
+                sh '''
+                if [ $GIT_BRANCH_LOCAL != "main" ];then
+                    gsutil rm -r $GCS_STAGING_LOCATION 2> /dev/null || true
+                fi
+                '''
+            }
+        }
+    }
+}
