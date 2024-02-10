@@ -62,6 +62,13 @@ class BigQueryToGCSTemplate(BaseTemplate):
             help='Cloud Storage location for output files'
         )
         parser.add_argument(
+            f'--{constants.BQ_GCS_OUTPUT_PARTITION_COLUMN}',
+            dest=constants.BQ_GCS_OUTPUT_PARTITION_COLUMN,
+            required=False,
+            default="",
+            help='Partition column name to partition the final output in destination bucket'
+        )
+        parser.add_argument(
             f'--{constants.BQ_GCS_OUTPUT_MODE}',
             dest=constants.BQ_GCS_OUTPUT_MODE,
             required=False,
@@ -92,6 +99,7 @@ class BigQueryToGCSTemplate(BaseTemplate):
         # Arguments
         input_table: str = args[constants.BQ_GCS_INPUT_TABLE]
         output_mode: str = args[constants.BQ_GCS_OUTPUT_MODE]
+        output_partition_column: str = args[constants.BQ_GCS_OUTPUT_PARTITION_COLUMN]
 
         output_location: str = args[constants.BQ_GCS_OUTPUT_LOCATION]
         output_format: str = args[constants.BQ_GCS_OUTPUT_FORMAT]
@@ -108,5 +116,8 @@ class BigQueryToGCSTemplate(BaseTemplate):
             .load()
 
         # Write
-        writer: DataFrameWriter = input_data.write.mode(output_mode)
+        if output_partition_column:
+            writer: DataFrameWriter = input_data.write.mode(output_mode).partitionBy(output_partition_column)
+        else:
+            writer: DataFrameWriter = input_data.write.mode(output_mode)
         persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "bigquery.gcs.output.")

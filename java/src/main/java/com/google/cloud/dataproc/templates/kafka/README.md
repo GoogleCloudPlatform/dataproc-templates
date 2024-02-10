@@ -57,6 +57,12 @@ kafka.bq.fail.on.dataloss=<spark-config-fail-on-dataloss>
 
 # Ouptut mode for writing data. Accepted values: 'append', 'complete', 'update'
 kafka.bq.stream.output.mode=<output-mode>
+
+# Time in seconds how long data will be collected before dispatching processing on it.
+kafka.bq.batch.interval==<kafka.bq.batch.interval>
+
+# The Group ID determines which consumers belong to which group.
+kafka.bq.consumer.group.id==<kafka.bq.consumer.group.id>
 ```
 
 ### Important properties
@@ -237,4 +243,156 @@ bin/start.sh \
 --templateProperty kafka.pubsub.output.projectId=$GCP_PROJECT \
 --templateProperty kafka.pubsub.starting.offset=earliest \
 --templateProperty kafka.pubsub.await.termination.timeout=120000
+```
+
+## 4. Kafka To BQ via spark Direct stream
+
+General Execution:
+
+```
+GCP_PROJECT=<gcp-project-id> \
+REGION=<region>  \
+SUBNET=<subnet>   \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+HISTORY_SERVER_CLUSTER=<history-server> \
+bin/start.sh \
+-- --template KafkaToBQDstream \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty kafka.bootstrap.servers=<kafka broker list> \
+--templateProperty kafka.topic=<kafka topic name> \
+--templateProperty kafka.starting.offset=<latest | earliest> \
+--templateProperty kafka.bq.stream.output.mode=<Append | Overwrite | ErrorIfExists | Ignore> \
+--templateProperty kafka.gcs.batch.interval=<Batch interval of the stream> \
+--templateProperty kafka.gcs.consumer.group.id=<Consumer group id for the kafka topic> \
+--templateProperty kafka.bq.dataset=kafkatobq \
+--templateProperty kafka.bq.table=kafkaevents \
+--templateProperty kafka.bq.temp.gcs.bucket=<gcs-bucket-name> \
+--templateProperty kafka.bq.await.termination.timeout=<stream-await-termination-timeout>
+```
+
+### Configurable Parameters
+Following properties are avaialble in commandline or [template.properties](../../../../../../../resources/template.properties) file:
+
+```
+# Kafka to BigQuery via Dstream
+
+# Kafka servers
+kafka.bootstrap.servers=<kafka broker list>
+
+# Kafka topics
+kafka.topic=<kafka topic names>
+
+# BigQuery output dataset
+kafka.bq.dataset=<output bigquery dataset>
+
+# BigQuery output table
+kafka.bq.table=<output bigquery table>
+
+# Cloud Storage bucket name, for storing temporary files
+kafka.bq.temp.gcs.bucket=<cloud storage bucket name>
+
+# Offset to start reading from. Accepted values: "earliest", "latest" 
+kafka.bq.starting.offset=<kafka-starting-offset>
+
+# Waits for specified time in ms before termination of stream
+kafka.bq.await.termination.timeout=<stream-await-termination-timeout>
+
+# Ouptut mode for writing data. Accepted values: 'overwrite', 'append', 'ignore', 'error', 'errorifexists', 'default'
+kafka.bq.stream.output.mode=<output-mode> default value : append
+```
+
+### Example submission
+```
+export GCP_PROJECT=dp-test-project
+export REGION=us-central1
+export SUBNET=test-subnet
+export GCS_STAGING_LOCATION=gs://dp-templates-kakfatogcs/stg
+export GCS_OUTPUT_PATH=gs://dp-templates-kafkatogcs/output/
+bin/start.sh \
+-- --template KafkaToBQDstream \
+--templateProperty project.id=$GCP_PROJECT \
+--templateProperty kafka.bootstrap.servers=102.1.1.20:9092 \
+--templateProperty kafka.topic=events-topic \
+--templateProperty kafka.starting.offset=latest \
+--templateProperty kafka.bq.stream.output.mode=Append \
+--templateProperty kafka.bq.batch.interval=60000 \
+--templateProperty kafka.bq.consumer.group.id=test.group.id \
+--templateProperty kafka.bq.dataset=kafkatobq \
+--templateProperty kafka.bq.table=kafkaevents \
+--templateProperty kafka.bq.temp.gcs.bucket=templates-demo-kafkatobq-stream \
+--templateProperty kafka.bq.await.termination.timeout=12000
+```
+
+
+## 5. Kafka To GCS via spark Direct stream
+
+General Execution:
+
+```
+GCP_PROJECT=<gcp-project-id> \
+REGION=<region>  \
+SUBNET=<subnet>   \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+HISTORY_SERVER_CLUSTER=<history-server> \
+bin/start.sh \
+-- --template KafkaTOGCSDstream \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty kafka.gcs.output.location=<gcs path> \
+--templateProperty kafka.bootstrap.servers=<kafka broker list> \
+--templateProperty kafka.topic=<kafka topic name> \
+--templateProperty kafka.starting.offset=<latest | earliest> \
+--templateProperty kafka.message.format=<bytes | json> 
+--templateProperty kafka.gcs.write.mode=<Append | Overwrite | ErrorIfExists | Ignore> \
+--templateProperty kafka.gcs.batch.interval=<Batch interval of the stream> \
+--templateProperty kafka.gcs.consumer.group.id=<Consumer group id for the kafka topic> \
+--templateProperty kafka.gcs.output.format=<json | parquet> \
+--templateProperty kafka.schema.url=<json schema url>
+```
+
+### Configurable Parameters
+Following properties are avaialble in commandline or [template.properties](../../../../../../../resources/template.properties) file:
+
+```
+# Kafka to GCS via Dstream
+
+# Kafka servers
+kafka.bootstrap.servers=<kafka broker list>
+
+# Kafka topics
+kafka.topic=<kafka topic names>
+
+# Offset to start reading from. Accepted values: "earliest", "latest" 
+kafka.starting.offset=<kafka-starting-offset>
+
+# Time in seconds how long data will be collected before dispatching processing on it.
+kafka.gcs.batch.interval==<kafka.gcs.batch.interval>
+
+# Ouptut mode for writing data. Accepted values: 'overwrite', 'append', 'ignore', 'error', 'errorifexists', 'default'
+kafka.gcs.write.mode=<output-mode> default value : append
+
+# Schema url is required if 'kafka.message.format' is set to json
+kafka.schema.url==<kafka.schema.url>
+```
+
+
+### Example submission
+```
+export GCP_PROJECT=dp-test-project
+export REGION=us-central1
+export SUBNET=test-subnet
+export GCS_STAGING_LOCATION=gs://dp-templates-kakfatogcs/stg
+export GCS_OUTPUT_PATH=gs://dp-templates-kafkatogcs/output/
+bin/start.sh \
+-- --template KafkaTOGCSDstream \
+--templateProperty project.id=$GCP_PROJECT \
+--templateProperty kafka.bootstrap.servers=102.1.1.20:9092 \
+--templateProperty kafka.topic=events-topic \
+--templateProperty kafka.starting.offset=latest \
+--templateProperty kafka.message.format=bytes \
+--templateProperty kafka.gcs.output.location=$GCS_OUTPUT_PATH \
+--templateProperty kafka.gcs.output.format=parquet \
+--templateProperty kafka.gcs.write.mode=Append \
+--templateProperty kafka.gcs.batch.interval=60000 \
+--templateProperty kafka.gcs.consumer.group.id=test.group.id \
+--templateProperty kafka.schema.url=gs://dp-templates-kafkatogcs/schema/msg_schema.json
 ```

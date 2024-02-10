@@ -334,6 +334,7 @@ GCS_BT_HBASE_CATALOG_JSON = "gcs.bigtable.hbase.catalog.json"
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
 BQ_GCS_OUTPUT_FORMAT = "bigquery.gcs.output.format"
 BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode"
+BQ_GCS_OUTPUT_PARTITION_COLUMN = "bigquery.gcs.output.partition.column"
 BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location"
 
 # GCS To GCS with transformations
