@@ -110,14 +110,6 @@ public class JDBCToBigQuery implements BaseTemplate {
       jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), jdbcSQLNumPartitions);
     }
 
-    if (StringUtils.isNotBlank(jdbcFetchSize)) {
-      jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), jdbcFetchSize);
-    }
-
-    if (StringUtils.isNotBlank(jdbcSessionInitStatement)) {
-      jdbcProperties.put(JDBCOptions.JDBC_SESSION_INIT_STATEMENT(), jdbcSessionInitStatement);
-    }
-
     /** Read Input data from JDBC table */
     Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
 
@@ -163,5 +155,78 @@ public class JDBCToBigQuery implements BaseTemplate {
               + "Set all the sql partitioning parameters together"
               + "in resources/conf/template.properties file or at runtime. Refer to jdbc/README.md for more instructions.");
     }
+    LOGGER.info(
+        "Starting JDBC to BigQuery spark job with following parameters:"
+            + "1. {}:{}"
+            + "2. {}:{}"
+            + "3. {}:{}"
+            + "4. {}:{}"
+            + "5. {}:{}"
+            + "6. {}:{}"
+            + "7. {}:{}"
+            + "8. {}:{}",
+        JDBC_TO_BQ_BIGQUERY_LOCATION,
+        bqLocation,
+        JDBC_TO_BQ_WRITE_MODE,
+        bqWriteMode,
+        JDBC_TO_BQ_SQL,
+        jdbcSQL,
+        JDBC_TO_BQ_JDBC_FETCH_SIZE,
+        jdbcFetchSize,
+        JDBC_TO_BQ_JDBC_SESSION_INIT_STATEMENT,
+        jdbcSessionInitStatement,
+        JDBC_TO_BQ_SQL_PARTITION_COLUMN,
+        jdbcSQLPartitionColumn,
+        JDBC_TO_BQ_SQL_UPPER_BOUND,
+        jdbcSQLUpperBound,
+        JDBC_TO_BQ_SQL_LOWER_BOUND,
+        jdbcSQLLowerBound,
+        JDBC_TO_BQ_SQL_NUM_PARTITIONS,
+        jdbcSQLNumPartitions);
+
+    SparkSession spark = null;
+
+    spark =
+        SparkSession.builder()
+            .appName("Spark JDBCToBigQuery Job")
+            .config("temporaryGcsBucket", temporaryGcsBucket)
+            .enableHiveSupport()
+            .getOrCreate();
+
+    HashMap<String, String> jdbcProperties = new HashMap<>();
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_DRIVER_CLASS(), jdbcDriverClassName);
+    jdbcProperties.put(JDBCOptions.JDBC_URL(), jdbcURL);
+    jdbcProperties.put(JDBCOptions.JDBC_TABLE_NAME(), jdbcSQL);
+
+    if (StringUtils.isNotBlank(concatedPartitionProps)) {
+      jdbcProperties.put(JDBCOptions.JDBC_PARTITION_COLUMN(), jdbcSQLPartitionColumn);
+      jdbcProperties.put(JDBCOptions.JDBC_UPPER_BOUND(), jdbcSQLUpperBound);
+      jdbcProperties.put(JDBCOptions.JDBC_LOWER_BOUND(), jdbcSQLLowerBound);
+      jdbcProperties.put(JDBCOptions.JDBC_NUM_PARTITIONS(), jdbcSQLNumPartitions);
+    }
+
+    if (StringUtils.isNotBlank(jdbcFetchSize)) {
+      jdbcProperties.put(JDBCOptions.JDBC_BATCH_FETCH_SIZE(), jdbcFetchSize);
+    }
+
+    if (StringUtils.isNotBlank(jdbcSessionInitStatement)) {
+      jdbcProperties.put(JDBCOptions.JDBC_SESSION_INIT_STATEMENT(), jdbcSessionInitStatement);
+    }
+
+    /** Read Input data from JDBC table */
+    Dataset<Row> inputData = spark.read().format("jdbc").options(jdbcProperties).load();
+
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
+
+    inputData
+        .write()
+        .mode(bqWriteMode)
+        .format("com.google.cloud.spark.bigquery")
+        .option("table", bqLocation)
+        .save();
   }
 }
