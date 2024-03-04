@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.5.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.4.0-beta...v0.5.0-beta) (2024-03-04)
+
+
+### Features
+
+* Add arguments to run MongToBQ template ([f0bfd4c](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/f0bfd4cfa5948f943a8b2626e9bf592b126a1da0))
+* Add integration test for MongoToBigQuery Python template ([906e26f](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/906e26f694bac71661ca1dcc982cfe0e6b4a504f))
+* Add preliminary documentation for MongoToBigQuery template ([99146fa](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/99146fa7d02b1beaac9e0b5cfe18e3621f7109b9))
+* added support for running python templates on an existing dataproc cluster ([bed0d62](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/bed0d622ec17cebd6af64d774e266a2a164afc3a))
+* Built java KafkaToBQDstream template for Dataproc ([220cd0e](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/220cd0e114e27e701d09afd7122646af463a1901))
+* Built Java KafkaToGCSDstream template for Dataproc ([d6c6232](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/d6c6232a6754dd8f99dcc1e5e1505900e4b5a797))
+* Connection to MongoDB established via the template ([8ba9e18](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/8ba9e1892973b3093aafa0c8f32bab216ef9cf24))
+* Initialise MongoToBQ Python template test file ([1345dfc](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/1345dfc0a2840d0b507c03ce0fb6c738f5a15d5b))
+* MongoToBigQuery template initiated with config to run from main.py ([4178ec9](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/4178ec9507b7bbda7a05a5d6d12eeac4126c0f3f))
+* MongoToBQ template writes successfully to destination table ([21f44ba](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/21f44ba0835b8c8da2dc97d87817ebc17dd88251))
+
+
+### Bug Fixes
+
+* Add Usage details of MongoToBQ template to README ([3cb21f1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3cb21f168250727d4fa8557ec31ac9eb7980226e))
+* integration test for MongoToBigQuery python ([955db75](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/955db75b050424e92c4092f1dd801b4742fe5433))
+* removed dupliacted code for read and write operations ([b3e8f98](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/b3e8f988f624665b142203cd66923a0154e07ea9))
+* removed dupliacted code for read and write operations ([9d5c5f4](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/9d5c5f4669d84697e87138b322229aa056880124))
+
+
+### Documentation
+
+* Add recommended jar versions to run MongoToGCS template ([#871](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/871)) ([3d1b729](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3d1b72982ddb9facab58b4f2088a44db53c1833b))
+* added instructions for CLUSTER mode in python README ([ecb2955](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/ecb29552aeef8d611fb7f45b7b48e92a24003aed))
+* added jenkins status for python cluster integration tests ([73967d1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/73967d1512908e0db302a3f01f4b69cec6728179))
+* added links in README for KafkaToBQDstream template ([bfc076c](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/bfc076c88f19a7502660973d4092b179c6fd20d0))
+* added links in README for KafkaToGCSDstream template ([8def950](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/8def950cab65d490c6ef79061be96b24f0c8da70))
+* adding blog for cassandra to gcs ([5ab3342](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5ab33427ae668d34f6503070f59a3037facc0647))
+* adding blog for cassandra to gcs ([47a478b](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/47a478be9f93a6903c4910624923c1047571b7fa))
+* adding blogpost for MongodbToGCS ([2960f71](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/2960f717dc5c5afe3641e92da5117d2e5cc36be1))
+* adding updates in a few python templates ([1597691](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/15976914625ef3b3a250161c5ad4061b66cb7e83))
+* clarify serverless and cluster modes, improve template execution instructions ([7a8e529](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7a8e5293feea60cf4136e141d0605533ba7af9d7))
+* enhanced instructions for better clarity on serverless and cluster modes ([5ae1999](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5ae1999b486f1736f1cb4993dcac1505d0e622b0))
+* hyperlink blog guide for RedshiftToGCS java template ([4dcf0a5](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/4dcf0a57868885221b3097c0419f7b0843da60cc))
+* updating GCS to Cloud Storage in Java templates ([426b772](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/426b7729dd96ad22412b111f891e3ab999978de1))
+* updating gcs to cloud storage in remaining python templates ([ec9925b](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/ec9925bc73367457174726b4d0258fbb1a5bca64))
+
 ## [0.4.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.3.0-beta...v0.4.0-beta) (2023-08-07)
 
 
