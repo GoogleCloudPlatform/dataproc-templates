@@ -909,7 +909,7 @@ pipeline {
                                   --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
                                   --templateProperty kafka.topic=integration-test-kafka-bq-dstream \
                                   --templateProperty kafka.bq.dataset=kafkatobq \
-                                  --templateProperty kafka.starting.offset=latest \
+                                  --templateProperty kafka.starting.offset=earliest \
                                   --templateProperty kafka.bq.batch.interval=60000 \
                                   --templateProperty kafka.bq.consumer.group.id=testgroup \
                                   --templateProperty kafka.bq.stream.output.mode=append \
@@ -933,7 +933,7 @@ pipeline {
                                   --templateProperty project.id=$GCP_PROJECT \
                                   --templateProperty kafka.bootstrap.servers=$ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
                                   --templateProperty kafka.topic=integration-test-kafka-gcs-dstream \
-                                  --templateProperty kafka.starting.offset=latest \
+                                  --templateProperty kafka.starting.offset=earliest \
                                   --templateProperty kafka.gcs.output.location=gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream/bytes \
                                   --templateProperty kafka.gcs.batch.interval=60000 \
                                   --templateProperty kafka.gcs.consumer.group.id=testgroupgcs \
