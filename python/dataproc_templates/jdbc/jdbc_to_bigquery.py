@@ -21,6 +21,7 @@ from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
+import dataproc_templates.util.secret_manager as secret_manager
 
 __all__ = ['JDBCToBigQueryTemplate']
 
@@ -144,7 +145,13 @@ class JDBCToBigQueryTemplate(BaseTemplate):
         big_query_dataset: str = args[constants.JDBC_BQ_OUTPUT_DATASET]
         big_query_table: str = args[constants.JDBC_BQ_OUTPUT_TABLE]
         bq_temp_bucket: str = args[constants.JDBC_BQ_LD_TEMP_BUCKET_NAME]
-        input_jdbc_url: str = args[constants.JDBC_BQ_INPUT_URL]
+        
+        #check if secret is passed or the connection string in URL
+        if str(args[constants.JDBC_BQ_INPUT_URL]).startswith("{") and str(args[constants.JDBC_BQ_INPUT_URL]).endswith("}"):
+            input_jdbc_url: str = secret_manager.access_secret_version(args[constants.JDBC_BQ_INPUT_URL])
+        else:
+            input_jdbc_url: str = args[constants.JDBC_BQ_INPUT_URL]
+
         input_jdbc_driver: str = args[constants.JDBC_BQ_INPUT_DRIVER]
         input_jdbc_table: str = args[constants.JDBC_BQ_INPUT_TABLE]
         input_jdbc_partitioncolumn: str = args[constants.JDBC_BQ_INPUT_PARTITIONCOLUMN]

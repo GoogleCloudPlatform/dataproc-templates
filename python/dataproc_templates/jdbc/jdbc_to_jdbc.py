@@ -21,6 +21,7 @@ from pyspark.sql import SparkSession, DataFrame
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
+import dataproc_templates.util.secret_manager as secret_manager
 
 __all__ = ['JDBCToJDBCTemplate']
 
@@ -172,7 +173,13 @@ class JDBCToJDBCTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_jdbc_url: str = args[constants.JDBCTOJDBC_INPUT_URL]
+        #check if secret is passed or the connection string in URL
+        if str(args[constants.JDBCTOJDBC_INPUT_URL]).startswith("{") and str(args[constants.JDBCTOJDBC_INPUT_URL]).endswith("}"):
+            input_jdbc_url: str = secret_manager.access_secret_version(args[constants.JDBCTOJDBC_INPUT_URL])
+        else:
+            input_jdbc_url: str = args[constants.JDBCTOJDBC_INPUT_URL]
+
+        
         input_jdbc_driver: str = args[constants.JDBCTOJDBC_INPUT_DRIVER]
         input_jdbc_table: str = args[constants.JDBCTOJDBC_INPUT_TABLE]
         input_jdbc_partitioncolumn: str = args[constants.JDBCTOJDBC_INPUT_PARTITIONCOLUMN]
@@ -181,7 +188,13 @@ class JDBCToJDBCTemplate(BaseTemplate):
         jdbc_numpartitions: str = args[constants.JDBCTOJDBC_NUMPARTITIONS]
         input_jdbc_fetchsize: int = args[constants.JDBCTOJDBC_INPUT_FETCHSIZE]
         input_jdbc_sessioninitstatement: str = args[constants.JDBCTOJDBC_SESSIONINITSTATEMENT]
-        output_jdbc_url: str = args[constants.JDBCTOJDBC_OUTPUT_URL]
+
+        #check if secret is passed or the connection string in URL
+        if str(args[constants.JDBCTOJDBC_OUTPUT_URL]).startswith("{") and str(args[constants.JDBCTOJDBC_OUTPUT_URL]).endswith("}"):
+            output_jdbc_url: str = secret_manager.access_secret_version(args[constants.JDBCTOJDBC_OUTPUT_URL])
+        else:
+            output_jdbc_url: str = args[constants.JDBCTOJDBC_OUTPUT_URL]
+
         output_jdbc_driver: str = args[constants.JDBCTOJDBC_OUTPUT_DRIVER]
         output_jdbc_table: str = args[constants.JDBCTOJDBC_OUTPUT_TABLE]
         output_jdbc_create_table_option: str = args[constants.JDBCTOJDBC_OUTPUT_CREATE_TABLE_OPTION]
