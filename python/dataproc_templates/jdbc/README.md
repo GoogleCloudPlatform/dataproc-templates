@@ -56,6 +56,8 @@ jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;passwor
 ```
 jdbc:oracle:thin:@//<hostname>:<port>/<dbservice>?user=<username>&password=<password>
 ```
+* Note:
+JDBC Connections now allow use of secrets created in Cloud Secret Manager. Users can create secret containing jdbc URL in secret manager and use it in the template by providing the secret enclosed under { }. Example {JDBCtoBigqueryConnURL} where 'JDBCtoBigqueryConnURL' is the secret name.
 
 ## Other important properties
 
@@ -95,10 +97,10 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 
 ## Arguments
 
-* `jdbctojdbc.input.url`: JDBC input URL
+* `jdbctojdbc.input.url`: JDBC input URL OR secret name enclosed inside { } 
 * `jdbctojdbc.input.driver`: JDBC input driver name
 * `jdbctojdbc.input.table`: JDBC input table name
-* `jdbctojdbc.output.url`: JDBC output url. When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the URL to provide a significant performance improvement over the default setting.
+* `jdbctojdbc.output.url`: JDBC output url. When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the URL to provide a significant performance improvement over the default setting. OR provide secret name enclosed inside { }
 * `jdbctojdbc.output.driver`: JDBC output driver name
 * `jdbctojdbc.output.table`: JDBC output table name
 * `jdbctojdbc.input.partitioncolumn` (Optional): JDBC input table partition column name
@@ -159,7 +161,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 
 ./bin/start.sh \
 -- --template=JDBCTOJDBC \
---jdbctojdbc.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
+--jdbctojdbc.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" OR "{jdbc_url_secret_name}" \
 --jdbctojdbc.input.driver=<jdbc-driver-class-name> \
 --jdbctojdbc.input.table=<input table name or subquery with where clause filter> \
 --jdbctojdbc.input.partitioncolumn=<optional-partition-column-name> \
@@ -315,7 +317,7 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 Template for reading data from JDBC table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
 
 ## Arguments
-* `jdbctogcs.input.url`: JDBC input URL
+* `jdbctogcs.input.url`: JDBC input URL OR secret name enclosed inside { }
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
 * `jdbctogcs.input.sql.query`: JDBC input SQL query
@@ -467,7 +469,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 
 ./bin/start.sh \
 -- --template=JDBCTOGCS \
---jdbctogcs.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
+--jdbctogcs.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" OR "{jdbc_url_secret_name}" \
 --jdbctogcs.input.driver=<jdbc-driver-class-name> \
 --jdbctogcs.input.table=<input table name or subquery with where clause filter> \
 --jdbctogcs.input.partitioncolumn=<optional-partition-column-name> \
@@ -586,7 +588,7 @@ This template requires the JBDC jar files mentioned, and also the [Spark BigQuer
 
 ## Arguments
 
-* `jdbc.bigquery.input.url`: JDBC input URL
+* `jdbc.bigquery.input.url`: JDBC input URL OR secret name enclosed inside { }
 * `jdbc.bigquery.input.driver`: JDBC input driver name
 * `jdbc.bigquery.input.table`: JDBC input table name
 * `jdbc.bigquery.input.partitioncolumn` (Optional): JDBC input table partition column name
@@ -671,7 +673,7 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 
 ./bin/start.sh \
 -- --template=JDBCTOBIGQUERY \
---jdbc.bigquery.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
+--jdbc.bigquery.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" OR "{jdbc_url_secret_name}" \
 --jdbc.bigquery.input.driver="<jdbc-driver-class-name>" \
 --jdbc.bigquery.input.table="input table name or subquery with where clause filter" \
 --jdbc.bigquery.output.mode="<append|overwrite|ignore|errorifexists>" \
