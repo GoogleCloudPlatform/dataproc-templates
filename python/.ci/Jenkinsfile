@@ -259,7 +259,7 @@ pipeline {
                                 
                                 ./bin/start.sh \
                                 -- --template=JDBCTOJDBC \
-                                --jdbctojdbc.input.url="jdbctobqconn" \
+                                --jdbctojdbc.input.url.secret="jdbctobqconn" \
                                 --jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
                                 --jdbctojdbc.input.table="demo" \
                                 --jdbctojdbc.output.url="jdbctobqconn" \
