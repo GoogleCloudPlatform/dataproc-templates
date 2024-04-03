@@ -244,6 +244,33 @@ pipeline {
                         }
                     }
                 } 
+                stage('JDBC To JDBC with secrets') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                            
+                                source env/bin/activate
+                                
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export JARS="gs://datproc_template_nk/jars/mysql-connector-java-8.0.29.jar,gs://datproc_template_nk/jars/postgresql-42.2.6.jar,gs://datproc_template_nk/jars/mssql-jdbc-6.4.0.jre8.jar"
+                                export SKIP_BUILD=true
+                                
+                                cd python
+                                
+                                ./bin/start.sh \
+                                -- --template=JDBCTOJDBC \
+                                --jdbctojdbc.input.url="jdbctobqconn" \
+                                --jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+                                --jdbctojdbc.input.table="demo" \
+                                --jdbctojdbc.output.url="jdbctobqconn" \
+                                --jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+                                --jdbctojdbc.output.table="demo_out" \
+                                --jdbctojdbc.output.mode="overwrite" \
+                                --jdbctojdbc.output.batch.size="1000"
+                            '''
+                        }
+                    }
+                }
                 stage('GCS To MONGO') {
                     steps{
                         retry(count: stageRetryCount) {
@@ -451,6 +478,36 @@ pipeline {
                         }
                     }
                 }
+                stage('JDBC TO BIGQUERY with secret') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                            
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
+
+                                source env/bin/activate
+                                
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                export SKIP_BUILD=true
+
+                                cd python
+                                
+                                ./bin/start.sh \
+                                -- --template=JDBCTOBIGQUERY \
+                                --jdbc.bigquery.input.url.secret="jdbctobqconn" \
+                                --jdbc.bigquery.input.driver="com.mysql.jdbc.Driver" \
+                                --jdbc.bigquery.input.table="test.demo" \
+                                --jdbc.bigquery.output.mode="overwrite" \
+                                --jdbc.bigquery.output.dataset="dataproc_templates" \
+                                --jdbc.bigquery.output.table="jdbctobq" \
+                                --jdbc.bigquery.temp.bucket.name="dataproc-templates/integration-testing/jdbctobq"
+                            '''
+                        }
+                    }
+                }
                 stage('Cassandra TO GCS') {
                     steps{
                         retry(count: stageRetryCount) {
@@ -504,6 +561,35 @@ pipeline {
                                 ./bin/start.sh \
                                 -- --template=JDBCTOGCS \
                                 --jdbctogcs.input.url="$TEST_JDBC_URL" \
+                                --jdbctogcs.input.driver="com.mysql.jdbc.Driver" \
+                                --jdbctogcs.input.table="test.demo" \
+                                --jdbctogcs.output.location="gs://dataproc-templates/integration-testing/jdbctogcs/output-python" \
+                                --jdbctogcs.output.mode="overwrite" \
+                                --jdbctogcs.output.format="csv"
+                            '''
+                        }
+                    }
+                }
+                stage('JDBC TO GCS with secret') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                            
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
+
+                                source env/bin/activate
+                                
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar"
+                                export SKIP_BUILD=true
+
+                                cd python
+                                
+                                ./bin/start.sh \
+                                -- --template=JDBCTOGCS \
+                                --jdbctogcs.input.url.secret="jdbctobqconn" \
                                 --jdbctogcs.input.driver="com.mysql.jdbc.Driver" \
                                 --jdbctogcs.input.table="test.demo" \
                                 --jdbctogcs.output.location="gs://dataproc-templates/integration-testing/jdbctogcs/output-python" \
