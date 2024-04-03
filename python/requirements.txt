@@ -6,3 +6,4 @@ mock>=4.0.3
 pytest-cov>=3.0.0
 coverage>=6.3.2
 google-cloud-bigtable>=2.17.0
+google-cloud-secret-manager>=2.18.0
