@@ -290,7 +290,7 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format.assert_called_with(
             constants.FORMAT_JDBC)
         mock_spark_session.read.format().options.assert_called_with(**{
-            constants.JDBC_URL: "jdbctobqconn",
+            constants.JDBC_URL: "url",
             constants.JDBC_DRIVER: "driver",
             constants.JDBC_TABLE: "table1",
             constants.JDBC_NUMPARTITIONS: "10",

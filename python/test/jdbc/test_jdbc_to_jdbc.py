@@ -211,7 +211,7 @@ class TestJDBCToJDBCTemplate:
         jdbc_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         _, kwargs = mock_spark_session.read.format().options.call_args
-        assert (constants.JDBC_URL, "jdbctobqconn") in kwargs.items()
+        assert (constants.JDBC_URL, "url") in kwargs.items()
         assert (constants.JDBC_DRIVER, "driver") in kwargs.items()
         assert (constants.JDBC_TABLE, "table1") in kwargs.items()
         assert (constants.JDBC_NUMPARTITIONS, "10") in kwargs.items()
