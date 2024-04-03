@@ -19,6 +19,7 @@ import pyspark
 
 from dataproc_templates.jdbc.jdbc_to_gcs import JDBCToGCSTemplate
 import dataproc_templates.util.template_constants as constants
+import dataproc_templates.util.secret_manager as secret_manager
 
 
 class TestJDBCToGCSTemplate:
@@ -290,7 +291,7 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.read.format.assert_called_with(
             constants.FORMAT_JDBC)
         mock_spark_session.read.format().options.assert_called_with(**{
-            constants.JDBC_URL: "url",
+            constants.JDBC_URL: secret_manager.access_secret_version("jdbctobqconn"),
             constants.JDBC_DRIVER: "driver",
             constants.JDBC_TABLE: "table1",
             constants.JDBC_NUMPARTITIONS: "10",

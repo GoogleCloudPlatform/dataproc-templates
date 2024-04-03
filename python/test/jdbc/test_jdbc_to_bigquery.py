@@ -19,6 +19,7 @@ import pyspark
 
 from dataproc_templates.jdbc.jdbc_to_bigquery import JDBCToBigQueryTemplate
 import dataproc_templates.util.template_constants as constants
+import dataproc_templates.util.secret_manager as secret_manager
 
 
 class TestJDBCToBigQueryTemplate:
@@ -195,7 +196,7 @@ class TestJDBCToBigQueryTemplate:
         jdbc_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
         mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
         _, kwargs = mock_spark_session.read.format().options.call_args
-        assert (constants.JDBC_URL, "jdbctobqconn") in kwargs.items()
+        assert (constants.JDBC_URL, secret_manager.access_secret_version("jdbctobqconn")) in kwargs.items()
         assert (constants.JDBC_DRIVER, "driver") in kwargs.items()
         assert (constants.JDBC_TABLE, "table1") in kwargs.items()
         assert (constants.JDBC_NUMPARTITIONS, "10") in kwargs.items()
