@@ -172,3 +172,43 @@ class TestJDBCToBigQueryTemplate:
         ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.format(
         ).option().option().mode().save.assert_called_once()
+
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_pass_args5(self, mock_spark_session):
+        """Tests JDBCToBigQueryTemplate pass args without partition column with secret"""
+
+        jdbc_to_bigquery_template = JDBCToBigQueryTemplate()
+
+        mock_parsed_args = jdbc_to_bigquery_template.parse_args(
+            ["--jdbc.bigquery.input.url.secret=jdbctobqconn",
+             "--jdbc.bigquery.input.driver=driver",
+             "--jdbc.bigquery.input.table=table1",
+             "--jdbc.bigquery.input.fetchsize=100",
+             "--jdbc.bigquery.input.sessioninitstatement=EXEC some_setup_sql('data4')",
+             "--jdbc.bigquery.output.mode=append",
+             "--jdbc.bigquery.output.dataset=bq-dataset",
+             "--jdbc.bigquery.output.table=bq-table",
+             "--jdbc.bigquery.temp.bucket.name=bucket-name",
+             ])
+        mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
+        jdbc_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
+        mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
+        _, kwargs = mock_spark_session.read.format().options.call_args
+        assert (constants.JDBC_URL, "jdbctobqconn") in kwargs.items()
+        assert (constants.JDBC_DRIVER, "driver") in kwargs.items()
+        assert (constants.JDBC_TABLE, "table1") in kwargs.items()
+        assert (constants.JDBC_NUMPARTITIONS, "10") in kwargs.items()
+        assert (constants.JDBC_FETCHSIZE, 100) in kwargs.items()
+        assert (constants.JDBC_SESSIONINITSTATEMENT, "EXEC some_setup_sql('data4')") in kwargs.items()
+        mock_spark_session.read.format().options().load()
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
+            constants.FORMAT_BIGQUERY)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option.assert_called_once_with(constants.TABLE, "bq-dataset.bq-table")
+        mock_spark_session.dataframe.DataFrame.write.format().option(
+        ).option.assert_called_once_with(constants.JDBC_BQ_TEMP_BUCKET, "bucket-name")
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        mock_spark_session.dataframe.DataFrame.write.format(
+        ).option().option().mode().save.assert_called_once()
