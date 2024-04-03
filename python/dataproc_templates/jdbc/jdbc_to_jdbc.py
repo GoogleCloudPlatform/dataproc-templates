@@ -35,12 +35,22 @@ class JDBCToJDBCTemplate(BaseTemplate):
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
-        parser.add_argument(
+        groupinput = parser.add_mutually_exclusive_group(required=True)
+        groupinput.add_argument(
             f'--{constants.JDBCTOJDBC_INPUT_URL}',
             dest=constants.JDBCTOJDBC_INPUT_URL,
-            required=True,
+            required=False,
+            default="",
             help='JDBC input URL'
         )
+        groupinput.add_argument(
+            f'--{constants.JDBCTOJDBC_INPUT_URL_SECRET}',
+            dest=constants.JDBCTOJDBC_INPUT_URL_SECRET,
+            required=False,
+            default="",
+            help='JDBC input URL secret name'
+        )
+        
         parser.add_argument(
             f'--{constants.JDBCTOJDBC_INPUT_DRIVER}',
             dest=constants.JDBCTOJDBC_INPUT_DRIVER,
@@ -96,12 +106,23 @@ class JDBCToJDBCTemplate(BaseTemplate):
             default="",
             help='Custom SQL statement to execute in each reader database session'
         )
-        parser.add_argument(
+
+        groupoutput = parser.add_mutually_exclusive_group(required=True)
+        groupoutput.add_argument(
             f'--{constants.JDBCTOJDBC_OUTPUT_URL}',
             dest=constants.JDBCTOJDBC_OUTPUT_URL,
-            required=True,
-            help='JDBC output URL'
+            required=False,
+            default="",
+            help='JDBC input URL'
         )
+        groupoutput.add_argument(
+            f'--{constants.JDBCTOJDBC_OUTPUT_URL_SECRET}',
+            dest=constants.JDBCTOJDBC_OUTPUT_URL_SECRET,
+            required=False,
+            default="",
+            help='JDBC input URL secret name'
+        )
+       
         parser.add_argument(
             f'--{constants.JDBCTOJDBC_OUTPUT_DRIVER}',
             dest=constants.JDBCTOJDBC_OUTPUT_DRIVER,
@@ -174,12 +195,11 @@ class JDBCToJDBCTemplate(BaseTemplate):
 
         # Arguments
         #check if secret is passed or the connection string in URL
-        if str(args[constants.JDBCTOJDBC_INPUT_URL]).startswith("{") and str(args[constants.JDBCTOJDBC_INPUT_URL]).endswith("}"):
-            input_jdbc_url: str = secret_manager.access_secret_version(args[constants.JDBCTOJDBC_INPUT_URL])
+        if str(args[constants.JDBCTOJDBC_INPUT_URL])=="":
+            input_jdbc_url: str = secret_manager.access_secret_version(args[constants.JDBCTOJDBC_INPUT_URL_SECRET])
         else:
             input_jdbc_url: str = args[constants.JDBCTOJDBC_INPUT_URL]
 
-        
         input_jdbc_driver: str = args[constants.JDBCTOJDBC_INPUT_DRIVER]
         input_jdbc_table: str = args[constants.JDBCTOJDBC_INPUT_TABLE]
         input_jdbc_partitioncolumn: str = args[constants.JDBCTOJDBC_INPUT_PARTITIONCOLUMN]
@@ -190,10 +210,11 @@ class JDBCToJDBCTemplate(BaseTemplate):
         input_jdbc_sessioninitstatement: str = args[constants.JDBCTOJDBC_SESSIONINITSTATEMENT]
 
         #check if secret is passed or the connection string in URL
-        if str(args[constants.JDBCTOJDBC_OUTPUT_URL]).startswith("{") and str(args[constants.JDBCTOJDBC_OUTPUT_URL]).endswith("}"):
-            output_jdbc_url: str = secret_manager.access_secret_version(args[constants.JDBCTOJDBC_OUTPUT_URL])
+        if str(args[constants.JDBCTOJDBC_OUTPUT_URL])=="":
+            output_jdbc_url: str = secret_manager.access_secret_version(args[constants.JDBCTOJDBC_OUTPUT_URL_SECRET])
         else:
             output_jdbc_url: str = args[constants.JDBCTOJDBC_OUTPUT_URL]
+        
 
         output_jdbc_driver: str = args[constants.JDBCTOJDBC_OUTPUT_DRIVER]
         output_jdbc_table: str = args[constants.JDBCTOJDBC_OUTPUT_TABLE]

@@ -1,5 +1,7 @@
 from google.cloud import secretmanager
 import google.auth
+import re
+
 
 def access_secret_version(secret_id, version_id="latest"):
     """
@@ -19,9 +21,11 @@ def access_secret_version(secret_id, version_id="latest"):
     # Create the Secret Manager client.
     client = secretmanager.SecretManagerServiceClient()
 
-    secret_id = sanitize_secret(secret_id)
-    # Build the resource name of the secret version.
-    name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+    if validate_secret(secret_id):
+        # Build the resource name of the secret version.
+        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+    else:
+        raise Exception("Invalid secret name. Secret name should not contain any other special symbol except - or _")
 
     # Access the secret version.
     response = client.access_secret_version(name=name)
@@ -30,6 +34,9 @@ def access_secret_version(secret_id, version_id="latest"):
     return response.payload.data.decode('UTF-8')
 
 
-def sanitize_secret(secret_id):
-    secret_id = secret_id.replace('{', '').replace('}', '')
-    return secret_id
+def validate_secret(secret_id):
+    valid_secret = True
+    regexp = re.compile('[^0-9a-zA-Z_-]+')
+    if regexp.search(secret_id):
+        valid_secret = False
+    return valid_secret
