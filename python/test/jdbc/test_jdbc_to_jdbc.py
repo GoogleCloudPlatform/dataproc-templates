@@ -220,7 +220,7 @@ class TestJDBCToJDBCTemplate:
         assert constants.JDBC_SESSIONINITSTATEMENT not in kwargs
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(constants.FORMAT_JDBC)
-        mock_spark_session.dataframe.DataFrame.write.format().option.assert_called_once_with(constants.JDBC_URL, "url")
+        mock_spark_session.dataframe.DataFrame.write.format().option.assert_called_once_with(constants.JDBC_URL, secret_manager.access_secret_version("jdbctobqconn"))
         mock_spark_session.dataframe.DataFrame.write.format().option().option.assert_called_once_with(constants.JDBC_DRIVER, "driver")
         mock_spark_session.dataframe.DataFrame.write.format().option().option().option.assert_called_once_with(constants.JDBC_TABLE, "table2")
         mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option.assert_called_once_with(constants.JDBC_CREATE_TABLE_OPTIONS, "")
