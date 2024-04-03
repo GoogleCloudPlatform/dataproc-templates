@@ -262,7 +262,7 @@ pipeline {
                                 --jdbctojdbc.input.url.secret="jdbctobqconn" \
                                 --jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
                                 --jdbctojdbc.input.table="demo" \
-                                --jdbctojdbc.output.url="jdbctobqconn" \
+                                --jdbctojdbc.output.url.secret="jdbctobqconn" \
                                 --jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
                                 --jdbctojdbc.output.table="demo_out" \
                                 --jdbctojdbc.output.mode="overwrite" \
