@@ -32,6 +32,11 @@ RUN mkdir -p "${SPARK_EXTRA_JARS_DIR}"
 # hbase-site.xml to be altered based to set server connection details, ref-: src/main/resources/hbase-site.xml
 COPY ${HBASE_SITE_NAME} /etc/hbase/conf/
 
+# Use mamba to install packages quickly.
+RUN ${CONDA_HOME}/bin/conda install mamba -n base -c conda-forge \
+    && ${CONDA_HOME}/bin/mamba install \
+    google-cloud-secret-manager
+
 # (Required) Create the 'spark' group/user.
 # The GID and UID must be 1099. Home directory is required.
 RUN groupadd -g 1099 spark
