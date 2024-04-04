@@ -1,4 +1,4 @@
-from google.cloud import secretmanager
+from google.cloud import secretmanager_v1 as secretmanager
 import google.auth
 import re
 
