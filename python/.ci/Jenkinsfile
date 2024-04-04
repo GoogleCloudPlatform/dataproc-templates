@@ -669,7 +669,9 @@ pipeline {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                            
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
@@ -708,6 +710,11 @@ pipeline {
                             sh '''
                                 whoami
                                 sudo su
+
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
+
                                 source env/bin/activate
 
                                 gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
