@@ -56,8 +56,8 @@ jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;passwor
 ```
 jdbc:oracle:thin:@//<hostname>:<port>/<dbservice>?user=<username>&password=<password>
 ```
-* Note:
-JDBC Connections now allow use of secrets created in Cloud Secret Manager. Please check the examples in respective sections.
+* **Note:
+JDBC Connections now allow use of secrets created in Cloud Secret Manager. Please check the examples in respective sections.**
 
 ## Other important properties
 
@@ -99,10 +99,12 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 
 * `jdbctojdbc.input.url`: JDBC input URL 
 * `jdbctojdbc.input.url.secret`: JDBC input URL secret. Pass the secret name as created in Cloud Secret Manager.
+> Note: Please provide only one of the above two properties (`jdbctojdbc.input.url` or `jdbctojdbc.input.url.secret`)
 * `jdbctojdbc.input.driver`: JDBC input driver name
 * `jdbctojdbc.input.table`: JDBC input table name
 * `jdbctojdbc.output.url`: JDBC output url. When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the URL to provide a significant performance improvement over the default setting. OR provide secret name enclosed inside { }
 * `jdbctojdbc.output.url.secret`: JDBC output URL secret. Pass the secret name as created in Cloud Secret Manager.
+> Note: Please provide only one of the above two properties (`jdbctojdbc.output.url` or `jdbctojdbc.output.url.secret`)
 * `jdbctojdbc.output.driver`: JDBC output driver name
 * `jdbctojdbc.output.table`: JDBC output table name
 * `jdbctojdbc.input.partitioncolumn` (Optional): JDBC input table partition column name
@@ -361,6 +363,7 @@ Template for reading data from JDBC table and writing into files in Google Cloud
 ## Arguments
 * `jdbctogcs.input.url`: JDBC input URL 
 * `jdbctogcs.input.url.secret`: JDBC input URL secret. Pass the secret name as created in Cloud Secret Manager.
+> Note: Please provide only one of the above two properties (`jdbctogcs.input.url` or `jdbctogcs.input.url.secret`)
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
 * `jdbctogcs.input.sql.query`: JDBC input SQL query
@@ -669,6 +672,7 @@ This template requires the JBDC jar files mentioned, and also the [Spark BigQuer
 
 * `jdbc.bigquery.input.url`: JDBC input URL
 * `jdbc.bigquery.input.url.secret`: JDBC input URL secret. Pass the secret name as created in Cloud Secret Manager.
+> Note: Please provide only one of the above two properties (`jdbc.bigquery.input.url` or `jdbc.bigquery.input.url.secret`)
 * `jdbc.bigquery.input.driver`: JDBC input driver name
 * `jdbc.bigquery.input.table`: JDBC input table name
 * `jdbc.bigquery.input.partitioncolumn` (Optional): JDBC input table partition column name
