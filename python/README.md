@@ -28,6 +28,9 @@
 - [S3ToBigQuery](/python/dataproc_templates/s3#amazon-s3-to-bigquery)
 - [SnowflakeToGCS](/python/dataproc_templates/snowflake#1-snowflake-to-gcs)(blogpost [link](https://medium.com/@varunikagupta96/exporting-data-from-snowflake-to-gcs-using-pyspark-on-dataproc-serverless-363d3bed551b))
 - [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery)
+- [ElasticsearchToGCS](/python/dataproc_templates/elasticsearch#elasticsearch-to-gcs)
+- [ElasticsearchToBQ](/python/dataproc_templates/elasticsearch#elasticsearch-to-bq)
+- [ElasticsearchToBigtable](/python/dataproc_templates/elasticsearch#elasticsearch-to-bigtable)
 
 Dataproc Templates (Python - PySpark) supports submitting jobs to both Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark) and Dataproc Cluster using [jobs submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs/submit/pyspark)
 

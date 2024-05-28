@@ -80,6 +80,8 @@ CSV_UNESCAPEDQUOTEHANDLING = "unescapedQuoteHandling"
 FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
 TABLE = "table"
 TEMP_GCS_BUCKET = "temporaryGcsBucket"
+WRITE_METHOD="writeMethod"
+DIRECT="direct"
 MONGO_URL = "spark.mongodb.output.uri"
 MONGO_INPUT_URI = "spark.mongodb.input.uri"
 MONGO_DATABASE = "database"
@@ -101,6 +103,55 @@ PUBSUBLITE_SUBSCRIPTION = "pubsublite.subscription"
 PUBSUBLITE_CHECKPOINT_LOCATION = "checkpointLocation"
 STREAM_PATH = "path"
 STREAM_CHECKPOINT_LOCATION = "checkpointLocation"
+FORMAT_ELASTICSEARCH="org.elasticsearch.hadoop.mr.EsInputFormat"
+ELASTICSEARCH_KEY_CLASS="org.apache.hadoop.io.NullWritable"
+ELASTICSEARCH_VALUE_CLASS="org.elasticsearch.hadoop.mr.LinkedMapWritable"
+ES_NODES_PATH_PREFIX="es.nodes.path.prefix"
+ES_QUERY="es.query"
+ES_OUTPUT_JSON="es.output.json"
+ES_MAPPING_DATE_RICH="es.mapping.date.rich"
+ES_READ_FIELD_INCLUDE="es.read.field.include"
+ES_READ_FIELD_EXCLUDE="es.read.field.exclude"
+ES_READ_FIELD_AS_ARRAY_INCLUDE="es.read.field.as.array.include"
+ES_READ_FIELD_AS_ARRAY_EXCLUDE="es.read.field.as.array.exclude"
+ES_READ_METADATA="es.read.metadata"
+ES_READ_METADATA_FIELD="es.read.metadata.field"
+ES_READ_METADATA_VERSION="es.read.metadata.version"
+ES_INDEX_READ_MISSING_AS_EMPTY="es.index.read.missing.as.empty"
+ES_FIELD_READ_EMPTY_AS_NULL="es.field.read.empty.as.null"
+ES_READ_SHARD_PREFERENCE="es.read.shard.preference"
+ES_READ_SOURCE_FILTER="es.read.source.filter"
+ES_INDEX_READ_ALLOW_RED_STATUS="es.index.read.allow.red.status"
+ES_INPUT_MAX_DOC_PER_PARTITION="es.input.max.docs.per.partition"
+ES_NODES_DISCOVERY="es.nodes.discovery"
+ES_NODES_CLIENT_ONLY="es.nodes.client.only"
+ES_NODES_DATA_ONLY="es.nodes.data.only"
+ES_NODES_WAN_ONLY="es.nodes.wan.only"
+ES_HTTP_TIMEOUT="es.http.timeout"
+ES_HTTP_RETRIES="es.http.retries"
+ES_SCROLL_KEEPALIVE="es.scroll.keepalive"
+ES_SCROLL_SIZE="es.scroll.size"
+ES_SCROLL_LIMIT="es.scroll.limit"
+ES_ACTION_HEART_BEAT_LEAD="es.action.heart.beat.lead"
+ES_NET_HTTP_HEADER_AUTHORIZATION="es.net.http.header.Authorization"
+ES_NET_SSL="es.net.ssl"
+ES_NET_SSL_CERT_ALLOW_SELF_SIGNED="es.net.ssl.cert.allow.self.signed"
+ES_NET_SSL_PROTOCOL="es.net.ssl.protocol"
+ES_NET_PROXY_HTTP_HOST="es.net.proxy.http.host"
+ES_NET_PROXY_HTTP_PORT="es.net.proxy.http.port"
+ES_NET_PROXY_HTTP_USER="es.net.proxy.http.user"
+ES_NET_PROXY_HTTP_PASS="es.net.proxy.http.pass"
+ES_NET_PROXY_HTTP_USE_SYSTEM_PROPS="es.net.proxy.http.use.system.props"
+ES_NET_PROXY_HTTPS_HOST="es.net.proxy.https.host"
+ES_NET_PROXY_HTTPS_PORT="es.net.proxy.https.port"
+ES_NET_PROXY_HTTPS_USER="es.net.proxy.https.user"
+ES_NET_PROXY_HTTPS_PASS="es.net.proxy.https.pass"
+ES_NET_PROXY_HTTPS_USE_SYSTEM_PROPS="es.net.proxy.https.use.system.props"
+ES_NET_PROXY_SOCKS_HOST="es.net.proxy.socks.host"
+ES_NET_PROXY_SOCKS_PORT="es.net.proxy.socks.port"
+ES_NET_PROXY_SOCKS_USER="es.net.proxy.socks.user"
+ES_NET_PROXY_SOCKS_PASS="es.net.proxy.socks.pass"
+ES_NET_PROXY_SOCKS_USE_SYSTEM_PROPS="es.net.proxy.socks.use.system.props"
 
 OPTION_DEFAULT = "default"
 OPTION_HELP = "help"
@@ -261,6 +312,192 @@ def get_csv_output_spark_options(prefix):
     spark_options = {(prefix + _).lower(): _ for _ in output_options}
     return spark_options
 
+# A map of Elasticsearch Spark Connector related options.
+ES_SPARK_READER_OPTIONS = {
+    ES_NODES_PATH_PREFIX:
+        {OPTION_HELP: "Prefix to add to all requests made to Elasticsearch"},
+    ES_QUERY:
+        {OPTION_HELP: "Holds the query used for reading data from the specified Index"},
+    ES_OUTPUT_JSON:
+        {OPTION_DEFAULT: "true",
+         OPTION_HELP: "Whether the output from the connector should be in JSON format or not"},
+    ES_MAPPING_DATE_RICH:
+        {OPTION_DEFAULT: "true",
+         OPTION_HELP: "Whether to create a rich Date like object for Date fields in Elasticsearch "
+                      "or returned them as primitives (String or long)"},
+    ES_READ_FIELD_INCLUDE:
+        {OPTION_HELP: "Fields/properties that are parsed and considered when reading the "
+                      "documents from Elasticsearch. By default empty meaning all fields are considered"},
+    ES_READ_FIELD_EXCLUDE:
+        {OPTION_HELP: "Fields/properties that are discarded when reading the documents from Elasticsearch."
+                      " By default empty meaning no fields are excluded"},
+    ES_READ_FIELD_AS_ARRAY_INCLUDE:
+        {OPTION_HELP: "Fields/properties that should be considered as arrays/lists"},
+    ES_READ_FIELD_AS_ARRAY_EXCLUDE:
+        {OPTION_HELP: "Fields/properties that should not be considered as arrays/lists"},
+    ES_READ_METADATA:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether to include the document metadata (such as id and version)"
+                      " in the results or not"},
+    ES_READ_METADATA_FIELD:
+        {OPTION_DEFAULT: "_metadata",
+         OPTION_HELP: "The field under which the metadata information is placed"},
+    ES_READ_METADATA_VERSION:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether to include the document version in the returned metadata"},
+    ES_INDEX_READ_MISSING_AS_EMPTY:
+        {OPTION_DEFAULT: "no",
+         OPTION_HELP: "Whether elasticsearch-hadoop will allow reading of non existing indices"},
+    ES_FIELD_READ_EMPTY_AS_NULL:
+        {OPTION_DEFAULT: "yes",
+         OPTION_HELP: "Whether elasticsearch-hadoop will treat empty fields as null"},
+    ES_READ_SHARD_PREFERENCE:
+        {OPTION_HELP: "The value to use for the shard preference of a search operation when executing "
+                      "a scroll query"},
+    ES_READ_SOURCE_FILTER:
+        {OPTION_HELP: "Comma delimited string of field names that you would like to return from Elasticsearch"},
+    ES_INDEX_READ_ALLOW_RED_STATUS:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Fetch the data from the available shards and ignore the shards which are not reachable"},
+    ES_INPUT_MAX_DOC_PER_PARTITION:
+        {OPTION_HELP: "The maximum number of documents per input partition."
+                      " This property is a suggestion, not a guarantee"},
+    ES_NODES_DISCOVERY:
+        {OPTION_DEFAULT: "true",
+         OPTION_HELP: "Whether to discover the nodes within the Elasticsearch cluster or "
+                      "only to use the ones given in es.nodes for metadata queries"},
+    ES_NODES_CLIENT_ONLY:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether to use Elasticsearch client nodes (or load-balancers)"},
+    ES_NODES_DATA_ONLY:
+        {OPTION_DEFAULT: "true",
+         OPTION_HELP: "Whether to use Elasticsearch data nodes only"},
+    ES_NODES_WAN_ONLY:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether the connector is used against an Elasticsearch instance in "
+                      "a cloud/restricted environment over the WAN, such as Amazon Web Services, "
+                      "in order to use this option set es.gcs.input.es.nodes.discovery and "
+                      "es.gcs.input.es.nodes.data.only to false"},
+    ES_HTTP_TIMEOUT:
+        {OPTION_DEFAULT: "1m",
+         OPTION_HELP: "Timeout for HTTP/REST connections to Elasticsearch"},
+    ES_HTTP_RETRIES:
+        {OPTION_DEFAULT: "3",
+         OPTION_HELP: "Number of retries for establishing a (broken) http connection"},
+    ES_SCROLL_KEEPALIVE:
+        {OPTION_DEFAULT: "10m",
+         OPTION_HELP: "The maximum duration of result scrolls between query requests"},
+    ES_SCROLL_SIZE:
+        {OPTION_DEFAULT: "1000",
+         OPTION_HELP: "Number of results/items/documents returned per scroll request on each executor/worker/task"},
+    ES_SCROLL_LIMIT:
+        {OPTION_DEFAULT: "-1",
+         OPTION_HELP: "Number of total results/items returned by each individual scroll."
+                      " A negative value indicates that all documents that match should be returned"},
+    ES_ACTION_HEART_BEAT_LEAD:
+        {OPTION_DEFAULT: "15s",
+         OPTION_HELP: "The lead to task timeout before elasticsearch-hadoop informs Hadoop "
+                      "the task is still running to prevent task restart"},
+    ES_NET_HTTP_HEADER_AUTHORIZATION:
+        {OPTION_HELP: "API Key for Elasticsearch Authorization"},
+    ES_NET_SSL:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Enable SSL"},
+    ES_NET_SSL_CERT_ALLOW_SELF_SIGNED:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether or not to allow self signed certificates"},
+    ES_NET_SSL_PROTOCOL:
+        {OPTION_DEFAULT: "TLS",
+         OPTION_HELP: "SSL protocol to be used"},
+    ES_NET_PROXY_HTTP_HOST:
+        {OPTION_HELP: "Http proxy host name"},
+    ES_NET_PROXY_HTTP_PORT:
+        {OPTION_HELP: "Http proxy port"},
+    ES_NET_PROXY_HTTP_USER:
+        {OPTION_HELP: "Http proxy user name"},
+    ES_NET_PROXY_HTTP_PASS:
+        {OPTION_HELP: "Http proxy password"},
+    ES_NET_PROXY_HTTP_USE_SYSTEM_PROPS:
+        {OPTION_DEFAULT: "yes",
+         OPTION_HELP: "Whether use the system Http proxy properties "
+                      "(namely http.proxyHost and http.proxyPort) or not"},
+    ES_NET_PROXY_HTTPS_HOST:
+        {OPTION_HELP: "Https proxy host name"},
+    ES_NET_PROXY_HTTPS_PORT:
+        {OPTION_HELP: "Https proxy port"},
+    ES_NET_PROXY_HTTPS_USER:
+        {OPTION_HELP: "Https proxy user name"},
+    ES_NET_PROXY_HTTPS_PASS:
+        {OPTION_HELP: "Https proxy password"},
+    ES_NET_PROXY_HTTPS_USE_SYSTEM_PROPS:
+        {OPTION_DEFAULT: "yes",
+         OPTION_HELP: "Whether use the system Https proxy properties "
+                      "(namely https.proxyHost and https.proxyPort) or not"},
+    ES_NET_PROXY_SOCKS_HOST:
+        {OPTION_HELP: "Http proxy host name"},
+    ES_NET_PROXY_SOCKS_PORT:
+        {OPTION_HELP: "Http proxy port"},
+    ES_NET_PROXY_SOCKS_USER:
+        {OPTION_HELP: "Http proxy user name"},
+    ES_NET_PROXY_SOCKS_PASS:
+        {OPTION_HELP: "Http proxy password"},
+    ES_NET_PROXY_SOCKS_USE_SYSTEM_PROPS:
+        {OPTION_DEFAULT: "yes",
+         OPTION_HELP: "Whether use the system Socks proxy properties "
+                      "(namely socksProxyHost and socksProxyHost) or not"}
+}
+
+def get_es_spark_connector_input_options(prefix):
+    input_options = [
+        ES_NODES_PATH_PREFIX,
+        ES_QUERY,
+        ES_OUTPUT_JSON,
+        ES_MAPPING_DATE_RICH,
+        ES_READ_FIELD_INCLUDE,
+        ES_READ_FIELD_EXCLUDE,
+        ES_READ_FIELD_AS_ARRAY_INCLUDE,
+        ES_READ_FIELD_AS_ARRAY_EXCLUDE,
+        ES_READ_METADATA,
+        ES_READ_METADATA_FIELD,
+        ES_READ_METADATA_VERSION,
+        ES_INDEX_READ_MISSING_AS_EMPTY,
+        ES_FIELD_READ_EMPTY_AS_NULL,
+        ES_READ_SHARD_PREFERENCE,
+        ES_READ_SOURCE_FILTER,
+        ES_INDEX_READ_ALLOW_RED_STATUS,
+        ES_INPUT_MAX_DOC_PER_PARTITION,
+        ES_NODES_DISCOVERY,
+        ES_NODES_CLIENT_ONLY,
+        ES_NODES_DATA_ONLY,
+        ES_NODES_WAN_ONLY,
+        ES_HTTP_TIMEOUT,
+        ES_HTTP_RETRIES,
+        ES_SCROLL_KEEPALIVE,
+        ES_SCROLL_SIZE,
+        ES_SCROLL_LIMIT,
+        ES_ACTION_HEART_BEAT_LEAD,
+        ES_NET_HTTP_HEADER_AUTHORIZATION,
+        ES_NET_SSL,
+        ES_NET_SSL_CERT_ALLOW_SELF_SIGNED,
+        ES_NET_SSL_PROTOCOL,
+        ES_NET_PROXY_HTTP_HOST,
+        ES_NET_PROXY_HTTP_PORT,
+        ES_NET_PROXY_HTTP_USER,
+        ES_NET_PROXY_HTTP_PASS,
+        ES_NET_PROXY_HTTP_USE_SYSTEM_PROPS,
+        ES_NET_PROXY_HTTPS_HOST,
+        ES_NET_PROXY_HTTPS_PORT,
+        ES_NET_PROXY_HTTPS_USER,
+        ES_NET_PROXY_HTTPS_PASS,
+        ES_NET_PROXY_HTTPS_USE_SYSTEM_PROPS,
+        ES_NET_PROXY_SOCKS_HOST,
+        ES_NET_PROXY_SOCKS_PORT,
+        ES_NET_PROXY_SOCKS_USER,
+        ES_NET_PROXY_SOCKS_PASS,
+        ES_NET_PROXY_SOCKS_USE_SYSTEM_PROPS,
+    ]
+    es_spark_connector_options = {(prefix + _).lower(): _ for _ in input_options}
+    return es_spark_connector_options
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -269,6 +506,37 @@ OUTPUT_MODE_IGNORE = "ignore"
 OUTPUT_MODE_ERRORIFEXISTS = "errorifexists"
 OUTPUT_MODE_COMPLETE = "complete"
 OUTPUT_MODE_UPDATE = "update"
+
+#ES to GCS
+ES_GCS_INPUT_NODE = "es.gcs.input.node"
+ES_GCS_INPUT_INDEX = "es.gcs.input.index"
+ES_GCS_NODE_USER = "es.gcs.input.user"
+ES_GCS_NODE_PASSWORD = "es.gcs.input.password"
+ES_GCS_OUTPUT_FORMAT = "es.gcs.output.format"
+ES_GCS_OUTPUT_LOCATION = "es.gcs.output.location"
+ES_GCS_OUTPUT_MODE = "es.gcs.output.mode"
+ES_GCS_FLATTEN_STRUCT = "es.gcs.flatten.struct.fields"
+ES_GCS_FLATTEN_ARRAY = "es.gcs.flatten.array.fields"
+
+#ES to BQ
+ES_BQ_INPUT_NODE = "es.bq.input.node"
+ES_BQ_INPUT_INDEX = "es.bq.input.index"
+ES_BQ_NODE_USER = "es.bq.input.user"
+ES_BQ_NODE_PASSWORD = "es.bq.input.password"
+ES_BQ_OUTPUT_DATASET = "es.bq.output.dataset"
+ES_BQ_OUTPUT_TABLE = "es.bq.output.table"
+ES_BQ_OUTPUT_MODE = "es.bq.output.mode"
+ES_BQ_FLATTEN_STRUCT = "es.bq.flatten.struct.fields"
+ES_BQ_FLATTEN_ARRAY = "es.bq.flatten.array.fields"
+
+#ES to BigTable
+ES_BT_INPUT_NODE = "es.bt.input.node"
+ES_BT_INPUT_INDEX = "es.bt.input.index"
+ES_BT_NODE_USER = "es.bt.input.user"
+ES_BT_NODE_PASSWORD = "es.bt.input.password"
+ES_BT_HBASE_CATALOG_JSON = "es.bt.hbase.catalog.json"
+ES_BT_FLATTEN_STRUCT = "es.bt.flatten.struct.fields"
+ES_BT_FLATTEN_ARRAY = "es.bt.flatten.array.fields"
 
 # GCS to BigQuery
 GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location"
