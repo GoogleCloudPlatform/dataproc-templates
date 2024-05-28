@@ -33,16 +33,16 @@ class TestElasticsearchToBQTemplate:
         parsed_args = elasticsearch_to_bigquery_template.parse_args(
             ["--es.bq.input.node=xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243",
              "--es.bq.input.index=demo",
-             "--es.bq.node.user=demo",
-             "--es.bq.node.password=demo",
+             "--es.bq.input.user=demo",
+             "--es.bq.input.password=demo",
              "--es.bq.output.dataset=dataset",
              "--es.bq.output.table=table",
              "--es.bq.output.mode=append"])
 
         assert parsed_args["es.bq.input.node"] == "xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243"
         assert parsed_args["es.bq.input.index"] == "demo"
-        assert parsed_args["es.bq.node.user"] == "demo"
-        assert parsed_args["es.bq.node.password"] == "demo"
+        assert parsed_args["es.bq.input.user"] == "demo"
+        assert parsed_args["es.bq.input.password"] == "demo"
         assert parsed_args["es.bq.output.dataset"] == "dataset"
         assert parsed_args["es.bq.output.table"] == "table"
         assert parsed_args["es.bq.output.mode"] == "append"
@@ -55,8 +55,8 @@ class TestElasticsearchToBQTemplate:
         mock_parsed_args = elasticsearch_to_bigquery_template.parse_args(
             ["--es.bq.input.node=xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243",
              "--es.bq.input.index=demo",
-             "--es.bq.node.user=demo",
-             "--es.bq.node.password=demo",
+             "--es.bq.input.user=demo",
+             "--es.bq.input.password=demo",
              "--es.bq.output.dataset=dataset",
              "--es.bq.output.table=table",
              "--es.bq.output.mode=append"])

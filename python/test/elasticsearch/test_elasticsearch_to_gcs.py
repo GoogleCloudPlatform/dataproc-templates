@@ -30,16 +30,16 @@ class TestElasticsearchToGCSTemplate:
         parsed_args = elasticsearch_to_gcs_template.parse_args(
             ["--es.gcs.input.node=xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243",
              "--es.gcs.input.index=demo",
-             "--es.gcs.node.user=demo",
-             "--es.gcs.node.password=demo",
+             "--es.gcs.input.user=demo",
+             "--es.gcs.input.password=demo",
              "--es.gcs.output.format=parquet",
              "--es.gcs.output.mode=overwrite",
              "--es.gcs.output.location=gs://my-output/esgcsoutput"])
 
         assert parsed_args["es.gcs.input.node"] == 'xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243'
         assert parsed_args["es.gcs.input.index"] == 'demo'
-        assert parsed_args["es.gcs.node.user"] == 'demo'
-        assert parsed_args["es.gcs.node.password"] == 'demo'
+        assert parsed_args["es.gcs.input.user"] == 'demo'
+        assert parsed_args["es.gcs.input.password"] == 'demo'
         assert parsed_args["es.gcs.output.format"] == 'parquet'
         assert parsed_args["es.gcs.output.mode"] == 'overwrite'
         assert parsed_args["es.gcs.output.location"] == 'gs://my-output/esgcsoutput'
@@ -52,8 +52,8 @@ class TestElasticsearchToGCSTemplate:
         mock_parsed_args = elasticsearch_to_gcs_template.parse_args(
             ["--es.gcs.input.node=xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243",
              "--es.gcs.input.index=demo",
-             "--es.gcs.node.user=demo",
-             "--es.gcs.node.password=demo",
+             "--es.gcs.input.user=demo",
+             "--es.gcs.input.password=demo",
              "--es.gcs.output.format=parquet",
              "--es.gcs.output.mode=overwrite",
              "--es.gcs.output.location=gs://my-output/esgcsoutput"])
@@ -77,8 +77,8 @@ class TestElasticsearchToGCSTemplate:
         mock_parsed_args = elasticsearch_to_gcs_template.parse_args(
             ["--es.gcs.input.node=xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243",
              "--es.gcs.input.index=demo",
-             "--es.gcs.node.user=demo",
-             "--es.gcs.node.password=demo",
+             "--es.gcs.input.user=demo",
+             "--es.gcs.input.password=demo",
              "--es.gcs.output.format=csv",
              "--es.gcs.output.mode=overwrite",
              "--es.gcs.output.partition.column=column",
@@ -113,8 +113,8 @@ class TestElasticsearchToGCSTemplate:
         mock_parsed_args = elasticsearch_to_gcs_template.parse_args(
             ["--es.gcs.input.node=xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243",
              "--es.gcs.input.index=demo",
-             "--es.gcs.node.user=demo",
-             "--es.gcs.node.password=demo",
+             "--es.gcs.input.user=demo",
+             "--es.gcs.input.password=demo",
              "--es.gcs.output.format=avro",
              "--es.gcs.output.mode=overwrite",
              "--es.gcs.output.location=gs://my-output/esgcsoutput"])
@@ -142,8 +142,8 @@ class TestElasticsearchToGCSTemplate:
         mock_parsed_args = elasticsearch_to_gcs_template.parse_args(
             ["--es.gcs.input.node=xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243",
              "--es.gcs.input.index=demo",
-             "--es.gcs.node.user=demo",
-             "--es.gcs.node.password=demo",
+             "--es.gcs.input.user=demo",
+             "--es.gcs.input.password=demo",
              "--es.gcs.output.format=json",
              "--es.gcs.output.mode=overwrite",
              "--es.gcs.output.location=gs://my-output/esgcsoutput"])

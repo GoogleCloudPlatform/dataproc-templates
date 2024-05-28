@@ -33,14 +33,14 @@ class TestElasticsearchToBigTableTemplate:
         parsed_args = elasticsearch_to_bigtable_template.parse_args(
             ["--es.bt.input.node=xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243",
              "--es.bt.input.index=demo",
-             "--es.bt.node.user=demo",
-             "--es.bt.node.password=demo",
+             "--es.bt.input.user=demo",
+             "--es.bt.input.password=demo",
              "--es.bt.hbase.catalog.json={key:value}"])
 
         assert parsed_args["es.bt.input.node"] == "xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243"
         assert parsed_args["es.bt.input.index"] == "demo"
-        assert parsed_args["es.bt.node.user"] == "demo"
-        assert parsed_args["es.bt.node.password"] == "demo"
+        assert parsed_args["es.bt.input.user"] == "demo"
+        assert parsed_args["es.bt.input.password"] == "demo"
         assert parsed_args["gcs.bigtable.hbase.catalog.json"] == '{key:value}'
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
@@ -51,8 +51,8 @@ class TestElasticsearchToBigTableTemplate:
         mock_parsed_args = elasticsearch_to_bigtable_template.parse_args(
             ["--es.bt.input.node=xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243",
              "--es.bt.input.index=demo",
-             "--es.bt.node.user=demo",
-             "--es.bt.node.password=demo",
+             "--es.bt.input.user=demo",
+             "--es.bt.input.password=demo",
              "--es.bt.hbase.catalog.json={key:value}"])
         
         elasticsearch_to_bigtable_template.run(mock_spark_session, mock_parsed_args)
