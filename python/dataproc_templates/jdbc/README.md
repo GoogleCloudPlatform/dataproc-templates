@@ -98,7 +98,7 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 ## Arguments
 
 * `jdbctojdbc.input.url`: JDBC input URL 
-* `jdbctojdbc.input.url.secret`: JDBC input URL secret. Pass the secret name as created in Cloud Secret Manager.
+* `jdbctojdbc.input.url.secret`: JDBC input URL secret. Pass the secret name as created in Cloud Secret Manager
 > Note: Please provide only one of the above two properties (`jdbctojdbc.input.url` or `jdbctojdbc.input.url.secret`)
 * `jdbctojdbc.input.driver`: JDBC input driver name
 * `jdbctojdbc.input.table`: JDBC input table name
