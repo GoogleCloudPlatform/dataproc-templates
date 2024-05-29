@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional, List, Any
+from typing import Optional, Dict, List, Any
+
+import re
+import json
 
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col, flatten
@@ -82,3 +85,71 @@ def flatten_array_fields(
             depth -= 1
     
     return df
+
+def rename_duplicate_columns(
+    dataframe_schema: Dict[str, Any], 
+    column_name_set: set = set(), 
+    parent: tuple = ()
+) -> Dict[str, Any]:
+    """Return a modified dataframe schema dict with the duplicate columns renamed"""
+    if 'fields' in dataframe_schema:
+        for fields in dataframe_schema['fields']:
+            qualified_column_name = '.'.join(parent + (fields['name'],))
+            new_qualified_column_name = qualified_column_name
+            i = 1
+            while new_qualified_column_name.lower() in column_name_set:
+                new_qualified_column_name = f"{qualified_column_name}_{i}"
+                i+=1
+            column_name_set.add(new_qualified_column_name.lower())
+            fields['name'] = new_qualified_column_name.split('.')[-1]
+            
+            if 'type' in fields and isinstance(fields['type'], dict):
+                if fields['type']['type'] == "struct":
+                    fields['type'] = rename_duplicate_columns(fields['type'], column_name_set, parent+(new_qualified_column_name.split('.')[-1],))
+
+    return dataframe_schema
+
+
+def modify_json_schema(
+    dataframe_schema: Dict[str, Any]
+) -> Dict[str, Any]:
+    """Return a modified dataframe schema dict with the Special Characters replaced with _ in the column names"""
+
+    if isinstance(dataframe_schema, dict):
+        for key in list(dataframe_schema.keys()):
+            if key == "name":
+                # Replaces all non-alphanumeric characters with underscores
+                dataframe_schema[key] = re.sub(r'[^a-zA-Z0-9_]+', '_', dataframe_schema[key])
+            # Recur for nested dictionaries
+            elif isinstance(dataframe_schema[key], dict):
+                modify_json_schema(dataframe_schema[key])
+            # Recur for each dictionary in the list if it's a list of dictionaries
+            elif isinstance(dataframe_schema[key], list):
+                for i in range(len(dataframe_schema[key])):
+                    if isinstance(dataframe_schema[key][i], dict):
+                        modify_json_schema(dataframe_schema[key][i])
+    
+    return dataframe_schema
+
+def rename_columns(
+    input_data: DataFrame,
+) -> DataFrame:
+    """Return a Dataframe with the Special Characters replaced with _ in the column names"""
+    renamed_df: DataFrame
+
+    # Rename the first level columns
+    renamed_df = input_data.selectExpr(*[f"`{column}` as `{re.sub(r'[^a-zA-Z0-9_]+', '_', column)}`" for column in input_data.columns])
+
+    # Rename the remaining columns
+    json_schema = modify_json_schema(json.loads(renamed_df.schema.json()))
+
+    # Rename the duplicate columns
+    json_schema = rename_duplicate_columns(json_schema)
+
+    replaced_schema = StructType.fromJson(json_schema)
+
+    for col_schema in replaced_schema:
+        if isinstance(col_schema.dataType, StructType) or isinstance(col_schema.dataType, ArrayType):
+            renamed_df = renamed_df.withColumn(col_schema.name, renamed_df[col_schema.name].cast(col_schema.dataType))
+
+    return renamed_df
