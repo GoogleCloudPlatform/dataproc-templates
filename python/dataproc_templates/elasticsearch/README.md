@@ -9,8 +9,8 @@ It uses the [Elasticsearch Spark Connector](https://www.elastic.co/guide/en/elas
 ## Arguments
 - `es.gcs.input.node`: Elasticsearch Node Uri (format: mynode:9600)
 - `es.gcs.input.index`: Elasticsearch Input Index Name (format: <index>/<type>)
-- `es.gcs.node.user`: Elasticsearch Username
-- `es.gcs.node.password`: Elasticsearch Password
+- `es.gcs.input.user`: Elasticsearch Username
+- `es.gcs.input.password`: Elasticsearch Password
 - `es.gcs.output.format`: Cloud Storage Output File Format (one of: avro,parquet,csv,json)
 - `es.gcs.output.location`: Cloud Storage Location to put Output Files (format: `gs://BUCKET/...`)
 - `es.gcs.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
@@ -91,8 +91,8 @@ $ python main.py --template ELASTICSEARCHTOGCS --help
 usage: main.py [-h] 
                --es.gcs.input.node ES.GCS.INPUT.NODE
                --es.gcs.input.index ES.GCS.INPUT.INDEX
-               --es.gcs.node.user ES.GCS.NODE.USER
-               --es.gcs.node.password ES.GCS.NODE.PASSWORD
+               --es.gcs.input.user es.gcs.input.user
+               --es.gcs.input.password es.gcs.input.password
                --es.gcs.output.format {avro,parquet,csv,json}
                --es.gcs.output.location ES.GCS.OUTPUT.LOCATION
                [--es.gcs.input.es.nodes.path.prefix ES.GCS.INPUT.ES.NODES.PATH.PREFIX]
@@ -167,9 +167,9 @@ options:
                         Elasticsearch Node Uri
   --es.gcs.input.index ES.GCS.INPUT.INDEX
                         Elasticsearch Input Index Name
-  --es.gcs.node.user ES.GCS.NODE.USER
+  --es.gcs.input.user ES.GCS.INPUT.USER
                         Elasticsearch Username
-  --es.gcs.node.password ES.GCS.NODE.PASSWORD
+  --es.gcs.input.password ES.GCS.INPUT.PASSWORD
                         Elasticsearch Password   
   --es.gcs.input.es.nodes.path.prefix ES.GCS.INPUT.ES.NODES.PATH.PREFIX
                         Prefix to add to all requests made to Elasticsearch
@@ -330,8 +330,8 @@ export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 -- --template=MONGOTOGCS \
     --es.gcs.input.node="xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243" \
     --es.gcs.input.index="demo" \
-    --es.gcs.node.user="demo" \
-    --es.gcs.node.password="demo" \
+    --es.gcs.input.user="demo" \
+    --es.gcs.input.password="demo" \
     --es.gcs.output.format="parquet" \
     --es.gcs.output.location="gs://my-output/esgcsoutput" \
     --es.gcs.output.mode="overwrite"
@@ -358,8 +358,8 @@ This template has been tested with the following versions of the above mentioned
 
 - `es.bq.input.node`: Elasticsearch Node Uri (format: mynode:9600)
 - `es.bq.input.index`: Elasticsearch Input Index Name (format: <index>/<type>)
-- `es.bq.node.user`: Elasticsearch Username
-- `es.bq.node.password`: Elasticsearch Password
+- `es.bq.input.user`: Elasticsearch Username
+- `es.bq.input.password`: Elasticsearch Password
 - `es.bq.output.dataset`: BigQuery dataset id (format: Dataset_id)
 - `es.bq.output.table`: BigQuery table name (format: Table_name)
 
@@ -422,8 +422,8 @@ $ python main.py --template ELASTICSEARCHTOBQ --help
 usage: main.py [-h] 
                --es.bq.input.node ES.BQ.INPUT.NODE
                --es.bq.input.index ES.BQ.INPUT.INDEX
-               --es.bq.node.user ES.BQ.NODE.USER
-               --es.bq.node.password ES.BQ.NODE.PASSWORD
+               --es.bq.input.user ES.BQ.INPUT.USER
+               --es.bq.input.password ES.BQ.INPUT.PASSWORD
                --es.bq.output.dataset ES.BQ.OUTPUT.DATASET
                --es.bq.output.table ES.BQ.OUTPUT.TABLE
                --es.bq.output.mode {overwrite,append,ignore,errorifexists}
@@ -482,9 +482,9 @@ options:
                         Elasticsearch Node Uri
   --es.bq.input.index ES.BQ.INPUT.INDEX
                         Elasticsearch Input Index Name
-  --es.bq.node.user ES.BQ.NODE.USER
+  --es.bq.input.user ES.BQ.INPUT.USER
                         Elasticsearch Username
-  --es.bq.node.password ES.BQ.NODE.PASSWORD
+  --es.bq.input.password ES.BQ.INPUT.PASSWORD
                         Elasticsearch Password   
   --es.bq.input.es.nodes.path.prefix ES.BQ.INPUT.ES.NODES.PATH.PREFIX
                         Prefix to add to all requests made to Elasticsearch
@@ -605,8 +605,8 @@ export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 -- --template=ELASTICSEARCHTOBQ \
     --es.bq.input.node="xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243" \
     --es.bq.input.index="demo" \
-    --es.bq.node.user="demo" \
-    --es.bq.node.password="demo" \
+    --es.bq.input.user="demo" \
+    --es.bq.input.password="demo" \
     --es.bq.output.dataset="my-project.test_dataset" \
     --es.bq.output.table="dummyusers" \
     --es.bq.output.mode="append"
@@ -692,8 +692,8 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
 ## Arguments
 - `es.bt.input.node`: Elasticsearch Node Uri (format: mynode:9600)
 - `es.bt.input.index`: Elasticsearch Input Index Name (format: <index>/<type>)
-- `es.bt.node.user`: Elasticsearch Username
-- `es.bt.node.password`: Elasticsearch Password
+- `es.bt.input.user`: Elasticsearch Username
+- `es.bt.input.password`: Elasticsearch Password
 - `es.bt.hbase.catalog.json`: HBase catalog inline json
 #### Optional Arguments
 - `es.bt.input.es.nodes.path.prefix`: Prefix to add to all requests made to Elasticsearch
@@ -753,8 +753,8 @@ $ python main.py --template GCSTOBIGTABLE --help
 usage: main.py [-h]
                --es.bt.input.node ES.BT.INPUT.NODE
                --es.bt.input.index ES.BT.INPUT.INDEX
-               --es.bt.node.user ES.BT.NODE.USER
-               --es.bt.node.password ES.BT.NODE.PASSWORD
+               --es.bt.input.user ES.BT.INPUT.USER
+               --es.bt.input.password ES.BT.INPUT.PASSWORD
                --es.bt.hbase.catalog.json ES.BT.HBASE.CATALOG.JSON
                [--es.bt.input.es.nodes.path.prefix ES.BT.INPUT.ES.NODES.PATH.PREFIX]
                [--es.bt.input.es.query ES.BT.INPUT.ES.QUERY]
@@ -812,9 +812,9 @@ options:
                         Elasticsearch Node Uri
   --es.bt.input.index ES.BT.INPUT.INDEX
                         Elasticsearch Input Index Name
-  --es.bt.node.user ES.BT.NODE.USER
+  --es.bt.input.user ES.BT.INPUT.USER
                         Elasticsearch Username
-  --es.bt.node.password ES.BT.NODE.PASSWORD
+  --es.bt.input.password ES.BT.INPUT.PASSWORD
                         Elasticsearch Password   
   --es.bt.input.es.nodes.path.prefix ES.BT.INPUT.ES.NODES.PATH.PREFIX
                         Prefix to add to all requests made to Elasticsearch
@@ -935,8 +935,8 @@ export JARS="gs://<your_bucket_to_store_dependencies>/elasticsearch-spark-30_2.1
 -- --template=ELASTICSEARCHTOBIGTABLE \
    --es.bt.input.node="xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243" \
    --es.bt.input.index="demo" \
-   --es.bt.node.user="demo" \
-   --es.bt.node.password="demo" \
+   --es.bt.input.user="demo" \
+   --es.bt.input.password="demo" \
    --es.bt.hbase.catalog.json='''{
                         "table":{"namespace":"default","name":"my_table"},
                         "rowkey":"key",
