@@ -67,20 +67,20 @@ def rename_duplicate_columns(
     parent: tuple = ()
 ) -> Dict[str, Any]:
     """Return a modified dataframe schema dict with the duplicate columns renamed"""
-
-    for fields in dataframe_schema['fields']:
-        qualified_column_name = '.'.join(parent + (fields['name'],))
-        new_qualified_column_name = qualified_column_name
-        i = 1
-        while new_qualified_column_name.lower() in column_name_set:
-            new_qualified_column_name = f"{qualified_column_name}_{i}"
-            i+=1
-        column_name_set.add(new_qualified_column_name.lower())
-        fields['name'] = new_qualified_column_name.split('.')[-1]
-        
-        if 'type' in fields and isinstance(fields['type'], dict):
-            if fields['type']['type'] == "struct":
-                fields['type'] = rename_duplicate_columns(fields['type'], column_name_set, parent+(new_qualified_column_name.split('.')[-1],))
+    if 'fields' in dataframe_schema:
+        for fields in dataframe_schema['fields']:
+            qualified_column_name = '.'.join(parent + (fields['name'],))
+            new_qualified_column_name = qualified_column_name
+            i = 1
+            while new_qualified_column_name.lower() in column_name_set:
+                new_qualified_column_name = f"{qualified_column_name}_{i}"
+                i+=1
+            column_name_set.add(new_qualified_column_name.lower())
+            fields['name'] = new_qualified_column_name.split('.')[-1]
+            
+            if 'type' in fields and isinstance(fields['type'], dict):
+                if fields['type']['type'] == "struct":
+                    fields['type'] = rename_duplicate_columns(fields['type'], column_name_set, parent+(new_qualified_column_name.split('.')[-1],))
 
     return dataframe_schema
 
