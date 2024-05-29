@@ -48,7 +48,8 @@ class TestElasticsearchToBQTemplate:
         assert parsed_args["es.bq.output.mode"] == "append"
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run(self, mock_spark_session):
+    @mock.patch("dataproc_templates.util.dataframe_reader_wrappers.rename_columns")
+    def test_run(self, mock_spark_session, mock_rename_columns):
         """Tests ElasticsearchToBQTemplate run"""
 
         elasticsearch_to_bigquery_template = ElasticsearchToBQTemplate()
@@ -61,6 +62,9 @@ class TestElasticsearchToBQTemplate:
              "--es.bq.output.table=table",
              "--es.bq.output.mode=append"])
         
+        mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
+        mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
+        mock_rename_columns.return_value = mock_spark_session.dataframe.DataFrame
         elasticsearch_to_bigquery_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.sparkContext.newAPIHadoopRDD.assert_called_once()

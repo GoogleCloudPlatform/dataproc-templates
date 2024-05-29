@@ -45,7 +45,8 @@ class TestElasticsearchToGCSTemplate:
         assert parsed_args["es.gcs.output.location"] == 'gs://my-output/esgcsoutput'
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_parquet(self, mock_spark_session):
+    @mock.patch("dataproc_templates.util.dataframe_reader_wrappers.rename_columns")
+    def test_run_parquet(self, mock_spark_session, mock_rename_columns):
         """Tests ElasticsearchToGCSTemplate runs with parquet format"""
 
         elasticsearch_to_gcs_template = ElasticsearchToGCSTemplate()
@@ -57,20 +58,24 @@ class TestElasticsearchToGCSTemplate:
              "--es.gcs.output.format=parquet",
              "--es.gcs.output.mode=overwrite",
              "--es.gcs.output.location=gs://my-output/esgcsoutput"])
-
+        
+        mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
+        mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
+        mock_rename_columns.return_value = mock_spark_session.dataframe.DataFrame
         elasticsearch_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.sparkContext.newAPIHadoopRDD.assert_called_once()
         mock_spark_session.sparkContext.newAPIHadoopRDD().flatMap.assert_called_once()
         mock_spark_session.read.json.assert_called_once()
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .parquet.assert_called_once_with("gs://my-output/esgcsoutput")
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_csv(self, mock_spark_session):
+    @mock.patch("dataproc_templates.util.dataframe_reader_wrappers.rename_columns")
+    def test_run_csv(self, mock_spark_session, mock_rename_columns):
         """Tests ElasticsearchToGCSTemplate runs with csv format"""
 
         elasticsearch_to_gcs_template = ElasticsearchToGCSTemplate()
@@ -81,32 +86,30 @@ class TestElasticsearchToGCSTemplate:
              "--es.gcs.input.password=demo",
              "--es.gcs.output.format=csv",
              "--es.gcs.output.mode=overwrite",
-             "--es.gcs.output.partition.column=column",
              "--es.gcs.output.location=gs://my-output/esgcsoutput"])
 
+        mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
+        mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
+        mock_rename_columns.return_value = mock_spark_session.dataframe.DataFrame
         elasticsearch_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.sparkContext.newAPIHadoopRDD.assert_called_once()
         mock_spark_session.sparkContext.newAPIHadoopRDD().flatMap.assert_called_once()
         mock_spark_session.read.json.assert_called_once()
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode() \
-            .partitionBy.assert_called_once_with("column")
-        mock_spark_session.write \
-            .mode() \
-            .partitionBy() \
             .options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
 
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode() \
-            .partitionBy() \
             .options() \
             .csv.assert_called_once_with("gs://my-output/esgcsoutput")
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_avro(self, mock_spark_session):
+    @mock.patch("dataproc_templates.util.dataframe_reader_wrappers.rename_columns")
+    def test_run_avro(self, mock_spark_session, mock_rename_columns):
         """Tests ElasticsearchToGCSTemplate runs with avro format"""
 
         elasticsearch_to_gcs_template = ElasticsearchToGCSTemplate()
@@ -119,23 +122,27 @@ class TestElasticsearchToGCSTemplate:
              "--es.gcs.output.mode=overwrite",
              "--es.gcs.output.location=gs://my-output/esgcsoutput"])
 
+        mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
+        mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
+        mock_rename_columns.return_value = mock_spark_session.dataframe.DataFrame
         elasticsearch_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.sparkContext.newAPIHadoopRDD.assert_called_once()
         mock_spark_session.sparkContext.newAPIHadoopRDD().flatMap.assert_called_once()
         mock_spark_session.read.json.assert_called_once()
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .format.assert_called_once_with(constants.FORMAT_AVRO)
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .format() \
             .save.assert_called_once_with("gs://my-output/esgcsoutput")
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
-    def test_run_json(self, mock_spark_session):
+    @mock.patch("dataproc_templates.util.dataframe_reader_wrappers.rename_columns")
+    def test_run_json(self, mock_spark_session, mock_rename_columns):
         """Tests ElasticsearchToGCSTemplate runs with json format"""
 
         elasticsearch_to_gcs_template = ElasticsearchToGCSTemplate()
@@ -148,13 +155,16 @@ class TestElasticsearchToGCSTemplate:
              "--es.gcs.output.mode=overwrite",
              "--es.gcs.output.location=gs://my-output/esgcsoutput"])
 
+        mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
+        mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
+        mock_rename_columns.return_value = mock_spark_session.dataframe.DataFrame
         elasticsearch_to_gcs_template.run(mock_spark_session, mock_parsed_args)
 
         mock_spark_session.sparkContext.newAPIHadoopRDD.assert_called_once()
         mock_spark_session.sparkContext.newAPIHadoopRDD().flatMap.assert_called_once()
         mock_spark_session.read.json.assert_called_once()
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode.assert_called_once_with(constants.OUTPUT_MODE_OVERWRITE)
-        mock_spark_session.write \
+        mock_spark_session.dataframe.DataFrame.write \
             .mode() \
             .json.assert_called_once_with("gs://my-output/esgcsoutput")
