@@ -384,6 +384,7 @@ HBASE_GCS_CATALOG_JSON = "hbase.gcs.catalog.json"
 
 # JDBC to JDBC
 JDBCTOJDBC_INPUT_URL = "jdbctojdbc.input.url"
+JDBCTOJDBC_INPUT_URL_SECRET = "jdbctojdbc.input.url.secret"
 JDBCTOJDBC_INPUT_DRIVER = "jdbctojdbc.input.driver"
 JDBCTOJDBC_INPUT_TABLE = "jdbctojdbc.input.table"
 JDBCTOJDBC_INPUT_FETCHSIZE = "jdbctojdbc.input.fetchsize"
@@ -393,6 +394,7 @@ JDBCTOJDBC_INPUT_UPPERBOUND = "jdbctojdbc.input.upperbound"
 JDBCTOJDBC_SESSIONINITSTATEMENT = "jdbctojdbc.input.sessioninitstatement"
 JDBCTOJDBC_NUMPARTITIONS = "jdbctojdbc.numpartitions"
 JDBCTOJDBC_OUTPUT_URL = "jdbctojdbc.output.url"
+JDBCTOJDBC_OUTPUT_URL_SECRET = "jdbctojdbc.output.url.secret"
 JDBCTOJDBC_OUTPUT_DRIVER = "jdbctojdbc.output.driver"
 JDBCTOJDBC_OUTPUT_TABLE = "jdbctojdbc.output.table"
 JDBCTOJDBC_OUTPUT_CREATE_TABLE_OPTION = "jdbctojdbc.output.create_table.option"
@@ -403,6 +405,7 @@ JDBCTOJDBC_SQL_QUERY = "jdbctojdbc.sql.query"
 
 # JDBC to GCS
 JDBCTOGCS_INPUT_URL = "jdbctogcs.input.url"
+JDBCTOGCS_INPUT_URL_SECRET = "jdbctogcs.input.url.secret"
 JDBCTOGCS_INPUT_DRIVER = "jdbctogcs.input.driver"
 JDBCTOGCS_INPUT_TABLE = "jdbctogcs.input.table"
 JDBCTOGCS_INPUT_SQL_QUERY = "jdbctogcs.input.sql.query"
@@ -421,6 +424,7 @@ JDBCTOGCS_TEMP_SQL_QUERY = "jdbctogcs.temp.sql.query"
 
 # JDBC to BigQuery
 JDBC_BQ_INPUT_URL = "jdbc.bigquery.input.url"
+JDBC_BQ_INPUT_URL_SECRET = "jdbc.bigquery.input.url.secret"
 JDBC_BQ_INPUT_DRIVER = "jdbc.bigquery.input.driver"
 JDBC_BQ_INPUT_TABLE = "jdbc.bigquery.input.table"
 JDBC_BQ_INPUT_FETCHSIZE = "jdbc.bigquery.input.fetchsize"

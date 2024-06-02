@@ -19,6 +19,7 @@ import pyspark
 
 from dataproc_templates.jdbc.jdbc_to_jdbc import JDBCToJDBCTemplate
 import dataproc_templates.util.template_constants as constants
+import dataproc_templates.util.secret_manager as secret_manager
 
 
 class TestJDBCToJDBCTemplate:
@@ -183,6 +184,43 @@ class TestJDBCToJDBCTemplate:
         mock_spark_session.read.format().options().load()
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(constants.FORMAT_JDBC)
         mock_spark_session.dataframe.DataFrame.write.format().option.assert_called_once_with(constants.JDBC_URL, "url")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option.assert_called_once_with(constants.JDBC_DRIVER, "driver")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option.assert_called_once_with(constants.JDBC_TABLE, "table2")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option.assert_called_once_with(constants.JDBC_CREATE_TABLE_OPTIONS, "")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option.assert_called_once_with(constants.JDBC_BATCH_SIZE, "1000")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option.assert_called_once_with(constants.JDBC_NUMPARTITIONS, "10")
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option().option().option().mode().save.assert_called_once()
+
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_pass_args4(self, mock_spark_session):
+        """Tests JDBCToJDBCTemplate pass args with secret"""
+
+        jdbc_to_jdbc_template = JDBCToJDBCTemplate()
+
+        mock_parsed_args = jdbc_to_jdbc_template.parse_args(
+            ["--jdbctojdbc.input.url.secret=jdbctobqconn",
+             "--jdbctojdbc.input.driver=driver",
+             "--jdbctojdbc.input.table=table1",
+             "--jdbctojdbc.input.fetchsize=20",
+             "--jdbctojdbc.output.url.secret=jdbctobqconn",
+             "--jdbctojdbc.output.driver=driver",
+             "--jdbctojdbc.output.table=table2"
+             ])
+        mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
+        jdbc_to_jdbc_template.run(mock_spark_session, mock_parsed_args)
+        mock_spark_session.read.format.assert_called_with(constants.FORMAT_JDBC)
+        _, kwargs = mock_spark_session.read.format().options.call_args
+        assert (constants.JDBC_URL, secret_manager.access_secret_version("jdbctobqconn")) in kwargs.items()
+        assert (constants.JDBC_DRIVER, "driver") in kwargs.items()
+        assert (constants.JDBC_TABLE, "table1") in kwargs.items()
+        assert (constants.JDBC_NUMPARTITIONS, "10") in kwargs.items()
+        assert (constants.JDBC_FETCHSIZE, 20) in kwargs.items()
+        assert constants.JDBC_SESSIONINITSTATEMENT not in kwargs
+        mock_spark_session.read.format().options().load()
+        mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(constants.FORMAT_JDBC)
+        mock_spark_session.dataframe.DataFrame.write.format().option.assert_called_once_with(constants.JDBC_URL, secret_manager.access_secret_version("jdbctobqconn"))
         mock_spark_session.dataframe.DataFrame.write.format().option().option.assert_called_once_with(constants.JDBC_DRIVER, "driver")
         mock_spark_session.dataframe.DataFrame.write.format().option().option().option.assert_called_once_with(constants.JDBC_TABLE, "table2")
         mock_spark_session.dataframe.DataFrame.write.format().option().option().option().option.assert_called_once_with(constants.JDBC_CREATE_TABLE_OPTIONS, "")
