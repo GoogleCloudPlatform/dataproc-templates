@@ -634,14 +634,15 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
         ```
       - Build the [Dockerfile](./Dockerfile), building and pushing it to GCP Container Registry with:
         ```
-        IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version>
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+        IMAGE=us-central1-docker.pkg.dev/<your_project>/<repository>/<your_custom_image>:<your_version>
         docker build -t "${IMAGE}" .
         docker push "${IMAGE}"
         ```
       - An SPARK_EXTRA_CLASSPATH environment variable should also be set to the same path when submitting the job.
         ```
         (./bin/start.sh ...)
-        --container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>"  # image with hbase-site.xml in /etc/hbase/conf/
+        --container-image="us-central1-docker.pkg.dev/<your_project>/<repository>/<your_custom_image>:<your_version>"  # image with hbase-site.xml in /etc/hbase/conf/
         --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'
         ```
 
@@ -922,11 +923,11 @@ options:
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS="gs://<your_bucket_to_store_dependencies>/elasticsearch-spark-30_2.12-8.11.4.jar, \
-             gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
-             file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar, \
+export JARS="gs://<your_bucket_to_store_dependencies>/elasticsearch-spark-30_2.12-8.11.4.jar,\
+             gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar,\
+             gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar,\
+             gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar,\
+             file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,\
              file:///usr/lib/spark/external/hbase-spark.jar"
 
 ./bin/start.sh \
