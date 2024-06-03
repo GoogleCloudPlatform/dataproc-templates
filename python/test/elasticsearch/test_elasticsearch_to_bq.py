@@ -49,7 +49,7 @@ class TestElasticsearchToBQTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     @mock.patch("dataproc_templates.util.dataframe_reader_wrappers.rename_columns")
-    def test_run(self, mock_spark_session, mock_rename_columns):
+    def test_run(self, mock_rename_columns, mock_spark_session):
         """Tests ElasticsearchToBQTemplate run"""
 
         elasticsearch_to_bigquery_template = ElasticsearchToBQTemplate()
@@ -70,6 +70,7 @@ class TestElasticsearchToBQTemplate:
         mock_spark_session.sparkContext.newAPIHadoopRDD.assert_called_once()
         mock_spark_session.sparkContext.newAPIHadoopRDD().flatMap.assert_called_once()
         mock_spark_session.read.json.assert_called_once()
+        mock_rename_columns.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(

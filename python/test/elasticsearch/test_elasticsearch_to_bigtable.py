@@ -45,7 +45,7 @@ class TestElasticsearchToBigTableTemplate:
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     @mock.patch("dataproc_templates.util.dataframe_reader_wrappers.rename_columns")
-    def test_run(self, mock_spark_session, mock_rename_columns):
+    def test_run(self, mock_rename_columns, mock_spark_session):
         """Tests ElasticsearchToBigTableTemplate run"""
 
         elasticsearch_to_bigtable_template = ElasticsearchToBigTableTemplate()
@@ -64,6 +64,7 @@ class TestElasticsearchToBigTableTemplate:
         mock_spark_session.sparkContext.newAPIHadoopRDD.assert_called_once()
         mock_spark_session.sparkContext.newAPIHadoopRDD().flatMap.assert_called_once()
         mock_spark_session.read.json.assert_called_once()
+        mock_rename_columns.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write.format. \
             assert_called_once_with(constants.FORMAT_HBASE)
         mock_spark_session.dataframe.DataFrame.write.format().options. \
