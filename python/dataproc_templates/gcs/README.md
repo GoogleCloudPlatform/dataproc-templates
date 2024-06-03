@@ -206,6 +206,7 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
         ```
       - Build the [Dockerfile](./Dockerfile), building and pushing it to GCP Container Registry with:
         ```
+        wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
         IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version>
         docker build -t "${IMAGE}" .
         docker push "${IMAGE}"

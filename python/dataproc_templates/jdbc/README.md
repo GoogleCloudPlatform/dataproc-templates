@@ -56,6 +56,8 @@ jdbc:sqlserver://<hostname>:<port>;databaseName=<dbname>;user=<username>;passwor
 ```
 jdbc:oracle:thin:@//<hostname>:<port>/<dbservice>?user=<username>&password=<password>
 ```
+* **Note:
+JDBC Connections now allow use of secrets created in Cloud Secret Manager. Please check the examples in respective sections.**
 
 ## Other important properties
 
@@ -95,10 +97,14 @@ Template for reading data from JDBC table and writing them to a JDBC table. It s
 
 ## Arguments
 
-* `jdbctojdbc.input.url`: JDBC input URL
+* `jdbctojdbc.input.url`: JDBC input URL 
+* `jdbctojdbc.input.url.secret`: JDBC input URL secret. Pass the secret name as created in Cloud Secret Manager
+> Note: Please provide only one of the above two properties (`jdbctojdbc.input.url` or `jdbctojdbc.input.url.secret`)
 * `jdbctojdbc.input.driver`: JDBC input driver name
 * `jdbctojdbc.input.table`: JDBC input table name
-* `jdbctojdbc.output.url`: JDBC output url. When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the URL to provide a significant performance improvement over the default setting.
+* `jdbctojdbc.output.url`: JDBC output url. When the JDBC target is PostgreSQL it is recommended to include the connection parameter reWriteBatchedInserts=true in the URL to provide a significant performance improvement over the default setting. OR provide secret name enclosed inside { }
+* `jdbctojdbc.output.url.secret`: JDBC output URL secret. Pass the secret name as created in Cloud Secret Manager.
+> Note: Please provide only one of the above two properties (`jdbctojdbc.output.url` or `jdbctojdbc.output.url.secret`)
 * `jdbctojdbc.output.driver`: JDBC output driver name
 * `jdbctojdbc.output.table`: JDBC output table name
 * `jdbctojdbc.input.partitioncolumn` (Optional): JDBC input table partition column name
@@ -126,12 +132,14 @@ usage: main.py --template JDBCTOJDBC \
 
 optional arguments:
     -h, --help            show this help message and exit
+    --jdbctojdbc.input.url.secret JDBCTOJDBC.INPUT.URL.SECRET \
     --jdbctojdbc.input.partitioncolumn JDBCTOJDBC.INPUT.PARTITIONCOLUMN \
     --jdbctojdbc.input.lowerbound JDBCTOJDBC.INPUT.LOWERBOUND \
     --jdbctojdbc.input.upperbound JDBCTOJDBC.INPUT.UPPERBOUND \
     --jdbctojdbc.numpartitions JDBCTOJDBC.NUMPARTITIONS \
     --jdbctojdbc.input.fetchsize JDBCTOJDBC.INPUT.FETCHSIZE \
     --jdbctojdbc.input.sessioninitstatement JDBCTOJDBC.INPUT.SESSIONINITSTATEMENT \
+    --jdbctojdbc.output.url.secret JDBCTOJDBC.OUTPUT.URL.SECRET \
     --jdbctojdbc.output.create_table.option JDBCTOJDBC.OUTPUT.CREATE_TABLE.OPTION \
     --jdbctojdbc.output.mode {overwrite,append,ignore,errorifexists} \
     --jdbctojdbc.output.batch.size JDBCTOJDBC.OUTPUT.BATCH.SIZE \
@@ -174,6 +182,26 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 --jdbctojdbc.output.create_table.option=<optional-output-table-properties> \
 --jdbctojdbc.output.mode=<optional-write-mode> \
 --jdbctojdbc.output.batch.size=<optional-batch-size>
+
+WITH SECRET
+
+./bin/start.sh \
+-- --template=JDBCTOJDBC \
+--jdbctojdbc.input.url.secret="<jdbc-input-url-secret-name>" \
+--jdbctojdbc.input.driver=<jdbc-driver-class-name> \
+--jdbctojdbc.input.table=<input table name or subquery with where clause filter> \
+--jdbctojdbc.input.partitioncolumn=<optional-partition-column-name> \
+--jdbctojdbc.input.lowerbound=<optional-partition-start-value>  \
+--jdbctojdbc.input.upperbound=<optional-partition-end-value>  \
+--jdbctojdbc.numpartitions=<optional-partition-number> \
+--jdbctojdbc.input.fetchsize=<optional-fetch-size> \
+--jdbctojdbc.input.sessioninitstatement=<optional-SQL-statement> \
+--jdbctojdbc.output.url.secret="<jdbc-output-url-secret-name>" \
+--jdbctojdbc.output.driver=<jdbc-driver-class-name> \
+--jdbctojdbc.output.table=<output-table-name> \
+--jdbctojdbc.output.create_table.option=<optional-output-table-properties> \
+--jdbctojdbc.output.mode=<optional-write-mode> \
+--jdbctojdbc.output.batch.size=<optional-batch-size>
 ```
 
 ## Example execution:
@@ -197,6 +225,24 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 --jdbctojdbc.input.upperbound="10" \
 --jdbctojdbc.numpartitions="4" \
 --jdbctojdbc.output.url="jdbc:mysql://1.1.1.1:3306/mydb?user=root&password=password123" \
+--jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+--jdbctojdbc.output.table="employees_out" \
+--jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id)  (PARTITION p0 VALUES LESS THAN (5),PARTITION p1 VALUES LESS THAN (10),PARTITION p2 VALUES LESS THAN (15),PARTITION p3 VALUES LESS THAN MAXVALUE)" \
+--jdbctojdbc.output.mode="overwrite" \
+--jdbctojdbc.output.batch.size="1000"
+
+WITH SECRET
+
+./bin/start.sh \
+-- --template=JDBCTOJDBC \
+--jdbctojdbc.input.url.secret="jdbctojdbcurlsecret" \
+--jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+--jdbctojdbc.input.table="(select * from employees where id <10) as employees" \
+--jdbctojdbc.input.partitioncolumn=id \
+--jdbctojdbc.input.lowerbound="1" \
+--jdbctojdbc.input.upperbound="10" \
+--jdbctojdbc.numpartitions="4" \
+--jdbctojdbc.output.url.secret="jdbctojdbcoutputurlsecret" \
 --jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
 --jdbctojdbc.output.table="employees_out" \
 --jdbctojdbc.output.create_table.option="PARTITION BY RANGE(id)  (PARTITION p0 VALUES LESS THAN (5),PARTITION p1 VALUES LESS THAN (10),PARTITION p2 VALUES LESS THAN (15),PARTITION p3 VALUES LESS THAN MAXVALUE)" \
@@ -315,7 +361,9 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 Template for reading data from JDBC table and writing into files in Google Cloud Storage. It supports reading partition tabels and supports writing in JSON, CSV, Parquet and Avro formats.
 
 ## Arguments
-* `jdbctogcs.input.url`: JDBC input URL
+* `jdbctogcs.input.url`: JDBC input URL 
+* `jdbctogcs.input.url.secret`: JDBC input URL secret. Pass the secret name as created in Cloud Secret Manager.
+> Note: Please provide only one of the above two properties (`jdbctogcs.input.url` or `jdbctogcs.input.url.secret`)
 * `jdbctogcs.input.driver`: JDBC input driver name
 * `jdbctogcs.input.table`: JDBC input table name
 * `jdbctogcs.input.sql.query`: JDBC input SQL query
@@ -391,6 +439,8 @@ options:
   -h, --help            show this help message and exit
   --jdbctogcs.input.url JDBCTOGCS.INPUT.URL
                         JDBC input URL
+  --jdbctogcs.input.url.secret JDBCTOGCS.INPUT.URL.SECRET
+                        JDBC input URL secret. Pass the secret name as created in Cloud Secret Manager.                  
   --jdbctogcs.input.driver JDBCTOGCS.INPUT.DRIVER
                         JDBC input driver name
   --jdbctogcs.input.table JDBCTOGCS.INPUT.TABLE
@@ -467,7 +517,25 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 
 ./bin/start.sh \
 -- --template=JDBCTOGCS \
---jdbctogcs.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
+--jdbctogcs.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" OR "{jdbc_url_secret_name}" \
+--jdbctogcs.input.driver=<jdbc-driver-class-name> \
+--jdbctogcs.input.table=<input table name or subquery with where clause filter> \
+--jdbctogcs.input.partitioncolumn=<optional-partition-column-name> \
+--jdbctogcs.input.lowerbound=<optional-partition-start-value>  \
+--jdbctogcs.input.upperbound=<optional-partition-end-value>  \
+--jdbctogcs.numpartitions=<optional-partition-number> \
+--jdbctogcs.input.fetchsize=<optional-fetch-size> \
+--jdbctogcs.input.sessioninitstatement=<optional-SQL-statement> \
+--jdbctogcs.output.location=<gcs-output-location> \
+--jdbctogcs.output.mode=<optional-write-mode> \
+--jdbctogcs.output.format=<output-write-format> \
+--jdbctogcs.output.partitioncolumn=<optional-output-partition-column-name>
+
+WITH SECRET 
+
+./bin/start.sh \
+-- --template=JDBCTOGCS \
+--jdbctogcs.input.url.secret="<jdbc-input-url-secret-name>" \
 --jdbctogcs.input.driver=<jdbc-driver-class-name> \
 --jdbctogcs.input.table=<input table name or subquery with where clause filter> \
 --jdbctogcs.input.partitioncolumn=<optional-partition-column-name> \
@@ -502,6 +570,22 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 ./bin/start.sh \
 -- --template=JDBCTOGCS \
 --jdbctogcs.input.url="jdbc:mysql://1.1.1.1:3306/mydb?user=root&password=password123" \
+--jdbctogcs.input.driver="com.mysql.cj.jdbc.Driver" \
+--jdbctogcs.input.table="(select * from employees where id <10) as employees" \
+--jdbctogcs.input.partitioncolumn="id" \
+--jdbctogcs.input.lowerbound="11" \
+--jdbctogcs.input.upperbound="20" \
+--jdbctogcs.numpartitions="4" \
+--jdbctogcs.output.location="gs://output_bucket/output/" \
+--jdbctogcs.output.mode="overwrite" \
+--jdbctogcs.output.format="csv" \
+--jdbctogcs.output.partitioncolumn="department_id"
+
+WITH SECRET
+
+./bin/start.sh \
+-- --template=JDBCTOGCS \
+--jdbctogcs.input.url.secret="jdbctogcsinputurl" \
 --jdbctogcs.input.driver="com.mysql.cj.jdbc.Driver" \
 --jdbctogcs.input.table="(select * from employees where id <10) as employees" \
 --jdbctogcs.input.partitioncolumn="id" \
@@ -587,6 +671,8 @@ This template requires the JBDC jar files mentioned, and also the [Spark BigQuer
 ## Arguments
 
 * `jdbc.bigquery.input.url`: JDBC input URL
+* `jdbc.bigquery.input.url.secret`: JDBC input URL secret. Pass the secret name as created in Cloud Secret Manager.
+> Note: Please provide only one of the above two properties (`jdbc.bigquery.input.url` or `jdbc.bigquery.input.url.secret`)
 * `jdbc.bigquery.input.driver`: JDBC input driver name
 * `jdbc.bigquery.input.table`: JDBC input table name
 * `jdbc.bigquery.input.partitioncolumn` (Optional): JDBC input table partition column name
@@ -622,6 +708,7 @@ usage: main.py [-h] --jdbc.bigquery.output.dataset
 
 optional arguments:
   -h, --help            show this help message and exit
+  --jdbc.bigquery.input.url.secret JDBC.BIGQUERY.INPUT.URL.SECRET
   --jdbc.bigquery.output.dataset JDBC.BIGQUERY.OUTPUT.DATASET
                         BigQuery dataset for the output table
   --jdbc.bigquery.output.table JDBC.BIGQUERY.OUTPUT.TABLE
@@ -671,7 +758,19 @@ export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_p
 
 ./bin/start.sh \
 -- --template=JDBCTOBIGQUERY \
---jdbc.bigquery.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" \
+--jdbc.bigquery.input.url="jdbc:mysql://<hostname>:<port>/<dbname>?user=<username>&password=<password>" OR "{jdbc_url_secret_name}" \
+--jdbc.bigquery.input.driver="<jdbc-driver-class-name>" \
+--jdbc.bigquery.input.table="input table name or subquery with where clause filter" \
+--jdbc.bigquery.output.mode="<append|overwrite|ignore|errorifexists>" \
+--jdbc.bigquery.output.dataset="<bigquery-dataset-name>" \
+--jdbc.bigquery.output.table="<bigquery-dataset-table>" \
+--jdbc.bigquery.temp.bucket.name="<temp-bq-bucket-name>"
+
+WITH SECRET 
+
+./bin/start.sh \
+-- --template=JDBCTOBIGQUERY \
+--jdbc.bigquery.input.url.secret="<jdbc-input-url-secret-name>" \
 --jdbc.bigquery.input.driver="<jdbc-driver-class-name>" \
 --jdbc.bigquery.input.table="input table name or subquery with where clause filter" \
 --jdbc.bigquery.output.mode="<append|overwrite|ignore|errorifexists>" \
@@ -696,6 +795,22 @@ export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-p
 ./bin/start.sh \
 -- --template=JDBCTOBIGQUERY \
 --jdbc.bigquery.input.url="jdbc:mysql://1.1.1.1:3306/mydb?user=root&password=password123" \
+--jdbc.bigquery.input.driver="com.mysql.cj.jdbc.Driver" \
+--jdbc.bigquery.input.table="(select * from employees where id < 10) as employees" \
+--jdbc.bigquery.input.partitioncolumn=id \
+--jdbc.bigquery.input.lowerbound="11" \
+--jdbc.bigquery.input.upperbound="20" \
+--jdbc.bigquery.input.numpartitions="4" \
+--jdbc.bigquery.output.mode="overwrite" \
+--jdbc.bigquery.output.dataset="bq-dataset" \
+--jdbc.bigquery.output.table="bq-table" \
+--jdbc.bigquery.temp.bucket.name="temp-bq-bucket-name"
+
+WITH SECRET 
+
+./bin/start.sh \
+-- --template=JDBCTOBIGQUERY \
+--jdbc.bigquery.input.url.secret="jdbctobqinputurl" \
 --jdbc.bigquery.input.driver="com.mysql.cj.jdbc.Driver" \
 --jdbc.bigquery.input.table="(select * from employees where id < 10) as employees" \
 --jdbc.bigquery.input.partitioncolumn=id \
