@@ -636,7 +636,7 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
         ```
         wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
         IMAGE=us-central1-docker.pkg.dev/<your_project>/<repository>/<your_custom_image>:<your_version>
-        docker build -t "${IMAGE}" .
+        docker build --platform linux/amd64 -t "${IMAGE}" .
         docker push "${IMAGE}"
         ```
       - An SPARK_EXTRA_CLASSPATH environment variable should also be set to the same path when submitting the job.
@@ -679,7 +679,7 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
    - file:///usr/lib/spark/external/hbase-spark.jar
 
 - **Bigtable dependency:**
-  - gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar
+  - gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-shaded-2.3.0.jar
     - Download it using ``` wget https://repo1.maven.org/maven2/com/google/cloud/bigtable/bigtable-hbase-2.x-shaded/2.3.0/bigtable-hbase-2.x-shaded-2.3.0.jar```
 
 - **HBase dependencies:**
@@ -929,10 +929,11 @@ export JARS="gs://<your_bucket_to_store_dependencies>/elasticsearch-spark-30_2.1
              gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar,\
              file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,\
              file:///usr/lib/spark/external/hbase-spark.jar"
+export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 
 ./bin/start.sh \
 --container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>" \
---properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \ # image with hbase-site.xml in /etc/hbase/conf/
+--properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/,spark.jars.packages=org.slf4j:slf4j-reload4j:1.7.36' \ # image with hbase-site.xml in /etc/hbase/conf/
 -- --template=ELASTICSEARCHTOBIGTABLE \
    --es.bt.input.node="xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243" \
    --es.bt.input.index="demo" \
