@@ -37,7 +37,8 @@ class TestElasticsearchToBQTemplate:
              "--es.bq.input.password=demo",
              "--es.bq.output.dataset=dataset",
              "--es.bq.output.table=table",
-             "--es.bq.output.mode=append"])
+             "--es.bq.output.mode=append",
+             "--es.bq.temp.bucket.name=bucket"])
 
         assert parsed_args["es.bq.input.node"] == "xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243"
         assert parsed_args["es.bq.input.index"] == "demo"
@@ -46,6 +47,7 @@ class TestElasticsearchToBQTemplate:
         assert parsed_args["es.bq.output.dataset"] == "dataset"
         assert parsed_args["es.bq.output.table"] == "table"
         assert parsed_args["es.bq.output.mode"] == "append"
+        assert parsed_args["es.bq.temp.bucket.name"] == "bucket"
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     @mock.patch("dataproc_templates.util.dataframe_reader_wrappers.rename_columns")
@@ -60,7 +62,8 @@ class TestElasticsearchToBQTemplate:
              "--es.bq.input.password=demo",
              "--es.bq.output.dataset=dataset",
              "--es.bq.output.table=table",
-             "--es.bq.output.mode=append"])
+             "--es.bq.output.mode=append",
+             "--es.bq.temp.bucket.name=bucket"])
         
         mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
         mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
@@ -74,10 +77,12 @@ class TestElasticsearchToBQTemplate:
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(
             constants.FORMAT_BIGQUERY)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option.assert_called_once_with(constants.WRITE_METHOD, constants.DIRECT)
-        mock_spark_session.dataframe.DataFrame.write.format().option(
         ).option.assert_called_once_with(constants.TABLE, "dataset.table")
+        mock_spark_session.dataframe.DataFrame.write.format().option(
+        ).option.assert_called_once_with(constants.ES_BQ_TEMP_BUCKET, "bucket")
+        mock_spark_session.dataframe.DataFrame.write.format().option(
+        ).option().option.assert_called_once_with('enableListInference', True)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        ).option().option().option().mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
         mock_spark_session.dataframe.DataFrame.write.format(
-        ).option().option().mode().save.assert_called_once()
+        ).option().option().option().mode().save.assert_called_once()

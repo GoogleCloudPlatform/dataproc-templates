@@ -91,6 +91,12 @@ class ElasticsearchToBQTemplate(BaseTemplate):
             help='BigQuery Output Table Name'
         )
         parser.add_argument(
+            f'--{constants.ES_BQ_LD_TEMP_BUCKET_NAME}',
+            dest=constants.ES_BQ_LD_TEMP_BUCKET_NAME,
+            required=True,
+            help='Spark BigQuery connector temporary bucket'
+        )
+        parser.add_argument(
             f'--{constants.ES_BQ_OUTPUT_MODE}',
             dest=constants.ES_BQ_OUTPUT_MODE,
             required=False,
@@ -124,6 +130,7 @@ class ElasticsearchToBQTemplate(BaseTemplate):
         es_password: str = args[constants.ES_BQ_NODE_PASSWORD]
         flatten_struct = args[constants.ES_BQ_FLATTEN_STRUCT]
         flatten_array = args[constants.ES_BQ_FLATTEN_ARRAY]
+        bq_temp_bucket: str = args[constants.ES_BQ_LD_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.ES_BQ_OUTPUT_MODE]
         big_query_output_dataset: str = args[constants.ES_BQ_OUTPUT_DATASET]
         big_query_output_table: str = args[constants.ES_BQ_OUTPUT_TABLE]
@@ -150,8 +157,9 @@ class ElasticsearchToBQTemplate(BaseTemplate):
 
         # Write
         input_data.write \
-                .format(constants.FORMAT_BIGQUERY) \
-                .option(constants.WRITE_METHOD, constants.DIRECT)\
-                .option(constants.TABLE, big_query_output_dataset + "." + big_query_output_table) \
-                .mode(output_mode) \
-                .save()
+            .format(constants.FORMAT_BIGQUERY) \
+            .option(constants.TABLE, big_query_output_dataset + "." + big_query_output_table) \
+            .option(constants.ES_BQ_TEMP_BUCKET, bq_temp_bucket) \
+            .option("enableListInference", True) \
+            .mode(output_mode) \
+            .save()

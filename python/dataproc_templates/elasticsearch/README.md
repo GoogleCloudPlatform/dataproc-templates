@@ -362,6 +362,7 @@ This template has been tested with the following versions of the above mentioned
 - `es.bq.input.password`: Elasticsearch Password
 - `es.bq.output.dataset`: BigQuery dataset id (format: Dataset_id)
 - `es.bq.output.table`: BigQuery table name (format: Table_name)
+- `es.bq.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
 
 #### Optional Arguments
 
@@ -426,6 +427,7 @@ usage: main.py [-h]
                --es.bq.input.password ES.BQ.INPUT.PASSWORD
                --es.bq.output.dataset ES.BQ.OUTPUT.DATASET
                --es.bq.output.table ES.BQ.OUTPUT.TABLE
+               --es.bq.temp.bucket.name ES.BQ.TEMP.BUCKET.NAME
                --es.bq.output.mode {overwrite,append,ignore,errorifexists}
                [--es.bq.input.es.nodes.path.prefix ES.BQ.INPUT.ES.NODES.PATH.PREFIX]
                [--es.bq.input.es.query ES.BQ.INPUT.ES.QUERY]
@@ -586,6 +588,8 @@ options:
                         BigQuery Output Dataset Name
   --es.bq.output.table ES.BQ.OUTPUT.TABLE
                         BigQuery Output Table Name
+  --es.bq.temp.bucket.name ES.BIGQUERY.TEMP.BUCKET.NAME
+                        Spark BigQuery connector temporary bucket
   --es.bq.output.mode {overwrite,append,ignore,errorifexists}
                         BigQuery Output write mode (one of:
                         append,overwrite,ignore,errorifexists) (Defaults to
@@ -609,6 +613,7 @@ export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
     --es.bq.input.password="demo" \
     --es.bq.output.dataset="my-project.test_dataset" \
     --es.bq.output.table="dummyusers" \
+    --es.bq.temp.bucket.name="<temp-bq-bucket-name>" \
     --es.bq.output.mode="append"
 ```
 # Elasticsearch To Bigtable
