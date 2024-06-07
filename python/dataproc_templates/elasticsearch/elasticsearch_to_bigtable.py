@@ -76,7 +76,10 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
             dest=constants.ES_BT_FLATTEN_ARRAY,
             action='store_true',
             required=False,
-            help=f'Flatten the n-D array fields to 1-D array fields, it needs {constants.ES_BT_FLATTEN_STRUCT} to be true'
+            help=(
+                'Flatten the n-D array fields to 1-D array fields,'
+                f' it needs {constants.ES_BT_FLATTEN_STRUCT} to be true'
+            )
         )
         parser.add_argument(
             f'--{constants.ES_BT_HBASE_CATALOG_JSON}',

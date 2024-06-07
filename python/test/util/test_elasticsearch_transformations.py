@@ -16,7 +16,7 @@
 
 import pytest
 
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType, ArrayType
 from pyspark.testing.utils import assertDataFrameEqual
 
@@ -30,14 +30,16 @@ from dataproc_templates.util.elasticsearch_transformations import \
 
 @pytest.fixture
 def spark_session():
+    """Spark Session Fixture"""
     spark = SparkSession.builder \
         .appName("Spark-Test-Application") \
         .enableHiveSupport() \
         .getOrCreate()
-    
+
     yield spark
 
 def test_flatten_struct_fields(spark_session):
+    """Test flatten struct fields function"""
     nested_schema = StructType([
                 StructField("id", IntegerType(), True),
                 StructField("nested", StructType([
@@ -45,7 +47,7 @@ def test_flatten_struct_fields(spark_session):
                     StructField("field2", StringType(), True)
                 ]), True)
             ])
-  
+
     nested_data = [(1, ("data1", "data2")), (2, ("data3", "data4"))]
 
     # Create a Spark DataFrame
@@ -59,7 +61,7 @@ def test_flatten_struct_fields(spark_session):
                 StructField("nested__field1", StringType(), True),
                 StructField("nested__field2", StringType(), True)
             ])
-    
+
     expected_data = [(1, "data1", "data2"), (2, "data3", "data4")]
 
     expected_df = spark_session.createDataFrame(expected_data, expected_schema)
@@ -67,6 +69,7 @@ def test_flatten_struct_fields(spark_session):
     assertDataFrameEqual(transformed_df, expected_df)
 
 def test_detect_multidimensional_array_columns(spark_session):
+    """Test detect multidimentional array columns function"""
     schema = StructType([
         StructField("id", IntegerType(), nullable=False),
         StructField("name", StringType(), nullable=False),
@@ -74,7 +77,7 @@ def test_detect_multidimensional_array_columns(spark_session):
         StructField("attributes", ArrayType(ArrayType(StringType())), nullable=False),
         StructField("properties", ArrayType(ArrayType(ArrayType(IntegerType()))), nullable=False)
     ])
-    
+
     df = spark_session.createDataFrame([], schema)
 
     output = detect_multidimensional_array_columns(df)
@@ -84,26 +87,28 @@ def test_detect_multidimensional_array_columns(spark_session):
     assert output == expected_result
 
 def test_flatten_array_fields(spark_session):
-   schema = StructType([
-        StructField("id", IntegerType(), nullable=False),
-        StructField("matrix-2d", ArrayType(ArrayType(IntegerType())), nullable=False),
-        StructField("matrix-3d", ArrayType(ArrayType(ArrayType(IntegerType()))), nullable=False)
-    ])
-   df = spark_session.createDataFrame([(1, [[1, 2], [3, 4]], [[[1, 2]], [[3,4]]])], schema)
-   flattened_df = flatten_array_fields(df)
-   
-   # Check the new schema has the same root level fields with updated array depth
-   assert len(flattened_df.schema.fields) == len(df.schema.fields)
-   assert isinstance(flattened_df.schema.fields[1].dataType, ArrayType)
-   assert not isinstance(flattened_df.schema.fields[1].dataType.elementType, ArrayType)
-   assert isinstance(flattened_df.schema.fields[2].dataType, ArrayType)
-   assert not isinstance(flattened_df.schema.fields[2].dataType.elementType, ArrayType)
-   
-   # Check that the actual data has been flattened correctly
-   expected_data = [(1, [1, 2, 3, 4], [1, 2, 3, 4])]
-   assert flattened_df.collect() == expected_data
+    """Test flatten array fields function"""
+    schema = StructType([
+            StructField("id", IntegerType(), nullable=False),
+            StructField("matrix-2d", ArrayType(ArrayType(IntegerType())), nullable=False),
+            StructField("matrix-3d", ArrayType(ArrayType(ArrayType(IntegerType()))), nullable=False)
+        ])
+    df = spark_session.createDataFrame([(1, [[1, 2], [3, 4]], [[[1, 2]], [[3,4]]])], schema)
+    flattened_df = flatten_array_fields(df)
+
+    # Check the new schema has the same root level fields with updated array depth
+    assert len(flattened_df.schema.fields) == len(df.schema.fields)
+    assert isinstance(flattened_df.schema.fields[1].dataType, ArrayType)
+    assert not isinstance(flattened_df.schema.fields[1].dataType.elementType, ArrayType)
+    assert isinstance(flattened_df.schema.fields[2].dataType, ArrayType)
+    assert not isinstance(flattened_df.schema.fields[2].dataType.elementType, ArrayType)
+
+    # Check that the actual data has been flattened correctly
+    expected_data = [(1, [1, 2, 3, 4], [1, 2, 3, 4])]
+    assert flattened_df.collect() == expected_data
 
 def test_rename_duplicate_columns():
+    """Test renam duplicate columns function"""
     schema = {
     "fields": [
         {"metadata": {}, "name": "@timestamp", "nullable": True, "type": "long"},
@@ -166,6 +171,7 @@ def test_rename_duplicate_columns():
     assert rename_duplicate_columns(schema) == expected_schema
 
 def test_modify_json_schema():
+    """Test modify json schema function"""
     schema = {
     "fields": [
         {"metadata": {}, "name": "@timestamp", "nullable": True, "type": "long"},
@@ -230,6 +236,7 @@ def test_modify_json_schema():
     assert modify_json_schema(schema) == expected_schema
 
 def test_rename_columns(spark_session):
+    """Test rename columns function"""
     schema = StructType([
         StructField("id", IntegerType(), nullable=False),
         StructField("person-info", StructType([
@@ -249,4 +256,3 @@ def test_rename_columns(spark_session):
     assert all(
         col.name in expected_inner_columns for col in renamed_df.schema["person_info"].dataType.fields
     )
-

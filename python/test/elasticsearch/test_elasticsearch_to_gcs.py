@@ -58,7 +58,7 @@ class TestElasticsearchToGCSTemplate:
              "--es.gcs.output.format=parquet",
              "--es.gcs.output.mode=overwrite",
              "--es.gcs.output.location=gs://my-output/esgcsoutput"])
-        
+
         mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
         mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
         mock_rename_columns.return_value = mock_spark_session.dataframe.DataFrame

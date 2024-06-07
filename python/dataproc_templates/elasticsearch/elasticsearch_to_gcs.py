@@ -77,7 +77,10 @@ class ElasticsearchToGCSTemplate(BaseTemplate):
             dest=constants.ES_GCS_FLATTEN_ARRAY,
             action='store_true',
             required=False,
-            help=f'Flatten the n-D array fields to 1-D array fields, it needs {constants.ES_GCS_FLATTEN_STRUCT} argument to be passed'
+            help=(
+                'Flatten the n-D array fields to 1-D array fields,'
+                f' it needs {constants.ES_GCS_FLATTEN_STRUCT} argument to be passed'
+            )
         )
         parser.add_argument(
             f'--{constants.ES_GCS_OUTPUT_FORMAT}',
@@ -114,7 +117,7 @@ class ElasticsearchToGCSTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
-        
+
         add_spark_options(parser, constants.get_csv_output_spark_options("es.gcs.output."))
 
         known_args: argparse.Namespace

@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Optional, Dict, Any
-import json 
+from typing import Optional
 
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.types import StructType, ArrayType
 
 import dataproc_templates.util.template_constants as constants
 from dataproc_templates.util.elasticsearch_transformations import rename_columns
@@ -62,9 +60,9 @@ def ingest_dataframe_from_cloud_storage(
 
 def ingest_dataframe_from_elasticsearch(
     spark: SparkSession,
-    es_node: str, 
-    es_index: str, 
-    es_user: str, 
+    es_node: str,
+    es_index: str,
+    es_user: str,
     es_password: str,
     args: dict,
     prefix: str,
@@ -95,11 +93,11 @@ def ingest_dataframe_from_elasticsearch(
         constants.ELASTICSEARCH_KEY_CLASS,\
         constants.ELASTICSEARCH_VALUE_CLASS,\
         conf=es_conf_json)
-    
+
     # Remove the Elasticsearch ID from the RDD
     input_data = input_data.flatMap(lambda x: x[1:])
 
-    # Convert into Dataframe 
+    # Convert into Dataframe
     input_data = spark.read.json(input_data)
 
     # Remove Special Characters from the Column Names

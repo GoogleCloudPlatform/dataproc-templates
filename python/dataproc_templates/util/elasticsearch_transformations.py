@@ -17,7 +17,7 @@ from typing import Optional, Dict, List, Any
 import re
 import json
 
-from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, flatten
 from pyspark.sql.types import StructType, ArrayType
 
@@ -28,7 +28,7 @@ def flatten_struct_fields(
 
     stack = [((), nested_df)]
     columns = []
-   
+
     while stack:
         parents, df = stack.pop()
 
@@ -78,17 +78,17 @@ def flatten_array_fields(
     """Return a Dataframe with the multidimensional array columns flattened into one dimensional array columns"""
 
     columns_with_multidimensional_arrays = detect_multidimensional_array_columns(df)
-    
+
     for column_name, depth in columns_with_multidimensional_arrays:
         while depth > 1:
             df = df.withColumn(column_name, flatten(col(column_name)))
             depth -= 1
-    
+
     return df
 
 def rename_duplicate_columns(
-    dataframe_schema: Dict[str, Any], 
-    column_name_set: set = set(), 
+    dataframe_schema: Dict[str, Any],
+    column_name_set: set = set(),
     parent: tuple = ()
 ) -> Dict[str, Any]:
     """Return a modified dataframe schema dict with the duplicate columns renamed"""
@@ -102,7 +102,7 @@ def rename_duplicate_columns(
                 i+=1
             column_name_set.add(new_qualified_column_name.lower())
             fields['name'] = new_qualified_column_name.split('.')[-1]
-            
+
             if 'type' in fields and isinstance(fields['type'], dict):
                 if fields['type']['type'] == "struct":
                     fields['type'] = rename_duplicate_columns(fields['type'], column_name_set, parent+(new_qualified_column_name.split('.')[-1],))
@@ -128,7 +128,7 @@ def modify_json_schema(
                 for i in range(len(dataframe_schema[key])):
                     if isinstance(dataframe_schema[key][i], dict):
                         modify_json_schema(dataframe_schema[key][i])
-    
+
     return dataframe_schema
 
 def rename_columns(

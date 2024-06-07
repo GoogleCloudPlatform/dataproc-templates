@@ -76,7 +76,10 @@ class ElasticsearchToBQTemplate(BaseTemplate):
             dest=constants.ES_BQ_FLATTEN_ARRAY,
             action='store_true',
             required=False,
-            help=f'Flatten the n-D array fields to 1-D array fields, it needs {constants.ES_BQ_FLATTEN_STRUCT} to be true'
+            help=(
+                'Flatten the n-D array fields to 1-D array fields,'
+                f' it needs {constants.ES_BQ_FLATTEN_STRUCT} to be true'
+            )
         )
         parser.add_argument(
             f'--{constants.ES_BQ_OUTPUT_DATASET}',

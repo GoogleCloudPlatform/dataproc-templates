@@ -111,6 +111,7 @@ def test_add_spark_options():
             ), f"Attribute {spark_option} has no help text in SPARK_OPTIONS"
 
 def test_add_es_spark_connector_options():
+    """Test add_es_spark_connector_options function"""
     for option_set, option_prefix in [
         (es_spark_opt("mock.in.prefix."), "mock.in.prefix"),
     ]:

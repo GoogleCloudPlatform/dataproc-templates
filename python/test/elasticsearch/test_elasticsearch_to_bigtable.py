@@ -55,7 +55,7 @@ class TestElasticsearchToBigTableTemplate:
              "--es.bt.input.user=demo",
              "--es.bt.input.password=demo",
              "--es.bt.hbase.catalog.json={key:value}"])
-        
+
         mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
         mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
         mock_rename_columns.return_value = mock_spark_session.dataframe.DataFrame

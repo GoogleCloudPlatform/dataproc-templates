@@ -117,7 +117,7 @@ def add_es_spark_connector_options(parser: argparse.ArgumentParser, template_to_
         return
 
     for option_name, es_spark_reader_option_name in template_to_es_spark_reader_option_map.items():
-        help_text = (constants.ES_SPARK_READER_OPTIONS[es_spark_reader_option_name].get(constants.OPTION_HELP, ""))
+        help_text = constants.ES_SPARK_READER_OPTIONS[es_spark_reader_option_name].get(constants.OPTION_HELP, "")
 
         parser.add_argument(
             f'--{option_name}',

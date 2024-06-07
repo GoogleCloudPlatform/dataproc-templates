@@ -64,7 +64,7 @@ class TestElasticsearchToBQTemplate:
              "--es.bq.output.table=table",
              "--es.bq.output.mode=append",
              "--es.bq.temp.bucket.name=bucket"])
-        
+
         mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
         mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
         mock_rename_columns.return_value = mock_spark_session.dataframe.DataFrame
