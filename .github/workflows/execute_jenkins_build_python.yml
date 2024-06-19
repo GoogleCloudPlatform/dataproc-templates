@@ -12,7 +12,7 @@ jobs:
       BUILD_URL: ${{ steps.trigger.outputs.BUILD_URL }}
       EXECUTABLE_URL: ${{ steps.get_executable_url.outputs.POLLING_URL }}
     env:
-      JENKINS_URL: https://dataproctemplatesci.com/job/dataproc-templates-build/job/ad-hoc/job/build-job-python/buildWithParameters?token=GITHUB_TOKEN&branchName=origin/${{ github.head_ref }}
+      JENKINS_URL: https://34.102.167.213/job/dataproc-templates-build/job/ad-hoc/job/build-job-python/buildWithParameters?token=GITHUB_TOKEN&branchName=origin/${{ github.head_ref }}
       JOB_NAME: build-job-python
       CREDS: ${{ secrets.JENKINS_CREDS }}
     steps:
