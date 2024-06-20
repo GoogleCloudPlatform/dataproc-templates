@@ -327,7 +327,7 @@ export REGION=us-central1
 export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 
 ./bin/start.sh \
--- --template=MONGOTOGCS \
+-- --template=ELASTICSEARCHTOGCS \
     --es.gcs.input.node="xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243" \
     --es.gcs.input.index="demo" \
     --es.gcs.input.user="demo" \
