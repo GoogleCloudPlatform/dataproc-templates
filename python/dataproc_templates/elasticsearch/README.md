@@ -6,6 +6,8 @@ It supports writing JSON, CSV, Parquet and Avro formats.
 
 It uses the [Elasticsearch Spark Connector](https://www.elastic.co/guide/en/elasticsearch/hadoop/current/index.html) for reading data from Elasticsearch Index.
 
+The template can support the Elasticsearch versions >= 7.12.0, using the appropriate Elasticsearch Spark Connector
+
 ## Arguments
 - `es.gcs.input.node`: Elasticsearch Node Uri (format: mynode:9600)
 - `es.gcs.input.index`: Elasticsearch Input Index Name (format: <index>/<type>)
@@ -347,7 +349,7 @@ It uses the [Elasticsearch Spark Connector](https://www.elastic.co/guide/en/elas
 
 Depending upon the versions of Elasticsearch, PySpark and Scala in the environment the Elasticsearch Spark JAR can be downloaded from this [link](https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch-spark-30). 
 
-The template can support the Elasticsearch versions >= 7.12.0
+The template can support the Elasticsearch versions >= 7.12.0, using the appropriate Elasticsearch Spark Connector
 
 This template has been tested with the following versions of the above mentioned JAR files:
 
@@ -673,7 +675,7 @@ It uses the [Elasticsearch Spark Connector](https://www.elastic.co/guide/en/elas
 
 Depending upon the versions of Elasticsearch, PySpark and Scala in the environment the Elasticsearch Spark JAR can be downloaded from this [link](https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch-spark-30). 
 
-The template can support the Elasticsearch versions >= 7.12.0.
+The template can support the Elasticsearch versions >= 7.12.0, using the appropriate Elasticsearch Spark Connector
 
 Some HBase and Bigtable dependencies are required to be passed when submitting the job.
 These dependencies need to be passed by using the --jars flag, or, in the case of Dataproc Templates, using the JARS environment variable.
