@@ -82,7 +82,8 @@ def ingest_dataframe_from_elasticsearch(
         "es.nodes": es_node,
         "es.resource": es_index,
         "es.net.http.auth.user": es_user,
-        "es.net.http.auth.pass": es_password
+        "es.net.http.auth.pass": es_password,
+        "es.output.json": "true"
     }
 
     # Merging the Required and Optional attributes

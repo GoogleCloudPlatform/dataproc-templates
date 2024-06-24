@@ -21,7 +21,6 @@ The template can support the Elasticsearch versions >= 7.12.0, using the appropr
 
 - `es.gcs.input.es.nodes.path.prefix`: Prefix to add to all requests made to Elasticsearch
 - `es.gcs.input.es.query`: Holds the query used for reading data from the specified Index
-- `es.gcs.input.es.output.json`: Whether the output from the connector should be in JSON format or not (default true)
 - `es.gcs.input.es.mapping.date.rich`: Whether to create a rich Date like object for Date fields in Elasticsearch or returned them as primitives (String or long) (default true)
 - `es.gcs.input.es.read.field.include`: Fields/properties that are parsed and considered when reading the documents from Elasticsearch. By default empty meaning all fields are considered
 - `es.gcs.input.es.read.field.exclude`: Fields/properties that are discarded when reading the documents from Elasticsearch
@@ -99,7 +98,6 @@ usage: main.py [-h]
                --es.gcs.output.location ES.GCS.OUTPUT.LOCATION
                [--es.gcs.input.es.nodes.path.prefix ES.GCS.INPUT.ES.NODES.PATH.PREFIX]
                [--es.gcs.input.es.query ES.GCS.INPUT.ES.QUERY]
-               [--es.gcs.input.es.output.json ES.GCS.INPUT.ES.OUTPUT.JSON]
                [--es.gcs.input.es.mapping.date.rich ES.GCS.INPUT.ES.MAPPING.DATE.RICH]
                [--es.gcs.input.es.read.field.include ES.GCS.INPUT.ES.READ.FIELD.INCLUDE]
                [--es.gcs.input.es.read.field.exclude ES.GCS.INPUT.ES.READ.FIELD.EXCLUDE]
@@ -177,8 +175,6 @@ options:
                         Prefix to add to all requests made to Elasticsearch
   --es.gcs.input.es.query ES.GCS.INPUT.ES.QUERY
                         Holds the query used for reading data from the specified Index
-  --es.gcs.input.es.output.json ES.GCS.INPUT.ES.OUTPUT.JSON
-                        Whether the output from the connector should be in JSON format or not
   --es.gcs.input.es.mapping.date.rich ES.GCS.INPUT.ES.MAPPING.DATE.RICH
                         Whether to create a rich Date like object for Date fields in Elasticsearch or returned them as primitives (String or long)
   --es.gcs.input.es.read.field.include ES.GCS.INPUT.ES.READ.FIELD.INCLUDE
@@ -370,7 +366,6 @@ This template has been tested with the following versions of the above mentioned
 
 - `es.bq.input.es.nodes.path.prefix`: Prefix to add to all requests made to Elasticsearch
 - `es.bq.input.es.query`: Holds the query used for reading data from the specified Index
-- `es.bq.input.es.output.json`: Whether the output from the connector should be in JSON format or not (default true)
 - `es.bq.input.es.mapping.date.rich`: Whether to create a rich Date like object for Date fields in Elasticsearch or returned them as primitives (String or long) (default true)
 - `es.bq.input.es.read.field.include`: Fields/properties that are parsed and considered when reading the documents from Elasticsearch. By default empty meaning all fields are considered
 - `es.bq.input.es.read.field.exclude`: Fields/properties that are discarded when reading the documents from Elasticsearch
@@ -433,7 +428,6 @@ usage: main.py [-h]
                --es.bq.output.mode {overwrite,append,ignore,errorifexists}
                [--es.bq.input.es.nodes.path.prefix ES.BQ.INPUT.ES.NODES.PATH.PREFIX]
                [--es.bq.input.es.query ES.BQ.INPUT.ES.QUERY]
-               [--es.bq.input.es.output.json ES.BQ.INPUT.ES.OUTPUT.JSON]
                [--es.bq.input.es.mapping.date.rich ES.BQ.INPUT.ES.MAPPING.DATE.RICH]
                [--es.bq.input.es.read.field.include ES.BQ.INPUT.ES.READ.FIELD.INCLUDE]
                [--es.bq.input.es.read.field.exclude ES.BQ.INPUT.ES.READ.FIELD.EXCLUDE]
@@ -494,8 +488,6 @@ options:
                         Prefix to add to all requests made to Elasticsearch
   --es.bq.input.es.query ES.BQ.INPUT.ES.QUERY
                         Holds the query used for reading data from the specified Index
-  --es.bq.input.es.output.json ES.BQ.INPUT.ES.OUTPUT.JSON
-                        Whether the output from the connector should be in JSON format or not
   --es.bq.input.es.mapping.date.rich ES.BQ.INPUT.ES.MAPPING.DATE.RICH
                         Whether to create a rich Date like object for Date fields in Elasticsearch or returned them as primitives (String or long)
   --es.bq.input.es.read.field.include ES.BQ.INPUT.ES.READ.FIELD.INCLUDE
@@ -706,7 +698,6 @@ Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrep
 #### Optional Arguments
 - `es.bt.input.es.nodes.path.prefix`: Prefix to add to all requests made to Elasticsearch
 - `es.bt.input.es.query`: Holds the query used for reading data from the specified Index
-- `es.bt.input.es.output.json`: Whether the output from the connector should be in JSON format or not (default true)
 - `es.bt.input.es.mapping.date.rich`: Whether to create a rich Date like object for Date fields in Elasticsearch or returned them as primitives (String or long) (default true)
 - `es.bt.input.es.read.field.include`: Fields/properties that are parsed and considered when reading the documents from Elasticsearch. By default empty meaning all fields are considered
 - `es.bt.input.es.read.field.exclude`: Fields/properties that are discarded when reading the documents from Elasticsearch
@@ -766,7 +757,6 @@ usage: main.py [-h]
                --es.bt.hbase.catalog.json ES.BT.HBASE.CATALOG.JSON
                [--es.bt.input.es.nodes.path.prefix ES.BT.INPUT.ES.NODES.PATH.PREFIX]
                [--es.bt.input.es.query ES.BT.INPUT.ES.QUERY]
-               [--es.bt.input.es.output.json ES.BT.INPUT.ES.OUTPUT.JSON]
                [--es.bt.input.es.mapping.date.rich ES.BT.INPUT.ES.MAPPING.DATE.RICH]
                [--es.bt.input.es.read.field.include ES.BT.INPUT.ES.READ.FIELD.INCLUDE]
                [--es.bt.input.es.read.field.exclude ES.BT.INPUT.ES.READ.FIELD.EXCLUDE]
@@ -828,8 +818,6 @@ options:
                         Prefix to add to all requests made to Elasticsearch
   --es.bt.input.es.query ES.BT.INPUT.ES.QUERY
                         Holds the query used for reading data from the specified Index
-  --es.bt.input.es.output.json ES.BT.INPUT.ES.OUTPUT.JSON
-                        Whether the output from the connector should be in JSON format or not
   --es.bt.input.es.mapping.date.rich ES.BT.INPUT.ES.MAPPING.DATE.RICH
                         Whether to create a rich Date like object for Date fields in Elasticsearch or returned them as primitives (String or long)
   --es.bt.input.es.read.field.include ES.BT.INPUT.ES.READ.FIELD.INCLUDE

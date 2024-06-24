@@ -107,7 +107,6 @@ ELASTICSEARCH_KEY_CLASS="org.apache.hadoop.io.NullWritable"
 ELASTICSEARCH_VALUE_CLASS="org.elasticsearch.hadoop.mr.LinkedMapWritable"
 ES_NODES_PATH_PREFIX="es.nodes.path.prefix"
 ES_QUERY="es.query"
-ES_OUTPUT_JSON="es.output.json"
 ES_MAPPING_DATE_RICH="es.mapping.date.rich"
 ES_READ_FIELD_INCLUDE="es.read.field.include"
 ES_READ_FIELD_EXCLUDE="es.read.field.exclude"
@@ -317,9 +316,6 @@ ES_SPARK_READER_OPTIONS = {
         {OPTION_HELP: "Prefix to add to all requests made to Elasticsearch"},
     ES_QUERY:
         {OPTION_HELP: "Holds the query used for reading data from the specified Index"},
-    ES_OUTPUT_JSON:
-        {OPTION_DEFAULT: "true",
-         OPTION_HELP: "Whether the output from the connector should be in JSON format or not"},
     ES_MAPPING_DATE_RICH:
         {OPTION_DEFAULT: "true",
          OPTION_HELP: "Whether to create a rich Date like object for Date fields in Elasticsearch "
