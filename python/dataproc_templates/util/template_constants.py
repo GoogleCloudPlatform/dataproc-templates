@@ -446,7 +446,6 @@ def get_es_spark_connector_input_options(prefix):
     input_options = [
         ES_NODES_PATH_PREFIX,
         ES_QUERY,
-        ES_OUTPUT_JSON,
         ES_MAPPING_DATE_RICH,
         ES_READ_FIELD_INCLUDE,
         ES_READ_FIELD_EXCLUDE,
