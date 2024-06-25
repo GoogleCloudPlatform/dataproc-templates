@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.5.0-beta...v0.6.0-beta) (2024-06-25)
+
+
+### Features
+
+* Add new dataproc templates for Elasticsearch ([#927](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/927)) ([7b1f23f](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7b1f23f8194ad3846ddddd678b86f238cf1b9321))
+
+
+### Bug Fixes
+
+* Update Jenkinsfile added secret manager to cluster integ tests ([#925](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/925)) ([5a74e67](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5a74e67b55bcc469cca51d94f5c3b1c83d3f44ba))
+
 ## [0.5.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.4.0-beta...v0.5.0-beta) (2024-03-04)
 
 
