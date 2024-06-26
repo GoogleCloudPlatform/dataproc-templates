@@ -42,6 +42,8 @@ public interface TemplateConstants {
   String BIGTABLE_KEY_COL_PROP = "bigtable.key.col";
 
   String BIGTABLE_COL_FAMILY_NAME_PROP = "bigtable.col.family.name";
+
+  String BQ_GCS_OUTPUT_PARTITION_COLUMN = "bigquery.gcs.output.partition.col";
   String GCS_STAGING_BUCKET_PATH = "gcs.staging.bucket.path";
 
   // HiveToGCS Template configs.

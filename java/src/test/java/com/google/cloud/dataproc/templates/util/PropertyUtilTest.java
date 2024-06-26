@@ -15,6 +15,8 @@
  */
 package com.google.cloud.dataproc.templates.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Properties;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -60,6 +62,6 @@ class PropertyUtilTest {
     Assertions.assertNull(PropertyUtil.getProperties().get("addingAnExtraProperty"));
 
     PropertyUtil.registerProperties(extraProperties);
-    Assertions.assertEquals("Added!", PropertyUtil.getProperties().get("addingAnExtraProperty"));
+    assertEquals("Added!", PropertyUtil.getProperties().get("addingAnExtraProperty"));
   }
 }

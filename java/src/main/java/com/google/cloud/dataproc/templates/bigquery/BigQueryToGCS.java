@@ -23,6 +23,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_FORMAT_PARQUET;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_LOCATION;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_MODE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_PARTITION_COLUMN;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_AVRO_EXTD_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_HEADER;
@@ -49,6 +50,7 @@ public class BigQueryToGCS implements BaseTemplate {
   private final String outputFileLocation;
   private final String sparkLogLevel;
   private final String outputMode;
+  private final String partitionBy;
 
   public BigQueryToGCS() {
     inputTableName = getProperties().getProperty(BQ_GCS_INPUT_TABLE_NAME);
@@ -56,6 +58,7 @@ public class BigQueryToGCS implements BaseTemplate {
     outputFileLocation = getProperties().getProperty(BQ_GCS_OUTPUT_LOCATION);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
     outputMode = getProperties().getProperty(BQ_GCS_OUTPUT_MODE);
+    partitionBy = getProperties().getProperty(BQ_GCS_OUTPUT_PARTITION_COLUMN);
   }
 
   @Override
@@ -68,6 +71,8 @@ public class BigQueryToGCS implements BaseTemplate {
 
     Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
     DataFrameWriter<Row> writer = inputData.write().mode(SaveMode.valueOf(outputMode));
+    writer.partitionBy(
+        org.apache.commons.lang.StringUtils.isEmpty(partitionBy) ? null : partitionBy.trim());
     switch (outputFileFormat) {
       case BQ_GCS_OUTPUT_FORMAT_CSV:
         writer
