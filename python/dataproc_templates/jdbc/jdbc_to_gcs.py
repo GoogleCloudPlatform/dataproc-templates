@@ -23,6 +23,7 @@ from dataproc_templates import BaseTemplate
 from dataproc_templates.util.argument_parsing import add_spark_options
 from dataproc_templates.util.dataframe_writer_wrappers import persist_dataframe_to_cloud_storage
 import dataproc_templates.util.template_constants as constants
+import dataproc_templates.util.secret_manager as secret_manager
 
 
 __all__ = ['JDBCToGCSTemplate']
@@ -37,12 +38,21 @@ class JDBCToGCSTemplate(BaseTemplate):
     def parse_args(args: Optional[Sequence[str]] = None) -> Dict[str, Any]:
         parser: argparse.ArgumentParser = argparse.ArgumentParser()
 
-        parser.add_argument(
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
             f'--{constants.JDBCTOGCS_INPUT_URL}',
             dest=constants.JDBCTOGCS_INPUT_URL,
-            required=True,
+            required=False,
+            default="",
             help='JDBC input URL'
         )
+        group.add_argument(
+            f'--{constants.JDBCTOGCS_INPUT_URL_SECRET}',
+            dest=constants.JDBCTOGCS_INPUT_URL_SECRET,
+            required=False,
+            default="",
+            help='JDBC input URL secret name'
+        )    
         parser.add_argument(
             f'--{constants.JDBCTOGCS_INPUT_DRIVER}',
             dest=constants.JDBCTOGCS_INPUT_DRIVER,
@@ -178,7 +188,14 @@ class JDBCToGCSTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
-        input_jdbc_url: str = args[constants.JDBCTOGCS_INPUT_URL]
+        #check if secret is passed or the connection string in URL
+        #check if secret is passed or the connection string in the agruments
+        if str(args[constants.JDBCTOGCS_INPUT_URL])=="":
+            input_jdbc_url: str = secret_manager.access_secret_version(args[constants.JDBCTOGCS_INPUT_URL_SECRET])
+        else:
+            input_jdbc_url: str = args[constants.JDBCTOGCS_INPUT_URL]
+        
+
         input_jdbc_driver: str = args[constants.JDBCTOGCS_INPUT_DRIVER]
         input_jdbc_table: str = args[constants.JDBCTOGCS_INPUT_TABLE]
         input_jdbc_sql_query: str = args[constants.JDBCTOGCS_INPUT_SQL_QUERY]

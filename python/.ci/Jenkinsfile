@@ -66,6 +66,7 @@ pipeline {
                     echo "Cluster $CLUSTER does not exist. Creating now..."
                     gcloud dataproc clusters create $CLUSTER \
                     --region $REGION \
+                    --properties dataproc:pip.packages='google-cloud-secret-manager==2.20.0' \
                     --subnet $SUBNET \
                     --no-address \
                     --master-machine-type n1-standard-2 \
@@ -244,6 +245,33 @@ pipeline {
                         }
                     }
                 } 
+                stage('JDBC To JDBC with secrets') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                            
+                                source env/bin/activate
+                                
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export JARS="gs://datproc_template_nk/jars/mysql-connector-java-8.0.29.jar,gs://datproc_template_nk/jars/postgresql-42.2.6.jar,gs://datproc_template_nk/jars/mssql-jdbc-6.4.0.jre8.jar"
+                                export SKIP_BUILD=true
+                                
+                                cd python
+                                
+                                ./bin/start.sh \
+                                -- --template=JDBCTOJDBC \
+                                --jdbctojdbc.input.url.secret="jdbctobqconn" \
+                                --jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+                                --jdbctojdbc.input.table="demo" \
+                                --jdbctojdbc.output.url.secret="jdbctobqconn" \
+                                --jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+                                --jdbctojdbc.output.table="demo_out" \
+                                --jdbctojdbc.output.mode="overwrite" \
+                                --jdbctojdbc.output.batch.size="1000"
+                            '''
+                        }
+                    }
+                }
                 stage('GCS To MONGO') {
                     steps{
                         retry(count: stageRetryCount) {
@@ -451,6 +479,36 @@ pipeline {
                         }
                     }
                 }
+                stage('JDBC TO BIGQUERY with secret') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                            
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
+
+                                source env/bin/activate
+                                
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                export SKIP_BUILD=true
+
+                                cd python
+                                
+                                ./bin/start.sh \
+                                -- --template=JDBCTOBIGQUERY \
+                                --jdbc.bigquery.input.url.secret="jdbctobqconn" \
+                                --jdbc.bigquery.input.driver="com.mysql.jdbc.Driver" \
+                                --jdbc.bigquery.input.table="test.demo" \
+                                --jdbc.bigquery.output.mode="overwrite" \
+                                --jdbc.bigquery.output.dataset="dataproc_templates" \
+                                --jdbc.bigquery.output.table="jdbctobq" \
+                                --jdbc.bigquery.temp.bucket.name="dataproc-templates/integration-testing/jdbctobq"
+                            '''
+                        }
+                    }
+                }
                 stage('Cassandra TO GCS') {
                     steps{
                         retry(count: stageRetryCount) {
@@ -504,6 +562,35 @@ pipeline {
                                 ./bin/start.sh \
                                 -- --template=JDBCTOGCS \
                                 --jdbctogcs.input.url="$TEST_JDBC_URL" \
+                                --jdbctogcs.input.driver="com.mysql.jdbc.Driver" \
+                                --jdbctogcs.input.table="test.demo" \
+                                --jdbctogcs.output.location="gs://dataproc-templates/integration-testing/jdbctogcs/output-python" \
+                                --jdbctogcs.output.mode="overwrite" \
+                                --jdbctogcs.output.format="csv"
+                            '''
+                        }
+                    }
+                }
+                stage('JDBC TO GCS with secret') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                            
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
+
+                                source env/bin/activate
+                                
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar"
+                                export SKIP_BUILD=true
+
+                                cd python
+                                
+                                ./bin/start.sh \
+                                -- --template=JDBCTOGCS \
+                                --jdbctogcs.input.url.secret="jdbctobqconn" \
                                 --jdbctogcs.input.driver="com.mysql.jdbc.Driver" \
                                 --jdbctogcs.input.table="test.demo" \
                                 --jdbctogcs.output.location="gs://dataproc-templates/integration-testing/jdbctogcs/output-python" \
@@ -583,7 +670,9 @@ pipeline {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                            
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
@@ -593,7 +682,7 @@ pipeline {
                                 cd python
                                 
                                 ./bin/start.sh \
-                                    --container-image="gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.1" \
+                                    --container-image="gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.2" \
                                     --properties="spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/" \
                                     -- --template=HBASETOGCS \
                                     --hbase.gcs.output.location="gs://python-dataproc-templates/hbase-gcs-output" \
@@ -622,13 +711,18 @@ pipeline {
                             sh '''
                                 whoami
                                 sudo su
+
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
+
                                 source env/bin/activate
 
                                 gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
                                 
                                 export GCS_STAGING_LOCATION=gs://python-dataproc-templates-temp
                                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.1
+                                export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.2
                                 export HBASE_SITE_PATH=../hbase-site.xml
                                 export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
                                 export SKIP_IMAGE_BUILD=TRUE
@@ -670,7 +764,7 @@ pipeline {
                                 cd python
                                 
                                 ./bin/start.sh \
-                                --container-image="gcr.io/$GCP_PROJECT/bt-templates-test:1.0.0" \
+                                --container-image="gcr.io/$GCP_PROJECT/bt-templates-test:1.0.1" \
                                 --properties="spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/" \
                                 -- --template=GCSTOBIGTABLE \
                                 --gcs.bigtable.input.format="csv" \
