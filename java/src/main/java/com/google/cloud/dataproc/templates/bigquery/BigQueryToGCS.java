@@ -32,6 +32,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_L
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_READ_FORMAT_BIGQUERY;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
@@ -40,8 +41,6 @@ import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Optional;
 
 public class BigQueryToGCS implements BaseTemplate {
 
@@ -60,7 +59,10 @@ public class BigQueryToGCS implements BaseTemplate {
     outputFileLocation = getProperties().getProperty(BQ_GCS_OUTPUT_LOCATION);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
     outputMode = getProperties().getProperty(BQ_GCS_OUTPUT_MODE);
-    partitionBy = Optional.ofNullable(getProperties().getProperty(BQ_GCS_OUTPUT_PARTITION_COLUMN)).map(String::toString).orElse("");
+    partitionBy =
+        Optional.ofNullable(getProperties().getProperty(BQ_GCS_OUTPUT_PARTITION_COLUMN))
+            .map(String::toString)
+            .orElse("");
   }
 
   @Override
@@ -73,7 +75,7 @@ public class BigQueryToGCS implements BaseTemplate {
 
     Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
     DataFrameWriter<Row> writer = inputData.write().mode(SaveMode.valueOf(outputMode));
-    if(!org.apache.commons.lang.StringUtils.isEmpty(partitionBy)){
+    if (!org.apache.commons.lang.StringUtils.isEmpty(partitionBy)) {
       writer.partitionBy(partitionBy.trim());
     }
     switch (outputFileFormat) {
