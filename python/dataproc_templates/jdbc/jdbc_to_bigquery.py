@@ -21,6 +21,7 @@ from pyspark.sql import SparkSession, DataFrame, DataFrameWriter
 
 from dataproc_templates import BaseTemplate
 import dataproc_templates.util.template_constants as constants
+import dataproc_templates.util.secret_manager as secret_manager
 
 __all__ = ['JDBCToBigQueryTemplate']
 
@@ -52,11 +53,21 @@ class JDBCToBigQueryTemplate(BaseTemplate):
             required=True,
             help='Spark BigQuery connector temporary bucket'
         )
-        parser.add_argument(
+
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
             f'--{constants.JDBC_BQ_INPUT_URL}',
             dest=constants.JDBC_BQ_INPUT_URL,
-            required=True,
+            required=False,
+            default="",
             help='JDBC input URL'
+        )
+        group.add_argument(
+            f'--{constants.JDBC_BQ_INPUT_URL_SECRET}',
+            dest=constants.JDBC_BQ_INPUT_URL_SECRET,
+            required=False,
+            default="",
+            help='JDBC input URL secret name'
         )
         parser.add_argument(
             f'--{constants.JDBC_BQ_INPUT_DRIVER}',
@@ -144,7 +155,13 @@ class JDBCToBigQueryTemplate(BaseTemplate):
         big_query_dataset: str = args[constants.JDBC_BQ_OUTPUT_DATASET]
         big_query_table: str = args[constants.JDBC_BQ_OUTPUT_TABLE]
         bq_temp_bucket: str = args[constants.JDBC_BQ_LD_TEMP_BUCKET_NAME]
-        input_jdbc_url: str = args[constants.JDBC_BQ_INPUT_URL]
+        
+        #check if secret is passed or the connection string in the agruments
+        if str(args[constants.JDBC_BQ_INPUT_URL])=="":
+            input_jdbc_url: str = secret_manager.access_secret_version(args[constants.JDBC_BQ_INPUT_URL_SECRET])
+        else:
+            input_jdbc_url: str = args[constants.JDBC_BQ_INPUT_URL]
+
         input_jdbc_driver: str = args[constants.JDBC_BQ_INPUT_DRIVER]
         input_jdbc_table: str = args[constants.JDBC_BQ_INPUT_TABLE]
         input_jdbc_partitioncolumn: str = args[constants.JDBC_BQ_INPUT_PARTITIONCOLUMN]

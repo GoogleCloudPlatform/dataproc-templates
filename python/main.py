@@ -47,6 +47,9 @@ from dataproc_templates.cassandra.cassandra_to_gcs import CassandraToGCSTemplate
 from dataproc_templates.pubsublite.pubsublite_to_gcs import PubSubLiteToGCSTemplate
 from dataproc_templates.azure.azure_blob_storage_to_bigquery import AzureBlobStorageToBigQueryTemplate
 from dataproc_templates.pubsublite.pubsublite_to_bigtable import PubSubLiteToBigtableTemplate
+from dataproc_templates.elasticsearch.elasticsearch_to_gcs import ElasticsearchToGCSTemplate
+from dataproc_templates.elasticsearch.elasticsearch_to_bq import ElasticsearchToBQTemplate
+from dataproc_templates.elasticsearch.elasticsearch_to_bigtable import ElasticsearchToBigTableTemplate
 
 LOGGER: logging.Logger = logging.getLogger('dataproc_templates')
 
@@ -78,7 +81,10 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.KAFKATOBQ: KafkaToBigQueryTemplate,
     TemplateName.S3TOBIGQUERY: S3ToBigQueryTemplate,
     TemplateName.PUBSUBLITETOGCS: PubSubLiteToGCSTemplate,
-    TemplateName.PUBSUBLITETOBIGTABLE: PubSubLiteToBigtableTemplate
+    TemplateName.PUBSUBLITETOBIGTABLE: PubSubLiteToBigtableTemplate,
+    TemplateName.ELASTICSEARCHTOGCS: ElasticsearchToGCSTemplate,
+    TemplateName.ELASTICSEARCHTOBQ: ElasticsearchToBQTemplate,
+    TemplateName.ELASTICSEARCHTOBIGTABLE: ElasticsearchToBigTableTemplate
 
 }
 

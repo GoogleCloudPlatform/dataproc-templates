@@ -76,7 +76,8 @@ class BdistEggCustomEggName(bdist_egg):
 
 dependencies = [
     "pyspark>=3.2.0",
-    "google-cloud-bigquery>=3.4.0"
+    "google-cloud-bigquery>=3.4.0",
+    "google-cloud-secret-manager>=2.19.0"
 ]
 
 
