@@ -77,6 +77,9 @@ fi
 if [ -z "${JOB_TYPE}" ]; then
   JOB_TYPE=SERVERLESS
 fi
+if [ -z "${SERVICE_ACCOUNT_NAME}" ]; then
+  OPT_SERVICE_ACCOUNT_NAME="--service-account=${SERVICE_ACCOUNT_NAME}"
+fi
 
 #if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
 if [ -n "${CATALOG}" ]; then
@@ -127,7 +130,7 @@ EOF
 elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
   echo "JOB_TYPE is SERVERLESS, so will submit on serverless Spark"
   command=$(cat << EOF
-  gcloud beta dataproc batches submit pyspark \
+  gcloud dataproc batches submit pyspark \
       ${PROJECT_ROOT_DIR}/main.py \
       ${OPT_SPARK_VERSION} \
       ${OPT_PROJECT} \
@@ -140,7 +143,8 @@ elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
       ${OPT_PROPERTIES} \
       ${OPT_SUBNET} \
       ${OPT_HISTORY_SERVER_CLUSTER} \
-      ${OPT_METASTORE_SERVICE}
+      ${OPT_METASTORE_SERVICE} \
+      ${OPT_SERVICE_ACCOUNT_NAME}
 EOF
 )
 else
