@@ -64,3 +64,11 @@ python run_notebook.py --script=<NOTEBOOK_NAME> \
    --notebook.paramter1="<>" \
    --notebook.paramter2="<>"
 ```
+
+### Deploying Notebook Directly to Colab
+If you directly open notebook to colab environment then it will pull out notebook only. Our notebooks requires certain packages which comes along with repository such as [util](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/main/notebooks/util). Please follow below steps for each packages which requires in imported notebook.
+```jupyter
+!git clone https://github.com/GoogleCloudPlatform/dataproc-templates.git
+!mv /content/dataproc-templates/notebooks/util /content/
+!mv /content/dataproc-templates/java/ /content/
+```

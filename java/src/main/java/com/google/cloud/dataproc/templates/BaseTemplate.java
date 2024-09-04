@@ -58,7 +58,8 @@ public interface BaseTemplate {
     TEXTTOBIGQUERY,
     JDBCTOJDBC,
     PUBSUBLITETOBIGTABLE,
-    KAFKATOBQDSTREAM
+    KAFKATOBQDSTREAM,
+    KAFKATOGCSDSTREAM
   }
 
   default Properties getProperties() {

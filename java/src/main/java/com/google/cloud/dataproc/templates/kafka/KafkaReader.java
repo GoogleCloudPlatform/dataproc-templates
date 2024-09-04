@@ -62,7 +62,13 @@ public class KafkaReader {
 
     // check on memory constraints
 
+    return getDatasetByMessageFormat(inputData, prop);
+  }
+
+  public Dataset<Row> getDatasetByMessageFormat(Dataset<Row> inputData, Properties prop) {
     Dataset<Row> processedData = null;
+    String kakfaMessageFormat = prop.getProperty(KAFKA_MESSAGE_FORMAT);
+    String kafkaSchemaUrl = prop.getProperty(KAFKA_SCHEMA_URL);
 
     switch (kakfaMessageFormat) {
       case "bytes":
