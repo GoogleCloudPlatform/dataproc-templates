@@ -41,6 +41,8 @@ import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 public class BigQueryToGCS implements BaseTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BigQueryToGCS.class);
@@ -58,7 +60,7 @@ public class BigQueryToGCS implements BaseTemplate {
     outputFileLocation = getProperties().getProperty(BQ_GCS_OUTPUT_LOCATION);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
     outputMode = getProperties().getProperty(BQ_GCS_OUTPUT_MODE);
-    partitionBy = getProperties().getProperty(BQ_GCS_OUTPUT_PARTITION_COLUMN);
+    partitionBy = Optional.ofNullable(getProperties().getProperty(BQ_GCS_OUTPUT_PARTITION_COLUMN)).map(String::toString).orElse("");
   }
 
   @Override
@@ -71,8 +73,9 @@ public class BigQueryToGCS implements BaseTemplate {
 
     Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
     DataFrameWriter<Row> writer = inputData.write().mode(SaveMode.valueOf(outputMode));
-    writer.partitionBy(
-        org.apache.commons.lang.StringUtils.isEmpty(partitionBy) ? null : partitionBy.trim());
+    if(!org.apache.commons.lang.StringUtils.isEmpty(partitionBy)){
+      writer.partitionBy(partitionBy.trim());
+    }
     switch (outputFileFormat) {
       case BQ_GCS_OUTPUT_FORMAT_CSV:
         writer
