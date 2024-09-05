@@ -75,7 +75,7 @@ public class BigQueryToGCS implements BaseTemplate {
 
     Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
     DataFrameWriter<Row> writer = inputData.write().mode(SaveMode.valueOf(outputMode));
-    if (!org.apache.commons.lang.StringUtils.isEmpty(partitionBy)) {
+    if (!StringUtils.isEmpty(partitionBy)) {
       writer.partitionBy(partitionBy.trim());
     }
     switch (outputFileFormat) {
