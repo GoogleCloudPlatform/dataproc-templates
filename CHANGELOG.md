@@ -1,30 +1,5 @@
 # Changelog
 
-## [0.6.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.5.0-beta...v0.6.0-beta) (2024-09-05)
-
-
-### Features
-
-* Add new dataproc templates for Elasticsearch ([#927](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/927)) ([7b1f23f](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7b1f23f8194ad3846ddddd678b86f238cf1b9321))
-* MySqlToSapanner_notebook integration with colab enterprise ([#940](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/940)) ([c4338cc](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c4338cc27945d236e414476c59a8aec447cb5913))
-* Provide optional parameter service account name while submitting serverless jobs ([#936](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/936)) ([7593aae](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7593aaea9c02cea38a92f098d94ff0d444ca4ec8))
-* Run directly from Colab, github and Vertex AI ([#937](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/937)) ([3aff47d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3aff47d357dd70dd4fbf131efd984b335b4dc9df))
-* Support Partitioning for BigQueryToGSC Template ([#855](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/855)) ([0d7152e](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/0d7152e8ab471773a846a000db4d10ea89e39bc5))
-
-
-### Bug Fixes
-
-* Update Jenkinsfile added secret manager to cluster integ tests ([#925](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/925)) ([5a74e67](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5a74e67b55bcc469cca51d94f5c3b1c83d3f44ba))
-
-
-### Documentation
-
-* adding blog for cassandra to bigquery ([#935](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/935)) ([3ce420b](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3ce420bb875bbe4b23b1f46c30f696ec1bb67697))
-* adding blog for gcs to mongodb ([#923](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/923)) ([6c7ad23](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/6c7ad23752499a3416e125a9fef5b9c965bea070))
-* adding blog link to main readme ([3a522a6](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3a522a6c3a91a16b8227368414e7323375cb45d4))
-* adding blog link to main readme ([#941](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/941)) ([3a522a6](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3a522a6c3a91a16b8227368414e7323375cb45d4))
-* provide steps to setup packages for notebook to run in colab ([#945](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/945)) ([2be3e41](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/2be3e4126bb16032d69b36d8996b319796721bce))
-
 ## [0.5.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.4.0-beta...v0.5.0-beta) (2024-03-04)
 
 
