@@ -15,6 +15,7 @@ bin/start.sh \
 --templateProperty bigquery.gcs.input.table=<projectId:datasetId.tableName> \
 --templateProperty bigquery.gcs.output.format=<csv|parquet|avro|json> \
 --templateProperty bigquery.gcs.output.location=<gcs path> \
+--templateProperty bigquery.gcs.output.partition.col=<field name> \
 --templateProperty bigquery.gcs.output.mode=<Append|Overwrite|ErrorIfExists|Ignore>
 ```
 
