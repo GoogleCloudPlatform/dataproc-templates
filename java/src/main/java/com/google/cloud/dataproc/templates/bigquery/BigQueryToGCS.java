@@ -23,6 +23,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_FORMAT_PARQUET;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_LOCATION;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_MODE;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.BQ_GCS_OUTPUT_PARTITION_COLUMN;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_AVRO_EXTD_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_FORMAT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.GCS_BQ_CSV_HEADER;
@@ -31,6 +32,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_L
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_READ_FORMAT_BIGQUERY;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.sql.DataFrameWriter;
 import org.apache.spark.sql.Dataset;
@@ -49,6 +51,7 @@ public class BigQueryToGCS implements BaseTemplate {
   private final String outputFileLocation;
   private final String sparkLogLevel;
   private final String outputMode;
+  private final String partitionBy;
 
   public BigQueryToGCS() {
     inputTableName = getProperties().getProperty(BQ_GCS_INPUT_TABLE_NAME);
@@ -56,6 +59,10 @@ public class BigQueryToGCS implements BaseTemplate {
     outputFileLocation = getProperties().getProperty(BQ_GCS_OUTPUT_LOCATION);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
     outputMode = getProperties().getProperty(BQ_GCS_OUTPUT_MODE);
+    partitionBy =
+        Optional.ofNullable(getProperties().getProperty(BQ_GCS_OUTPUT_PARTITION_COLUMN))
+            .map(String::toString)
+            .orElse("");
   }
 
   @Override
@@ -68,6 +75,9 @@ public class BigQueryToGCS implements BaseTemplate {
 
     Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
     DataFrameWriter<Row> writer = inputData.write().mode(SaveMode.valueOf(outputMode));
+    if (!StringUtils.isEmpty(partitionBy)) {
+      writer.partitionBy(partitionBy.trim());
+    }
     switch (outputFileFormat) {
       case BQ_GCS_OUTPUT_FORMAT_CSV:
         writer
