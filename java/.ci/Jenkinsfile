@@ -719,6 +719,7 @@ pipeline {
                                 --templateProperty project.id=$GCP_PROJECT \
                                 --templateProperty bigquery.gcs.input.table=$GCP_PROJECT:dataproc_templates.emp_table \
                                 --templateProperty bigquery.gcs.output.format=avro \
+                                --templateProperty bigquery.gcs.output.partition.col=emp_city \
                                 --templateProperty bigquery.gcs.output.mode=Overwrite \
                                 --templateProperty bigquery.gcs.output.location=gs://dataproc-templates/integration-testing/output/BIGQUERYTOGCS/avro
                             '''
