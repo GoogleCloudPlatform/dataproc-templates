@@ -978,7 +978,7 @@ pipeline {
                             sh'''
 
                                 export SKIP_BUILD=true
-                                export JARS="gs://spark-lib/mongodb/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/mongodb/mongo-java-driver-3.9.1.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 
                                 cd java
                                 bin/start.sh \

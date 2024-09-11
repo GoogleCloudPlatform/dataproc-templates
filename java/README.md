@@ -41,7 +41,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md) f
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 * [KafkaToBQDstream](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#4-kafka-to-bq-via-spark-direct-stream)
 * [KafkaToGCSDstream](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#5-kafka-to-gcs-via-spark-direct-stream)
-* [MongoToBQ](https://github.com/GoogleCloudPlatform/dataproc-templates/tree/main/java/src/main/java/com/google/cloud/dataproc/templates/mongo/MongoToBQ.java)
+* [MongoToBQ](src/main/java/com/google/cloud/dataproc/templates/mongo/MongoToBQ.java)
 
 ...
 
