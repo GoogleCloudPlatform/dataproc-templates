@@ -32,12 +32,14 @@ export REGION=us-central1
 export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 
 ./bin/start.sh \
--- --template=MONGOTOBQ \
-    --mongo.bq.input.uri="mongodb://10.0.0.57:27017" \
-    --mongo.bq.input.database="demo" \
-    --mongo.bq.input.collection="dummyusers" \
-    --mongo.bq.output.dataset="my-project.test_dataset" \
-    --mongo.bq.output.table="dummyusers" \
-    --mongo.bq.output.mode="append" \
-    --mongo.bq.temp.bucket.name="my-staging-bucket"
+-- \
+--template MongoToBQ \
+--templateProperty project.id=$GCP_PROJECT \
+--templateProperty mongo.bq.input.uri="$ENV_TEST_MONGO_DB_URI" \
+--templateProperty mongo.bq.input.database=demo \
+--templateProperty mongo.bq.input.collection=dummyusers \
+--templateProperty mongo.bq.output.dataset=dataproc_templates \
+--templateProperty mongo.bq.output.table=mongotobq \
+--templateProperty mongo.bq.output.mode=Append \
+--templateProperty mongo.bq.temp.bucket.name=dataproc-templates/integration-testing/mongotobq
 ```
