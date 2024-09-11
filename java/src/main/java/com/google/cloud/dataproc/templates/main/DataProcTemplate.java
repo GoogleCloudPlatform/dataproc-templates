@@ -38,6 +38,7 @@ import com.google.cloud.dataproc.templates.kafka.KafkaToBQDstream;
 import com.google.cloud.dataproc.templates.kafka.KafkaToGCS;
 import com.google.cloud.dataproc.templates.kafka.KafkaToGCSDstream;
 import com.google.cloud.dataproc.templates.kafka.KafkaToPubSub;
+import com.google.cloud.dataproc.templates.mongo.MongoToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBigTable;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
@@ -105,6 +106,7 @@ public class DataProcTemplate {
           .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
           .put(TemplateName.KAFKATOBQDSTREAM, (args) -> new KafkaToBQDstream())
           .put(TemplateName.KAFKATOGCSDSTREAM, (args) -> new KafkaToGCSDstream())
+          .put(TemplateName.MONGOTOBQ, (args) -> new MongoToBQ())
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
