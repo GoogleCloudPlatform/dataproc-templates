@@ -38,7 +38,7 @@ import com.google.cloud.dataproc.templates.kafka.KafkaToBQDstream;
 import com.google.cloud.dataproc.templates.kafka.KafkaToGCS;
 import com.google.cloud.dataproc.templates.kafka.KafkaToGCSDstream;
 import com.google.cloud.dataproc.templates.kafka.KafkaToPubSub;
-import com.google.cloud.dataproc.templates.mongo.MongoToBQ;
+import com.google.cloud.dataproc.templates.databases.MongoToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBigTable;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
