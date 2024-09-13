@@ -106,7 +106,7 @@ public class DataProcTemplate {
           .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
           .put(TemplateName.KAFKATOBQDSTREAM, (args) -> new KafkaToBQDstream())
           .put(TemplateName.KAFKATOGCSDSTREAM, (args) -> new KafkaToGCSDstream())
-          .put(TemplateName.MONGOTOBQ, (args) -> new MongoToBQ())
+          .put(TemplateName.MONGOTOBQ, MongoToBQ::of)
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";

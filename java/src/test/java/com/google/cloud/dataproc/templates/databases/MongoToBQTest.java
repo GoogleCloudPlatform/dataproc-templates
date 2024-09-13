@@ -34,7 +34,14 @@ public class MongoToBQTest {
 
   @BeforeEach
   void setup() {
+    SparkSession spark = SparkSession.builder().master("local").getOrCreate();
+  }
 
+  @ParameterizedTest
+  @MethodSource("propertyKeys")
+  void runTemplateWithValidParameters(String propKey) {
+
+    LOGGER.info("Running test: runTemplateWithValidParameters");
     PropertyUtil.getProperties().setProperty(MONGO_BQ_INPUT_URI, "mongodb://10.0.0.57:27017");
     PropertyUtil.getProperties().setProperty(MONGO_BQ_INPUT_DATABASE, "demo");
     PropertyUtil.getProperties().setProperty(MONGO_BQ_INPUT_COLLECTION, "dummyusers");
@@ -43,23 +50,19 @@ public class MongoToBQTest {
     PropertyUtil.getProperties().setProperty(MONGO_BQ_OUTPUT_TABLE, "mongotobq");
     PropertyUtil.getProperties()
         .setProperty(MONGO_BQ_TEMP_BUCKET_NAME, "dataproc-templates/integration-testing/mongotobq");
-    SparkSession spark = SparkSession.builder().master("local").getOrCreate();
-  }
-
-  @ParameterizedTest
-  @MethodSource("propertyKeys")
-  void runTemplateWithValidParameters(String propKey) {
-
-    PropertyUtil.getProperties().setProperty(propKey, "someValue");
-    mongoToBQ = new MongoToBQ();
+    MongoToBQConfig mongoToBQConfig = MongoToBQConfig.fromProperties(PropertyUtil.getProperties());
+    mongoToBQ = new MongoToBQ(mongoToBQConfig);
     assertDoesNotThrow(mongoToBQ::validateInput);
   }
 
   @ParameterizedTest
   @MethodSource("propertyKeys")
   void runTemplateWithInvalidParameters(String propKey) {
+
+    LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    mongoToBQ = new MongoToBQ();
+    MongoToBQConfig mongoToBQConfig = MongoToBQConfig.fromProperties(PropertyUtil.getProperties());
+    mongoToBQ = new MongoToBQ(mongoToBQConfig);
 
     Exception exception =
         assertThrows(IllegalArgumentException.class, () -> mongoToBQ.validateInput());
