@@ -19,6 +19,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,13 +65,8 @@ public class MongoToBQTest {
     MongoToBQConfig mongoToBQConfig = MongoToBQConfig.fromProperties(PropertyUtil.getProperties());
     mongoToBQ = new MongoToBQ(mongoToBQConfig);
 
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> mongoToBQ.validateInput());
-    assertEquals(
-        "Required parameters for MongoToBQ not passed. "
-            + "Set mandatory parameter for MongoToBQ template "
-            + "in resources/conf/template.properties file.",
-        exception.getMessage());
+    ValidationUtil.ValidationException exception =
+        assertThrows(ValidationUtil.ValidationException.class, mongoToBQ::validateInput);
   }
 
   static Stream<String> propertyKeys() {
