@@ -259,7 +259,7 @@ Arguments
 - `mongo.bq.output.dataset`: BigQuery dataset id (format: Dataset_id)
 - `mongo.bq.output.table`: BigQuery table name (format: Table_name)
 - `mongo.bq.temp.bucket.name`: Cloud Storage bucket name to store temporary files (format: Bucket_name)
-- `mongo.bq.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)
+- `mongo.bq.output.mode`: Output write mode (one of: append,overwrite)
 
 Example submission
 
