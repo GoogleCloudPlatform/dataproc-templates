@@ -58,7 +58,7 @@ public class MongoToBQConfig {
   @NotEmpty
   private String bqOutputTable;
 
-  @JsonProperty(value = MONGO_BQ_TEMP_BUCKET)
+  @JsonProperty(value = MONGO_BQ_TEMP_BUCKET_NAME)
   @NotEmpty
   private String bqTempBucket;
 

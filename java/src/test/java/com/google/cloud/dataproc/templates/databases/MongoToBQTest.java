@@ -43,6 +43,7 @@ public class MongoToBQTest {
   void runTemplateWithValidParameters(String propKey) {
 
     LOGGER.info("Running test: runTemplateWithValidParameters");
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "test");
     PropertyUtil.getProperties().setProperty(MONGO_BQ_INPUT_URI, "mongodb://10.0.0.57:27017");
     PropertyUtil.getProperties().setProperty(MONGO_BQ_INPUT_DATABASE, "demo");
     PropertyUtil.getProperties().setProperty(MONGO_BQ_INPUT_COLLECTION, "dummyusers");
