@@ -28,6 +28,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md) f
 * [KafkaToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#2-kafka-to-gcs) (blogpost [link](https://medium.com/@pniralakeri/importing-data-from-kafka-to-gcs-using-dataproc-serverless-38e449d559f9))
 * [KafkaToGCSDstream](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#5-kafka-to-gcs-via-spark-direct-stream)
 * [KafkaToPubSub](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md#3-kafka-to-pubsub)
+* [MongoToBQ](src/main/java/com/google/cloud/dataproc/templates/databases/MongoToBQ.java)
 * [MongoToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-mongo-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/migrating-data-from-mongo-to-gcs-using-java-and-dataproc-serverless-template-390500481804))
 * [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#1-pubsub-to-bigquery) (blogpost [link](https://medium.com/google-cloud/from-pub-sub-to-bigquery-streaming-data-in-near-real-time-b550aeff595d))
 * [PubSubToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#1-pubsub-to-bigtable) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-bigtable-using-dataproc-serverless-3142c1bcc22a))

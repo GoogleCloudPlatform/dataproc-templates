@@ -511,4 +511,17 @@ public interface TemplateConstants {
 
   String KAFKA_GCS_BATCH_INTERVAL = "kafka.gcs.batch.interval";
   String KAFKA_GCS_WRITE_MODE = "kafka.gcs.write.mode";
+
+  /** Mongo to BQ */
+  String MONGO_BQ_INPUT_URI = "mongo.bq.input.uri";
+
+  String MONGO_BQ_INPUT_DATABASE = "mongo.bq.input.database";
+  String MONGO_BQ_INPUT_COLLECTION = "mongo.bq.input.collection";
+  String MONGO_BQ_OUTPUT_DATASET = "mongo.bq.output.dataset";
+  String MONGO_BQ_OUTPUT_TABLE = "mongo.bq.output.table";
+  String MONGO_BQ_OUTPUT_MODE = "mongo.bq.output.mode";
+  String MONGO_BQ_TEMP_BUCKET_NAME = "mongo.bq.temp.bucket.name";
+  String MONGO_BQ_FORMAT = "com.google.cloud.spark.bigquery";
+  String MONGO_BQ_TABLE = "table";
+  String MONGO_BQ_TEMP_BUCKET = "temporaryGcsBucket";
 }

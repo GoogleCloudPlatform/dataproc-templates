@@ -972,6 +972,30 @@ pipeline {
                         }
                     }
                 }
+                stage('MONGO TO BIGQUERY'){
+                    steps{
+                        retry(count: stageRetryCount){
+                            sh'''
+
+                                export SKIP_BUILD=true
+                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+
+                                cd java
+                                bin/start.sh \
+                                -- \
+                                --template MongoToBQ \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty mongo.bq.input.uri="$ENV_TEST_MONGO_DB_URI" \
+                                --templateProperty mongo.bq.input.database=demo \
+                                --templateProperty mongo.bq.input.collection=dummyusers \
+                                --templateProperty mongo.bq.output.dataset=dataproc_templates \
+                                --templateProperty mongo.bq.output.table=mongotobq \
+                                --templateProperty mongo.bq.output.mode=Append \
+                                --templateProperty mongo.bq.temp.bucket.name=dataproc-templates/integration-testing/mongotobq
+                            '''
+                        }
+                    }
+                }
             }
         }
     }
