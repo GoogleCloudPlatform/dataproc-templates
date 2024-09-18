@@ -187,7 +187,8 @@ pipeline {
                                 --templateProperty "spanner.gcs.input.table.id=sparktest" \
                                 --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/pgsql/parquet \
                                 --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
-                                --templateProperty spanner.gcs.output.gcs.format=parquet
+                                --templateProperty spanner.gcs.output.gcs.format=parquet \
+                                --templateProperty spanner.jdbc.dialect=postgresql
                             '''
                         }
                     }
