@@ -17,16 +17,14 @@ package com.google.cloud.dataproc.templates.databases;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
+import com.google.cloud.dataproc.dialects.PostgresJDBCDialect;
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.HashMap;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.spark.sql.DataFrameWriter;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.*;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
 import org.apache.spark.sql.jdbc.JdbcDialects;
 import org.slf4j.Logger;
@@ -52,14 +50,29 @@ public class SpannerToGCS implements BaseTemplate {
   @Override
   public void runTemplate() {
 
-    JdbcDialects.registerDialect(new SpannerJdbcDialect());
-
     SparkSession spark = SparkSession.builder().appName("DatabaseToGCS Dataproc job").getOrCreate();
 
     // Set log level
     spark.sparkContext().setLogLevel(config.getSparkLogLevel());
 
     LOGGER.debug("added jars : {}", spark.sparkContext().addedJars().keys());
+
+    LOGGER.info("Spanner JDBC Dialect is {}", config.getSpannerJdbcDialect());
+    switch (config.getSpannerJdbcDialect().toLowerCase()) {
+      case SPANNER_GOOGLESQL_JDBC_DIALECT:
+        JdbcDialects.registerDialect(new SpannerJdbcDialect());
+        break;
+
+      case SPANNER_POSTGRESQL_JDBC_DIALECT:
+        JdbcDialects.registerDialect(new PostgresJDBCDialect());
+        break;
+
+      default:
+        throw new UnsupportedOperationException(
+            String.format(
+                "%s spanner jdbc dialect is not supported. Expected values are either googlesql or postgresql.",
+                config.getSpannerJdbcDialect()));
+    }
 
     HashMap<String, String> jdbcProperties = new HashMap<>();
     jdbcProperties.put(JDBCOptions.JDBC_URL(), config.getSpannerJdbcUrl());
@@ -75,7 +88,7 @@ public class SpannerToGCS implements BaseTemplate {
 
     Dataset<Row> jdbcDF = spark.read().format("jdbc").options(jdbcProperties).load();
 
-    LOGGER.info("Data load complete from table/query: " + config.getInputTableId());
+    LOGGER.info("Data load complete from table/query: {}", config.getInputTableId());
 
     if (StringUtils.isNotBlank(config.getTempTable())
         && StringUtils.isNotBlank(config.getTempQuery())) {
@@ -86,6 +99,7 @@ public class SpannerToGCS implements BaseTemplate {
     DataFrameWriter<Row> writer =
         jdbcDF.write().format(config.getGcsOutputFormat()).mode(config.getGcsWriteMode());
 
+    LOGGER.info("Start writing to GCS Bucket {}", config.getGcsOutputLocation());
     writer.save(config.getGcsOutputLocation());
 
     spark.stop();

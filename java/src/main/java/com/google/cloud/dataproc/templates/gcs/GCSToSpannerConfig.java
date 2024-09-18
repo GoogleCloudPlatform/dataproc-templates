@@ -15,8 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -84,6 +83,10 @@ public class GCSToSpannerConfig {
   @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
   private String sparkLogLevel;
 
+  @JsonProperty(value = SPANNER_JDBC_DIALECT)
+  @Pattern(regexp = "(?i)(googlesql|postgresql)")
+  private String spannerJdbcDialect;
+
   public String getInputLocation() {
     return inputLocation;
   }
@@ -129,6 +132,10 @@ public class GCSToSpannerConfig {
     return sparkLogLevel;
   }
 
+  public String getSpannerJdbcDialect() {
+    return spannerJdbcDialect;
+  }
+
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
@@ -141,6 +148,7 @@ public class GCSToSpannerConfig {
         .add("saveModeString", saveModeString)
         .add("primaryKey", primaryKey)
         .add("batchInsertSize", batchInsertSize)
+        .add("spannerJDBCDialect", spannerJdbcDialect)
         .toString();
   }
 

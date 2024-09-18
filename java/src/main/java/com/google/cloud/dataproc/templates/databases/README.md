@@ -1,6 +1,9 @@
 ## Executing Spanner to Cloud Storage template
 
-General Execution:
+Spanner JDBC driver is supporting GoogleSQL and Postgresql dialect. Please refer our [documentation](https://cloud.google.com/spanner/docs/pg-jdbc-connect#spanner-jdbc-driver). Template by default uses GoogleSQL dialect.
+
+
+General Execution (Default using googlesql dialect):
 
 ```
 export GCP_PROJECT=<gcp-project-id>
@@ -20,6 +23,30 @@ bin/start.sh \
 --templateProperty spanner.gcs.input.sql.lowerBound=<optional-partition-lower-bound-value> \
 --templateProperty spanner.gcs.input.sql.upperBound=<optional-partition-lower-bound-value> \
 --templateProperty spanner.gcs.input.sql.numPartitions=<optional-partition-partition-number>
+```
+
+<b>Postgresql dialect example</b>
+
+Note: Currently postgresql dialect is not supporting to pass query. You must pass only table name.
+```
+export GCP_PROJECT=<gcp-project-id>
+export REGION=<region>
+export SUBNET=<subnet>
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+bin/start.sh \
+-- --template SPANNERTOGCS \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty spanner.gcs.input.spanner.id=<spanner-id> \
+--templateProperty spanner.gcs.input.database.id=<database-id> \
+--templateProperty spanner.gcs.input.table.id=<table-id> \
+--templateProperty spanner.gcs.output.gcs.path=<gcs-path> \
+--templateProperty spanner.gcs.output.gcs.saveMode=<Append|Overwrite|ErrorIfExists|Ignore> \
+--templateProperty spanner.gcs.output.gcs.format=<avro|csv|parquet|json|orc> \
+--templateProperty spanner.gcs.input.sql.partitionColumn=<optional-sql-partition-column> \
+--templateProperty spanner.gcs.input.sql.lowerBound=<optional-partition-lower-bound-value> \
+--templateProperty spanner.gcs.input.sql.upperBound=<optional-partition-lower-bound-value> \
+--templateProperty spanner.gcs.input.sql.numPartitions=<optional-partition-partition-number>
+--templateProperty spanner.jdbc.dialect=postgresql
 ```
 
 **Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together. 

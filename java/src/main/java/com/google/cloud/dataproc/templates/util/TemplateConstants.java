@@ -524,4 +524,10 @@ public interface TemplateConstants {
   String MONGO_BQ_FORMAT = "com.google.cloud.spark.bigquery";
   String MONGO_BQ_TABLE = "table";
   String MONGO_BQ_TEMP_BUCKET = "temporaryGcsBucket";
+
+  /** Spanner JDBC dialect */
+  String SPANNER_JDBC_DIALECT = "spanner.jdbc.dialect";
+
+  String SPANNER_GOOGLESQL_JDBC_DIALECT = "googlesql";
+  String SPANNER_POSTGRESQL_JDBC_DIALECT = "postgresql";
 }

@@ -82,6 +82,10 @@ public class SpannerToGCSConfig {
   @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
   private String sparkLogLevel;
 
+  @JsonProperty(value = SPANNER_JDBC_DIALECT)
+  @Pattern(regexp = "(?i)(googlesql|postgresql)")
+  private String spannerJdbcDialect;
+
   @AssertTrue(
       message =
           "Optional SQL paritioning parameters are not passed correctly for SpannerToGCS. If one is specified then all needs to be specified in resources/conf/template.properties file or at runtime. Refer to databases/README.md for more instructions.")
@@ -159,6 +163,10 @@ public class SpannerToGCSConfig {
         projectId, spannerInstanceId, inputDatabaseId);
   }
 
+  public String getSpannerJdbcDialect() {
+    return spannerJdbcDialect;
+  }
+
   @Override
   public String toString() {
     return "{"
@@ -200,6 +208,9 @@ public class SpannerToGCSConfig {
         + "'"
         + ", tempQuery='"
         + getTempQuery()
+        + "'"
+        + ", spannerJdbcDialect='"
+        + getSpannerJdbcDialect()
         + "'"
         + "}";
   }

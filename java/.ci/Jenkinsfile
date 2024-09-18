@@ -148,7 +148,7 @@ pipeline {
                         }
                     }
                 }
-                stage('SPANNER TO GCS'){
+                stage('SPANNER TO GCS GOOGLESQL DIALECT'){
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
@@ -163,7 +163,29 @@ pipeline {
                                 --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
                                 --templateProperty spanner.gcs.input.database.id=spark-ci-db \
                                 --templateProperty "spanner.gcs.input.table.id=(select id,name from badges2 where name = 'Teacher' limit 10000)" \
-                                --templateProperty spanner.gcs.output.gcs.path=dataproc-templates/integration-testing/output/SPANNERTOGCS/parquet \
+                                --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/parquet \
+                                --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+                                --templateProperty spanner.gcs.output.gcs.format=parquet
+                            '''
+                        }
+                    }
+                }
+                stage('SPANNER TO GCS POSTGRESQL DIALECT'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template SPANNERTOGCS \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
+                                --templateProperty spanner.gcs.input.database.id=pgsqltest \
+                                --templateProperty "spanner.gcs.input.table.id=sparktest" \
+                                --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/pgsql/parquet \
                                 --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
                                 --templateProperty spanner.gcs.output.gcs.format=parquet
                             '''

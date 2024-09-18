@@ -15,12 +15,17 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_GOOGLESQL_JDBC_DIALECT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_POSTGRESQL_JDBC_DIALECT;
+
+import com.google.cloud.dataproc.dialects.PostgresJDBCDialect;
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
 import org.apache.spark.sql.jdbc.JdbcDialects;
@@ -53,16 +58,41 @@ public class GCSToSpanner implements BaseTemplate {
 
       Dataset<Row> dataset =
           spark.read().format(config.getInputFormat()).load(config.getInputLocation());
-      write(dataset);
+
+      try {
+        write(dataset);
+      } catch (Exception ex) {
+        LOGGER.error("Exception in GCSToSpanner Template", ex);
+      }
     }
   }
 
-  public void write(Dataset<Row> dataset) {
+  public void write(Dataset<Row> dataset) throws Exception {
     String spannerUrl =
         String.format(
             "jdbc:cloudspanner:/projects/%s/instances/%s/databases/%s?lenient=true",
             config.getProjectId(), config.getInstance(), config.getDatabase());
-    JdbcDialects.registerDialect(new SpannerJdbcDialect());
+    LOGGER.info("Spanner JDBC Dialect is {}", config.getSpannerJdbcDialect());
+    switch (config.getSpannerJdbcDialect().toLowerCase()) {
+      case SPANNER_GOOGLESQL_JDBC_DIALECT:
+        JdbcDialects.registerDialect(new SpannerJdbcDialect());
+        break;
+
+      case SPANNER_POSTGRESQL_JDBC_DIALECT:
+        JdbcDialects.registerDialect(new PostgresJDBCDialect());
+        if (config.getSaveMode() != SaveMode.Append) {
+          throw new UnsupportedOperationException(
+              "Spanner jdbc dialect supports only append mode. Please refer README.md file.");
+        }
+        break;
+
+      default:
+        throw new UnsupportedOperationException(
+            String.format(
+                "%s spanner jdbc dialect is not supported. Expected values are either googlesql or postgresql.",
+                config.getSpannerJdbcDialect()));
+    }
+    LOGGER.info("Start writing to spanner");
     dataset
         .write()
         .format("jdbc")
