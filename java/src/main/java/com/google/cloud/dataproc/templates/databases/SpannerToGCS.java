@@ -17,8 +17,8 @@ package com.google.cloud.dataproc.templates.databases;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
-import com.google.cloud.dataproc.dialects.SpannerPostgresJDBCDialect;
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
+import com.google.cloud.dataproc.dialects.SpannerPostgresJDBCDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
