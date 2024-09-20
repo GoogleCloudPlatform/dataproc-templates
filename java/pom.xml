@@ -327,6 +327,12 @@
       <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.cloud.spark.bigtable/spark-bigtable -->
+    <dependency>
+      <groupId>com.google.cloud.spark.bigtable</groupId>
+      <artifactId>spark-bigtable_${scala.binary.version}</artifactId>
+      <version>0.2.1</version>
+    </dependency>
   </dependencies>
 
   <build>

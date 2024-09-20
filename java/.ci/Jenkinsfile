@@ -585,12 +585,11 @@ pipeline {
                                 bin/start.sh \
                                 -- --template GCSTOBIGTABLE \
                                 --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty gcs.bigtable.input.location=gs://dataproc-templates/data/csv/GCSToBigTable_cities.csv \
-                                --templateProperty gcs.bigtable.input.format=csv \
+                                --templateProperty gcs.bigtable.input.location=gs://dataproc-templates/data/parquet/ \
+                                --templateProperty gcs.bigtable.input.format=parquet \
                                 --templateProperty gcs.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
                                 --templateProperty gcs.bigtable.output.project.id=$GCP_PROJECT \
-                                --templateProperty gcs.bigtable.table.name=test \
-                                --templateProperty gcs.bigtable.column.family=Name
+                                --templateProperty gcs.bigtable.catalog.location="gs://dataproc-templates/conf/employeecatalog.json"
                             '''
                         }
                     }
