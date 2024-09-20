@@ -17,7 +17,7 @@ package com.google.cloud.dataproc.templates.databases;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
-import com.google.cloud.dataproc.dialects.PostgresJDBCDialect;
+import com.google.cloud.dataproc.dialects.SpannerPostgresJDBCDialect;
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -64,7 +64,7 @@ public class SpannerToGCS implements BaseTemplate {
         break;
 
       case SPANNER_POSTGRESQL_JDBC_DIALECT:
-        JdbcDialects.registerDialect(new PostgresJDBCDialect());
+        JdbcDialects.registerDialect(new SpannerPostgresJDBCDialect());
         break;
 
       default:

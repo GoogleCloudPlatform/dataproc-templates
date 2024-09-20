@@ -18,7 +18,7 @@ package com.google.cloud.dataproc.templates.gcs;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_GOOGLESQL_JDBC_DIALECT;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_POSTGRESQL_JDBC_DIALECT;
 
-import com.google.cloud.dataproc.dialects.PostgresJDBCDialect;
+import com.google.cloud.dataproc.dialects.SpannerPostgresJDBCDialect;
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -79,7 +79,7 @@ public class GCSToSpanner implements BaseTemplate {
         break;
 
       case SPANNER_POSTGRESQL_JDBC_DIALECT:
-        JdbcDialects.registerDialect(new PostgresJDBCDialect());
+        JdbcDialects.registerDialect(new SpannerPostgresJDBCDialect());
         if (config.getSaveMode() != SaveMode.Append) {
           throw new UnsupportedOperationException(
               "Spanner jdbc dialect supports only append mode. Please refer README.md file.");

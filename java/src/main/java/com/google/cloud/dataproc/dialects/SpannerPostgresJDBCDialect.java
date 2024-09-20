@@ -25,7 +25,7 @@ import org.apache.spark.sql.types.DecimalType;
 import org.apache.spark.sql.types.MetadataBuilder;
 import scala.Option;
 
-public class PostgresJDBCDialect extends JdbcDialect {
+public class SpannerPostgresJDBCDialect extends JdbcDialect {
 
   @Override
   public boolean canHandle(String url) {
@@ -51,7 +51,7 @@ public class PostgresJDBCDialect extends JdbcDialect {
    */
   public Option<JdbcType> getJDBCType(final DataType dt) {
     if (IntegerType.equals(dt)) {
-      return Option.apply(new JdbcType("INT8", 4));
+      return Option.apply(new JdbcType("INT", 4));
     } else if (LongType.equals(dt)) {
       return Option.apply(new JdbcType("INT8", -5));
     } else if (DoubleType.equals(dt)) {
