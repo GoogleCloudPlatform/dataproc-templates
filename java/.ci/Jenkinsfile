@@ -125,7 +125,7 @@ pipeline {
                         }
                     }
                 }
-                stage('GCS TO SPANNER') {
+                stage('GCS TO SPANNER GOOGLESQL DIALECT') {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
@@ -398,7 +398,7 @@ pipeline {
         }
         stage('Parallel Execution 4'){
             parallel{
-                stage('JDBC TO SPANNER'){
+                stage('JDBC TO SPANNER GOOGLESQL DIALECT'){
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
@@ -1015,6 +1015,62 @@ pipeline {
                                 --templateProperty mongo.bq.output.table=mongotobq \
                                 --templateProperty mongo.bq.output.mode=Append \
                                 --templateProperty mongo.bq.temp.bucket.name=dataproc-templates/integration-testing/mongotobq
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 11'){
+            parallel{
+                stage('GCS TO SPANNER POSTGRESQL DIALECT') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM badges;'
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                    -- --template GCSTOSPANNER \
+                                    --templateProperty project.id=$GCP_PROJECT \
+                                    --templateProperty gcs.spanner.input.format=avro \
+                                    --templateProperty gcs.spanner.input.location=gs://dataproc-templates/data/avro/empavro \
+                                    --templateProperty gcs.spanner.output.instance=$ENV_TEST_SPANNER_ID \
+                                    --templateProperty gcs.spanner.output.database=pgsqltest   \
+                                    --templateProperty gcs.spanner.output.table=badges \
+                                    --templateProperty gcs.spanner.output.saveMode=Append \
+                                    --templateProperty gcs.spanner.output.primaryKey=empno \
+                                    --templateProperty spanner.jdbc.dialect=postgresql
+                            '''
+                        }
+                    }
+                }
+                stage('JDBC TO SPANNER POSTGRESQL DIALECT'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM employee;'
+                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template JDBCTOSPANNER \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+                                --templateProperty jdbctospanner.sql="select * from test.employee" \
+                                --templateProperty jdbctospanner.output.instance=$ENV_TEST_SPANNER_ID \
+                                --templateProperty jdbctospanner.output.database=pgsqltest \
+                                --templateProperty jdbctospanner.output.table=employee \
+                                --templateProperty jdbctospanner.output.saveMode=Append \
+                                --templateProperty jdbctospanner.output.primaryKey='empno' \
+                                --templateProperty spanner.jdbc.dialect=postgresql
                             '''
                         }
                     }
