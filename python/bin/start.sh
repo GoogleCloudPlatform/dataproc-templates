@@ -39,7 +39,8 @@ fi
 if [ $4 = "--template=HBASETOGCS" ] || [ $4 = "--template=GCSTOBIGTABLE" ]; then
   OPT_SPARK_VERSION="--version=1.0.29"
 else
-  OPT_SPARK_VERSION="--version=1.1"
+  #OPT_SPARK_VERSION="--version=1.1"
+  OPT_SPARK_VERSION="--version=1.2"
 fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
