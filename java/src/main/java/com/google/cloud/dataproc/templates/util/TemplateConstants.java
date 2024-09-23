@@ -236,9 +236,7 @@ public interface TemplateConstants {
   String GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format";
   String GCS_BT_OUTPUT_INSTANCE_ID = "gcs.bigtable.output.instance.id";
   String GCS_BT_OUTPUT_PROJECT_ID = "gcs.bigtable.output.project.id";
-  String GCS_BT_OUTPUT_TABLE_NAME = "gcs.bigtable.table.name";
   String GCS_BT_CATALOG_LOCATION = "gcs.bigtable.catalog.location";
-  String GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY = "gcs.bigtable.column.family";
 
   /** GCS to GCS properties */
   String GCS_GCS_INPUT_LOCATION = "gcs.gcs.input.location";

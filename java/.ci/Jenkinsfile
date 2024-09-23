@@ -47,6 +47,21 @@ pipeline {
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream 2> /dev/null || true
 
+                                    cat > /tmp/employeecatalog.json << EOF
+                                    {
+                                      "table": {"name": "employee"},
+                                      "rowkey": "id_rowkey",
+                                      "columns": {
+                                        "key": {"cf": "rowkey", "col": "id_rowkey", "type": "string"},
+                                        "name": {"cf": "personal", "col": "name", "type": "string"},
+                                        "address": {"cf": "personal", "col": "address", "type": "string"},
+                                        "empno": {"cf": "professional", "col": "empno", "type": "string"}
+                                      }
+                                    }
+                                    EOF
+
+                                    gsutil cp /tmp/employeecatalog.json gs://dataproc-templates/conf/
+
                                 '''
                             }
                     }
