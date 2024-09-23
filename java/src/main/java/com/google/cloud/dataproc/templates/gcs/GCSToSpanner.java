@@ -59,15 +59,11 @@ public class GCSToSpanner implements BaseTemplate {
       Dataset<Row> dataset =
           spark.read().format(config.getInputFormat()).load(config.getInputLocation());
 
-      try {
-        write(dataset);
-      } catch (Exception ex) {
-        LOGGER.error("Exception in GCSToSpanner Template", ex);
-      }
+      write(dataset);
     }
   }
 
-  public void write(Dataset<Row> dataset) throws Exception {
+  public void write(Dataset<Row> dataset) {
     String spannerUrl =
         String.format(
             "jdbc:cloudspanner:/projects/%s/instances/%s/databases/%s?lenient=true",

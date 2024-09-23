@@ -70,11 +70,7 @@ public class JDBCToSpanner implements BaseTemplate {
       inputData = spark.sql(config.getTempQuery());
     }
 
-    try {
-      write(inputData);
-    } catch (Exception ex) {
-      LOGGER.error("Exception in JDBCToSpanner Template", ex);
-    }
+    write(inputData);
   }
 
   public void write(Dataset<Row> dataset) {
