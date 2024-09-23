@@ -60,6 +60,7 @@ cat > /tmp/employeecatalog.json << EOF
 }
 EOF
 
+                                    cat /tmp/employeecatalog.json
                                     gsutil cp /tmp/employeecatalog.json gs://dataproc-templates/conf/
 
                                 '''
