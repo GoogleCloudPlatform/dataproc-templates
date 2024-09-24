@@ -538,5 +538,4 @@ public interface TemplateConstants {
   String SPARK_BIGTABLE_PROJECT_ID = "spark.bigtable.project.id";
   String SPARK_BIGTABLE_INSTANCE_ID = "spark.bigtable.instance.id";
   String SPARK_BIGTABLE_CATALOG = "catalog";
-
 }
