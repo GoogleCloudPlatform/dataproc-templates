@@ -236,8 +236,7 @@ public interface TemplateConstants {
   String GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format";
   String GCS_BT_OUTPUT_INSTANCE_ID = "gcs.bigtable.output.instance.id";
   String GCS_BT_OUTPUT_PROJECT_ID = "gcs.bigtable.output.project.id";
-  String GCS_BT_OUTPUT_TABLE_NAME = "gcs.bigtable.table.name";
-  String GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY = "gcs.bigtable.column.family";
+  String GCS_BT_CATALOG_LOCATION = "gcs.bigtable.catalog.location";
 
   /** GCS to GCS properties */
   String GCS_GCS_INPUT_LOCATION = "gcs.gcs.input.location";
@@ -524,4 +523,13 @@ public interface TemplateConstants {
   String MONGO_BQ_FORMAT = "com.google.cloud.spark.bigquery";
   String MONGO_BQ_TABLE = "table";
   String MONGO_BQ_TEMP_BUCKET = "temporaryGcsBucket";
+
+  /** Spark BigTable Common Properties */
+  String SPARK_BIGTABLE_CREATE_NEW_TABLE = "spark.bigtable.create.new.table";
+
+  String SPARK_BIGTABLE_FORMAT = "bigtable";
+  String SPARK_BIGTABLE_BATCH_MUTATE_SIZE = "spark.bigtable.batch.mutate.size";
+  String SPARK_BIGTABLE_PROJECT_ID = "spark.bigtable.project.id";
+  String SPARK_BIGTABLE_INSTANCE_ID = "spark.bigtable.instance.id";
+  String SPARK_BIGTABLE_CATALOG = "catalog";
 }

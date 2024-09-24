@@ -17,15 +17,14 @@ package com.google.cloud.dataproc.templates.gcs;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class GCStoBigTableTest {
 
-  private GCStoBigTable gcsCsvToBigtableTest;
+  private GCStoBigTable gcStoBigTable;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GCStoBigTableTest.class);
 
@@ -43,20 +42,22 @@ public class GCStoBigTableTest {
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
 
-  @Test
+  @ParameterizedTest
+  @MethodSource("propertyKeys")
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
     Properties props = PropertyUtil.getProperties();
     PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
     props.setProperty(GCS_BT_INPUT_LOCATION, "gs://test-bucket/test/filename.csv");
     props.setProperty(GCS_BT_OUTPUT_INSTANCE_ID, "test-instance-id");
-    props.setProperty(GCS_BT_OUTPUT_TABLE_NAME, "table-name");
     props.setProperty(GCS_BT_OUTPUT_PROJECT_ID, "test-project-id");
     props.setProperty(GCS_BT_INPUT_FORMAT, "csv");
-    props.setProperty(GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY, "cf");
-    gcsCsvToBigtableTest = new GCStoBigTable();
+    props.setProperty(GCS_BT_CATALOG_LOCATION, "gs://test-bucket.conf/catalog.json");
 
-    assertDoesNotThrow(gcsCsvToBigtableTest::validateInput);
+    GCStoBigTableConfig gcStoBigTableConfig = GCStoBigTableConfig.fromProperties(props);
+    gcStoBigTable = new GCStoBigTable(gcStoBigTableConfig);
+
+    assertDoesNotThrow(gcStoBigTable::validateInput);
   }
 
   @ParameterizedTest
@@ -64,14 +65,13 @@ public class GCStoBigTableTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    gcsCsvToBigtableTest = new GCStoBigTable();
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> gcsCsvToBigtableTest.validateInput());
-    assertEquals(
-        "Required parameters for GCStoBT not passed. "
-            + "Set mandatory parameter for GCStoBT template"
-            + " in resources/conf/template.properties file.",
-        exception.getMessage());
+
+    GCStoBigTableConfig gcStoBigTableConfig =
+        GCStoBigTableConfig.fromProperties(PropertyUtil.getProperties());
+    gcStoBigTable = new GCStoBigTable(gcStoBigTableConfig);
+
+    ValidationUtil.ValidationException exception =
+        assertThrows(ValidationUtil.ValidationException.class, gcStoBigTable::validateInput);
   }
 
   static Stream<String> propertyKeys() {
@@ -79,9 +79,8 @@ public class GCStoBigTableTest {
         PROJECT_ID_PROP,
         GCS_BT_INPUT_LOCATION,
         GCS_BT_OUTPUT_INSTANCE_ID,
-        GCS_BT_OUTPUT_TABLE_NAME,
         GCS_BT_OUTPUT_PROJECT_ID,
-        GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY,
+        GCS_BT_CATALOG_LOCATION,
         GCS_BT_INPUT_FORMAT);
   }
 }
