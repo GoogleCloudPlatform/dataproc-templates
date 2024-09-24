@@ -1,6 +1,9 @@
 ## Executing Spanner to Cloud Storage template
 
-General Execution:
+Spanner JDBC driver is supporting GoogleSQL and Postgresql dialect. Please refer our [documentation](https://cloud.google.com/spanner/docs/pg-jdbc-connect#spanner-jdbc-driver). Template by default uses GoogleSQL dialect.
+
+
+General Execution (Default using googlesql dialect):
 
 ```
 export GCP_PROJECT=<gcp-project-id>
@@ -22,8 +25,33 @@ bin/start.sh \
 --templateProperty spanner.gcs.input.sql.numPartitions=<optional-partition-partition-number>
 ```
 
-**Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together. 
+<b>Postgresql dialect example</b>
+
+```
+export GCP_PROJECT=<gcp-project-id>
+export REGION=<region>
+export SUBNET=<subnet>
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+bin/start.sh \
+-- --template SPANNERTOGCS \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty spanner.gcs.input.spanner.id=<spanner-id> \
+--templateProperty spanner.gcs.input.database.id=<database-id> \
+--templateProperty spanner.gcs.input.table.id=<table-id> \
+--templateProperty spanner.gcs.output.gcs.path=<gcs-path> \
+--templateProperty spanner.gcs.output.gcs.saveMode=<Append|Overwrite|ErrorIfExists|Ignore> \
+--templateProperty spanner.gcs.output.gcs.format=<avro|csv|parquet|json|orc> \
+--templateProperty spanner.gcs.input.sql.partitionColumn=<optional-sql-partition-column> \
+--templateProperty spanner.gcs.input.sql.lowerBound=<optional-partition-lower-bound-value> \
+--templateProperty spanner.gcs.input.sql.upperBound=<optional-partition-lower-bound-value> \
+--templateProperty spanner.gcs.input.sql.numPartitions=<optional-partition-partition-number>
+--templateProperty spanner.jdbc.dialect=postgresql
+```
+
+**Note**: 
+1. partitionColumn, lowerBound, upperBound and numPartitions must be used together. 
 If one is specified then all needs to be specified.
+2. `spanner.gcs.input.table.id` supports passing query or table name. When you pass query at that time query must be enclosed between `()` and table name without any brackets. Ex: `spanner.gcs.input.table.id=(SELECT * FROM test)` for query and `spanner.gcs.input.table.id=test` for table name. 
 
 ### Export query results as avro
 Update`spanner.gcs.input.table.id` property as follows:

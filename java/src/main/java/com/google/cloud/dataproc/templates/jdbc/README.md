@@ -246,12 +246,13 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 ***
 
 ## 3. JDBC To SPANNER
+Spanner JDBC driver is supporting GoogleSQL and Postgresql dialect. Please refer our [documentation](https://cloud.google.com/spanner/docs/pg-jdbc-connect#spanner-jdbc-driver). Template by default uses GoogleSQL dialect.
 
 Note - Add dependency jars specific to database in JARS variable.
 
 Example: export JARS=gs://<bucket_name>/mysql-connector-java.jar
 
-General Execution
+General Execution (Default googlesql dialect)
 
 ```
 export GCP_PROJECT=<gcp-project-id> \
@@ -278,6 +279,37 @@ bin/start.sh \
 --templateProperty jdbctospanner.output.saveMode=<Append|Overwrite|ErrorIfExists|Ignore> \
 --templateProperty jdbctospanner.output.primaryKey=<column[(,column)*] - primary key columns needed when creating the table> \
 --templateProperty jdbctospanner.output.batch.size=<optional integer>
+```
+
+<b>Postgresql dialect example</b>
+
+Note: Currently we are supporting `Append` mode only. Tables must be created before running postgres dialect.
+```
+export GCP_PROJECT=<gcp-project-id> \
+export REGION=<region>  \
+export SUBNET=<subnet>   \
+export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+export JARS=<gcs_path_to_jdbc_jar_files>
+
+bin/start.sh \
+-- --template JDBCTOSPANNER \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty jdbctospanner.jdbc.url=<jdbc url> \
+--templateProperty jdbctospanner.jdbc.driver.class.name=<jdbc-driver-class-name> \
+--templateProperty jdbctospanner.jdbc.fetchsize=<optional-fetch-size> \
+--templateProperty jdbctospanner.jdbc.sessioninitstatement=<optional-session-init-statement> \
+--templateProperty jdbctospanner.sql=<input-sql> \
+--templateProperty jdbctospanner.sql.partitionColumn=<optional-partition-column-name> \
+--templateProperty jdbctospanner.sql.lowerBound=<optional-partition-start-value> \
+--templateProperty jdbctospanner.sql.upperBound=<optional-partition-end-value> \
+--templateProperty jdbctospanner.sql.numPartitions=<optional-partition-number> \
+--templateProperty jdbctospanner.output.instance=<spanner instance id> \
+--templateProperty jdbctospanner.output.database=<spanner database id> \
+--templateProperty jdbctospanner.output.table=<spanner table id> \
+--templateProperty jdbctospanner.output.saveMode=<Append> \
+--templateProperty jdbctospanner.output.primaryKey=<column[(,column)*] - primary key columns needed when creating the table> \
+--templateProperty jdbctospanner.output.batch.size=<optional integer>
+--templateProperty spanner.jdbc.dialect=postgresql
 ```
 
 **Note**: Following is example JDBC URL for MySQL database:

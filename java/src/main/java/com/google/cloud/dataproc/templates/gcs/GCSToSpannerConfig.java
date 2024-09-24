@@ -15,14 +15,14 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.PROJECT_ID_PROP;
-import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPARK_LOG_LEVEL;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.MoreObjects;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -84,6 +84,10 @@ public class GCSToSpannerConfig {
   @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
   private String sparkLogLevel;
 
+  @JsonProperty(value = SPANNER_JDBC_DIALECT)
+  @Pattern(regexp = "(?i)(googlesql|postgresql)")
+  private String spannerJdbcDialect;
+
   public String getInputLocation() {
     return inputLocation;
   }
@@ -129,6 +133,10 @@ public class GCSToSpannerConfig {
     return sparkLogLevel;
   }
 
+  public String getSpannerJdbcDialect() {
+    return spannerJdbcDialect;
+  }
+
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
@@ -141,7 +149,19 @@ public class GCSToSpannerConfig {
         .add("saveModeString", saveModeString)
         .add("primaryKey", primaryKey)
         .add("batchInsertSize", batchInsertSize)
+        .add("spannerJDBCDialect", spannerJdbcDialect)
         .toString();
+  }
+
+  @AssertTrue(
+      message =
+          "Template supports postgresql dialect with append mode and googlesql dialect. Please check README.md file.")
+  private boolean isSpannerJDBCDialectPropertyValid() {
+
+    if (spannerJdbcDialect.equalsIgnoreCase(SPANNER_POSTGRESQL_JDBC_DIALECT)
+        && SaveMode.valueOf(saveModeString) == SaveMode.Append) {
+      return true;
+    } else return spannerJdbcDialect.equalsIgnoreCase(SPANNER_GOOGLESQL_JDBC_DIALECT);
   }
 
   public static GCSToSpannerConfig fromProperties(Properties properties) {

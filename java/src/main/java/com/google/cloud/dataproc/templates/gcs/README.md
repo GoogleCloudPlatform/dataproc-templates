@@ -74,6 +74,8 @@ Additional supported parameters.
 2. `spark.bigtable.batch.mutate.size` : The batch size for batch mutation requests. Maximum is `100K`. Default is `100`.
 
 ## 3. Cloud Storage to Spanner
+Spanner JDBC driver is supporting GoogleSQL and Postgresql dialect. Please refer our [documentation](https://cloud.google.com/spanner/docs/pg-jdbc-connect#spanner-jdbc-driver). Template by default uses GoogleSQL dialect.
+<br/><b>GoogleSQL dialect Example:</b>
 ```
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region>  \
@@ -90,7 +92,25 @@ bin/start.sh \
 --templateProperty gcs.spanner.output.primaryKey=<column[(,column)*] - primary key columns needed when creating the table> \
 --templateProperty gcs.spanner.output.batchInsertSize=<optional integer>
 ```
-
+<br/><b>Postgresql dialect example</b>
+<br/>Note: Currently we are supporting `Append` mode only. Tables must be created before running postgres dialect.
+```
+GCP_PROJECT=<gcp-project-id> \
+REGION=<region>  \
+GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
+bin/start.sh \
+-- --template GCSTOSPANNER \
+--templateProperty project.id=<gcp-project-id> \
+--templateProperty gcs.spanner.input.format=<avro | parquet | orc> \
+--templateProperty gcs.spanner.input.location=<gcs path> \
+--templateProperty gcs.spanner.output.instance=<spanner instance id> \
+--templateProperty gcs.spanner.output.database=<spanner database id> \
+--templateProperty gcs.spanner.output.table=<spanner table id> \
+--templateProperty gcs.spanner.output.saveMode=<Append> \
+--templateProperty gcs.spanner.output.primaryKey=<column[(,column)*] - primary key columns needed when creating the table> \
+--templateProperty gcs.spanner.output.batchInsertSize=<optional integer> \
+--templateProperty spanner.jdbc.dialect=postgresql
+```
 
 ## 4. Cloud Storage to JDBC
 

@@ -108,6 +108,10 @@ public class JDBCToSpannerConfig {
   @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
   private String sparkLogLevel;
 
+  @JsonProperty(value = SPANNER_JDBC_DIALECT)
+  @Pattern(regexp = "(?i)(googlesql|postgresql)")
+  private String spannerJdbcDialect;
+
   @AssertTrue(
       message =
           "Required parameters for JDBCToSpanner not passed. Template property should be provided for either the SQL Query or the SQL File, but not both. Refer to jdbc/README.md for more instructions.")
@@ -128,6 +132,17 @@ public class JDBCToSpannerConfig {
             && StringUtils.isNotBlank(jdbcSQLLowerBound)
             && StringUtils.isNotBlank(jdbcSQLUpperBound)
             && StringUtils.isNotBlank(jdbcSQLNumPartitions)));
+  }
+
+  @AssertTrue(
+      message =
+          "Template supports postgresql dialect with append mode and googlesql dialect. Please check README.md file.")
+  private boolean isSpannerJDBCDialectPropertyValid() {
+
+    if (spannerJdbcDialect.equalsIgnoreCase(SPANNER_POSTGRESQL_JDBC_DIALECT)
+        && SaveMode.valueOf(saveModeString) == SaveMode.Append) {
+      return true;
+    } else return spannerJdbcDialect.equalsIgnoreCase(SPANNER_GOOGLESQL_JDBC_DIALECT);
   }
 
   public String getProjectId() {
@@ -213,6 +228,10 @@ public class JDBCToSpannerConfig {
 
   public String getSparkLogLevel() {
     return sparkLogLevel;
+  }
+
+  public @Pattern(regexp = "(?i)(googlesql|postgresql)") String getSpannerJdbcDialect() {
+    return spannerJdbcDialect;
   }
 
   public String getSQL() {

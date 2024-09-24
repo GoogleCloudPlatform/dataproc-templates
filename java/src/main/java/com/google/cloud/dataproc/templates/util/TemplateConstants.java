@@ -524,6 +524,12 @@ public interface TemplateConstants {
   String MONGO_BQ_TABLE = "table";
   String MONGO_BQ_TEMP_BUCKET = "temporaryGcsBucket";
 
+  /** Spanner JDBC dialect */
+  String SPANNER_JDBC_DIALECT = "spanner.jdbc.dialect";
+
+  String SPANNER_GOOGLESQL_JDBC_DIALECT = "googlesql";
+  String SPANNER_POSTGRESQL_JDBC_DIALECT = "postgresql";
+
   /** Spark BigTable Common Properties */
   String SPARK_BIGTABLE_CREATE_NEW_TABLE = "spark.bigtable.create.new.table";
 
