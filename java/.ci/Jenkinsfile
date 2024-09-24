@@ -1053,7 +1053,7 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
 
-                                gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM employee;'
+                                gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM pgdialect;'
                                 export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
                                 export SKIP_BUILD=true
 
@@ -1064,10 +1064,10 @@ pipeline {
                                 --templateProperty project.id=$GCP_PROJECT \
                                 --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
                                 --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
-                                --templateProperty jdbctospanner.sql="select * from test.employee" \
+                                --templateProperty jdbctospanner.sql="select * from test.pgdialect" \
                                 --templateProperty jdbctospanner.output.instance=$ENV_TEST_SPANNER_ID \
                                 --templateProperty jdbctospanner.output.database=pgsqltest \
-                                --templateProperty jdbctospanner.output.table=employee \
+                                --templateProperty jdbctospanner.output.table=pgdialect \
                                 --templateProperty jdbctospanner.output.saveMode=Append \
                                 --templateProperty jdbctospanner.output.primaryKey='empno' \
                                 --templateProperty spanner.jdbc.dialect=postgresql

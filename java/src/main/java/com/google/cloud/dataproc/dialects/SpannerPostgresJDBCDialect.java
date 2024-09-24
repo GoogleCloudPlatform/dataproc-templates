@@ -29,18 +29,7 @@ public class SpannerPostgresJDBCDialect extends JdbcDialect {
 
   @Override
   public boolean canHandle(String url) {
-    return url.toLowerCase().startsWith("jdbc:postgresql:");
-  }
-
-  /**
-   * Spanner uses backticks to quote column identifiers
-   *
-   * @param column column name
-   * @return column name wrapped in backticks
-   */
-  @Override
-  public String quoteIdentifier(String column) {
-    return "`" + column + "`";
+    return url.toLowerCase().startsWith("jdbc:cloudspanner:");
   }
 
   /**
