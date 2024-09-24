@@ -82,7 +82,7 @@ public class DataProcTemplate {
           .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
           .put(TemplateName.REDSHIFTTOGCS, RedshiftToGCS::of)
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
-          .put(TemplateName.GCSTOBIGTABLE, (args) -> new GCStoBigTable())
+          .put(TemplateName.GCSTOBIGTABLE, GCStoBigTable::of)
           .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.GCSTOMONGO, (args) -> new GCStoMongo())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())

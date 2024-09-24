@@ -47,6 +47,22 @@ pipeline {
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream 2> /dev/null || true
 
+cat > /tmp/employeecatalog.json << EOF
+{
+  "table": {"name": "employee"},
+  "rowkey": "id_rowkey",
+  "columns": {
+    "key": {"cf": "rowkey", "col": "id_rowkey", "type": "string"},
+    "name": {"cf": "personal", "col": "name", "type": "string"},
+    "address": {"cf": "personal", "col": "address", "type": "string"},
+    "empno": {"cf": "professional", "col": "empno", "type": "string"}
+  }
+}
+EOF
+
+                                    cat /tmp/employeecatalog.json
+                                    gsutil cp /tmp/employeecatalog.json gs://dataproc-templates/conf/
+
                                 '''
                             }
                     }
@@ -608,12 +624,11 @@ pipeline {
                                 bin/start.sh \
                                 -- --template GCSTOBIGTABLE \
                                 --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty gcs.bigtable.input.location=gs://dataproc-templates/data/csv/GCSToBigTable_cities.csv \
-                                --templateProperty gcs.bigtable.input.format=csv \
+                                --templateProperty gcs.bigtable.input.location=gs://dataproc-templates/data/parquet/ \
+                                --templateProperty gcs.bigtable.input.format=parquet \
                                 --templateProperty gcs.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
                                 --templateProperty gcs.bigtable.output.project.id=$GCP_PROJECT \
-                                --templateProperty gcs.bigtable.table.name=test \
-                                --templateProperty gcs.bigtable.column.family=Name
+                                --templateProperty gcs.bigtable.catalog.location="gs://dataproc-templates/conf/employeecatalog.json"
                             '''
                         }
                     }

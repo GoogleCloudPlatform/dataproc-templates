@@ -30,7 +30,27 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 
 ## 2. Cloud Storage To BigTable
 
+Please refer our public [documentation](https://cloud.google.com/bigtable/docs/use-bigtable-spark-connector) for more details around spark bigtable connector.
+
 General Execution:
+
+`Catalog` Example : 
+
+Make sure `table name` matches with your existing BigTable table name if you are working with existing table. If you try to create a brand new table then `employee` table will be created. 
+
+Note: We support table creation only first time when it is not created otherwise connector will throw `table already exist` error.
+```json
+{
+  "table": {"name": "employee"},
+  "rowkey": "id_rowkey",
+  "columns": {
+    "key": {"cf": "rowkey", "col": "id_rowkey", "type": "string"},
+    "name": {"cf": "personal", "col": "name", "type": "string"},
+    "address": {"cf": "personal", "col": "address", "type": "string"},
+    "empno": {"cf": "professional", "col": "empno", "type": "string"}
+  }
+}
+```
 
 ```
 GCP_PROJECT=<gcp-project-id> \
@@ -45,23 +65,13 @@ bin/start.sh \
 --templateProperty gcs.bigtable.input.format=<csv|parquet|avro> \
 --templateProperty gcs.bigtable.output.instance.id=<bigtable instance Id> \
 --templateProperty gcs.bigtable.output.project.id=<bigtable project Id> \
---templateProperty gcs.bigtable.table.name=<bigtable tableName> \
---templateProperty gcs.bigtable.column.family=<bigtable column family>
-
-Example execution:-
-
-bin/start.sh \
--- --template GCSTOBIGTABLE \
---templateProperty project.id=my-project-id \
---templateProperty gcs.bigtable.input.location=gs://my-gcp-project-input-bucket/filename.csv \
---templateProperty gcs.bigtable.input.format=csv \
---templateProperty gcs.bigtable.output.instance.id=my-instance-id \
---templateProperty gcs.bigtable.output.project.id=my-project-id \
---templateProperty gcs.bigtable.table.name=my-bt-table \
---templateProperty gcs.bigtable.table.column.family=cf
-
-(Please note that the table in Bigtable should exist with the above given column family before executing the template)
+--templateProperty gcs.bigtable.catalog.location="gs://dataproc-templates/conf/employeecatalog.json"
 ```
+
+Additional supported parameters.
+
+1. `spark.bigtable.create.new.table` : Set to true if you would like to create a table based on your catalog. Default is `false`.
+2. `spark.bigtable.batch.mutate.size` : The batch size for batch mutation requests. Maximum is `100K`. Default is `100`.
 
 ## 3. Cloud Storage to Spanner
 Spanner JDBC driver is supporting GoogleSQL and Postgresql dialect. Please refer our [documentation](https://cloud.google.com/spanner/docs/pg-jdbc-connect#spanner-jdbc-driver). Template by default uses GoogleSQL dialect.
