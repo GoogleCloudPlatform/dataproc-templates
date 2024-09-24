@@ -86,17 +86,7 @@ public class JDBCToSpanner implements BaseTemplate {
 
       case SPANNER_POSTGRESQL_JDBC_DIALECT:
         JdbcDialects.registerDialect(new SpannerPostgresJDBCDialect());
-        if (config.getSaveMode() != SaveMode.Append) {
-          throw new UnsupportedOperationException(
-              "Spanner jdbc dialect supports only append mode. Please refer README.md file.");
-        }
         break;
-
-      default:
-        throw new UnsupportedOperationException(
-            String.format(
-                "%s spanner jdbc dialect is not supported. Expected values are either googlesql or postgresql.",
-                config.getSpannerJdbcDialect()));
     }
 
     LOGGER.info("Start writing to spanner");

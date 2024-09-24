@@ -134,6 +134,17 @@ public class JDBCToSpannerConfig {
             && StringUtils.isNotBlank(jdbcSQLNumPartitions)));
   }
 
+  @AssertTrue(
+      message =
+          "Template supports postgresql dialect with append mode and googlesql dialect. Please check README.md file.")
+  private boolean isSpannerJDBCDialectPropertyValid() {
+
+    if (spannerJdbcDialect.equalsIgnoreCase(SPANNER_POSTGRESQL_JDBC_DIALECT)
+        && SaveMode.valueOf(saveModeString) == SaveMode.Append) {
+      return true;
+    } else return spannerJdbcDialect.equalsIgnoreCase(SPANNER_GOOGLESQL_JDBC_DIALECT);
+  }
+
   public String getProjectId() {
     return projectId;
   }

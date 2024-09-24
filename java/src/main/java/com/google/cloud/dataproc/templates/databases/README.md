@@ -27,7 +27,6 @@ bin/start.sh \
 
 <b>Postgresql dialect example</b>
 
-Note: Currently postgresql dialect is not supporting to pass query. You must pass only table name.
 ```
 export GCP_PROJECT=<gcp-project-id>
 export REGION=<region>
@@ -49,8 +48,10 @@ bin/start.sh \
 --templateProperty spanner.jdbc.dialect=postgresql
 ```
 
-**Note**: partitionColumn, lowerBound, upperBound and numPartitions must be used together. 
+**Note**: 
+1. partitionColumn, lowerBound, upperBound and numPartitions must be used together. 
 If one is specified then all needs to be specified.
+2. `spanner.gcs.input.table.id` supports passing query or table name. When you pass query at that time query must be enclosed between `()` and table name without any brackets. Ex: `spanner.gcs.input.table.id=(SELECT * FROM test)` for query and `spanner.gcs.input.table.id=test` for table name. 
 
 ### Export query results as avro
 Update`spanner.gcs.input.table.id` property as follows:

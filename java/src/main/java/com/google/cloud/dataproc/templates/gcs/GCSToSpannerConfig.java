@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.MoreObjects;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -150,6 +151,17 @@ public class GCSToSpannerConfig {
         .add("batchInsertSize", batchInsertSize)
         .add("spannerJDBCDialect", spannerJdbcDialect)
         .toString();
+  }
+
+  @AssertTrue(
+      message =
+          "Template supports postgresql dialect with append mode and googlesql dialect. Please check README.md file.")
+  private boolean isSpannerJDBCDialectPropertyValid() {
+
+    if (spannerJdbcDialect.equalsIgnoreCase(SPANNER_POSTGRESQL_JDBC_DIALECT)
+        && SaveMode.valueOf(saveModeString) == SaveMode.Append) {
+      return true;
+    } else return spannerJdbcDialect.equalsIgnoreCase(SPANNER_GOOGLESQL_JDBC_DIALECT);
   }
 
   public static GCSToSpannerConfig fromProperties(Properties properties) {

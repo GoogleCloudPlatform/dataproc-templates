@@ -114,6 +114,10 @@ public class SpannerToGCSConfig {
   }
 
   public String getInputTableId() {
+
+    if (this.inputTableId.trim().startsWith("(") && this.inputTableId.trim().endsWith(")")) {
+      return String.format("%s AS A", this.inputTableId);
+    }
     return this.inputTableId;
   }
 
@@ -213,6 +217,15 @@ public class SpannerToGCSConfig {
         + getSpannerJdbcDialect()
         + "'"
         + "}";
+  }
+
+  @AssertTrue(
+      message =
+          "Template supports postgresql dialect and googlesql dialect. Please check README.md file.")
+  private boolean isSpannerJDBCDialectPropertyValid() {
+
+    return spannerJdbcDialect.equalsIgnoreCase(SPANNER_POSTGRESQL_JDBC_DIALECT)
+        || spannerJdbcDialect.equalsIgnoreCase(SPANNER_GOOGLESQL_JDBC_DIALECT);
   }
 
   public static SpannerToGCSConfig fromProperties(Properties properties) {

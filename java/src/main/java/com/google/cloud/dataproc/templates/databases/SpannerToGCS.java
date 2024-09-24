@@ -66,12 +66,6 @@ public class SpannerToGCS implements BaseTemplate {
       case SPANNER_POSTGRESQL_JDBC_DIALECT:
         JdbcDialects.registerDialect(new SpannerPostgresJDBCDialect());
         break;
-
-      default:
-        throw new UnsupportedOperationException(
-            String.format(
-                "%s spanner jdbc dialect is not supported. Expected values are either googlesql or postgresql.",
-                config.getSpannerJdbcDialect()));
     }
 
     HashMap<String, String> jdbcProperties = new HashMap<>();

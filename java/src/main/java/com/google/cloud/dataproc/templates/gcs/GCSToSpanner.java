@@ -25,7 +25,6 @@ import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions;
 import org.apache.spark.sql.jdbc.JdbcDialects;
@@ -68,6 +67,7 @@ public class GCSToSpanner implements BaseTemplate {
         String.format(
             "jdbc:cloudspanner:/projects/%s/instances/%s/databases/%s?lenient=true",
             config.getProjectId(), config.getInstance(), config.getDatabase());
+
     LOGGER.info("Spanner JDBC Dialect is {}", config.getSpannerJdbcDialect());
     switch (config.getSpannerJdbcDialect().toLowerCase()) {
       case SPANNER_GOOGLESQL_JDBC_DIALECT:
@@ -76,18 +76,9 @@ public class GCSToSpanner implements BaseTemplate {
 
       case SPANNER_POSTGRESQL_JDBC_DIALECT:
         JdbcDialects.registerDialect(new SpannerPostgresJDBCDialect());
-        if (config.getSaveMode() != SaveMode.Append) {
-          throw new UnsupportedOperationException(
-              "Spanner jdbc dialect supports only append mode. Please refer README.md file.");
-        }
         break;
-
-      default:
-        throw new UnsupportedOperationException(
-            String.format(
-                "%s spanner jdbc dialect is not supported. Expected values are either googlesql or postgresql.",
-                config.getSpannerJdbcDialect()));
     }
+
     LOGGER.info("Start writing to spanner");
     dataset
         .write()
