@@ -1,0 +1,139 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+steps:
+  - name: gcr.io/cloud-builders/git
+    args:
+      - clone
+      - 'https://github.com/GoogleCloudPlatform/${_REPO}.git'
+    id: check-out-source-code
+  - name: python
+    args:
+      - python
+      - setup.py
+      - bdist_egg
+      - '--output=${_BINARY_PREFIX}.egg'
+    dir: '${_REPO}/python'
+    id: build-python-egg
+  - name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gsutil cp ${_REPO}/python/main.py gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/  
+    id: cp-python-main-to-gcs-tag-folder
+  - name: gcr.io/cloud-builders/gsutil
+    args:
+      - cp
+      - main.py
+      - 'gs://${_PUBLIC_BUCKET}/latest/python/'
+    dir: '${_REPO}/python'
+    id: cp-python-main-to-gcs-latest-folder
+  - name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gsutil cp ${_REPO}/python/${_BINARY_PREFIX}.egg gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/
+    id: cp-python-egg-to-gcs-tag-folder
+  - name: gcr.io/cloud-builders/gsutil
+    args:
+      - cp
+      - '${_BINARY_PREFIX}.egg'
+      - 'gs://${_PUBLIC_BUCKET}/latest/python/'
+    dir: '${_REPO}/python'
+    id: cp-python-egg-to-gcs-latest-folder
+  - id: build-java-jar
+    name: 'gcr.io/cloud-builders/mvn:3.5.0-jdk-8'
+    args:
+      - package
+      - '-Dmaven.test.skip=true'
+    dir: '${_REPO}/java'
+  - id: stage-java-jar-to-temp-gcs-directory
+    name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gsutil cp ${_REPO}/java/target/dataproc-templates-1.0-SNAPSHOT.jar gs://${_PUBLIC_BUCKET}/tmp/$TAG_NAME/java/
+  - id: run-integration-tests-for-ui-templates
+    name: gcr.io/cloud-builders/gcloud
+    entrypoint: 'bash'
+    args: 
+      - "-c"
+      - |
+        #!/usr/bin/env bash
+
+        apt-get update && apt-get install -y jq
+
+        JENKINS_URL="${_JENKINS_UI_INT_TEST_URL}&jarPath=gs://${_PUBLIC_BUCKET}/tmp/$TAG_NAME/java/dataproc-templates-1.0-SNAPSHOT.jar"
+        CREDS=$(gcloud beta secrets versions access --secret="jenkins-admin-credentials" latest)
+        echo $$JENKINS_URL
+        echo $$CREDS
+
+        BUILD_URL=$(curl -i -s -u $$CREDS "$$JENKINS_URL" | grep "location" | awk '{printf $$2}' | tr -d '\r')
+        echo $$BUILD_URL
+
+        if [[ $$? != 0 ]]; then
+          echo "API request failed. Please check the Jenkins URL and API token."
+          exit 1
+        fi
+
+        JOB_URL=$${BUILD_URL}api/json
+
+        echo "Build Job Queue URL received on Jenkins trigger: $$JOB_URL"
+        EXECUTABLE_URL=$(curl -s -u $$CREDS $$JOB_URL | jq -r '.executable.url')
+        if [[ $$? != 0 ]]; then
+          echo "API request failed. Please check the Jenkins URL and API token."
+          exit 1
+        fi           
+          echo "Executable URL received on the first attempt: [$$EXECUTABLE_URL]"
+          while [[ "$$EXECUTABLE_URL" == null ]]; do
+            EXECUTABLE_URL=$(curl -s -u $$CREDS $$JOB_URL | jq -r '.executable.url')
+            if [[ $$? != 0 ]]; then
+              echo "API request failed. Please check the Jenkins URL and API token."
+              exit 1
+            fi          
+          done
+        POLLING_URL=$${EXECUTABLE_URL}api/json
+
+
+        echo "Executable URL to be polled for the triggered Jenkins job: $$POLLING_URL"
+        status="UNKNOWN"
+        while [[ $$status != "SUCCESS" ]]; do
+        # TODO: sleep 90
+          sleep 1
+          status=$(curl -s -u $$CREDS $$POLLING_URL | jq -r '.result')
+          if [[ $$? != 0 ]]; then
+            echo "JSON data could not be parsed. Exiting..."
+            exit 1
+          fi
+          echo "Result Polled on Job Executable URL: [$status]"            
+          [ "$$status" == null  ] && continue
+          if [[ $$status == "FAILURE" || $$status == "NOT_BUILT" || $$status == "ABORTED" || $$status == "UNSTABLE" ]]; then
+            echo "Jenkins job $$JOB_NAME with Build URL $$JOB_URL completed with status [$$status]"
+            exit 99
+          fi
+        done
+        echo "Jenkins job $$JOB_NAME with Build URL $$JOB_URL completed with status $$status"
+  - id: trigger-promote-binaries-pipeline
+    name: gcr.io/cloud-builders/gcloud
+    # TODO: dataproc-templates
+    args:
+      - '-c'
+      - >
+        gcloud builds triggers run promote-java-binaries
+        --project dataproc-templates
+        --substitutions _TMP_GCS_URI=gs://${_PUBLIC_BUCKET}/tmp/$TAG_NAME/java/dataproc-templates-1.0-SNAPSHOT.jar,_TARGET_GCS_URI_TAG=gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/java/,_TARGET_GCS_URI_LATEST=gs://${_PUBLIC_BUCKET}/latest/java/${_BINARY_PREFIX}.jar
+    entrypoint: bash
