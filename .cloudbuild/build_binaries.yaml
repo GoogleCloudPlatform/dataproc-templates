@@ -61,13 +61,13 @@ steps:
       - package
       - '-Dmaven.test.skip=true'
     dir: '${_REPO}/java'
-  - id: stage-java-jar-to-temp-gcs-directory
+  - id: stage-java-jar-to-preprod-gcs-directory
     name: gcr.io/cloud-builders/gsutil
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gsutil cp ${_REPO}/java/target/dataproc-templates-1.0-SNAPSHOT.jar gs://${_PUBLIC_BUCKET}/tmp/$TAG_NAME/java/
+        gsutil cp ${_REPO}/java/target/dataproc-templates-1.0-SNAPSHOT.jar gs://${_PRE_PROD_BUCKET}/$TAG_NAME/java/
   - id: run-integration-tests-for-ui-templates
     name: gcr.io/cloud-builders/gcloud
     entrypoint: 'bash'
@@ -78,7 +78,7 @@ steps:
 
         apt-get update && apt-get install -y jq
 
-        JENKINS_URL="${_JENKINS_UI_INT_TEST_URL}&jarPath=gs://${_PUBLIC_BUCKET}/tmp/$TAG_NAME/java/dataproc-templates-1.0-SNAPSHOT.jar"
+        JENKINS_URL="${_JENKINS_UI_INT_TEST_URL}&jarPath=gs://${_PRE_PROD_BUCKET}/$TAG_NAME/java/dataproc-templates-1.0-SNAPSHOT.jar"
         CREDS=$(gcloud beta secrets versions access --secret="jenkins-admin-credentials" latest)
         echo $$JENKINS_URL
 
@@ -135,5 +135,5 @@ steps:
       - >
         gcloud builds triggers run promote-java-binaries
         --project dataproc-templates
-        --substitutions _TMP_GCS_URI=gs://${_PUBLIC_BUCKET}/tmp/$TAG_NAME/java/dataproc-templates-1.0-SNAPSHOT.jar,_TARGET_GCS_URI_TAG=gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/java/,_TARGET_GCS_URI_LATEST=gs://${_PUBLIC_BUCKET}/latest/java/${_BINARY_PREFIX}.jar
+        --substitutions _TMP_GCS_URI=gs://${_PRE_PROD_BUCKET}/$TAG_NAME/java/dataproc-templates-1.0-SNAPSHOT.jar,_TARGET_GCS_URI_TAG=gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/java/,_TARGET_GCS_URI_LATEST=gs://${_PUBLIC_BUCKET}/latest/java/${_BINARY_PREFIX}.jar
     entrypoint: bash
