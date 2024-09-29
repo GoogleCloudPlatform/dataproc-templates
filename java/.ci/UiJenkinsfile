@@ -28,7 +28,9 @@ pipeline {
             returnStdout: true
         ).trim()
     }
-    stage('Reset Resources'){
+    stages {
+        //Deploy one time so that build is copied to GCS location
+        stage('Reset Resources'){
                     steps {
                             catchError {
                                 sh '''
@@ -37,9 +39,7 @@ pipeline {
                                 '''
                             }
                     }
-    }
-    stages {
-        //Deploy one time so that build is copied to GCS location
+            }
         stage('Parallel Execution 1'){
             parallel{
                 stage('SPANNER TO GCS'){
