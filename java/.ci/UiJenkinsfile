@@ -1,0 +1,420 @@
+def stageRetryCount = 3
+
+pipeline {
+    
+    agent any
+
+    environment {
+        DATAPROC_TELEPORT_WEBHOOK_URL = credentials('dataproc-teleport-webhook-url')
+
+        TEST_JDBC_URL = credentials('env-test-jdbc-url')
+    }
+    stages {
+        //Deploy one time so that build is copied to GCS location
+        stage('Parallel Execution 1'){
+            parallel{
+                stage('SPANNER TO GCS'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template SPANNERTOGCS \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
+                                --templateProperty spanner.gcs.input.database.id=spark-ci-db \
+                                --templateProperty "spanner.gcs.input.table.id=(select id,name from badges2 where name = 'Teacher' limit 10000)" \
+                                --templateProperty spanner.gcs.output.gcs.path=dataproc-templates/integration-testing/output/SPANNERTOGCS/parquet \
+                                --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+                                --templateProperty spanner.gcs.output.gcs.format=parquet
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO BIGQUERY(avro)') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template GCSTOBIGQUERY \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty gcs.bigquery.input.location="gs://dataproc-templates/integration-testing/gcstobigquery/cities.avro" \
+                                --templateProperty gcs.bigquery.input.format=avro \
+                                --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
+                                --templateProperty gcs.bigquery.output.table="gcs_to_bq_avro" \
+                                --templateProperty gcs.bigquery.output.mode="Overwrite" \
+                                --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO SPANNER') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                
+                                export SKIP_BUILD=true
+
+                                cd java
+                                
+                                bin/start.sh \
+                                    -- --template GCSTOSPANNER \
+                                    --templateProperty project.id=$GCP_PROJECT \
+                                    --templateProperty gcs.spanner.input.format=avro \
+                                    --templateProperty gcs.spanner.input.location=gs://dataproc-templates/data/avro/empavro \
+                                    --templateProperty gcs.spanner.output.instance=$ENV_TEST_SPANNER_ID \
+                                    --templateProperty gcs.spanner.output.database=spark-ci-db   \
+                                    --templateProperty gcs.spanner.output.table=badges \
+                                    --templateProperty gcs.spanner.output.saveMode=Overwrite \
+                                    --templateProperty gcs.spanner.output.primaryKey=empno
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO GCS (avro)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                
+                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template GCSTOGCS \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty gcs.gcs.input.location=gs://dataproc-templates/data/avro/empavro \
+                                --templateProperty gcs.gcs.input.format=avro \
+                                --templateProperty gcs.gcs.output.location=gs://dataproc-templates/integration-testing/output/GCSTOGCS/avro \
+                                --templateProperty gcs.gcs.output.format=csv \
+                                --templateProperty gcs.gcs.write.mode=overwrite \
+                                --templateProperty gcs.gcs.temp.table=dataset \
+                                --templateProperty gcs.gcs.temp.query='select * from global_temp.dataset where sal>1500'
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 2'){
+            parallel{
+                stage('GCS TO GCS (csv)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template GCSTOGCS \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty gcs.gcs.input.location=gs://dataproc-templates/integration-testing/gcstogcs/csvtoavro/csv/cities.csv \
+                                --templateProperty gcs.gcs.input.format=csv \
+                                --templateProperty gcs.gcs.output.location=gs://dataproc-templates/integration-testing/output/GCSTOGCS/avro \
+                                --templateProperty gcs.gcs.output.format=avro \
+                                --templateProperty gcs.gcs.write.mode=overwrite
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO JDBC') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export JARS=gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar
+                                export SKIP_BUILD=true
+
+                                cd java
+                                
+                                bin/start.sh \
+                                    -- --template GCSTOJDBC \
+                                    --templateProperty project.id=$GCP_PROJECT \
+                                    --templateProperty gcs.jdbc.input.location=gs://dataproc-templates/data/avro/empavro \
+                                    --templateProperty gcs.jdbc.input.format=avro \
+                                    --templateProperty gcs.jdbc.output.table=avrodemo \
+                                    --templateProperty gcs.jdbc.output.saveMode=Overwrite   \
+                                    --templateProperty gcs.jdbc.output.url="$TEST_JDBC_URL" \
+                                    --templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver'
+                            '''
+                        }
+                    }
+                }
+
+                stage('HIVE TO BIGQUERY'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
+                                -- --template HIVETOBIGQUERY \
+                                --templateProperty hivetobq.bigquery.location=$GCP_PROJECT.dataproc_templates.test \
+                                --templateProperty hivetobq.sql="select * from default.employee" \
+                                --templateProperty hivetobq.write.mode=Overwrite \
+                                --templateProperty hivetobq.temp.gcs.bucket=dataproc-templates/integration-testing/output/HIVETOBIGQUERY
+                            '''
+                        }
+                    }
+                }
+
+                stage('Hive TO GCS'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
+                                -- --template HIVETOGCS \
+                                --templateProperty hive.input.table=employee \
+                                --templateProperty hive.input.db=default \
+                                --templateProperty hive.gcs.output.path=gs://dataproc-templates/integration-testing/output/HIVETOGCS
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 3'){
+            parallel{
+                stage('JDBC TO BQ'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                        sh '''
+                            export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                        
+                            cd java
+                        
+                            bin/start.sh \
+                            -- --template JDBCTOBIGQUERY \
+                            --templateProperty jdbctobq.bigquery.location=$GCP_PROJECT.dataproc_templates.jdbctobq \
+                            --templateProperty jdbctobq.jdbc.url="$TEST_JDBC_URL" \
+                            --templateProperty jdbctobq.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+                            --templateProperty jdbctobq.sql="select * from test.employee" \
+                            --templateProperty jdbctobq.write.mode=overwrite \
+                            --templateProperty jdbctobq.temp.gcs.bucket=dataproc-templates/integration-testing/output/JDBCTOBIGQUERY 
+                        '''
+                    }
+                }
+                }            
+
+                stage('JDBC TO SPANNER'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template JDBCTOSPANNER \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+                                --templateProperty jdbctospanner.sql="select * from test.employee" \
+                                --templateProperty jdbctospanner.output.instance=$ENV_TEST_SPANNER_ID \
+                                --templateProperty jdbctospanner.output.database=spark-ci-db \
+                                --templateProperty jdbctospanner.output.table=employee \
+                                --templateProperty jdbctospanner.output.saveMode=Overwrite \
+                                --templateProperty jdbctospanner.output.primaryKey='empno'
+                            '''
+                        }
+                    }
+                }
+
+                stage('JDBC TO GCS (csv)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                
+                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template JDBCTOGCS \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty jdbctogcs.jdbc.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+                                --templateProperty jdbctogcs.output.location=gs://dataproc-templates/integration-testing/output/JDBCTOGCS/csv \
+                                --templateProperty jdbctogcs.output.format=csv \
+                                --templateProperty jdbctogcs.write.mode=overwrite \
+                                --templateProperty jdbctogcs.sql="select * from test.employee" 
+                            '''
+                        }
+                    }
+                }
+                stage('JDBC TO GCS (avro)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                
+                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template JDBCTOGCS \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty jdbctogcs.jdbc.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+                                --templateProperty jdbctogcs.output.location=gs://dataproc-templates/integration-testing/output/JDBCTOGCS/avro \
+                                --templateProperty jdbctogcs.output.format=avro \
+                                --templateProperty jdbctogcs.write.mode=overwrite \
+                                --templateProperty jdbctogcs.sql="select * from test.employee" 
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 4'){
+            parallel{
+                stage('SPANNER TO GCS (csv)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export SKIP_BUILD=true
+                                    
+                                cd java
+
+                                bin/start.sh \
+                                -- --template SPANNERTOGCS \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
+                                --templateProperty spanner.gcs.input.database.id=test-db \
+                                --templateProperty spanner.gcs.input.table.id=shakespeare \
+                                --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/csv \
+                                --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+                                --templateProperty spanner.gcs.output.gcs.format=csv
+                            '''
+                        }
+                    }
+                }
+                stage('SPANNER TO GCS (avro)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export SKIP_BUILD=true
+                                    
+                                cd java
+
+                                bin/start.sh \
+                                -- --template SPANNERTOGCS \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
+                                --templateProperty spanner.gcs.input.database.id=test-db \
+                                --templateProperty spanner.gcs.input.table.id=shakespeare \
+                                --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/avro \
+                                --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+                                --templateProperty spanner.gcs.output.gcs.format=avro
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO BIGQUERY(csv)') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template GCSTOBIGQUERY \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty gcs.bigquery.input.location=gs://dataproc-templates/integration-testing/gcstobigquery/cities.csv \
+                                --templateProperty gcs.bigquery.input.format=csv \
+                                --templateProperty gcs.bigquery.output.dataset=dataproc_templates \
+                                --templateProperty gcs.bigquery.output.table=gcs_bq_cities \
+                                --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 5'){
+            parallel{
+                stage('JDBC To JDBC'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export SKIP_BUILD=true
+                                    
+                                cd java
+
+                                bin/start.sh \
+                                -- --template JDBCTOJDBC \
+                                --templateProperty jdbctojdbc.input.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+                                --templateProperty jdbctojdbc.input.table="employee" \
+                                --templateProperty jdbctojdbc.output.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+                                --templateProperty jdbctojdbc.output.table="employee_output" \
+                                --templateProperty jdbctojdbc.output.mode="Overwrite" 
+                            '''
+                        }
+                    }
+                }
+                stage('PUBSUB TO GCS') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+            
+                                export SKIP_BUILD=true
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template PUBSUBTOGCS \
+                                --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
+                                --templateProperty pubsubtogcs.input.subscription=pubsubtogcsv3-sub \
+                                --templateProperty pubsubtogcs.gcs.bucket.name=pubsubtogcs_dev \
+                                --templateProperty pubsubtogcs.gcs.output.data.format=JSON \
+                                --templateProperty pubsubtogcs.batch.size=50
+                            ''' 
+                        }
+                    }
+                }
+                   
+            }
+        }
+    }
+    post {
+        always{
+            // script {
+            //     googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
+    		// 	message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
+    		// 	notifyFailure: 'true',
+    		// 	notifyAborted: 'true',
+    		// 	notifyUnstable: 'true',
+    		// 	notifyNotBuilt: 'true',
+    		// 	notifyBackToNormal: 'true'
+            //     }
+            }            
+    }
+    
+}
