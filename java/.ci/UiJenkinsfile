@@ -9,6 +9,16 @@ pipeline {
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
     }
+    stage('Reset Resources'){
+                    steps {
+                            catchError {
+                                sh '''
+                                    gcloud pubsub topics publish pubsubtogcsv3 --message='{"Name": "NewMsg", "Age": 10}'
+                                    gcloud pubsub topics publish test-pubsub-bq --message='{"Name": "Another message", "Age": 18}' 2> /dev/null || true
+                                '''
+                            }
+                    }
+    }
     stages {
         //Deploy one time so that build is copied to GCS location
         stage('Parallel Execution 1'){
