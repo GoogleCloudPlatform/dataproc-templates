@@ -51,7 +51,7 @@ pipeline {
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --version="1.1" \
                                     --project="${GCP_PROJECT}" \
-                                    --region="us-weat1" \
+                                    --region="us-west1" \
                                     --jars="${jarPath}" \
                                     -- --template=SPANNERTOGCS \
                                     --templateProperty project.id="${GCP_PROJECT}" \
