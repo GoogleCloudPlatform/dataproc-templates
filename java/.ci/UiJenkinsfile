@@ -403,18 +403,18 @@ pipeline {
             }
         }
     }
-    post {
-        always{
-            // script {
-            //     googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
-    		// 	message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
-    		// 	notifyFailure: 'true',
-    		// 	notifyAborted: 'true',
-    		// 	notifyUnstable: 'true',
-    		// 	notifyNotBuilt: 'true',
-    		// 	notifyBackToNormal: 'true'
-            //     }
-            }            
-    }
+    // post {
+    //     always{
+    //         script {
+    //             googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
+    // 			message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
+    // 			notifyFailure: 'true',
+    // 			notifyAborted: 'true',
+    // 			notifyUnstable: 'true',
+    // 			notifyNotBuilt: 'true',
+    // 			notifyBackToNormal: 'true'
+    //             }
+    //         }            
+    // }
     
 }
