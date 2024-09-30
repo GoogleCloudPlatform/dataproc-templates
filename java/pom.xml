@@ -128,6 +128,7 @@
     <maven.surefire.plugin.version>3.5.0</maven.surefire.plugin.version>
     <junit-platform.version>5.11.0</junit-platform.version>
     <jacoco.maven.version>0.8.12</jacoco.maven.version>
+    <maven.shade.plugin.version>3.6.0</maven.shade.plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -644,6 +645,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
         <executions>
           <execution>
             <phase>package</phase>
