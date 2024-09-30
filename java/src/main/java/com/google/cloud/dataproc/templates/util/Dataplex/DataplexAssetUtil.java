@@ -15,7 +15,7 @@
  */
 package com.google.cloud.dataproc.templates.util.Dataplex;
 
-import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonObject;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

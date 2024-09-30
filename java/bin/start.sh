@@ -64,10 +64,10 @@ if [ -z "$SKIP_BUILD" ]; then
 
 fi
 
-OPT_SPARK_VERSION="--version=1.1"
+OPT_SPARK_VERSION="--version=1.2"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
-OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+OPT_JARS="--jars=${GCS_STAGING_LOCATION}/${JAR_FILE}"
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
 OPT_CLASS="--class=com.google.cloud.dataproc.templates.main.DataProcTemplate"

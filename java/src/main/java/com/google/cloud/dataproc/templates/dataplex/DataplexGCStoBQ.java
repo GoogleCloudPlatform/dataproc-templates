@@ -18,12 +18,12 @@ package com.google.cloud.dataproc.templates.dataplex;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.bigquery.connector.common.BigQueryConnectorException;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.gcs.GCStoBigquery;
 import com.google.cloud.dataproc.templates.util.Dataplex.DataplexAssetUtil;
 import com.google.cloud.dataproc.templates.util.Dataplex.DataplexEntityUtil;
 import com.google.cloud.dataproc.templates.util.DataprocTemplateException;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.connector.common.BigQueryConnectorException;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;

@@ -26,7 +26,8 @@ public class OutputConfig {
 
   @NotBlank private String format;
   private String path;
-  @NotNull private Map<String, String> options = ImmutableMap.of();;
+  @NotNull private Map<String, String> options = ImmutableMap.of();
+  ;
 
   @Pattern(regexp = "Overwrite|ErrorIfExists|Append|Ignore")
   private String mode;

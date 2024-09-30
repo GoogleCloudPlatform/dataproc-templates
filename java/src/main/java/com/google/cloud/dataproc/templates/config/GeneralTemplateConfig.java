@@ -40,7 +40,8 @@ import java.util.Set;
 public class GeneralTemplateConfig {
 
   @NotEmpty() private Map<String, @Valid InputConfig> input = ImmutableMap.of();
-  @NotNull private Map<String, @Valid QueryConfig> query = ImmutableMap.of();;
+  @NotNull private Map<String, @Valid QueryConfig> query = ImmutableMap.of();
+  ;
   @NotEmpty() private Map<String, @Valid OutputConfig> output = ImmutableMap.of();
 
   public Map<String, InputConfig> getInput() {
