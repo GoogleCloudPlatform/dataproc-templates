@@ -626,6 +626,13 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven.surefire.plugin.version}</version>
+        <configuration>
+          <!-- Required this when using Java 9 or later, some JDK internals must be exposed  -->
+          <!-- https://issues.apache.org/jira/browse/SPARK-33772 -->
+          <argLine>
+            --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+          </argLine>
+        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.junit.jupiter</groupId>
