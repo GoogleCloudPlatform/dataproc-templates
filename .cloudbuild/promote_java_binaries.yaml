@@ -1,0 +1,40 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+steps:
+  - id: cp-java-jar-to-gcs-tag-folder
+    name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "_TMP_GCS_URI: ${_TMP_GCS_URI}"
+        echo "_TARGET_GCS_URI_TAG: ${_TARGET_GCS_URI_TAG}"
+        gsutil cp ${_TMP_GCS_URI} ${_TARGET_GCS_URI_TAG}
+  - id: cp-java-jar-to-gcs-latest-folder
+    name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "_TMP_GCS_URI: ${_TMP_GCS_URI}"
+        echo "_TARGET_GCS_URI_LATEST: ${_TARGET_GCS_URI_LATEST}"
+        gsutil cp ${_TMP_GCS_URI} ${_TARGET_GCS_URI_LATEST}
+  - id: cleanup-tmp-jar-file
+    name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gsutil rm ${_TMP_GCS_URI}
