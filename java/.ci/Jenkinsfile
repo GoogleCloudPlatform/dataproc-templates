@@ -102,7 +102,7 @@ EOF
             steps {
                 retry(count: stageRetryCount) {
                     sh '''
-                        export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                        export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                         
                         cd java
                         
@@ -126,7 +126,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -150,7 +150,7 @@ EOF
                                 
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
 
                                 cd java
                                 
@@ -175,7 +175,7 @@ EOF
 
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -199,7 +199,7 @@ EOF
 
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
 
                                 cd java
 
@@ -224,7 +224,7 @@ EOF
                                 
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -247,7 +247,7 @@ EOF
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar"
                                 export SKIP_BUILD=true
 
                                 cd java
@@ -272,7 +272,7 @@ EOF
             
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -292,7 +292,7 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                 
                                 cd java
@@ -315,7 +315,7 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                 
                                 cd java
@@ -343,7 +343,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -364,7 +364,7 @@ EOF
 
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 export SPARK_PROPERTIES="dataproc.sparkBqConnector.uri=gs://spark-lib/bigquery/spark-3.5-bigquery-0.41.0.jar"
                                 
                                 cd java
@@ -389,7 +389,7 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                 
                                 cd java
@@ -414,7 +414,7 @@ EOF
                             sh '''                                
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -438,7 +438,7 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
 
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                 
                                 cd java
@@ -465,7 +465,7 @@ EOF
                                 
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -489,7 +489,7 @@ EOF
                                 
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -513,7 +513,7 @@ EOF
                                 
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -539,7 +539,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                     
                                 cd java
 
@@ -570,7 +570,7 @@ EOF
                                 cd java
                                 
                                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
                                 
                                 bin/start.sh \
                                 --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.1 \
@@ -599,10 +599,11 @@ EOF
                                 export HBASE_SITE_PATH=../hbase-site.xml
                                 export IMAGE=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/${IMAGE_NAME_VERSION}
                                 export SKIP_IMAGE_BUILD=TRUE
+                                export SKIP_BUILD=true
                                 
                                 cd java
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 bin/start.sh \
                                 --container-image=$IMAGE \
@@ -624,7 +625,7 @@ EOF
                                 
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -650,7 +651,7 @@ EOF
                             sh '''  
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
 
                                 cd java
 
@@ -672,7 +673,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                     
                                 cd java
 
@@ -695,7 +696,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                     
                                 cd java
 
@@ -718,7 +719,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 cd java
                                 
@@ -744,7 +745,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                     
                                 cd java
 
@@ -767,7 +768,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                     
                                 cd java
 
@@ -791,7 +792,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                     
                                 cd java
 
@@ -813,7 +814,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                     
                                 cd java
 
@@ -841,7 +842,7 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                     
                                 cd java
 
@@ -868,7 +869,7 @@ EOF
                                 cd java
                                 
                                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
                                 
                                 bin/start.sh \
                                 --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.1 \
@@ -901,7 +902,7 @@ EOF
                                 
                                 cd java
 
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 
                                 bin/start.sh \
                                 --container-image=$IMAGE \
@@ -920,7 +921,7 @@ EOF
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                     
                                 cd java
@@ -944,7 +945,7 @@ EOF
                             sh '''
 
                                 export SKIP_BUILD=true
-                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar"
 
                                 cd java
 
@@ -970,7 +971,7 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
                                 cd java
                                 bin/start.sh \
                                 -- --template PUBSUBLITETOBIGTABLE \
@@ -990,7 +991,7 @@ EOF
                              sh '''
 
                                   export SKIP_BUILD=true
-                                  export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                  
                                   cd java
                                   bin/start.sh \
                                   -- \
@@ -1016,7 +1017,7 @@ EOF
                              sh '''
 
                                   export SKIP_BUILD=true
-                                  export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                  
                                   cd java
                                   bin/start.sh \
                                   -- \
@@ -1042,7 +1043,7 @@ EOF
                             sh '''
 
                                  export SKIP_BUILD=true
-                                 export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                 
                                  cd java
                                  bin/start.sh \
                                  -- \
@@ -1069,7 +1070,7 @@ EOF
                             sh'''
 
                                 export SKIP_BUILD=true
-                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar"
 
                                 cd java
                                 bin/start.sh \
@@ -1098,7 +1099,7 @@ EOF
 
                                 gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM badges;'
                                 export SKIP_BUILD=true
-                                export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                
 
                                 cd java
 
@@ -1123,7 +1124,7 @@ EOF
                             sh '''
 
                                 gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM pgdialect;'
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar,gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
 
                                 cd java

@@ -380,6 +380,11 @@
       <artifactId>spark-cassandra-connector_${scala.binary.version}</artifactId>
       <version>${spark.cassandra.connector.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-posix</artifactId>
+      <version>${jnr.posix.version}</version>
+    </dependency>
 
     <!-- Spark Snowflake Connector -->
     <dependency>
@@ -527,11 +532,6 @@
 <!--      <groupId>org.json</groupId>-->
 <!--      <artifactId>json</artifactId>-->
 <!--      <version>${json.version}</version>-->
-<!--    </dependency>-->
-<!--    <dependency>-->
-<!--      <groupId>com.github.jnr</groupId>-->
-<!--      <artifactId>jnr-posix</artifactId>-->
-<!--      <version>${jnr.posix.version}</version>-->
 <!--    </dependency>-->
 <!--    <dependency>-->
 <!--      <groupId>com.github.ben-manes.caffeine</groupId>-->
