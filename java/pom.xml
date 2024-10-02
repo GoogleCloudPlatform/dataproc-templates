@@ -84,6 +84,10 @@
     <spark.bigtable.connector.version>0.2.1</spark.bigtable.connector.version>
     <spark.streaming.pubsub.version>2.4.0</spark.streaming.pubsub.version>
 
+    <!-- Spark Kafka Streaming Dependency. Aligned with Spark 3.5.1 -->
+    <json4s.version>3.7.0-M11</json4s.version>
+    <commons.io.version>2.13.0</commons.io.version>
+
     <!-- Spark Cassandra Connector -->
     <spark.cassandra.connector.version>3.5.1</spark.cassandra.connector.version>
 
@@ -293,6 +297,24 @@
       <groupId>org.apache.bahir</groupId>
       <artifactId>spark-streaming-pubsub_${scala.binary.version}</artifactId>
       <version>${spark.streaming.pubsub.version}</version>
+    </dependency>
+
+    <!-- Required by spark streaming kafka -->
+    <dependency>
+      <groupId>org.json4s</groupId>
+      <artifactId>json4s-jackson_${scala.binary.version}</artifactId>
+      <version>${json4s.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons.io.version}</version>
     </dependency>
 
 
@@ -680,6 +702,10 @@
                 <relocation>
                   <pattern>org.json</pattern>
                   <shadedPattern>com.google.cloud.dataproc.repackaged.org.json</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.json4s</pattern>
+                  <shadePattern>com.google.cloud.dataproc.repackaged.org.json4s</shadePattern>
                 </relocation>
                 <relocation>
                   <pattern>org.threeten</pattern>

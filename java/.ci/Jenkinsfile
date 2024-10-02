@@ -365,7 +365,7 @@ EOF
                                 export SKIP_BUILD=true
 
                                 export JARS="gs://dataproc-templates/jars/spark-avro_2.12-3.5.1.jar"
-                                export SPARK_PROPERTIES="dataproc.sparkBqConnector.uri=gs://spark-lib/bigquery/spark-bigquery-with-dependencies_2.12-0.41.0.jar"
+                                export SPARK_PROPERTIES="dataproc.sparkBqConnector.uri=gs://spark-lib/bigquery/spark-3.5-bigquery-0.41.0.jar"
                                 
                                 cd java
                                 
