@@ -705,7 +705,7 @@
                 </relocation>
                 <relocation>
                   <pattern>org.json4s</pattern>
-                  <shadePattern>com.google.cloud.dataproc.repackaged.org.json4s</shadePattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.json4s</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.threeten</pattern>
