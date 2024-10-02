@@ -570,7 +570,7 @@ EOF
                                 cd java
                                 
                                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/connector/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/connector/hbase-spark.jar"
+                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar"
                                 
                                 bin/start.sh \
                                 --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.1 \
@@ -869,7 +869,7 @@ EOF
                                 cd java
                                 
                                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/connector/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/connector/hbase-spark.jar"
+                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar"
                                 
                                 bin/start.sh \
                                 --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.1 \
