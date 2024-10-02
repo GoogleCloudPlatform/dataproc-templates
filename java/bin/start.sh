@@ -100,12 +100,15 @@ if [ -n "${CATALOG}" ]; then
   echo "Downloading Hbase jar dependency"
   wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar
   wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar
+  wget https://repo1.maven.org/maven2/org/apache/hbase/connectors/spark/hbase-spark/1.0.1/hbase-spark-1.0.1.jar
   gsutil copy hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
   gsutil copy hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
+  gsutil copy hbase-spark-1.0.1.jar ${GCS_STAGING_LOCATION}/hbase-spark-1.0.1.jar
   echo "Passing downloaded dependency jars"
-  OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+  OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-spark-1.0.1.jar"
   rm hbase-client-2.4.12.jar
   rm hbase-shaded-mapreduce-2.4.12.jar
+  rm hbase-spark-1.0.1.jar
 fi
 
 if [ -n "${HBASE_SITE_PATH}" ]; then

@@ -596,10 +596,11 @@ EOF
                                 gcloud auth configure-docker
                                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
                                 export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.1
-                                export HBASE_SITE_PATH=../hbase-site.xml
+                            #    export HBASE_SITE_PATH=../hbase-site.xml
                                 export IMAGE=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/${IMAGE_NAME_VERSION}
                                 export SKIP_IMAGE_BUILD=TRUE
                                 export SKIP_BUILD=true
+                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar"
                                 
                                 cd java
 
@@ -896,9 +897,10 @@ EOF
                                 gcloud auth configure-docker
                                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
                                 export IMAGE_NAME_VERSION=hbase-to-gcs-java-automated:1.0.0
-                                export HBASE_SITE_PATH=../hbase-site.xml
+                            #    export HBASE_SITE_PATH=../hbase-site.xml
                                 export IMAGE=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/${IMAGE_NAME_VERSION}
                                 export SKIP_IMAGE_BUILD=TRUE
+                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar"
                                 
                                 cd java
 
