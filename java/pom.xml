@@ -103,8 +103,8 @@
     <hbase.client.version>2.6.0-hadoop3</hbase.client.version>
 
     <!-- jakarta.validation -->
-    <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
-    <jakarta.el.api.version>6.0.1</jakarta.el.api.version>
+    <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
+    <jakarta.el.api.version>4.0.0</jakarta.el.api.version>
     <!-- Reference : https://docs.jboss.org/hibernate/validator/8.0/reference/en-US/html_single/#validator-gettingstarted-uel -->
     <glassfish.expressly.version>5.0.0</glassfish.expressly.version>
 
@@ -438,22 +438,17 @@
     <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
-      <version>7.0.1.Final</version>
+      <version>${hibernate.validator.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
       <artifactId>jakarta.el</artifactId>
-      <version>4.0.0</version>
+      <version>${jakarta.el.api.version}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator-cdi</artifactId>
-      <version>7.0.1.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-common</artifactId>
-      <version>3.2.4</version>
+      <version>${hibernate.validator.version}</version>
     </dependency>
 
     <!-- yaml parsing of config, and ensure related jackson libraries use same version -->
