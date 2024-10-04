@@ -9,25 +9,9 @@ pipeline {
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
 
-        TEST_JDBC_host = sh (
-            script: "echo $TEST_JDBC_URL | sed -E 's/jdbc:mysql:\\/\\/([^:]+):.*/\\1/'",
-            returnStdout: true
-        ).trim()
-        TEST_JDBC_database = sh (
-            script: "echo $TEST_JDBC_URL | sed -E 's/.*\\/([^?]+)\\?.*/\\1/'",
-            returnStdout: true
-        ).trim()
-        TEST_JDBC_user = sh (
-            script: "echo $TEST_JDBC_URL | sed -E 's/.*\\?user=([^&]+)&.*/\\1/'",
-            returnStdout: true
-        ).trim()
-        TEST_JDBC_password = sh (
-            script: "echo $TEST_JDBC_URL | sed -E 's/.*&password=([^&]+).*/\\1/'",
-            returnStdout: true
-        ).trim()
 
         GIT_BRANCH_LOCAL = sh (
-            script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
+            script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|860-integration-tests-notebook|'",  // Remove "origin/" and set the default branch to main
             returnStdout: true
         ).trim()
     }
@@ -61,6 +45,20 @@ pipeline {
                     }
             }
         }
+        stage('Extract JDBC URL Parameters') {
+            steps {
+                script {
+                    def host = TEST_JDBC_URL.substring(TEST_JDBC_URL.indexOf("//") + 2, TEST_JDBC_URL.indexOf(":", TEST_JDBC_URL.indexOf("//") + 2))
+                    def database = TEST_JDBC_URL.substring(TEST_JDBC_URL.indexOf("/", TEST_JDBC_URL.indexOf("//") + 2) + 1, TEST_JDBC_URL.indexOf("?"))
+                    def user = TEST_JDBC_URL.substring(TEST_JDBC_URL.indexOf("user=") + 5, TEST_JDBC_URL.indexOf("&"))
+                    def password = TEST_JDBC_URL.substring(TEST_JDBC_URL.indexOf("password=") + 9)
+                    env.DB_HOST = host
+                    env.DB_NAME = database
+                    env.DB_USER = user
+                    env.DB_PASSWORD = password
+                }
+            }
+        }
         stage('Parallel Execution'){
             parallel{
                 stage('MYSQL TO SPANNER') {
@@ -77,17 +75,23 @@ pipeline {
                                 pip install -r requirements.txt
                                 cd ..
 
+                                wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O ./cloud_sql_proxy
+                                chmod +x cloud_sql_proxy
+                                nohup ./cloud_sql_proxy -instances=$MYSQL_INSTANCE_CONNECTION_NAME_GCP=tcp:3306 &
+
                                 python run_notebook.py --script=MYSQLTOSPANNER \
-                                                        --mysql.host="$TEST_JDBC_host" \
+                                                        --mysql.host="${DB_HOST}" \
                                                         --mysql.port="3306" \
-                                                        --mysql.username="$TEST_JDBC_user" \
-                                                        --mysql.password="$TEST_JDBC_password" \
-                                                        --mysql.database="$TEST_JDBC_database" \
+                                                        --mysql.username="${DB_USER}" \
+                                                        --mysql.password="${DB_PASSWORD}" \
+                                                        --mysql.database="${DB_NAME}" \
                                                         --mysql.table.list="employee" \
                                                         --mysql.read.partition.columns="{}" \
                                                         --spanner.instance="dataproc-spark-test" \
                                                         --spanner.database="spark-ci-db" \
                                                         --spanner.table.primary.keys="{\\"employee\\":\\"empno\\"}"
+
+                                kill $(pgrep cloud_sql_proxy)
 
                             '''
                         }
