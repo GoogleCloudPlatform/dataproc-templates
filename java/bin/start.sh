@@ -68,6 +68,10 @@ OPT_SPARK_VERSION="--version=1.1"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
 OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
+  echo "Dataproc Serverless Runtime 1.1 Detected"
+	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+fi
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
 OPT_CLASS="--class=com.google.cloud.dataproc.templates.main.DataProcTemplate"
