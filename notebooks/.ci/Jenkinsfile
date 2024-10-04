@@ -9,15 +9,6 @@ pipeline {
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
 
-        # Extract host
-        TEST_JDBC_host=$(echo "$TEST_JDBC_URL" | sed -E 's/jdbc:mysql:\/\/([^:]+):.*/\1/')
-        # Extract database
-        TEST_JDBC_database=$(echo "$TEST_JDBC_URL" | sed -E 's/.*\/([^?]+)\?.*/\1/')
-        # Extract user
-        TEST_JDBC_user=$(echo "$TEST_JDBC_URL" | sed -E 's/.*\?user=([^&]+)&.*/\1/')
-        # Extract password
-        TEST_JDBC_password=$(echo "$TEST_JDBC_URL" | sed -E 's/.*&password=([^&]+).*/\1/')
-
         GIT_BRANCH_LOCAL = sh (
             script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
             returnStdout: true
@@ -62,6 +53,15 @@ pipeline {
                                 export GCS_STAGING_LOCATION=gs://dataproc-templates/integration-testing
                                 export JARS="gs://datproc_template_nk/jars/mysql-connector-java-8.0.29.jar,gs://datproc_template_nk/jars/postgresql-42.2.6.jar,gs://datproc_template_nk/jars/mssql-jdbc-6.4.0.jre8.jar"
                                 export SKIP_BUILD=true
+
+                                # Extract host
+                                TEST_JDBC_host=$(echo "$TEST_JDBC_URL" | sed -E 's/jdbc:mysql:\/\/([^:]+):.*/\1/')
+                                # Extract database
+                                TEST_JDBC_database=$(echo "$TEST_JDBC_URL" | sed -E 's/.*\/([^?]+)\?.*/\1/')
+                                # Extract user
+                                TEST_JDBC_user=$(echo "$TEST_JDBC_URL" | sed -E 's/.*\?user=([^&]+)&.*/\1/')
+                                # Extract password
+                                TEST_JDBC_password=$(echo "$TEST_JDBC_URL" | sed -E 's/.*&password=([^&]+).*/\1/')
 
                                 cd notebooks
 
