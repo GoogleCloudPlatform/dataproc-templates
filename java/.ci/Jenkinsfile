@@ -363,8 +363,6 @@ EOF
                             sh '''                                
 
                                 export SKIP_BUILD=true
-
-                                
                                 export SPARK_PROPERTIES="dataproc.sparkBqConnector.uri=gs://spark-lib/bigquery/spark-3.3-bigquery-0.41.0.jar"
                                 
                                 cd java
