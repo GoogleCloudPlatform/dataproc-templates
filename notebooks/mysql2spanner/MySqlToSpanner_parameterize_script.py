@@ -113,6 +113,13 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         )
 
         parser.add_argument(
+            f"--{constants.MYSQL_READ_PARTITION_COLUMNS_ARG}",
+            dest=constants.MYSQL_READ_PARTITION_COLUMNS,
+            required=True,
+            help='Dictionary of custom read partition columns, e.g.: {"table2": "secondary_id"}',
+        )
+
+        parser.add_argument(
             f"--{constants.MAX_PARALLELISM_ARG}",
             dest=constants.MAX_PARALLELISM,
             type=int,
@@ -140,6 +147,9 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         # Convert JSON string to object
         args[constants.SPANNER_TABLE_PRIMARY_KEYS] = json.loads(
             args[constants.SPANNER_TABLE_PRIMARY_KEYS]
+        )
+        args[constants.MYSQL_READ_PARTITION_COLUMNS] = json.loads(
+            args[constants.MYSQL_READ_PARTITION_COLUMNS]
         )
 
         # Exclude arguments that are not needed to be passed to the notebook
