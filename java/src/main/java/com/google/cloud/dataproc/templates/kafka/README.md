@@ -120,7 +120,7 @@ export GCP_PROJECT=my-gcp-project
 export REGION=us-west1
 export SUBNET=test-subnet
 export GCS_STAGING_LOCATION=gs://templates-demo-kafkatobq
-export SPARK_PROPERTIES="dataproc.sparkBqConnector.uri=gs://spark-lib/bigquery/spark-3.5-bigquery-0.41.0.jar"
+export SPARK_PROPERTIES="dataproc.sparkBqConnector.uri=gs://spark-lib/bigquery/spark-3.3-bigquery-0.41.0.jar"
 bin/start.sh \
 -- \
 --template KAFKATOBQ \
@@ -135,7 +135,7 @@ bin/start.sh \
 --templateProperty kafka.bq.await.termination.timeout=1200000
 ```
 
-**Note:** Currently spark bigquery connector has an open [bug](https://github.com/GoogleCloudDataproc/spark-bigquery-connector/issues/1209) which requires to pass `spark-3.5-bigquery-0.41.0.jar` externally as mentioned in above example submission.
+**Note:** Currently spark bigquery connector has an open [bug](https://github.com/GoogleCloudDataproc/spark-bigquery-connector/issues/1209) which requires to pass `spark-3.3-bigquery-0.41.0.jar` externally as mentioned in above example submission.
 
 
 ## 2. Kafka To Cloud Storage
