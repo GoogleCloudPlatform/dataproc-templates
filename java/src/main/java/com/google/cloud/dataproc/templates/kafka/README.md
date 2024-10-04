@@ -136,7 +136,8 @@ bin/start.sh \
 ```
 
 **Note:** Currently spark bigquery connector has an open [bug](https://github.com/GoogleCloudDataproc/spark-bigquery-connector/issues/1209) which requires to pass `spark-3.3-bigquery-0.41.0.jar` externally as mentioned in above example submission.
-
+1. `spark-3.3-bigquery-0.41.0.jar` -> Compatible with Serverless Dataproc Image Version >= `1.1`
+2. `spark-3.5-bigquery-0.41.0.jar` -> Compatible with Serverless Dataproc Image Version >= `1.2`
 
 ## 2. Kafka To Cloud Storage
 
