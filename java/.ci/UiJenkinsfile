@@ -236,7 +236,6 @@ pipeline {
                     steps {
                         retry(count: stageRetryCount) {
                         sh '''
-
                             gcloud dataproc batches submit spark \
                                 --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                 --version="1.1" \
@@ -250,14 +249,7 @@ pipeline {
                                 --templateProperty jdbctobq.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
                                 --templateProperty jdbctobq.write.mode="overwrite" \
                                 --templateProperty jdbctobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/JDBCTOBIGQUERY" \
-                                --templateProperty jdbctobq.sql="select * from test.employee" \
-                                --templateProperty jdbctobq.sql.numPartitions="PARTITIONS" \
-                                --templateProperty jdbctobq.sql.partitionColumn="INPUT_PARTITION_COLUMN" \
-                                --templateProperty jdbctobq.sql.lowerBound="LOWERBOUND" \
-                                --templateProperty jdbctobq.sql.upperBound="UPPERBOUND" \
-                                --templateProperty jdbctobq.jdbc.fetchsize="FETCHSIZE" \
-                                --templateProperty jdbctobq.temp.table="TEMPVIEW" \
-                                --templateProperty jdbctobq.temp.query="SQL_QUERY"
+                                --templateProperty jdbctobq.sql="select * from test.employee"
                         '''
                     }
                 }
