@@ -312,7 +312,7 @@ pipeline {
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --version="1.1" \
-                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template JDBCTOJDBC \
                                     --templateProperty project.id="${GCP_PROJECT}" \
@@ -336,7 +336,7 @@ pipeline {
                                     --version="1.1" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --jars="${jar_path}" \
+                                    --jars="${jarPath}" \
                                     -- --template=PUBSUBTOGCS \
                                     --templateProperty pubsubtogcs.input.project.id="${GCP_PROJECT}" \
                                     --templateProperty pubsubtogcs.input.subscription="pubsubtogcsv3-sub" \
@@ -361,7 +361,7 @@ pipeline {
                                 --version="1.1" \
                                 --project="${GCP_PROJECT}" \
                                 --region="us-west1" \
-                                --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
                                 --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                 -- --template=JDBCTOBIGQUERY \
                                 --templateProperty jdbctobq.bigquery.location="${GCP_PROJECT}.dataproc_templates.jdbctobq" \
@@ -385,7 +385,7 @@ pipeline {
                                     --version="1.1" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template=JDBCTOSPANNER \
                                     --templateProperty project.id="${GCP_PROJECT}" \
@@ -411,7 +411,7 @@ pipeline {
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --version="1.1" \
-                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template=JDBCTOGCS \
                                     --templateProperty project.id="${GCP_PROJECT}" \
@@ -434,7 +434,7 @@ pipeline {
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --version="1.1" \
-                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/external/spark-avro.jar" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/external/spark-avro.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template=JDBCTOGCS \
                                     --templateProperty project.id="${GCP_PROJECT}" \
