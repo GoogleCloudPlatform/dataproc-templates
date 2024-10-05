@@ -97,7 +97,7 @@ pipeline {
                                     --version="1.1" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --jars="${jarPath}" \
+                                    --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
                                     -- --template GCSTOSPANNER \
                                     --templateProperty project.id="${GCP_PROJECT}" \
                                     --templateProperty gcs.spanner.input.format="avro" \
@@ -161,29 +161,29 @@ pipeline {
                         }
                     }
                 }
-        //         stage('GCS TO JDBC') {
-        //             steps{
-        //                 retry(count: stageRetryCount) {
-        //                     sh '''
-        //                         export JARS=gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar
-        //                         export SKIP_BUILD=true
-
-        //                         cd java
+                stage('GCS TO JDBC') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
                                 
-        //                         bin/start.sh \
-        //                             -- --template GCSTOJDBC \
-        //                             --templateProperty project.id=$GCP_PROJECT \
-        //                             --templateProperty gcs.jdbc.input.location=gs://dataproc-templates/data/avro/empavro \
-        //                             --templateProperty gcs.jdbc.input.format=avro \
-        //                             --templateProperty gcs.jdbc.output.table=avrodemo \
-        //                             --templateProperty gcs.jdbc.output.saveMode=Overwrite   \
-        //                             --templateProperty gcs.jdbc.output.url="$TEST_JDBC_URL" \
-        //                             --templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver'
-        //                     '''
-        //                 }
-        //             }
-        //         }
-
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --version="1.1" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar" \
+                                    -- --template=GCSTOJDBC \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty gcs.jdbc.input.location="gs://dataproc-templates/data/avro/empavro" \
+                                    --templateProperty gcs.jdbc.input.format="avro" \
+                                    --templateProperty gcs.jdbc.output.saveMode="Overwrite" \
+                                    --templateProperty gcs.jdbc.output.url="${TEST_JDBC_URL}" \
+                                    --templateProperty gcs.jdbc.output.table="avrodemo" \
+                                    --templateProperty gcs.jdbc.output.driver="com.mysql.jdbc.Driver"
+                            '''
+                        }
+                    }
+                }
         //         stage('HIVE TO BIGQUERY'){
         //             steps {
         //                 retry(count: stageRetryCount) {
