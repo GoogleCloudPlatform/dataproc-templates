@@ -172,6 +172,7 @@ pipeline {
                                     --region="us-west1" \
                                     --version="1.1" \
                                     --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar,gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template=GCSTOJDBC \
                                     --templateProperty project.id="${GCP_PROJECT}" \
                                     --templateProperty gcs.jdbc.input.location="gs://dataproc-templates/data/avro/empavro" \
@@ -195,6 +196,7 @@ pipeline {
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath}" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     --properties="spark.hadoop.hive.metastore.uris=${ENV_TEST_HIVE_METASTORE_URIS}" \
                                     -- --template HIVETOBIGQUERY \
                                     --templateProperty hivetobq.bigquery.location="${GCP_PROJECT}.dataproc_templates.test" \
@@ -215,6 +217,7 @@ pipeline {
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     --properties="spark.hadoop.hive.metastore.uris=${ENV_TEST_HIVE_METASTORE_URIS}" \
                                     -- --template=HIVETOGCS \
                                     --templateProperty hive.input.table="employee" \
@@ -240,6 +243,7 @@ pipeline {
                                 --project="${GCP_PROJECT}" \
                                 --region="us-west1" \
                                 --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                 -- --template=JDBCTOBIGQUERY \
                                 --templateProperty jdbctobq.bigquery.location="${GCP_PROJECT}.dataproc_templates.jdbctobq" \
                                 --templateProperty jdbctobq.jdbc.url="${TEST_JDBC_URL}" \
@@ -259,31 +263,32 @@ pipeline {
                 }
             }            
 
-        //         stage('JDBC TO SPANNER'){
-        //             steps {
-        //                 retry(count: stageRetryCount) {
-        //                     sh '''
+                stage('JDBC TO SPANNER'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
 
-        //                         export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
-        //                         export SKIP_BUILD=true
-                                
-        //                         cd java
-                                
-        //                         bin/start.sh \
-        //                         -- --template JDBCTOSPANNER \
-        //                         --templateProperty project.id=$GCP_PROJECT \
-        //                         --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
-        //                         --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
-        //                         --templateProperty jdbctospanner.sql="select * from test.employee" \
-        //                         --templateProperty jdbctospanner.output.instance=$ENV_TEST_SPANNER_ID \
-        //                         --templateProperty jdbctospanner.output.database=spark-ci-db \
-        //                         --templateProperty jdbctospanner.output.table=employee \
-        //                         --templateProperty jdbctospanner.output.saveMode=Overwrite \
-        //                         --templateProperty jdbctospanner.output.primaryKey='empno'
-        //                     '''
-        //                 }
-        //             }
-        //         }
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.1" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template=JDBCTOSPANNER \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty jdbctospanner.jdbc.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctospanner.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+                                    --templateProperty jdbctospanner.sql="select * from test.employee" \
+                                    --templateProperty jdbctospanner.output.instance="${ENV_TEST_SPANNER_ID}" \
+                                    --templateProperty jdbctospanner.output.database="spark-ci-db" \
+                                    --templateProperty jdbctospanner.output.table="employee" \
+                                    --templateProperty jdbctospanner.output.saveMode="Overwrite" \
+                                    --templateProperty jdbctospanner.output.primaryKey="empno"
+                            '''
+                        }
+                    }
+                }
 
         //         stage('JDBC TO GCS (csv)'){
         //             steps {
