@@ -232,6 +232,126 @@ pipeline {
         }
         stage('Parallel Execution 3'){
             parallel{
+                stage('SPANNER TO GCS (csv)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                    gcloud dataproc batches submit spark \
+                                        --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                        --version="1.1" \
+                                        --project="${GCP_PROJECT}" \
+                                        --region="us-west1" \
+                                        --jars="${jarPath}" \
+                                        -- --template=SPANNERTOGCS \
+                                        --templateProperty project.id="${GCP_PROJECT}" \
+                                        --templateProperty spanner.gcs.input.spanner.id="${ENV_TEST_SPANNER_ID}" \
+                                        --templateProperty spanner.gcs.input.database.id="test-db" \
+                                        --templateProperty spanner.gcs.input.table.id="shakespeare" \
+                                        --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/csv" \
+                                        --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
+                                        --templateProperty spanner.gcs.output.gcs.format="csv"
+                            '''
+                        }
+                    }
+                }
+                stage('SPANNER TO GCS (avro)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                    gcloud dataproc batches submit spark \
+                                        --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                        --version="1.1" \
+                                        --project="${GCP_PROJECT}" \
+                                        --region="us-west1" \
+                                        --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
+                                        -- --template=SPANNERTOGCS \
+                                        --templateProperty project.id="${GCP_PROJECT}" \
+                                        --templateProperty spanner.gcs.input.spanner.id="${ENV_TEST_SPANNER_ID}" \
+                                        --templateProperty spanner.gcs.input.database.id="test-db" \
+                                        --templateProperty spanner.gcs.input.table.id="shakespeare" \
+                                        --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/avro" \
+                                        --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
+                                        --templateProperty spanner.gcs.output.gcs.format="avro"
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO BIGQUERY(csv)') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.1" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath}" \
+                                    -- --template=GCSTOBIGQUERY \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty gcs.bigquery.input.location="gs://dataproc-templates/integration-testing/gcstobigquery/cities.csv" \
+                                    --templateProperty gcs.bigquery.input.format="csv" \
+                                    --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
+                                    --templateProperty gcs.bigquery.output.table="gcs_bq_cities" \
+                                    --templateProperty gcs.bigquery.output.mode="Overwrite" \
+                                    --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 4'){
+            parallel{
+                stage('JDBC To JDBC'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --version="1.1" \
+                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template JDBCTOJDBC \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+                                    --templateProperty jdbctojdbc.input.table="employee" \
+                                    --templateProperty jdbctojdbc.output.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+                                    --templateProperty jdbctojdbc.output.table="employee_output" \
+                                    --templateProperty jdbctojdbc.output.mode="Overwrite" \
+                            '''
+                        }
+                    }
+                }
+                stage('PUBSUB TO GCS') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.1" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jar_path}" \
+                                    -- --template=PUBSUBTOGCS \
+                                    --templateProperty pubsubtogcs.input.project.id="${GCP_PROJECT}" \
+                                    --templateProperty pubsubtogcs.input.subscription="pubsubtogcsv3-sub" \
+                                    --templateProperty pubsubtogcs.gcs.bucket.name="pubsubtogcs_dev" \
+                                    --templateProperty pubsubtogcs.gcs.output.data.format="JSON" \
+                                    --templateProperty pubsubtogcs.batch.size="50"
+                            ''' 
+                        }
+                    }
+                }
+                   
+            }
+        }
+        stage('Parallel Execution 5'){
+            parallel{
                 stage('JDBC TO BQ'){
                     steps {
                         retry(count: stageRetryCount) {
@@ -328,126 +448,6 @@ pipeline {
                         }
                     }
                 }
-            }
-        }
-        stage('Parallel Execution 4'){
-            parallel{
-                stage('SPANNER TO GCS (csv)'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                    gcloud dataproc batches submit spark \
-                                        --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                        --version="1.1" \
-                                        --project="${GCP_PROJECT}" \
-                                        --region="us-west1" \
-                                        --jars="${jarPath}" \
-                                        -- --template=SPANNERTOGCS \
-                                        --templateProperty project.id="${GCP_PROJECT}" \
-                                        --templateProperty spanner.gcs.input.spanner.id="${ENV_TEST_SPANNER_ID}" \
-                                        --templateProperty spanner.gcs.input.database.id="test-db" \
-                                        --templateProperty spanner.gcs.input.table.id="shakespeare" \
-                                        --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/csv" \
-                                        --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
-                                        --templateProperty spanner.gcs.output.gcs.format="csv"
-                            '''
-                        }
-                    }
-                }
-                stage('SPANNER TO GCS (avro)'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                    gcloud dataproc batches submit spark \
-                                        --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                        --version="1.1" \
-                                        --project="${GCP_PROJECT}" \
-                                        --region="us-west1" \
-                                        --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
-                                        -- --template=SPANNERTOGCS \
-                                        --templateProperty project.id="${GCP_PROJECT}" \
-                                        --templateProperty spanner.gcs.input.spanner.id="${ENV_TEST_SPANNER_ID}" \
-                                        --templateProperty spanner.gcs.input.database.id="test-db" \
-                                        --templateProperty spanner.gcs.input.table.id="shakespeare" \
-                                        --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/avro" \
-                                        --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
-                                        --templateProperty spanner.gcs.output.gcs.format="avro"
-                            '''
-                        }
-                    }
-                }
-                stage('GCS TO BIGQUERY(csv)') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-
-                                gcloud dataproc batches submit spark \
-                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
-                                    --project="${GCP_PROJECT}" \
-                                    --region="us-west1" \
-                                    --jars="${jarPath}" \
-                                    -- --template=GCSTOBIGQUERY \
-                                    --templateProperty project.id="${GCP_PROJECT}" \
-                                    --templateProperty gcs.bigquery.input.location="gs://dataproc-templates/integration-testing/gcstobigquery/cities.csv" \
-                                    --templateProperty gcs.bigquery.input.format="csv" \
-                                    --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
-                                    --templateProperty gcs.bigquery.output.table="gcs_bq_cities" \
-                                    --templateProperty gcs.bigquery.output.mode="Overwrite" \
-                                    --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates"
-                            '''
-                        }
-                    }
-                }
-            }
-        }
-        stage('Parallel Execution 5'){
-            parallel{
-                stage('JDBC To JDBC'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                gcloud dataproc batches submit spark \
-                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --project="${GCP_PROJECT}" \
-                                    --region="us-west1" \
-                                    --version="1.1" \
-                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
-                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
-                                    -- --template JDBCTOJDBC \
-                                    --templateProperty project.id="${GCP_PROJECT}" \
-                                    --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
-                                    --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
-                                    --templateProperty jdbctojdbc.input.table="employee" \
-                                    --templateProperty jdbctojdbc.output.url="${TEST_JDBC_URL}" \
-                                    --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
-                                    --templateProperty jdbctojdbc.output.table="employee_output" \
-                                    --templateProperty jdbctojdbc.output.mode="Overwrite" \
-                            '''
-                        }
-                    }
-                }
-                stage('PUBSUB TO GCS') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                gcloud dataproc batches submit spark \
-                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
-                                    --project="${GCP_PROJECT}" \
-                                    --region="us-west1" \
-                                    --jars="${jar_path}" \
-                                    -- --template=PUBSUBTOGCS \
-                                    --templateProperty pubsubtogcs.input.project.id="${GCP_PROJECT}" \
-                                    --templateProperty pubsubtogcs.input.subscription="pubsubtogcsv3-sub" \
-                                    --templateProperty pubsubtogcs.gcs.bucket.name="pubsubtogcs_dev" \
-                                    --templateProperty pubsubtogcs.gcs.output.data.format="JSON" \
-                                    --templateProperty pubsubtogcs.batch.size="50"
-                            ''' 
-                        }
-                    }
-                }
-                   
             }
         }
     }
