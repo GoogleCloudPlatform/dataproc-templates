@@ -73,7 +73,7 @@ pipeline {
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --version="1.1" \
                                     --project="${GCP_PROJECT}" \
-                                    --region="us-wes1" \
+                                    --region="us-west1" \
                                     --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
                                     -- --template=GCSTOBIGQUERY \
                                     --templateProperty project.id="${GCP_PROJECT}" \
@@ -96,7 +96,7 @@ pipeline {
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --version="1.1" \
                                     --project="${GCP_PROJECT}" \
-                                    --region="us-wes1" \
+                                    --region="us-west1" \
                                     --jars="${jarPath}" \
                                     -- --template GCSTOSPANNER \
                                     --templateProperty project.id="${GCP_PROJECT}" \
@@ -377,7 +377,7 @@ pipeline {
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --version="1.1" \
                                     --project="${GCP_PROJECT}" \
-                                    --region="us-wes1" \
+                                    --region="us-west1" \
                                     --jars="${jarPath}" \
                                     -- --template=GCSTOBIGQUERY \
                                     --templateProperty project.id="${GCP_PROJECT}" \
