@@ -171,7 +171,7 @@ pipeline {
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --version="1.1" \
-                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar" \
+                                    --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar,gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar" \
                                     -- --template=GCSTOJDBC \
                                     --templateProperty project.id="${GCP_PROJECT}" \
                                     --templateProperty gcs.jdbc.input.location="gs://dataproc-templates/data/avro/empavro" \
@@ -184,69 +184,80 @@ pipeline {
                         }
                     }
                 }
-        //         stage('HIVE TO BIGQUERY'){
-        //             steps {
-        //                 retry(count: stageRetryCount) {
-        //                     sh '''
+                stage('HIVE TO BIGQUERY'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
                                 
-        //                         export SKIP_BUILD=true
-                                
-        //                         cd java
-                                
-        //                         bin/start.sh \
-        //                         --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
-        //                         -- --template HIVETOBIGQUERY \
-        //                         --templateProperty hivetobq.bigquery.location=$GCP_PROJECT.dataproc_templates.test \
-        //                         --templateProperty hivetobq.sql="select * from default.employee" \
-        //                         --templateProperty hivetobq.write.mode=Overwrite \
-        //                         --templateProperty hivetobq.temp.gcs.bucket=dataproc-templates/integration-testing/output/HIVETOBIGQUERY
-        //                     '''
-        //                 }
-        //             }
-        //         }
-
-        //         stage('Hive TO GCS'){
-        //             steps {
-        //                 retry(count: stageRetryCount) {
-        //                     sh '''
-        //                         export SKIP_BUILD=true
-                                
-        //                         cd java
-                                
-        //                         bin/start.sh \
-        //                         --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
-        //                         -- --template HIVETOGCS \
-        //                         --templateProperty hive.input.table=employee \
-        //                         --templateProperty hive.input.db=default \
-        //                         --templateProperty hive.gcs.output.path=gs://dataproc-templates/integration-testing/output/HIVETOGCS
-        //                     '''
-        //                 }
-        //             }
-        //         }
+                               gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.1" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath}" \
+                                    --properties="spark.hadoop.hive.metastore.uris=${ENV_TEST_HIVE_METASTORE_URIS}" \
+                                    -- --template HIVETOBIGQUERY \
+                                    --templateProperty hivetobq.bigquery.location="${GCP_PROJECT}.dataproc_templates.test" \
+                                    --templateProperty hivetobq.sql="select * from default.employeeERY" \
+                                    --templateProperty hivetobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/HIVETOBIGQUERY" \
+                                    --templateProperty hivetobq.write.mode="Overwrite"
+                            '''
+                        }
+                    }
+                }
+                stage('Hive TO GCS'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                               gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.1" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
+                                    --properties="spark.hadoop.hive.metastore.uris=${ENV_TEST_HIVE_METASTORE_URIS}" \
+                                    -- --template=HIVETOGCS \
+                                    --templateProperty hive.input.table="employee" \
+                                    --templateProperty hive.input.db="default" \
+                                    --templateProperty hive.gcs.output.path="gs://dataproc-templates/integration-testing/output/HIVETOGCS" \
+                                    --templateProperty hive.gcs.save.mode="overwrite"
+                            '''
+                        }
+                    }
+                }
             }
         }
-        // stage('Parallel Execution 3'){
-        //     parallel{
-        //         stage('JDBC TO BQ'){
-        //             steps {
-        //                 retry(count: stageRetryCount) {
-        //                 sh '''
-        //                     export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
-                        
-        //                     cd java
-                        
-        //                     bin/start.sh \
-        //                     -- --template JDBCTOBIGQUERY \
-        //                     --templateProperty jdbctobq.bigquery.location=$GCP_PROJECT.dataproc_templates.jdbctobq \
-        //                     --templateProperty jdbctobq.jdbc.url="$TEST_JDBC_URL" \
-        //                     --templateProperty jdbctobq.jdbc.driver.class.name=com.mysql.jdbc.Driver \
-        //                     --templateProperty jdbctobq.sql="select * from test.employee" \
-        //                     --templateProperty jdbctobq.write.mode=overwrite \
-        //                     --templateProperty jdbctobq.temp.gcs.bucket=dataproc-templates/integration-testing/output/JDBCTOBIGQUERY 
-        //                 '''
-        //             }
-        //         }
-        //         }            
+        stage('Parallel Execution 3'){
+            parallel{
+                stage('JDBC TO BQ'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                        sh '''
+
+                            gcloud dataproc batches submit spark \
+                                --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                --version="1.1" \
+                                --project="${GCP_PROJECT}" \
+                                --region="us-west1" \
+                                --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                -- --template=JDBCTOBIGQUERY \
+                                --templateProperty jdbctobq.bigquery.location="${GCP_PROJECT}.dataproc_templates.jdbctobq" \
+                                --templateProperty jdbctobq.jdbc.url="${TEST_JDBC_URL}" \
+                                --templateProperty jdbctobq.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+                                --templateProperty jdbctobq.write.mode="overwrite" \
+                                --templateProperty jdbctobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/JDBCTOBIGQUERY" \
+                                --templateProperty jdbctobq.sql="select * from test.employee" \
+                                --templateProperty jdbctobq.sql.numPartitions="PARTITIONS" \
+                                --templateProperty jdbctobq.sql.partitionColumn="INPUT_PARTITION_COLUMN" \
+                                --templateProperty jdbctobq.sql.lowerBound="LOWERBOUND" \
+                                --templateProperty jdbctobq.sql.upperBound="UPPERBOUND" \
+                                --templateProperty jdbctobq.jdbc.fetchsize="FETCHSIZE" \
+                                --templateProperty jdbctobq.temp.table="TEMPVIEW" \
+                                --templateProperty jdbctobq.temp.query="SQL_QUERY"
+                        '''
+                    }
+                }
+            }            
 
         //         stage('JDBC TO SPANNER'){
         //             steps {
@@ -320,8 +331,8 @@ pipeline {
         //                 }
         //             }
         //         }
-        //     }
-        // }
+            }
+        }
         stage('Parallel Execution 4'){
             parallel{
                 stage('SPANNER TO GCS (csv)'){
@@ -355,7 +366,7 @@ pipeline {
                                         --version="1.1" \
                                         --project="${GCP_PROJECT}" \
                                         --region="us-west1" \
-                                        --jars="${jarPath}" \
+                                        --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
                                         -- --template=SPANNERTOGCS \
                                         --templateProperty project.id="${GCP_PROJECT}" \
                                         --templateProperty spanner.gcs.input.spanner.id="${ENV_TEST_SPANNER_ID}" \
