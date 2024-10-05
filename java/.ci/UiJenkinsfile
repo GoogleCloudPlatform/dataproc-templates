@@ -200,7 +200,7 @@ pipeline {
                                     --properties="spark.hadoop.hive.metastore.uris=${ENV_TEST_HIVE_METASTORE_URIS}" \
                                     -- --template HIVETOBIGQUERY \
                                     --templateProperty hivetobq.bigquery.location="${GCP_PROJECT}.dataproc_templates.test" \
-                                    --templateProperty hivetobq.sql="select * from default.employeeERY" \
+                                    --templateProperty hivetobq.sql="select * from default.employee" \
                                     --templateProperty hivetobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/HIVETOBIGQUERY" \
                                     --templateProperty hivetobq.write.mode="Overwrite"
                             '''
@@ -290,52 +290,52 @@ pipeline {
                     }
                 }
 
-        //         stage('JDBC TO GCS (csv)'){
-        //             steps {
-        //                 retry(count: stageRetryCount) {
-        //                     sh '''
-                                
-        //                         export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
-        //                         export SKIP_BUILD=true
-                                
-        //                         cd java
-                                
-        //                         bin/start.sh \
-        //                         -- --template JDBCTOGCS \
-        //                         --templateProperty project.id=$GCP_PROJECT \
-        //                         --templateProperty jdbctogcs.jdbc.url="$TEST_JDBC_URL" \
-        //                         --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.jdbc.Driver \
-        //                         --templateProperty jdbctogcs.output.location=gs://dataproc-templates/integration-testing/output/JDBCTOGCS/csv \
-        //                         --templateProperty jdbctogcs.output.format=csv \
-        //                         --templateProperty jdbctogcs.write.mode=overwrite \
-        //                         --templateProperty jdbctogcs.sql="select * from test.employee" 
-        //                     '''
-        //                 }
-        //             }
-        //         }
-        //         stage('JDBC TO GCS (avro)'){
-        //             steps {
-        //                 retry(count: stageRetryCount) {
-        //                     sh '''
-                                
-        //                         export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
-        //                         export SKIP_BUILD=true
-                                
-        //                         cd java
-                                
-        //                         bin/start.sh \
-        //                         -- --template JDBCTOGCS \
-        //                         --templateProperty project.id=$GCP_PROJECT \
-        //                         --templateProperty jdbctogcs.jdbc.url="$TEST_JDBC_URL" \
-        //                         --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.jdbc.Driver \
-        //                         --templateProperty jdbctogcs.output.location=gs://dataproc-templates/integration-testing/output/JDBCTOGCS/avro \
-        //                         --templateProperty jdbctogcs.output.format=avro \
-        //                         --templateProperty jdbctogcs.write.mode=overwrite \
-        //                         --templateProperty jdbctogcs.sql="select * from test.employee" 
-        //                     '''
-        //                 }
-        //             }
-        //         }
+                stage('JDBC TO GCS (csv)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --version="1.1" \
+                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template=JDBCTOGCS \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctogcs.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+                                    --templateProperty jdbctogcs.output.format="csv" \
+                                    --templateProperty jdbctogcs.output.location="gs://dataproc-templates/integration-testing/output/JDBCTOGCS/csv" \
+                                    --templateProperty jdbctogcs.sql="select * from test.employee" \
+                                    --templateProperty jdbctogcs.write.mode="overwrite" 
+                            '''
+                        }
+                    }
+                }
+                stage('JDBC TO GCS (avro)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --version="1.1" \
+                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/external/spark-avro.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template=JDBCTOGCS \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctogcs.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+                                    --templateProperty jdbctogcs.output.format="avro" \
+                                    --templateProperty jdbctogcs.output.location="gs://dataproc-templates/integration-testing/output/JDBCTOGCS/avro" \
+                                    --templateProperty jdbctogcs.sql="select * from test.employee" \
+                                    --templateProperty jdbctogcs.write.mode="overwrite"
+                            '''
+                        }
+                    }
+                }
             }
         }
         stage('Parallel Execution 4'){
@@ -409,53 +409,55 @@ pipeline {
                 }
             }
         }
-        // stage('Parallel Execution 5'){
-        //     parallel{
-        //         stage('JDBC To JDBC'){
-        //             steps {
-        //                 retry(count: stageRetryCount) {
-        //                     sh '''
-        //                         export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
-        //                         export SKIP_BUILD=true
-                                    
-        //                         cd java
-
-        //                         bin/start.sh \
-        //                         -- --template JDBCTOJDBC \
-        //                         --templateProperty jdbctojdbc.input.url="$TEST_JDBC_URL" \
-        //                         --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
-        //                         --templateProperty jdbctojdbc.input.table="employee" \
-        //                         --templateProperty jdbctojdbc.output.url="$TEST_JDBC_URL" \
-        //                         --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
-        //                         --templateProperty jdbctojdbc.output.table="employee_output" \
-        //                         --templateProperty jdbctojdbc.output.mode="Overwrite" 
-        //                     '''
-        //                 }
-        //             }
-        //         }
-        //         stage('PUBSUB TO GCS') {
-        //             steps{
-        //                 retry(count: stageRetryCount) {
-        //                     sh '''
-            
-        //                         export SKIP_BUILD=true
-                                
-        //                         cd java
-                                
-        //                         bin/start.sh \
-        //                         -- --template PUBSUBTOGCS \
-        //                         --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
-        //                         --templateProperty pubsubtogcs.input.subscription=pubsubtogcsv3-sub \
-        //                         --templateProperty pubsubtogcs.gcs.bucket.name=pubsubtogcs_dev \
-        //                         --templateProperty pubsubtogcs.gcs.output.data.format=JSON \
-        //                         --templateProperty pubsubtogcs.batch.size=50
-        //                     ''' 
-        //                 }
-        //             }
-        //         }
+        stage('Parallel Execution 5'){
+            parallel{
+                stage('JDBC To JDBC'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --version="1.1" \
+                                    --jars="${jar_path},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template JDBCTOJDBC \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+                                    --templateProperty jdbctojdbc.input.table="employee" \
+                                    --templateProperty jdbctojdbc.output.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+                                    --templateProperty jdbctojdbc.output.table="employee_output" \
+                                    --templateProperty jdbctojdbc.output.mode="Overwrite" \
+                            '''
+                        }
+                    }
+                }
+                stage('PUBSUB TO GCS') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.1" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jar_path}" \
+                                    -- --template=PUBSUBTOGCS \
+                                    --templateProperty pubsubtogcs.input.project.id="${GCP_PROJECT}" \
+                                    --templateProperty pubsubtogcs.input.subscription="pubsubtogcsv3-sub" \
+                                    --templateProperty pubsubtogcs.gcs.bucket.name="pubsubtogcs_dev" \
+                                    --templateProperty pubsubtogcs.gcs.output.data.format="JSON" \
+                                    --templateProperty pubsubtogcs.batch.size="50"
+                            ''' 
+                        }
+                    }
+                }
                    
-        //     }
-        // }
+            }
+        }
     }
     // post {
     //     always{
