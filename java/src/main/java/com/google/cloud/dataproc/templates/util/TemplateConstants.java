@@ -42,6 +42,8 @@ public interface TemplateConstants {
   String BIGTABLE_KEY_COL_PROP = "bigtable.key.col";
 
   String BIGTABLE_COL_FAMILY_NAME_PROP = "bigtable.col.family.name";
+
+  String BQ_GCS_OUTPUT_PARTITION_COLUMN = "bigquery.gcs.output.partition.col";
   String GCS_STAGING_BUCKET_PATH = "gcs.staging.bucket.path";
 
   // HiveToGCS Template configs.
@@ -234,8 +236,7 @@ public interface TemplateConstants {
   String GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format";
   String GCS_BT_OUTPUT_INSTANCE_ID = "gcs.bigtable.output.instance.id";
   String GCS_BT_OUTPUT_PROJECT_ID = "gcs.bigtable.output.project.id";
-  String GCS_BT_OUTPUT_TABLE_NAME = "gcs.bigtable.table.name";
-  String GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY = "gcs.bigtable.column.family";
+  String GCS_BT_CATALOG_LOCATION = "gcs.bigtable.catalog.location";
 
   /** GCS to GCS properties */
   String GCS_GCS_INPUT_LOCATION = "gcs.gcs.input.location";
@@ -509,4 +510,32 @@ public interface TemplateConstants {
 
   String KAFKA_GCS_BATCH_INTERVAL = "kafka.gcs.batch.interval";
   String KAFKA_GCS_WRITE_MODE = "kafka.gcs.write.mode";
+
+  /** Mongo to BQ */
+  String MONGO_BQ_INPUT_URI = "mongo.bq.input.uri";
+
+  String MONGO_BQ_INPUT_DATABASE = "mongo.bq.input.database";
+  String MONGO_BQ_INPUT_COLLECTION = "mongo.bq.input.collection";
+  String MONGO_BQ_OUTPUT_DATASET = "mongo.bq.output.dataset";
+  String MONGO_BQ_OUTPUT_TABLE = "mongo.bq.output.table";
+  String MONGO_BQ_OUTPUT_MODE = "mongo.bq.output.mode";
+  String MONGO_BQ_TEMP_BUCKET_NAME = "mongo.bq.temp.bucket.name";
+  String MONGO_BQ_FORMAT = "com.google.cloud.spark.bigquery";
+  String MONGO_BQ_TABLE = "table";
+  String MONGO_BQ_TEMP_BUCKET = "temporaryGcsBucket";
+
+  /** Spanner JDBC dialect */
+  String SPANNER_JDBC_DIALECT = "spanner.jdbc.dialect";
+
+  String SPANNER_GOOGLESQL_JDBC_DIALECT = "googlesql";
+  String SPANNER_POSTGRESQL_JDBC_DIALECT = "postgresql";
+
+  /** Spark BigTable Common Properties */
+  String SPARK_BIGTABLE_CREATE_NEW_TABLE = "spark.bigtable.create.new.table";
+
+  String SPARK_BIGTABLE_FORMAT = "bigtable";
+  String SPARK_BIGTABLE_BATCH_MUTATE_SIZE = "spark.bigtable.batch.mutate.size";
+  String SPARK_BIGTABLE_PROJECT_ID = "spark.bigtable.project.id";
+  String SPARK_BIGTABLE_INSTANCE_ID = "spark.bigtable.instance.id";
+  String SPARK_BIGTABLE_CATALOG = "catalog";
 }

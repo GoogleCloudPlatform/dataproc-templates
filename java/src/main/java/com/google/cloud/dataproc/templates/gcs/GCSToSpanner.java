@@ -15,7 +15,11 @@
  */
 package com.google.cloud.dataproc.templates.gcs;
 
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_GOOGLESQL_JDBC_DIALECT;
+import static com.google.cloud.dataproc.templates.util.TemplateConstants.SPANNER_POSTGRESQL_JDBC_DIALECT;
+
 import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
+import com.google.cloud.dataproc.dialects.SpannerPostgresJDBCDialect;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
@@ -53,6 +57,7 @@ public class GCSToSpanner implements BaseTemplate {
 
       Dataset<Row> dataset =
           spark.read().format(config.getInputFormat()).load(config.getInputLocation());
+
       write(dataset);
     }
   }
@@ -62,7 +67,19 @@ public class GCSToSpanner implements BaseTemplate {
         String.format(
             "jdbc:cloudspanner:/projects/%s/instances/%s/databases/%s?lenient=true",
             config.getProjectId(), config.getInstance(), config.getDatabase());
-    JdbcDialects.registerDialect(new SpannerJdbcDialect());
+
+    LOGGER.info("Spanner JDBC Dialect is {}", config.getSpannerJdbcDialect());
+    switch (config.getSpannerJdbcDialect().toLowerCase()) {
+      case SPANNER_GOOGLESQL_JDBC_DIALECT:
+        JdbcDialects.registerDialect(new SpannerJdbcDialect());
+        break;
+
+      case SPANNER_POSTGRESQL_JDBC_DIALECT:
+        JdbcDialects.registerDialect(new SpannerPostgresJDBCDialect());
+        break;
+    }
+
+    LOGGER.info("Start writing to spanner");
     dataset
         .write()
         .format("jdbc")

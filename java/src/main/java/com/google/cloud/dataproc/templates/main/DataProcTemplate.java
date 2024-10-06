@@ -20,6 +20,7 @@ import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
 import com.google.cloud.dataproc.templates.databases.CassandraToBQ;
 import com.google.cloud.dataproc.templates.databases.CassandraToGCS;
+import com.google.cloud.dataproc.templates.databases.MongoToBQ;
 import com.google.cloud.dataproc.templates.databases.MongoToGCS;
 import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
@@ -81,7 +82,7 @@ public class DataProcTemplate {
           .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
           .put(TemplateName.REDSHIFTTOGCS, RedshiftToGCS::of)
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
-          .put(TemplateName.GCSTOBIGTABLE, (args) -> new GCStoBigTable())
+          .put(TemplateName.GCSTOBIGTABLE, GCStoBigTable::of)
           .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.GCSTOMONGO, (args) -> new GCStoMongo())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
@@ -105,6 +106,7 @@ public class DataProcTemplate {
           .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
           .put(TemplateName.KAFKATOBQDSTREAM, (args) -> new KafkaToBQDstream())
           .put(TemplateName.KAFKATOGCSDSTREAM, (args) -> new KafkaToGCSDstream())
+          .put(TemplateName.MONGOTOBQ, MongoToBQ::of)
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";

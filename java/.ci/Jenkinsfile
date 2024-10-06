@@ -47,6 +47,22 @@ pipeline {
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream 2> /dev/null || true
 
+cat > /tmp/employeecatalog.json << EOF
+{
+  "table": {"name": "employee"},
+  "rowkey": "id_rowkey",
+  "columns": {
+    "key": {"cf": "rowkey", "col": "id_rowkey", "type": "string"},
+    "name": {"cf": "personal", "col": "name", "type": "string"},
+    "address": {"cf": "personal", "col": "address", "type": "string"},
+    "empno": {"cf": "professional", "col": "empno", "type": "string"}
+  }
+}
+EOF
+
+                                    cat /tmp/employeecatalog.json
+                                    gsutil cp /tmp/employeecatalog.json gs://dataproc-templates/conf/
+
                                 '''
                             }
                     }
@@ -125,7 +141,7 @@ pipeline {
                         }
                     }
                 }
-                stage('GCS TO SPANNER') {
+                stage('GCS TO SPANNER GOOGLESQL DIALECT') {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
@@ -148,7 +164,7 @@ pipeline {
                         }
                     }
                 }
-                stage('SPANNER TO GCS'){
+                stage('SPANNER TO GCS GOOGLESQL DIALECT'){
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
@@ -163,9 +179,32 @@ pipeline {
                                 --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
                                 --templateProperty spanner.gcs.input.database.id=spark-ci-db \
                                 --templateProperty "spanner.gcs.input.table.id=(select id,name from badges2 where name = 'Teacher' limit 10000)" \
-                                --templateProperty spanner.gcs.output.gcs.path=dataproc-templates/integration-testing/output/SPANNERTOGCS/parquet \
+                                --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/parquet \
                                 --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
                                 --templateProperty spanner.gcs.output.gcs.format=parquet
+                            '''
+                        }
+                    }
+                }
+                stage('SPANNER TO GCS POSTGRESQL DIALECT'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template SPANNERTOGCS \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
+                                --templateProperty spanner.gcs.input.database.id=pgsqltest \
+                                --templateProperty "spanner.gcs.input.table.id=(SELECT * FROM sparktest LIMIT 1000)" \
+                                --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/pgsql/parquet \
+                                --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+                                --templateProperty spanner.gcs.output.gcs.format=parquet \
+                                --templateProperty spanner.jdbc.dialect=postgresql
                             '''
                         }
                     }
@@ -375,7 +414,7 @@ pipeline {
         }
         stage('Parallel Execution 4'){
             parallel{
-                stage('JDBC TO SPANNER'){
+                stage('JDBC TO SPANNER GOOGLESQL DIALECT'){
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
@@ -585,12 +624,11 @@ pipeline {
                                 bin/start.sh \
                                 -- --template GCSTOBIGTABLE \
                                 --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty gcs.bigtable.input.location=gs://dataproc-templates/data/csv/GCSToBigTable_cities.csv \
-                                --templateProperty gcs.bigtable.input.format=csv \
+                                --templateProperty gcs.bigtable.input.location=gs://dataproc-templates/data/parquet/ \
+                                --templateProperty gcs.bigtable.input.format=parquet \
                                 --templateProperty gcs.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
                                 --templateProperty gcs.bigtable.output.project.id=$GCP_PROJECT \
-                                --templateProperty gcs.bigtable.table.name=test \
-                                --templateProperty gcs.bigtable.column.family=Name
+                                --templateProperty gcs.bigtable.catalog.location="gs://dataproc-templates/conf/employeecatalog.json"
                             '''
                         }
                     }
@@ -719,6 +757,7 @@ pipeline {
                                 --templateProperty project.id=$GCP_PROJECT \
                                 --templateProperty bigquery.gcs.input.table=$GCP_PROJECT:dataproc_templates.emp_table \
                                 --templateProperty bigquery.gcs.output.format=avro \
+                                --templateProperty bigquery.gcs.output.partition.col=emp_city \
                                 --templateProperty bigquery.gcs.output.mode=Overwrite \
                                 --templateProperty bigquery.gcs.output.location=gs://dataproc-templates/integration-testing/output/BIGQUERYTOGCS/avro
                             '''
@@ -967,6 +1006,86 @@ pipeline {
                                  --templateProperty kafka.schema.url=gs://dataproc-templates/integration-testing/schema.json \
                                  --templateProperty kafka.gcs.output.format=parquet \
                                  --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+                            '''
+                        }
+                    }
+                }
+                stage('MONGO TO BIGQUERY'){
+                    steps{
+                        retry(count: stageRetryCount){
+                            sh'''
+
+                                export SKIP_BUILD=true
+                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+
+                                cd java
+                                bin/start.sh \
+                                -- \
+                                --template MongoToBQ \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty mongo.bq.input.uri="$ENV_TEST_MONGO_DB_URI" \
+                                --templateProperty mongo.bq.input.database=demo \
+                                --templateProperty mongo.bq.input.collection=dummyusers \
+                                --templateProperty mongo.bq.output.dataset=dataproc_templates \
+                                --templateProperty mongo.bq.output.table=mongotobq \
+                                --templateProperty mongo.bq.output.mode=Append \
+                                --templateProperty mongo.bq.temp.bucket.name=dataproc-templates/integration-testing/mongotobq
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 11'){
+            parallel{
+                stage('GCS TO SPANNER POSTGRESQL DIALECT') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM badges;'
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                    -- --template GCSTOSPANNER \
+                                    --templateProperty project.id=$GCP_PROJECT \
+                                    --templateProperty gcs.spanner.input.format=avro \
+                                    --templateProperty gcs.spanner.input.location=gs://dataproc-templates/data/avro/empavro \
+                                    --templateProperty gcs.spanner.output.instance=$ENV_TEST_SPANNER_ID \
+                                    --templateProperty gcs.spanner.output.database=pgsqltest   \
+                                    --templateProperty gcs.spanner.output.table=badges \
+                                    --templateProperty gcs.spanner.output.saveMode=Append \
+                                    --templateProperty gcs.spanner.output.primaryKey=empno \
+                                    --templateProperty spanner.jdbc.dialect=postgresql
+                            '''
+                        }
+                    }
+                }
+                stage('JDBC TO SPANNER POSTGRESQL DIALECT'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM pgdialect;'
+                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template JDBCTOSPANNER \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+                                --templateProperty jdbctospanner.sql="select * from test.pgdialect" \
+                                --templateProperty jdbctospanner.output.instance=$ENV_TEST_SPANNER_ID \
+                                --templateProperty jdbctospanner.output.database=pgsqltest \
+                                --templateProperty jdbctospanner.output.table=pgdialect \
+                                --templateProperty jdbctospanner.output.saveMode=Append \
+                                --templateProperty jdbctospanner.output.primaryKey='empno' \
+                                --templateProperty spanner.jdbc.dialect=postgresql
                             '''
                         }
                     }
