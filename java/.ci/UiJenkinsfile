@@ -67,12 +67,12 @@ pipeline {
 
                     PROJECT_ROOT_DIR=${BIN_DIR}/..
                     JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
-                    cd ${PROJECT_ROOT_DIR}
                     mvn clean spotless:apply install -DskipTests
                     build_status=$?
 
                     check_status $build_status "\n Code build went successful, thus we are good to go \n" "\n We ran into some issues while building the jar file, seems like mvn clean install is not running fine \n"
                     export jarPath=${PROJECT_ROOT_DIR}/target/${JAR_FILE}
+                    ls
 
                 '''
                             
