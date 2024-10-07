@@ -43,7 +43,7 @@ pipeline {
             }
         stage('Build Jar'){
             steps {
-                script{
+                sh '''
                     cd java
                     BIN_DIR="$(dirname "$BASH_SOURCE")"
                     java --version
@@ -76,7 +76,7 @@ pipeline {
                     ls $jarPath
                     ls
 
-                }
+                '''
                             
                 }
         }
