@@ -40,6 +40,27 @@ pipeline {
                             }
                     }
             }
+        stage('Build Jar'){
+            steps {
+                sh '''
+                    BIN_DIR="$(dirname "$BASH_SOURCE")"
+                    mvn --version
+                    mvn_status=$?
+                    PROJECT_ROOT_DIR=${BIN_DIR}/..
+                    JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
+
+                    check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
+                    cd ${PROJECT_ROOT_DIR}
+                    mvn clean spotless:apply install -DskipTests
+                    build_status=$?
+
+                    check_status $build_status "\n Code build went successful, thus we are good to go \n" "\n We ran into some issues while building the jar file, seems like mvn clean install is not running fine \n"
+                    export jarPath=${PROJECT_ROOT_DIR}/target/${JAR_FILE}
+
+                '''
+                            
+                }
+        }
         stage('Parallel Execution 1'){
             parallel{
                 stage('SPANNER TO GCS'){
@@ -451,18 +472,27 @@ pipeline {
             }
         }
     }
-    // post {
-    //     always{
-    //         script {
-    //             googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
-    // 			message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
-    // 			notifyFailure: 'true',
-    // 			notifyAborted: 'true',
-    // 			notifyUnstable: 'true',
-    // 			notifyNotBuilt: 'true',
-    // 			notifyBackToNormal: 'true'
-    //             }
-    //         }            
-    // }
+      post {
+        // always{
+        //     script {
+        //         if( env.GIT_BRANCH_LOCAL == 'main' ){
+        //             googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
+    	// 			message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
+    	// 			notifyFailure: 'true',
+    	// 			notifyAborted: 'true',
+    	// 			notifyUnstable: 'true',
+    	// 			notifyNotBuilt: 'true',
+    	// 			notifyBackToNormal: 'true'
+        //         }
+        //     }
+        //     catchError {
+        //         sh '''
+        //         if [ $GIT_BRANCH_LOCAL != "main" ];then
+        //             gsutil rm -r $GCS_STAGING_LOCATION 2> /dev/null || true
+        //         fi
+        //         '''
+        //     }
+        // }
+    }
     
 }
