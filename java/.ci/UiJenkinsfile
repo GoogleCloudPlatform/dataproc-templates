@@ -44,12 +44,28 @@ pipeline {
             steps {
                 sh '''
                     BIN_DIR="$(dirname "$BASH_SOURCE")"
+                    java --version
+                    java_status=$?
+                    if [ "$java_status" -eq 0 ];
+                    then
+                        printf "Java is installed, thus we are good to go"
+                    else
+                        printf "Java is not installed on this machine, thus we need to install that first"
+                        exit 1
+                    fi
+                    
                     mvn --version
                     mvn_status=$?
+                    if [ "$java_status" -eq 0 ];
+                    then
+                        printf "Maven is installed, thus we are good to go"
+                    else
+                        printf "Maven is not installed on this machine, thus we need to install that first"
+                        exit 1
+                    fi
+
                     PROJECT_ROOT_DIR=${BIN_DIR}/..
                     JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
-
-                    check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
                     cd ${PROJECT_ROOT_DIR}
                     mvn clean spotless:apply install -DskipTests
                     build_status=$?
