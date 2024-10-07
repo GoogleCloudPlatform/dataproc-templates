@@ -43,6 +43,7 @@ pipeline {
         stage('Build Jar'){
             steps {
                 sh '''
+                    cd java
                     BIN_DIR="$(dirname "$BASH_SOURCE")"
                     java --version
                     java_status=$?
