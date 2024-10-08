@@ -9,7 +9,7 @@ pipeline {
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
         JAR_FILE="dataproc-templates-1.0-SNAPSHOT.jar"
-        CURRENT_DATE=sh(script: $(date +%Y-%m-%d))
+        CURRENT_DATE=sh(script: "echo $(date +%Y-%m-%d)")
         GCS_DESTINATION="gs://dataproc-templates-binaries-preprod/${CURRENT_DATE}"
         jarPath=${GCS_DESTINATION}/${JAR_FILE}
 
