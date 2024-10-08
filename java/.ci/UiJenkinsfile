@@ -27,9 +27,9 @@ pipeline {
         GCS_STAGING_LOCATION = sh (script: '''
             CURRENT_BRANCH=`echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'`
             if [ $CURRENT_BRANCH != "main" ];then
-            echo "$GCS_STAGING_LOCATION/$(uuidgen)"
+            echo "$jarPath/$(uuidgen)"
             else
-            echo $GCS_STAGING_LOCATION
+            echo $jarPath
             fi
             '''.stripIndent(),
             returnStdout: true
@@ -75,9 +75,8 @@ pipeline {
                     build_status=$?
 
                     LOCAL_JAR_Path=./target/${JAR_FILE}
-                    GCP_JAR_Path=${GCS_DESTINATION}/${JAR_FILE}
 
-                    gsutil cp ${LOCAL_JAR_Path} ${GCP_JAR_Path}
+                    gsutil cp ${LOCAL_JAR_Path} ${GCS_STAGING_LOCATION}/
                 '''
                             
                 }
