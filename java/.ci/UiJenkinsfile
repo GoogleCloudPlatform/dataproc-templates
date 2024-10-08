@@ -27,9 +27,9 @@ pipeline {
         GCS_STAGING_LOCATION = sh (script: '''
             CURRENT_BRANCH=`echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'`
             if [ $CURRENT_BRANCH != "main" ];then
-            echo "$jarPath/$(uuidgen)"
+            echo "${jarPath}/$(uuidgen)"
             else
-            echo $jarPath
+            echo ${jarPath}
             fi
             '''.stripIndent(),
             returnStdout: true
