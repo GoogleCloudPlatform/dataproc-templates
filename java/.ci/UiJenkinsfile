@@ -66,7 +66,7 @@ pipeline {
                     fi
 
                     JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
-                    mvn clean spotless:apply install -DskipTests
+                    #mvn clean spotless:apply install -DskipTests
                     build_status=$?
 
                     LOCAL_JAR_Path=./target/${JAR_FILE}
@@ -74,9 +74,8 @@ pipeline {
                     GCS_DESTINATION=gs://dataproc-templates-binaries-preprod/${CURRENT_DATE}
                     GCP_JAR_Path=${GCS_DESTINATION}/${JAR_FILE}
 
-                    gsutil cp ${LOCAL_JAR_Path} ${GCP_JAR_Path}
-                    echo "jarPath=${GCP_JAR_Path}" | tee -a environment
-
+                    #gsutil cp ${LOCAL_JAR_Path} ${GCP_JAR_Path}
+                    echo "jarPath=${GCP_JAR_Path}" > jar_path.properties
                 '''
                             
                 }
@@ -87,6 +86,8 @@ pipeline {
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
+                                source jar_path.properties
+                                echo "Deploying ${jarPath}"
 
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
