@@ -24,8 +24,8 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonObject;
-import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonParser;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.IOException;
 
 public class DataplexAPIUtil {
