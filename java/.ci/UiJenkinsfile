@@ -493,27 +493,27 @@ pipeline {
             }
         }
     }
-    //   post {
-    //     always{
-    //         script {
-    //             if( env.GIT_BRANCH_LOCAL == 'main' ){
-    //                 googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
-    // 				message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
-    // 				notifyFailure: 'true',
-    // 				notifyAborted: 'true',
-    // 				notifyUnstable: 'true',
-    // 				notifyNotBuilt: 'true',
-    // 				notifyBackToNormal: 'true'
-    //             }
-    //         }
-    //         catchError {
-    //             sh '''
-    //             if [ $GIT_BRANCH_LOCAL != "main" ];then
-    //                 gsutil rm -r $GCS_STAGING_LOCATION 2> /dev/null || true
-    //             fi
-    //             '''
-    //         }
-    //     }
-    // }
+      post {
+        always{
+            script {
+                if( env.GIT_BRANCH_LOCAL == 'main' ){
+                    googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
+    				message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
+    				notifyFailure: 'true',
+    				notifyAborted: 'true',
+    				notifyUnstable: 'true',
+    				notifyNotBuilt: 'true',
+    				notifyBackToNormal: 'true'
+                }
+            }
+            catchError {
+                sh '''
+                if [ $GIT_BRANCH_LOCAL != "main" ];then
+                    gsutil rm -r $GCS_STAGING_LOCATION 2> /dev/null || true
+                fi
+                '''
+            }
+        }
+    }
     
 }
