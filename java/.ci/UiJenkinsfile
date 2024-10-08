@@ -9,8 +9,8 @@ pipeline {
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
         JAR_FILE="dataproc-templates-1.0-SNAPSHOT.jar"
-        CURRENT_DATE=sh (
-            script: "echo $(date +%Y-%m-%d)"
+        CURRENT_DATE= sh (
+            script: "date +%Y-%m-%d"
             returnStdout: true
         )
         GCS_DESTINATION="gs://dataproc-templates-binaries-preprod/${CURRENT_DATE}"
@@ -72,7 +72,7 @@ pipeline {
                     fi
 
                     #JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
-                    #mvn clean spotless:apply install -DskipTests
+                    mvn clean spotless:apply install -DskipTests
                     build_status=$?
 
                     LOCAL_JAR_Path=./target/${JAR_FILE}
