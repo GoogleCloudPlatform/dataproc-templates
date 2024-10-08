@@ -8,14 +8,7 @@ pipeline {
         DATAPROC_TELEPORT_WEBHOOK_URL = credentials('dataproc-teleport-webhook-url')
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
-        JAR_FILE="dataproc-templates-1.0-SNAPSHOT.jar"
-        CURRENT_DATE= sh (
-            script: "date +%Y-%m-%d",
-            returnStdout: true
-        ).trim()
-        GCS_DESTINATION="gs://dataproc-templates-binaries-preprod/${CURRENT_DATE}"
-        jarPath="${GCS_DESTINATION}/${JAR_FILE}"
-
+        
         GIT_BRANCH_LOCAL = sh (
             script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
             returnStdout: true
@@ -24,16 +17,18 @@ pipeline {
         MAVEN_HOME = "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven"
         PATH = "$PATH:$MAVEN_HOME/bin"
 
+        JAR_FILE="dataproc-templates-1.0-SNAPSHOT.jar"
         GCS_STAGING_LOCATION = sh (script: '''
             CURRENT_BRANCH=`echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'`
             if [ $CURRENT_BRANCH != "main" ];then
-            echo "${jarPath}/$(uuidgen)"
+            echo "gs://dataproc-templates-binaries-preprod/$(uuidgen)"
             else
-            echo ${jarPath}
+            echo "gs://dataproc-templates-binaries-preprod"
             fi
             '''.stripIndent(),
             returnStdout: true
         ).trim()
+        jarPath="${GCS_STAGING_LOCATION}/${JAR_FILE}"
     }
     stages {
         //Deploy one time so that build is copied to GCS location
