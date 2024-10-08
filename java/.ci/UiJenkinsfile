@@ -44,8 +44,7 @@ pipeline {
         stage('Build Jar'){
             steps {
                 sh '''
-                    cd java
-                    BIN_DIR="$(dirname "$BASH_SOURCE")"
+                    cd java                
                     java --version
                     java_status=$?
                     if [ "$java_status" -eq 0 ];
@@ -66,12 +65,11 @@ pipeline {
                         exit 1
                     fi
 
-                    PROJECT_ROOT_DIR=${BIN_DIR}/..
                     JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
                     mvn clean spotless:apply install -DskipTests
                     build_status=$?
 
-                    export jarPath=${PROJECT_ROOT_DIR}/target/${JAR_FILE}
+                    export jarPath=../target/${JAR_FILE}
                     echo $jarPath
                     ls $jarPath
                     ls
