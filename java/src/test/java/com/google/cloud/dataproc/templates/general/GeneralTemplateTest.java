@@ -31,8 +31,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Set;
 import org.apache.commons.cli.CommandLine;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public class GeneralTemplateTest {
     Assertions.assertTrue(violations.isEmpty());
   }
 
-  @Ignore
+  @Disabled
   public void testLoadConfigWithoutInput(@TempDir Path tempDir) throws IOException {
     Path yamlPath = Paths.get(tempDir.toString(), "config.yaml");
     String yaml =

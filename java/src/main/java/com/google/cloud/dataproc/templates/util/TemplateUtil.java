@@ -15,11 +15,11 @@
  */
 package com.google.cloud.dataproc.templates.util;
 
+import com.google.api.gax.rpc.FixedHeaderProvider;
+import com.google.api.gax.rpc.HeaderProvider;
+import com.google.cloud.bigquery.BigQuery;
+import com.google.cloud.bigquery.BigQueryOptions;
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.FixedHeaderProvider;
-import com.google.cloud.spark.bigquery.repackaged.com.google.api.gax.rpc.HeaderProvider;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQuery;
-import com.google.cloud.spark.bigquery.repackaged.com.google.cloud.bigquery.BigQueryOptions;
 import com.google.common.collect.ImmutableMap;
 
 public class TemplateUtil {

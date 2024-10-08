@@ -102,7 +102,7 @@ EOF
             steps {
                 retry(count: stageRetryCount) {
                     sh '''
-                        export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                        export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                         
                         cd java
                         
@@ -125,6 +125,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -148,6 +150,8 @@ EOF
                                 
                                 export SKIP_BUILD=true
 
+                                
+
                                 cd java
                                 
                                 bin/start.sh \
@@ -170,6 +174,8 @@ EOF
                             sh '''
 
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -193,6 +199,8 @@ EOF
 
                                 export SKIP_BUILD=true
 
+                                
+
                                 cd java
 
                                 bin/start.sh \
@@ -215,6 +223,8 @@ EOF
                             sh '''
                                 
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -237,7 +247,7 @@ EOF
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                                export JARS=gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar"
                                 export SKIP_BUILD=true
 
                                 cd java
@@ -261,6 +271,8 @@ EOF
                             sh '''
             
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -280,7 +292,7 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 
-                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                 
                                 cd java
@@ -303,7 +315,7 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 
-                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                 
                                 cd java
@@ -330,6 +342,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -349,6 +363,7 @@ EOF
                             sh '''                                
 
                                 export SKIP_BUILD=true
+                                export SPARK_PROPERTIES="dataproc.sparkBqConnector.uri=gs://spark-lib/bigquery/spark-3.3-bigquery-0.41.0.jar"
                                 
                                 cd java
                                 
@@ -372,7 +387,7 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 
-                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                 
                                 cd java
@@ -396,6 +411,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''                                
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -419,7 +436,7 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
 
-                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                 
                                 cd java
@@ -445,6 +462,8 @@ EOF
                             sh '''
                                 
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -467,6 +486,8 @@ EOF
                             sh '''
                                 
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -489,6 +510,8 @@ EOF
                             sh '''
                                 
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -513,6 +536,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                     
                                 cd java
 
@@ -530,70 +555,15 @@ EOF
                         }
                     }
                 }
-                stage('HBASE TO GCS (Manual)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-                                
-                                cd java
-                                
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
-                                
-                                bin/start.sh \
-                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.1 \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
-                                -- --template=HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=csv \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/csv  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
-                            '''
-                        }
-                    }
-                }
-                stage('HBASE TO GCS (Automated)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
-                                gcloud auth configure-docker
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.1
-                                export HBASE_SITE_PATH=../hbase-site.xml
-                                export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
-                                export SKIP_IMAGE_BUILD=TRUE
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                --container-image=$IMAGE \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
-                                -- --template HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=csv \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/csv  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
-                                
-                            '''
-                        }
-                    }
-                }
+
                 stage('GCS TO GCS (csv)'){
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
                                 
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -619,6 +589,8 @@ EOF
                             sh '''  
                                 export SKIP_BUILD=true
 
+                                
+
                                 cd java
 
                                 bin/start.sh \
@@ -638,6 +610,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                     
                                 cd java
 
@@ -659,6 +633,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                     
                                 cd java
 
@@ -680,6 +656,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                 
                                 cd java
                                 
@@ -704,6 +682,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                     
                                 cd java
 
@@ -725,6 +705,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                     
                                 cd java
 
@@ -747,10 +729,10 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                     
                                 cd java
-                                
-                                export JARS=gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar
 
                                 bin/start.sh \
                                 -- --template=BIGQUERYTOGCS \
@@ -769,6 +751,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                     
                                 cd java
 
@@ -795,6 +779,8 @@ EOF
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+
+                                
                                     
                                 cd java
 
@@ -808,70 +794,12 @@ EOF
                         }
                     }
                 }
-                stage('HBASE TO GCS (Manual)(avro)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-                                
-                                cd java
-                                
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
-                                
-                                bin/start.sh \
-                                --container-image=gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.1 \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
-                                -- --template=HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=avro \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/avro  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
-                            '''
-                        }
-                    }
-                }
-                stage('HBASE TO GCS (Automated)(avro)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                            
-                                gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
-                                gcloud auth configure-docker
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs-java-automated:1.0.0
-                                export HBASE_SITE_PATH=../hbase-site.xml
-                                export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
-                                export SKIP_IMAGE_BUILD=TRUE
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                --container-image=$IMAGE \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
-                                -- --template HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=avro \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/avro  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
-                                
-                            '''
-                        }
-                    }
-                }
+
                 stage('JDBC To JDBC'){
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
-                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
                                     
                                 cd java
@@ -914,13 +842,14 @@ EOF
                 }
             }
         }
-        stage('Parallel Execution 10'){
+        stage('Parallel Execution 9'){
             parallel{
                 stage('PubSubLite To BigTable') {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
                                 export SKIP_BUILD=true
+                                
                                 cd java
                                 bin/start.sh \
                                 -- --template PUBSUBLITETOBIGTABLE \
@@ -940,6 +869,7 @@ EOF
                              sh '''
 
                                   export SKIP_BUILD=true
+                                  
                                   cd java
                                   bin/start.sh \
                                   -- \
@@ -965,6 +895,7 @@ EOF
                              sh '''
 
                                   export SKIP_BUILD=true
+                                  
                                   cd java
                                   bin/start.sh \
                                   -- \
@@ -990,6 +921,7 @@ EOF
                             sh '''
 
                                  export SKIP_BUILD=true
+                                 
                                  cd java
                                  bin/start.sh \
                                  -- \
@@ -1016,7 +948,7 @@ EOF
                             sh'''
 
                                 export SKIP_BUILD=true
-                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar"
 
                                 cd java
                                 bin/start.sh \
@@ -1036,7 +968,7 @@ EOF
                 }
             }
         }
-        stage('Parallel Execution 11'){
+        stage('Parallel Execution 10'){
             parallel{
                 stage('GCS TO SPANNER POSTGRESQL DIALECT') {
                     steps{
@@ -1045,6 +977,7 @@ EOF
 
                                 gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM badges;'
                                 export SKIP_BUILD=true
+                                
 
                                 cd java
 
@@ -1069,7 +1002,7 @@ EOF
                             sh '''
 
                                 gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM pgdialect;'
-                                export JARS=gs://dataproc-templates/jars/mysql-connector-java.jar
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
 
                                 cd java
@@ -1089,6 +1022,127 @@ EOF
                             '''
                         }
                     }
+                }
+            }
+        }
+        stage('HBASE TO GCS (Manual)') {
+            when {
+                // Run this stage only if JOB_TYPE is not set to CLUSTER
+                expression { env.JOB_TYPE != "CLUSTER" }
+            }
+            steps{
+                retry(count: stageRetryCount) {
+                    sh '''
+                        export SKIP_BUILD=true
+                        export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                        export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
+
+                        cd java
+
+                        bin/start.sh \
+                        --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.3 \
+                        --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
+                        -- --template=HBASETOGCS \
+                        --templateProperty hbasetogcs.output.fileformat=csv \
+                        --templateProperty hbasetogcs.output.savemode=overwrite \
+                        --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/csv  \
+                        --templateProperty hbasetogcs.table.catalog=$CATALOG
+                    '''
+                }
+            }
+        }
+        stage('HBASE TO GCS (Automated)') {
+            when {
+                // Run this stage only if JOB_TYPE is not set to CLUSTER
+                expression { env.JOB_TYPE != "CLUSTER" }
+            }
+            steps{
+                retry(count: stageRetryCount) {
+                    sh '''
+                        gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
+                        gcloud auth configure-docker us-docker.pkg.dev
+                        export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                        export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.3
+                        export HBASE_SITE_PATH=../hbase-site.xml
+                        export IMAGE=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/${IMAGE_NAME_VERSION}
+                        export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
+
+                        export SKIP_IMAGE_BUILD=TRUE
+                        export SKIP_BUILD=true
+
+                        cd java
+
+                        bin/start.sh \
+                        --container-image=$IMAGE \
+                        --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
+                        -- --template HBASETOGCS \
+                        --templateProperty hbasetogcs.output.fileformat=csv \
+                        --templateProperty hbasetogcs.output.savemode=overwrite \
+                        --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/csv  \
+                        --templateProperty hbasetogcs.table.catalog=$CATALOG
+
+                    '''
+                }
+            }
+        }
+        stage('HBASE TO GCS (Manual)(avro)') {
+            when {
+                // Run this stage only if JOB_TYPE is not set to CLUSTER
+                expression { env.JOB_TYPE != "CLUSTER" }
+            }
+            steps{
+                retry(count: stageRetryCount) {
+                    sh '''
+                        export SKIP_BUILD=true
+                        export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                        export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
+
+                        cd java
+
+                        bin/start.sh \
+                        --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.3 \
+                        --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
+                        -- --template=HBASETOGCS \
+                        --templateProperty hbasetogcs.output.fileformat=avro \
+                        --templateProperty hbasetogcs.output.savemode=overwrite \
+                        --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/avro  \
+                        --templateProperty hbasetogcs.table.catalog=$CATALOG
+                    '''
+                }
+            }
+        }
+        stage('HBASE TO GCS (Automated)(avro)') {
+            when {
+                // Run this stage only if JOB_TYPE is not set to CLUSTER
+                expression { env.JOB_TYPE != "CLUSTER" }
+            }
+            steps{
+                retry(count: stageRetryCount) {
+                    sh '''
+
+                        gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
+                        gcloud auth configure-docker us-docker.pkg.dev
+                        export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                        export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.3
+                        export HBASE_SITE_PATH=../hbase-site.xml
+                        export IMAGE=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/${IMAGE_NAME_VERSION}
+                        export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
+
+                        export SKIP_IMAGE_BUILD=TRUE
+                        export SKIP_BUILD=true
+
+                        cd java
+
+                        bin/start.sh \
+                        --container-image=$IMAGE \
+                        --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
+                        -- --template HBASETOGCS \
+                        --templateProperty hbasetogcs.output.fileformat=avro \
+                        --templateProperty hbasetogcs.output.savemode=overwrite \
+                        --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/avro  \
+                        --templateProperty hbasetogcs.table.catalog=$CATALOG
+
+                    '''
                 }
             }
         }

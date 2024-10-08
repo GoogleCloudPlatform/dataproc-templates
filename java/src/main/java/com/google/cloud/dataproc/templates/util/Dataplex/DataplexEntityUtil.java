@@ -17,9 +17,9 @@ package com.google.cloud.dataproc.templates.util.Dataplex;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
-import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonArray;
-import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonElement;
-import com.google.cloud.spark.bigquery.repackaged.com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;

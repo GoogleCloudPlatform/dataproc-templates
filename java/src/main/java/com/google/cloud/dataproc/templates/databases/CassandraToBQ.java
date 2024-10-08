@@ -75,7 +75,7 @@ public class CassandraToBQ implements BaseTemplate {
     dataset
         .write()
         .mode(config.getMode())
-        .format("com.google.cloud.spark.bigquery")
+        .format("bigquery")
         .option("table", config.getBqLocation())
         .option("temporaryGcsBucket", config.getTemplocation())
         .save();
