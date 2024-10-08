@@ -14,7 +14,7 @@ pipeline {
             returnStdout: true
         ).trim()
         GCS_DESTINATION="gs://dataproc-templates-binaries-preprod/${CURRENT_DATE}"
-        jarPath=${GCS_DESTINATION} + "/" + ${JAR_FILE}
+        jarPath="${GCS_DESTINATION}/${JAR_FILE}"
 
         GIT_BRANCH_LOCAL = sh (
             script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
