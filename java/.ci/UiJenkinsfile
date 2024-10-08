@@ -71,16 +71,13 @@ pipeline {
                         exit 1
                     fi
 
-                    #JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
                     mvn clean spotless:apply install -DskipTests
                     build_status=$?
 
                     LOCAL_JAR_Path=./target/${JAR_FILE}
-                    #CURRENT_DATE=$(date +%Y-%m-%d)
-                    #GCS_DESTINATION=gs://dataproc-templates-binaries-preprod/${CURRENT_DATE}
                     GCP_JAR_Path=${GCS_DESTINATION}/${JAR_FILE}
 
-                    #gsutil cp ${LOCAL_JAR_Path} ${GCP_JAR_Path}
+                    gsutil cp ${LOCAL_JAR_Path} ${GCP_JAR_Path}
                 '''
                             
                 }
