@@ -76,7 +76,7 @@ pipeline {
                     CURRENT_DATE=$(date +%Y-%m-%d)
                     GCS_DESTINATION=gs://dataproc-templates-binaries-preprod/${CURRENT_DATE}/
 
-                    gsutil cp ${jarPath} #{GCS_DESTINATION}/${JAR_FILE}
+                    gsutil cp ${jarPath} ${GCS_DESTINATION}/${JAR_FILE}
 
                 '''
                             
