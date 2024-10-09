@@ -6,7 +6,6 @@ on:
 
 jobs:
   jenkins-integration-tests-python:
-    if: (github.event.pull_request.head.ref != 'release-please--branches--main')
     runs-on: ubuntu-latest
     outputs:
       BUILD_URL: ${{ steps.trigger.outputs.BUILD_URL }}
