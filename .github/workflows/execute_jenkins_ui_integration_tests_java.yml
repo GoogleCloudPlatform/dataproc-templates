@@ -1,18 +1,18 @@
-name: Java Integration
+name: Java UI Integration
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  jenkins-integration-tests-java:
+  jenkins-ui-integration-tests-java:
     runs-on: ubuntu-latest
     outputs:
       BUILD_URL: ${{ steps.trigger.outputs.BUILD_URL }}
       EXECUTABLE_URL: ${{ steps.get_executable_url.outputs.POLLING_URL }}
     env:
-      JENKINS_URL: https://dataproctemplatesci.com/job/dataproc-templates-build/job/ad-hoc/job/integration-tests-java/buildWithParameters?token=GITHUB_TOKEN&branchName=origin/${{ github.head_ref }}
-      JOB_NAME: integration-tests-java
+      JENKINS_URL: https://dataproctemplatesci.com/job/dataproc-templates-build/job/ad-hoc/job/ui-integration-tests-java/buildWithParameters?token=GITHUB_TOKEN&branchName=origin/${{ github.head_ref }}
+      JOB_NAME: ui-integration-tests-java
       CREDS: ${{ secrets.JENKINS_CREDS }}
     steps:
       - name: Trigger Jenkins Job
