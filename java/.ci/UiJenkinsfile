@@ -502,7 +502,7 @@ pipeline {
             catchError {
                 sh '''
                 if [ $GIT_BRANCH_LOCAL != "main" ];then
-                    gsutil rm -r $GCS_STAGING_LOCATION 2> /dev/null || true
+                    gsutil rm -r $jarPath 2> /dev/null || true
                 fi
                 '''
             }
