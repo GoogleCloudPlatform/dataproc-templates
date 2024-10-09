@@ -25,7 +25,7 @@ from typing import Optional
 import shutil
 import io
 import os
-import logging
+from distutils import log
 from setuptools import setup, find_packages
 from setuptools.command.bdist_egg import bdist_egg
 
@@ -66,7 +66,7 @@ class BdistEggCustomEggName(bdist_egg):
         built_egg_path: str = self.get_outputs()[0]
 
         if self.output is not None:
-            logging.info(
+            log.info(
                 'Will rename output .egg file from %s to %s',
                 built_egg_path,
                 self.output
