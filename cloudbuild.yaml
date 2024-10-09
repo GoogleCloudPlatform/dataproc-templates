@@ -1,0 +1,76 @@
+# Copyright 2023 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+steps:
+  - name: gcr.io/cloud-builders/git
+    args:
+      - clone
+      - 'https://github.com/GoogleCloudPlatform/${_REPO}.git'
+    id: check-out-source-code
+  - name: python
+    args:
+      - python
+      - setup.py
+      - bdist_egg
+      - '--output=${_BINARY_PREFIX}.egg'
+    dir: '${_REPO}/python'
+    id: build-python-egg
+  - name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gsutil cp ${_REPO}/python/main.py gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/  
+    id: cp-python-main-to-gcs-tag-folder
+  - name: gcr.io/cloud-builders/gsutil
+    args:
+      - cp
+      - main.py
+      - 'gs://${_PUBLIC_BUCKET}/latest/python/'
+    dir: '${_REPO}/python'
+    id: cp-python-main-to-gcs-latest-folder
+  - name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gsutil cp ${_REPO}/python/${_BINARY_PREFIX}.egg gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/
+    id: cp-python-egg-to-gcs-tag-folder
+  - name: gcr.io/cloud-builders/gsutil
+    args:
+      - cp
+      - '${_BINARY_PREFIX}.egg'
+      - 'gs://${_PUBLIC_BUCKET}/latest/python/'
+    dir: '${_REPO}/python'
+    id: cp-python-egg-to-gcs-latest-folder
+  - name: 'gcr.io/cloud-builders/mvn:3.5.0-jdk-8'
+    args:
+      - package
+      - '-Dmaven.test.skip=true'
+    dir: '${_REPO}/java'
+    id: build-java-jar
+  - name: gcr.io/cloud-builders/gsutil
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gsutil cp ${_REPO}/java/target/dataproc-templates-1.0-SNAPSHOT.jar gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/java/
+    id: cp-java-egg-to-gcs-tag-folder
+  - name: gcr.io/cloud-builders/gsutil
+    args:
+      - cp
+      - dataproc-templates-1.0-SNAPSHOT.jar
+      - 'gs://${_PUBLIC_BUCKET}/latest/java/${_BINARY_PREFIX}.jar'
+    dir: '${_REPO}/java/target'
+    id: cp-java-jar-to-gcs-latest-folder
