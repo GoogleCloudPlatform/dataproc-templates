@@ -86,7 +86,7 @@
 
     <!-- Spark Kafka Streaming Dependency. Aligned with Spark 3.5.1 -->
     <json4s.version>3.7.0-M11</json4s.version>
-    <commons.io.version>2.13.0</commons.io.version>
+    <commons.io.version>2.14.0</commons.io.version>
 
     <!-- Spark Cassandra Connector -->
     <spark.cassandra.connector.version>3.5.1</spark.cassandra.connector.version>
