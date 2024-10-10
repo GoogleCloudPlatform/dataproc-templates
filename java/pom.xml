@@ -94,10 +94,6 @@
     <!-- Spark Snowflake Connector -->
     <spark.snowflake.connector.version>3.0.0</spark.snowflake.connector.version>
 
-    <!-- Hadoop AWS Dependencies -->
-    <hadoop.aws.version>3.4.0</hadoop.aws.version>
-    <aws.java.sdk.version>1.12.772</aws.java.sdk.version>
-
     <!-- HBase Dependencies -->
     <hbase.spark.connector.version>1.0.1</hbase.spark.connector.version>
     <hbase.client.version>2.6.0-hadoop3</hbase.client.version>
@@ -391,33 +387,6 @@
       <groupId>net.snowflake</groupId>
       <artifactId>spark-snowflake_${scala.binary.version}</artifactId>
       <version>${spark.snowflake.connector.version}</version>
-    </dependency>
-
-    <!-- Hadoop AWS Dependencies -->
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-common</artifactId>
-      <version>${hadoop.aws.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-aws</artifactId>
-      <version>${hadoop.aws.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk</artifactId>
-      <version>${aws.java.sdk.version}</version>
     </dependency>
 
     <!-- HBase Dependencies -->
