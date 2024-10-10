@@ -37,6 +37,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable {
   private static final Logger LOGGER = LoggerFactory.getLogger(PubSubLiteToBigTable.class);
   private String inputProjectID;
