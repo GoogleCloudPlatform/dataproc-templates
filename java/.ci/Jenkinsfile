@@ -27,6 +27,8 @@ pipeline {
             '''.stripIndent(),
             returnStdout: true
         ).trim()
+
+        S3_USER = credentials('aws-s3-ro-credentials')
     }
     stages {
         stage('Prepare Environment'){
@@ -329,6 +331,29 @@ EOF
                                 --templateProperty jdbctogcs.output.format=avro \
                                 --templateProperty jdbctogcs.write.mode=overwrite \
                                 --templateProperty jdbctogcs.sql="select * from test.employee" 
+                            '''
+                        }
+                    }
+                }
+                stage('S3 TO BigQuery (avro)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template S3TOBIGQUERY \
+                                --templateProperty project.id=yadavaja-sandbox \
+                                --templateProperty s3.bq.access.key=$S3_USER \
+                                --templateProperty s3.bq.secret.key=$S3_USER_PSW \
+                                --templateProperty s3.bq.input.format=avro \
+                                --templateProperty s3.bq.input.location=s3a://dataproc-templates-integration-tests/cities.avro \
+                                --templateProperty s3.bq.output.dataset.name=dataproc_templates \
+                                --templateProperty s3.bq.output.table.name=s3_to_bq_avro \
+                                --templateProperty s3.bq.output.mode=Overwrite \
+                                --templateProperty s3.bq.ld.temp.bucket.name=dataproc-templates
                             '''
                         }
                     }
