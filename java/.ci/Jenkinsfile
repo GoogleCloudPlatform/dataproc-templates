@@ -345,7 +345,7 @@ EOF
 
                                 bin/start.sh \
                                 -- --template S3TOBIGQUERY \
-                                --templateProperty project.id=yadavaja-sandbox \
+                                --templateProperty project.id=$GCP_PROJECT \
                                 --templateProperty s3.bq.access.key=$S3_KEY \
                                 --templateProperty s3.bq.secret.key=$S3_SECRET \
                                 --templateProperty s3.bq.input.format=avro \
