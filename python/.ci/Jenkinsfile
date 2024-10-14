@@ -141,7 +141,6 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -312,7 +311,6 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -341,7 +339,6 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -369,7 +366,7 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-cassandra-connector/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://spark-cassandra-connector/jnr-posix-3.1.8.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                export JARS="gs://spark-cassandra-connector/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://spark-cassandra-connector/jnr-posix-3.1.8.jar"
                                 export SKIP_BUILD=true
 
                                 cd python

@@ -824,7 +824,7 @@ export JARS=<gcs-bucket-location-containing-jar-file>
 ```
 
 
-# Text To BigQuery
+# Text To BigQuery (Deprecated and will be removed in Q1 2025)
 
 Template for reading TEXT files from Cloud Storage and writing them to a BigQuery table. It supports reading Text files with compression GZIP, BZIP2, LZ4, DEFLATE, NONE.
 

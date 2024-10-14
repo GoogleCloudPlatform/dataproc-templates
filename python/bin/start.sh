@@ -39,12 +39,17 @@ fi
 if [ $4 = "--template=HBASETOGCS" ] || [ $4 = "--template=GCSTOBIGTABLE" ]; then
   OPT_SPARK_VERSION="--version=1.0.29"
 else
-  OPT_SPARK_VERSION="--version=1.1"
+  OPT_SPARK_VERSION="--version=1.2"
 fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
-OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
+#OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
+OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar"
+if [[ $OPT_SPARK_VERSION == *"=1.1"* || $JOB_TYPE == "CLUSTER" ]]; then
+  echo "Dataproc Serverless Runtime 1.1 or CLUSTER Job Type Detected"
+	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
+fi
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
 OPT_PY_FILES="--py-files=${PROJECT_ROOT_DIR}/${PACKAGE_EGG_FILE}"
