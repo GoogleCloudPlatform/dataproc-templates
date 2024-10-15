@@ -742,10 +742,6 @@ pipeline {
                     }
                 }
                 stage('GCS TO Bigtable') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
