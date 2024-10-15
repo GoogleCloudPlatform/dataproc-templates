@@ -742,35 +742,25 @@ pipeline {
                     }
                 }
                 stage('GCS TO Bigtable') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
-
-                                python3.8 -m venv env
-
-                                source env/bin/activate
-                                
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
                                 export SKIP_BUILD=true
-                                export JARS="gs://python-dataproc-templates-temp/jars/bigtable-hbase-2.x-shaded-2.3.0.jar,gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
-
+                                export JARS="gs://spark-lib/bigtable/spark-bigtable_2.12-0.1.0.jar"
+                                export SPARK_PROPERTIES="spark.jars.packages=org.slf4j:slf4j-reload4j:1.7.36"
 
                                 cd python
                                 
                                 ./bin/start.sh \
-                                --container-image="gcr.io/$GCP_PROJECT/bt-templates-test:1.0.1" \
-                                --properties="spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/" \
                                 -- --template=GCSTOBIGTABLE \
                                 --gcs.bigtable.input.format="csv" \
                                 --gcs.bigtable.input.location="gs://dataproc-templates/data/csv/cities.csv" \
-                                --gcs.bigtable.hbase.catalog.json=\'\'\'{
-                                    "table":{"namespace":"default","name":"cities"},
+                                --spark.bigtable.project.id=$GCP_PROJECT \
+                                --spark.bigtable.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
+                                --gcs.bigtable.catalog.json=\'\'\'{
+                                    "table":{"name":"cities"},
                                     "rowkey":"key",
                                     "columns":{
                                         "key":{"cf":"rowkey", "col":"key", "type":"string"},
