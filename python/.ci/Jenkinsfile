@@ -21,38 +21,6 @@ pipeline {
                 git branch: "${GIT_BRANCH_LOCAL}", changelog: false, poll: false, url: 'https://github.com/GoogleCloudPlatform/dataproc-templates/'    
             }
         }
-        stage('Clean Resources'){
-            steps {
-                catchError {
-                    sh '''
-                        gcloud pubsub lite-topics publish psltobt \
-                            --location=us-west1 \
-                            --message=\'\'\'
-                            { 
-                                "rowkey":"rk1",
-                                "columns": [
-                                    {
-                                        "columnfamily":"place",
-                                        "columnname":"city",
-                                        "columnvalue":"Bangalore"
-                                    },
-                                    {
-                                        "columnfamily":"place",
-                                        "columnname":"state",
-                                        "columnvalue":"Karnataka"
-                                    },
-                                    {
-                                        "columnfamily":"date",
-                                        "columnname":"year",
-                                        "columnvalue":"2023"
-                                    }
-                                ] 
-                            }
-                            \'\'\'
-                    '''
-                }
-            }
-        }
         stage('Cluster Creation'){
             when {
                 // Run this stage only if JOB_TYPE is not set to CLUSTER
@@ -626,11 +594,16 @@ pipeline {
                         }
                     }
                 }
-                stage('PUB/SUB LITE TO BIGTABLE') {
+            }
+        }  
+         stage('Parallel Execution 6'){
+            parallel{
+                stage('S3 TO BigQuery (avro)') {    
                     steps{
                         retry(count: stageRetryCount) {
-                            sh '''
-                            
+                            withCredentials([usernamePassword(credentialsId: 'aws-s3-ro-credentials',
+                        passwordVariable: 'S3_SECRET', usernameVariable: 'S3_KEY')])
+                            {sh '''
                                 python3.8 -m pip install --user virtualenv    
 
                                 python3.8 -m venv env
@@ -638,26 +611,28 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-LATEST-with-dependencies.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
 
                                 ./bin/start.sh \
-                                -- --template=PUBSUBLITETOBIGTABLE \
-                                --pubsublite.bigtable.subscription.path=projects/$GCP_PROJECT/locations/$REGION/subscriptions/psltobt-sub \
-                                --pubsublite.bigtable.streaming.checkpoint.location="gs://dataproc-templates/integration-testing/psltobt/checkpoint" \
-                                --pubsublite.bigtable.output.project=$GCP_PROJECT \
-                                --pubsublite.bigtable.output.instance=$ENV_TEST_BIGTABLE_INSTANCE \
-                                --pubsublite.bigtable.output.table="output_table" \
-                                --pubsublite.bigtable.streaming.timeout=20
+                                    -- --template=S3TOBIGQUERY \
+                                        --s3.bq.input.location="s3a://dataproc-templates-integration-tests/cities.avro" \
+                                        --s3.bq.access.key="${S3_KEY}" \
+                                        --s3.bq.secret.key="${S3_SECRET}" \
+                                        --s3.bq.input.format="avro" \
+                                        --s3.bq.output.dataset.name="dataproc_templates" \
+                                        --s3.bq.output.table.name="s3_to_bq_avro_py" \
+                                        --s3.bq.output.mode="overwrite" \
+                                        --s3.bq.temp.bucket.name="${GCS_STAGING_LOCATION}"
                             '''
+                            }
                         }
                     }
                 }
             }
-        }  
-        stage('Parallel Execution 6'){
+        }
+        stage('Parallel Execution 7'){
             parallel{
                 stage('Hbase TO GCS (Manual)') {    
                     when {
