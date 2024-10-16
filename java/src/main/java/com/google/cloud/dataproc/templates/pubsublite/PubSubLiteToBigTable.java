@@ -20,8 +20,6 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import com.google.cloud.bigtable.data.v2.BigtableDataClient;
 import com.google.cloud.bigtable.data.v2.models.RowMutation;
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import com.google.cloud.spark.bigquery.repackaged.org.json.JSONArray;
-import com.google.cloud.spark.bigquery.repackaged.org.json.JSONObject;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
@@ -34,9 +32,12 @@ import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.streaming.Trigger;
 import org.apache.spark.sql.types.DataTypes;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class PubSubLiteToBigTable implements BaseTemplate, java.io.Serializable {
   private static final Logger LOGGER = LoggerFactory.getLogger(PubSubLiteToBigTable.class);
   private String inputProjectID;

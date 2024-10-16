@@ -35,83 +35,238 @@
     </license>
   </licenses>
   <properties>
-    <java.version>1.8</java.version>
+    <!-- https://cloud.google.com/dataproc-serverless/docs/concepts/versions/spark-runtime-versions#spark_runtime_version_12 -->
+    <!-- Java & Scala Version Aligned with Dataproc Serverless Spark Runtime 1.2 -->
+    <java.version>11</java.version>
+    <scala.binary.version>2.12</scala.binary.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
-    <spark.version>3.3.3</spark.version>
-    <scala.binary.version>2.12</scala.binary.version>
-    <gcs.version>2.4.5</gcs.version>
+
+    <!-- Spark Version Aligned with Dataproc Serverless Spark Runtime 1.2 -->
+    <spark.version>3.3.4</spark.version>
+
+    <!-- GCP Dependencies. Only change when it is aligned with Spark -->
+    <aopalliance.version>1.0</aopalliance.version>
+    <zstd.version>1.4.9-1</zstd.version>
+    <gax.version>2.30.0</gax.version>
+    <google.auth.library.bom.version>1.16.1</google.auth.library.bom.version>
+    <google-cloud-dataproc.version>4.11.0</google-cloud-dataproc.version>
+    <google-cloud-spanner.version>6.50.0</google-cloud-spanner.version>
+    <google-cloud-storage.version>2.20.2</google-cloud-storage.version>
+    <gcs.connector.version>hadoop2-2.2.8</gcs.connector.version>
+    <error.prone.annotations.version>2.18.0</error.prone.annotations.version>
+    <jsr.version>3.0.2</jsr.version>
+    <guava.version>32.0.0-jre</guava.version>
+    <netty.version>4.1.92.Final</netty.version>
+    <paranamer.version>2.8</paranamer.version>
+    <protobuf.version>3.23.0</protobuf.version>
+    <zstd.version>1.4.9-1</zstd.version>
+    <openlineage.version>1.19.0</openlineage.version>
+    <grpc.version>1.55.1</grpc.version>
+    <commons.codec.version>1.15</commons.codec.version>
+    <commons.compress.version>1.26.0</commons.compress.version>
+    <javax.inject.version>1</javax.inject.version>
+    <javax.annotation.api.versoin>1.3.2</javax.annotation.api.versoin>
+    <junit.version>4.13.2</junit.version>
+    <avro.version>1.11.3</avro.version>
+    <arrow.version>12.0.0</arrow.version>
+    <mockito.core.version>4.10.0</mockito.core.version>
+    <conscrypt.openjdk.version>2.5.2</conscrypt.openjdk.version>
+    <shade.skip>false</shade.skip>
+    <spanner.jdbc.version>2.14.0</spanner.jdbc.version>
+    <google.cloud.pubsub.version>1.132.0</google.cloud.pubsub.version>
+    <google.cloud.pubsublite.version>1.14.0</google.cloud.pubsublite.version>
+    <google.cloud.bigtable.version>2.42.0</google.cloud.bigtable.version>
+    <google.oauth.client.version>1.36.0</google.oauth.client.version>
+    <google.api.client.version>2.7.0</google.api.client.version>
+    <spark.bigquery.connector.version>0.36.4</spark.bigquery.connector.version>
+    <pubsublite.spark.sql.streaming.version>1.0.0</pubsublite.spark.sql.streaming.version>
+    <spark.bigtable.connector.version>0.2.1</spark.bigtable.connector.version>
+    <spark.streaming.pubsub.version>2.4.0</spark.streaming.pubsub.version>
+
+    <!-- Spark Kafka Streaming Dependency. Aligned with Spark 3.5.1 -->
+    <json4s.version>3.7.0-M11</json4s.version>
+    <commons.io.version>2.14.0</commons.io.version>
+
+    <!-- Spark Cassandra Connector -->
+    <spark.cassandra.connector.version>3.5.1</spark.cassandra.connector.version>
+
+    <!-- Spark Snowflake Connector -->
+    <spark.snowflake.connector.version>3.0.0</spark.snowflake.connector.version>
+
+    <!-- HBase Dependencies -->
+    <hbase.spark.connector.version>1.0.1</hbase.spark.connector.version>
+    <hbase.client.version>2.6.0-hadoop3</hbase.client.version>
+
+    <!-- jakarta.validation -->
+    <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
+    <jakarta.el.api.version>4.0.0</jakarta.el.api.version>
+    <!-- Reference : https://docs.jboss.org/hibernate/validator/8.0/reference/en-US/html_single/#validator-gettingstarted-uel -->
+    <glassfish.expressly.version>5.0.0</glassfish.expressly.version>
+
+    <!-- jackson yaml parsing of config, and ensure related jackson libraries use same version -->
+    <jackson.version>2.15.2</jackson.version>
+
+    <!-- Logging Dependencies -->
+    <logback.classic.version>1.5.8</logback.classic.version>
+    <log4j.version>2.24.0</log4j.version>
+    <slf4j.version>1.7.16</slf4j.version>
+    <jnr.posix.version>3.1.19</jnr.posix.version>
+
+    <!-- Other Dependencies -->
+    <commons.cli.version>1.9.0</commons.cli.version>
+
     <project.version>3.1</project.version>
-    <junit-platform.version>5.7.2</junit-platform.version>
-    <spotless-maven-plugin.version>2.1.0</spotless-maven-plugin.version>
+
+    <!-- Maven Spotless Plugin With Google Style Format -->
+    <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
+    <google.java.format.version>1.23.0</google.java.format.version>
+    <json.version>20240303</json.version>
+    <caffeine.version>3.1.8</caffeine.version>
+
+    <!-- Maven Plugin -->
+    <maven.surefire.plugin.version>3.5.0</maven.surefire.plugin.version>
+    <junit-platform.version>5.11.0</junit-platform.version>
+    <jacoco.maven.version>0.8.12</jacoco.maven.version>
+    <maven.shade.plugin.version>3.6.0</maven.shade.plugin.version>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>aopalliance</groupId>
+        <artifactId>aopalliance</artifactId>
+        <version>${aopalliance.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${jackson.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <!-- Fixing CVE-2022-42003 -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.luben</groupId>
+        <artifactId>zstd-jni</artifactId>
+        <version>${zstd.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.api</groupId>
+        <artifactId>gax-bom</artifactId>
+        <version>${gax.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.auth</groupId>
+        <artifactId>google-auth-library-bom</artifactId>
+        <version>${google.auth.library.bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-spanner-bom</artifactId>
+        <version>${google-cloud-spanner.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.cloud</groupId>
+        <artifactId>google-cloud-storage</artifactId>
+        <version>${google-cloud-storage.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.code.findbugs</groupId>
+        <artifactId>jsr305</artifactId>
+        <version>${jsr.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-bom</artifactId>
+        <version>${protobuf.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${commons.codec.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.grpc</groupId>
+        <artifactId>grpc-bom</artifactId>
+        <version>${grpc.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-bom</artifactId>
+        <version>${netty.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>${javax.inject.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>${javax.annotation.api.versoin}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-compress</artifactId>
+        <version>${commons.compress.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.conscrypt</groupId>
+        <artifactId>conscrypt-openjdk-uber</artifactId>
+        <version>${conscrypt.openjdk.version}</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
+    <!-- Spark Dependencies -->
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_2.12</artifactId>
-      <version>${spark.version}</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jul-to-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>jcl-over-slf4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>ch.qos.logback</groupId>
-          <artifactId>logback-classic</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency> <!-- Spark dependency -->
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-sql_2.12</artifactId>
+      <artifactId>spark-core_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.2.13</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-log4j12</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-sql_${scala.binary.version}</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>${junit-platform.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-hive -->
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-hive_${scala.binary.version}</artifactId>
@@ -125,70 +280,173 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.bahir</groupId>
-      <artifactId>spark-streaming-pubsub_2.12</artifactId>
-      <version>2.4.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-sql-kafka-0-10_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/com.datastax.spark/spark-cassandra-connector -->
     <dependency>
-      <groupId>com.datastax.spark</groupId>
-      <artifactId>spark-cassandra-connector_${scala.binary.version}</artifactId>
-      <version>3.3.0</version>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
+      <version>${spark.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.github.jnr</groupId>
-      <artifactId>jnr-posix</artifactId>
-      <version>3.0.61</version>
+      <groupId>org.apache.bahir</groupId>
+      <artifactId>spark-streaming-pubsub_${scala.binary.version}</artifactId>
+      <version>${spark.streaming.pubsub.version}</version>
+    </dependency>
+
+    <!-- Required by spark streaming kafka -->
+    <dependency>
+      <groupId>org.json4s</groupId>
+      <artifactId>json4s-jackson_${scala.binary.version}</artifactId>
+      <version>${json4s.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-        <groupId>net.snowflake</groupId>
-        <artifactId>spark-snowflake_2.12</artifactId>
-        <version>2.10.0-spark_3.2</version>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons.io.version}</version>
     </dependency>
-    <dependency>
-      <groupId>com.github.jnr</groupId>
-      <artifactId>jnr-posix</artifactId>
-      <version>3.0.61</version>
-    </dependency>
+
+
+    <!-- Google Cloud Dependencies -->
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-pubsub</artifactId>
-      <version>1.119.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.oauth-client</groupId>
-      <artifactId>google-oauth-client</artifactId>
-      <version>1.33.3</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.api-client</groupId>
-      <artifactId>google-api-client</artifactId>
-      <version>1.32.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.cloud.spark</groupId>
-      <artifactId>spark-bigquery-with-dependencies_2.12</artifactId>
-      <version>0.22.0</version>
+      <version>${google.cloud.pubsub.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-bigquerystorage</artifactId>
-      <version>2.34.0</version>
+      <artifactId>google-cloud-spanner</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-spanner-jdbc</artifactId>
-      <version>2.6.0</version>
+      <version>${spanner.jdbc.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-aws</artifactId>
-      <version>2.7.3</version>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-pubsublite</artifactId>
+      <version>${google.cloud.pubsublite.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-storage</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.oauth-client</groupId>
+      <artifactId>google-oauth-client</artifactId>
+      <version>${google.oauth.client.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.api-client</groupId>
+      <artifactId>google-api-client</artifactId>
+      <version>${google.api.client.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud.spark</groupId>
+      <artifactId>spark-bigquery_${scala.binary.version}</artifactId>
+      <version>${spark.bigquery.connector.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>pubsublite-spark-sql-streaming</artifactId>
+      <version>${pubsublite.spark.sql.streaming.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-bigtable</artifactId>
+      <version>${google.cloud.bigtable.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.cloud.spark.bigtable</groupId>
+      <artifactId>spark-bigtable_${scala.binary.version}</artifactId>
+      <version>${spark.bigtable.connector.version}</version>
+    </dependency>
+
+    <!-- Spark Cassandra Connector -->
+    <dependency>
+      <groupId>com.datastax.spark</groupId>
+      <artifactId>spark-cassandra-connector_${scala.binary.version}</artifactId>
+      <version>${spark.cassandra.connector.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jnr</groupId>
+      <artifactId>jnr-posix</artifactId>
+      <version>${jnr.posix.version}</version>
+    </dependency>
+
+    <!-- Spark Snowflake Connector -->
+    <dependency>
+      <groupId>net.snowflake</groupId>
+      <artifactId>spark-snowflake_${scala.binary.version}</artifactId>
+      <version>${spark.snowflake.connector.version}</version>
+    </dependency>
+
+    <!-- HBase Dependencies -->
+    <dependency>
+      <groupId>org.apache.hbase.connectors.spark</groupId>
+      <artifactId>hbase-spark</artifactId>
+      <version>${hbase.spark.connector.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-client</artifactId>
+      <version>${hbase.client.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- jakarta.validation -->
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>${hibernate.validator.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>jakarta.el</artifactId>
+      <version>${jakarta.el.api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator-cdi</artifactId>
+      <version>${hibernate.validator.version}</version>
+    </dependency>
+
+    <!-- yaml parsing of config, and ensure related jackson libraries use same version -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+
+    <!-- Logging Dependencies -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>${logback.classic.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
@@ -198,140 +456,59 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk</artifactId>
-      <version>1.7.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hbase.connectors.spark</groupId>
-      <artifactId>hbase-spark</artifactId>
-      <version>1.0.0</version>
-      <scope>provided</scope>
-      <exclusions>
         <exclusion>
-          <groupId>org.glassfish</groupId>
-          <artifactId>javax.el</artifactId>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/org.apache.hbase.connectors.spark/hbase-spark-protocol -->
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-client</artifactId>
-      <version>2.2.0</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
-      <version>2.17.1</version>
+      <version>${log4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.17.1</version>
+      <version>${log4j.version}</version>
     </dependency>
+    <!-- Rely on Spark to provide dependencies from upstream -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.33</version>
+      <version>${slf4j.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.33</version>
+      <version>${slf4j.version}</version>
+      <scope>provided</scope>
     </dependency>
-    <!-- yaml parsing of config, and ensure related jackson libraries use same version -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>2.12.6</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.12.7.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-yaml</artifactId>
-      <version>2.12.6</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>2.12.6</version>
-    </dependency>
-    <!-- for jakarta.validation -->
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <version>7.0.1.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.glassfish</groupId>
-      <artifactId>jakarta.el</artifactId>
-      <version>4.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator-cdi</artifactId>
-      <version>7.0.1.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hadoop</groupId>
-      <artifactId>hadoop-common</artifactId>
-      <version>3.2.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>pubsublite-spark-sql-streaming</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-pubsublite</artifactId>
-      <version>1.9.3</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.ben-manes.caffeine</groupId>
-      <artifactId>caffeine</artifactId>
-      <version>2.9.3</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-storage</artifactId>
-      <version>${gcs.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>20231013</version>
-    </dependency>
+
+    <!-- Other Dependencies -->
     <dependency>
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
-      <version>1.5.0</version>
+      <version>${commons.cli.version}</version>
     </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.json</groupId>-->
+<!--      <artifactId>json</artifactId>-->
+<!--      <version>${json.version}</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>com.github.ben-manes.caffeine</groupId>-->
+<!--      <artifactId>caffeine</artifactId>-->
+<!--      <version>${caffeine.version}</version>-->
+<!--    </dependency>-->
+
+    <!-- Java Test Libraries -->
     <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-bigtable</artifactId>
-      <version>2.1.0</version>
-    </dependency>
-    <!-- Spark kafka Direct stream-->
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
-      <version>${spark.version}</version>
-    </dependency>
-    <!-- https://mvnrepository.com/artifact/com.google.cloud.spark.bigtable/spark-bigtable -->
-    <dependency>
-      <groupId>com.google.cloud.spark.bigtable</groupId>
-      <artifactId>spark-bigtable_${scala.binary.version}</artifactId>
-      <version>0.2.1</version>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit-platform.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -340,7 +517,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.8</version>
+        <version>${jacoco.maven.version}</version>
         <executions>
           <execution>
             <id>prepare-agent</id>
@@ -360,7 +537,14 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M5</version>
+        <version>${maven.surefire.plugin.version}</version>
+        <configuration>
+          <!-- Required this when using Java 9 or later, some JDK internals must be exposed  -->
+          <!-- https://issues.apache.org/jira/browse/SPARK-33772 -->
+          <argLine>
+            --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+          </argLine>
+        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -372,6 +556,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -394,22 +579,119 @@
                   </excludes>
                 </filter>
               </filters>
+              <!-- Very high critical settings. Please do detail testing after making any changes. -->
               <relocations>
                 <relocation>
-                  <pattern>com</pattern>
-                  <shadedPattern>repackaged.com.google</shadedPattern>
-                  <includes>
-                    <include>com.google.protobuf.**</include>
-                    <!--                    <inclde>com.google.common.**</inclde>-->
-                    <!--                    <include>io.grpc.internal.**</include>-->
-                  </includes>
+                  <pattern>android</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.android</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org</pattern>
-                  <shadedPattern>repackaged.org</shadedPattern>
-                  <includes>
-                    <include>org.apache.commons.cli.**</include>
-                  </includes>
+                  <pattern>autovalue</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.autovalue</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>avro.shaded</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.avro.shaded</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.fasterxml</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.com.fasterxml</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.github</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.com.github</shadedPattern>
+                  <!-- Need to exclude the zstd library from being repackaged because of https://github.com/luben/zstd-jni#limitations -->
+                  <excludes>
+                    <exclude>com.github.luben.zstd.**</exclude>
+                  </excludes>
+                </relocation>
+                <relocation>
+                  <pattern>com.google</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.com.google</shadedPattern>
+                  <excludes>
+                    <exclude>com.google.cloud.bigquery.connector.common.**</exclude>
+                    <exclude>com.google.cloud.dataproc.**</exclude>
+                  </excludes>
+                </relocation>
+                <relocation>
+                  <pattern>com.thoughtworks.paranamer</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.com.thoughtworks.paranamer
+                  </shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.typesafe</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.com.typesafe</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>io.grpc</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.io.grpc</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>io.netty</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.io.netty</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>io.opencensus</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.io.opencensus</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>io.perfmark</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.io.perfmark</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.arrow</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.apache.arrow</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.beam</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.apache.beam</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.commons</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.apache.commons</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.apache.http</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.apache.http</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.checkerframework</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.checkerframework
+                  </shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.codehaus.mojo</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.codehaus.mojo</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.json</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.json</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.json4s</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.json4s</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.threeten</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.threeten</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.tukaani.xz</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.tukaani.xz</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.xerial.snappy</pattern>
+                  <shadedPattern>com.google.cloud.dataproc.repackaged.org.xerial.snappy</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>META-INF/native/libio_grpc_netty_shaded_netty</pattern>
+                  <shadedPattern>META-INF/native/libcom_google_cloud_dataproc_repackaged_io_grpc_netty_shaded_io_grpc_netty
+                  </shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>META-INF/native/io_grpc_netty_shaded_netty</pattern>
+                  <shadedPattern>META-INF/native/com_google_cloud_dataproc_repackaged_io_grpc_netty_shaded_io_grpc_netty
+                  </shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
@@ -434,7 +716,7 @@
           </formats>
           <java>
             <googleJavaFormat>
-              <version>1.7</version>
+              <version>${google.java.format.version}</version>
               <style>GOOGLE</style>
             </googleJavaFormat>
             <licenseHeader>

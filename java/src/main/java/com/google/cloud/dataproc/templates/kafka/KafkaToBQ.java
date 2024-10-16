@@ -20,6 +20,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import java.util.concurrent.TimeoutException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -149,6 +150,22 @@ public class KafkaToBQ implements BaseTemplate {
         tempGcsBucket);
   }
 
+  /**
+   * TODO: Currently there is a bug
+   * (https://github.com/GoogleCloudDataproc/spark-bigquery-connector/issues/1209). Once it is fixed
+   * then we might have to change the logic.
+   *
+   * @param dataset
+   * @param streamOutputMode
+   * @param checkpointLocation
+   * @param projectId
+   * @param bigQueryDataset
+   * @param bigQueryTable
+   * @param tempGcsBucket
+   * @param kafkaAwaitTerminationTimeout
+   * @throws StreamingQueryException
+   * @throws TimeoutException
+   */
   public void writeToBigQuery(
       Dataset<Row> dataset,
       String streamOutputMode,
@@ -161,13 +178,22 @@ public class KafkaToBQ implements BaseTemplate {
       throws StreamingQueryException, TimeoutException {
     dataset
         .writeStream()
-        .format(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_FORMAT)
-        .outputMode(streamOutputMode)
-        .option(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_HEADER, true)
-        .option(KAFKA_BQ_SPARK_CONF_NAME_CHECKPOINT_LOCATION, checkpointLocation)
-        .option(
-            KAFKA_BQ_SPARK_CONF_NAME_TABLE, projectId + "." + bigQueryDataset + "." + bigQueryTable)
-        .option(KAFKA_BQ_SPARK_CONF_NAME_TEMP_GCS_BUCKET, tempGcsBucket)
+        .foreachBatch(
+            (VoidFunction2<Dataset<Row>, Long>)
+                (rowDataset, batchID) -> {
+                  LOGGER.info("Write To BigQuery Batch ID: {}", batchID);
+                  rowDataset
+                      .write()
+                      .mode(streamOutputMode)
+                      .format(KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_FORMAT)
+                      .option(KAFKA_BQ_SPARK_CONF_NAME_CHECKPOINT_LOCATION, checkpointLocation)
+                      .option(
+                          KAFKA_BQ_SPARK_CONF_NAME_TABLE,
+                          projectId + "." + bigQueryDataset + "." + bigQueryTable)
+                      .option(KAFKA_BQ_SPARK_CONF_NAME_TEMP_GCS_BUCKET, tempGcsBucket)
+                      .option("writeMethod", "direct")
+                      .save();
+                })
         .start()
         .awaitTermination(kafkaAwaitTerminationTimeout);
   }

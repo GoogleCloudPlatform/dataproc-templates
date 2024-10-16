@@ -126,12 +126,7 @@ public class JDBCToBigQuery implements BaseTemplate {
       inputData = spark.sql(tempQuery);
     }
 
-    inputData
-        .write()
-        .mode(bqWriteMode)
-        .format("com.google.cloud.spark.bigquery")
-        .option("table", bqLocation)
-        .save();
+    inputData.write().mode(bqWriteMode).format("bigquery").option("table", bqLocation).save();
   }
 
   public void validateInput() {

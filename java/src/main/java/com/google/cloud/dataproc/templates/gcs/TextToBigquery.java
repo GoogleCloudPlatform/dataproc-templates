@@ -23,6 +23,7 @@ import org.apache.spark.sql.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class TextToBigquery implements BaseTemplate {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(TextToBigquery.class);
