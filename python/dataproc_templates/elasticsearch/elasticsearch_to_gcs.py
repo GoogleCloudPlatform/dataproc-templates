@@ -53,13 +53,11 @@ class ElasticsearchToGCSTemplate(BaseTemplate):
         parser.add_argument(
             f'--{constants.ES_GCS_NODE_USER}',
             dest=constants.ES_GCS_NODE_USER,
-            required=True,
             help='Elasticsearch Node User'
         )
         parser.add_argument(
             f'--{constants.ES_GCS_NODE_PASSWORD}',
             dest=constants.ES_GCS_NODE_PASSWORD,
-            required=True,
             help='Elasticsearch Node Password'
         )
 
@@ -159,6 +157,10 @@ class ElasticsearchToGCSTemplate(BaseTemplate):
             if flatten_array:
                 # Flatten the n-D array fields to 1-D array fields
                 input_data = flatten_array_fields(input_data)
+
+        if not input_data.head(1):
+            logger.info("No records in dataframe, Skipping the GCS Load")
+            return
 
         # Write
         writer: DataFrameWriter = input_data.write.mode(output_mode)

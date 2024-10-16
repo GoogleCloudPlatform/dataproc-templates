@@ -52,13 +52,11 @@ class ElasticsearchToBQTemplate(BaseTemplate):
         parser.add_argument(
             f'--{constants.ES_BQ_NODE_USER}',
             dest=constants.ES_BQ_NODE_USER,
-            required=True,
             help='Elasticsearch Node User'
         )
         parser.add_argument(
             f'--{constants.ES_BQ_NODE_PASSWORD}',
             dest=constants.ES_BQ_NODE_PASSWORD,
-            required=True,
             help='Elasticsearch Node Password'
         )
 
@@ -150,6 +148,9 @@ class ElasticsearchToBQTemplate(BaseTemplate):
             spark, es_node, es_index, es_user, es_password, args, "es.bq.input."
         )
 
+        print(f"Before flatten")
+        input_data.printSchema()
+
         if flatten_struct:
             # Flatten the Struct Fields
             input_data = flatten_struct_fields(input_data)
@@ -157,6 +158,13 @@ class ElasticsearchToBQTemplate(BaseTemplate):
             if flatten_array:
                 # Flatten the n-D array fields to 1-D array fields
                 input_data = flatten_array_fields(input_data)
+
+        if not input_data.head(1):
+            logger.info("No records in dataframe, Skipping the BigQuery Load")
+            return
+
+        print(f"After flatten")
+        input_data.printSchema()
 
         # Write
         input_data.write \
