@@ -211,7 +211,7 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
                     }'''
     ```
 
-3) [Create and manage](https://cloud.google.com/bigtable/docs/managing-tables) your Bigtable table schema, column families, etc, to match the provided HBase catalog.
+3) [Create and manage](https://cloud.google.com/bigtable/docs/managing-tables) your Bigtable table schema, column families, etc, to match the provided Bigtable catalog.
 
 ## Required JAR files
 

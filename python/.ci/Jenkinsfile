@@ -156,35 +156,6 @@ pipeline {
         }
         stage('Parallel Execution 2'){
             parallel{
-                stage('TEXT TO BIGQUERY') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                            
-                                python3.8 -m pip install --user virtualenv    
-
-                                python3.8 -m venv env
-                                source env/bin/activate
-                                
-                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
-                                export SKIP_BUILD=true
-
-                                cd python
-                                
-                                ./bin/start.sh  -- \
-                                --template=TEXTTOBIGQUERY \
-                                --text.bigquery.input.compression="gzip" \
-                                --text.bigquery.input.delimiter="," \
-                                --text.bigquery.input.location="gs://python-dataproc-templates/text-bq-input/" \
-                                --text.bigquery.output.dataset="python_dataproc_templates" \
-                                --text.bigquery.output.table="python_text_bq_table" \
-                                --text.bigquery.output.mode=overwrite \
-                                --text.bigquery.temp.bucket.name="python-dataproc-templates-temp-bq"
-                            '''
-                        }
-                    }
-                }
                 stage('JDBC To JDBC') {
                     steps{
                         retry(count: stageRetryCount) {
