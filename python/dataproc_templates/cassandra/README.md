@@ -52,7 +52,7 @@ wget https://repo1.maven.org/maven2/com/github/jnr/jnr-posix/3.1.8/jnr-posix-3.1
 Jar files named `spark-cassandra-connector-assembly_2.12-3.2.0.jar` and `jnr-posix-3.1.8.jar` would be downloaded, this can be passed to provide spark drivers and workers with cassandra connector class and its dependencies.
 ```
 export GCP_PROJECT=<project_id>
-export JARS="gs://path/to/jar/spark-cassandra-connector_2.12-3.2.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar,gs://path/to/jnr-posix-3.1.8.jar" # Pass the downloaded jar path and bigquery connector jar
+export JARS="gs://path/to/jar/spark-cassandra-connector_2.12-3.2.0.jar,gs://path/to/jnr-posix-3.1.8.jar" # Pass the downloaded jar path
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
 export REGION=<region>
 
@@ -72,7 +72,7 @@ export GCP_PROJECT=my-project
 export REGION=us-central1
 export GCS_STAGING_LOCATION=gs://staging_bucket
 export SUBNET=projects/my-project/regions/us-central1/subnetworks/default
-export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar,gs://jar-bucket/jnr-posix-3.1.8.jar"
+export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://jar-bucket/jnr-posix-3.1.8.jar"
 
 
     ./bin/start.sh \
@@ -220,7 +220,7 @@ wget https://repo1.maven.org/maven2/com/github/jnr/jnr-posix/3.1.8/jnr-posix-3.1
 Jar files named `spark-cassandra-connector-assembly_2.12-3.2.0.jar` and `jnr-posix-3.1.8.jar` would be downloaded, this can be passed to provide spark drivers and workers with cassandra connector class and its dependencies.
 ```
 export GCP_PROJECT=<project_id>
-export JARS="gs://path/to/jar/spark-cassandra-connector_2.12-3.2.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar,gs://path/to/jnr-posix-3.1.8.jar" # Pass the downloaded jar path and bigquery connector jar
+export JARS="gs://path/to/jar/spark-cassandra-connector_2.12-3.2.0.jar,gs://path/to/jnr-posix-3.1.8.jar" # Pass the downloaded jar path
 export REGION=<region>
 
 ./bin/start.sh \
@@ -249,7 +249,7 @@ After downloading the jar, a sample submission -:
 export GCP_PROJECT=my-project
 export REGION=us-central1
 export SUBNET=projects/my-project/regions/us-central1/subnetworks/default
-export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar,gs://jar-bucket/jnr-posix-3.1.8.jar"
+export JARS="gs://jar-bucket/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://jar-bucket/jnr-posix-3.1.8.jar"
 
 
     ./bin/start.sh \

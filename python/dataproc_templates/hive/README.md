@@ -42,18 +42,12 @@ optional arguments:
   --hive.bigquery.output.mode {overwrite,append,ignore,errorifexists}
                         Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to overwrite)
 ```
-
-## Required JAR files
-
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
-
 ## Example submission
 
 ```
 export GCP_PROJECT=my-project
 export REGION=us-central1
 export GCS_STAGING_LOCATION="gs://my-bucket"
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 
 ./bin/start.sh \

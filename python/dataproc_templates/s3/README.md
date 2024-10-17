@@ -35,17 +35,12 @@ optional arguments:
                         Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
 ```
 
-## Required JAR files
-
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
-
 ## General execution
 
 ```bash
 export GCP_PROJECT=<project-id>
 export REGION=<region>
-export GCS_STAGING_LOCATION=<gcs-bucket-name> 
-export JARS=gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar 
+export GCS_STAGING_LOCATION=<gcs-bucket-name>
 
 ./bin/start.sh \
 -- --template=S3TOBIGQUERY \

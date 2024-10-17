@@ -1,4 +1,4 @@
-# Pub/Sub Lite to Cloud Storage
+# Pub/Sub Lite to Cloud Storage (Deprecated and will be removed in Q1 2025)
 
 Template for reading files from Pub/Sub Lite and writing them to Google Cloud Storage.
 
@@ -142,7 +142,7 @@ export REGION=us-central1
     --pubsublite.to.gcs.processing.time="1 second"
 ```
 
-# Pub/Sub Lite to Bigtable
+# Pub/Sub Lite to Bigtable (Deprecated and will be removed in Q1 2025)
 
 Template for reading data from Pub/Sub Lite and writing it to Bigtable.
 

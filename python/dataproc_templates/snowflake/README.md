@@ -143,7 +143,7 @@ optional arguments:
 1. Snowflake Connector for Spark : [Maven Repo Download Link](https://mvnrepository.com/artifact/net.snowflake/spark-snowflake)
 2. Snowflake JDBC Driver : [Maven Repo Download Link](https://mvnrepository.com/artifact/net.snowflake/snowflake-jdbc) Please ensure that jdbc driver version is compatible with the snowflake-spark connector version.
 
-Download the above mentioned jars and place them in a Cloud Storage bucket.
+Download the above mentioned jars for appropriate spark version and place them in a Cloud Storage bucket.
 
 ### Example submission
 ```
@@ -152,17 +152,17 @@ export REGION="us-central1"
 export SUBNET="projects/sample-project/regions/europe-west2/subnetworks/test-subnet"
 export GCS_STAGING_LOCATION="gs://test-bucket"
 export JARS="gs://test_bucket/spark-snowflake_2.12-2.10.0-spark_3.1.jar,gs://test_bucket/dependencies/snowflake-jdbc-3.13.14.jar"
-bin/start.sh \
--- \
---template=SNOWFLAKETOGCS \
---snowflake.to.gcs.sf.url="https://yqnnxfk.snowflakecomputing.com" \
---snowflake.to.gcs.sf.user="test" \
---snowflake.to.gcs.sf.password="pwd1234" \
---snowflake.to.gcs.sf.database="SNOWFLAKE_SAMPLE_DATA" \
---snowflake.to.gcs.sf.schema="TPCDS_SF100TCL" \
---snowflake.to.gcs.sf.table="CALL_CENTER" \
---snowflake.to.gcs.sf.autopushdown="off" \
---snowflake.to.gcs.output.location="gs://test-bucket/snowflake" \
---snowflake.to.gcs.output.format="avro" \
---snowflake.to.gcs.partition.column="CC_CALL_CENTER_SK"
+
+./bin/start.sh \
+    -- --template=SNOWFLAKETOGCS \
+        --snowflake.to.gcs.sf.url="https://yqnnxfk.snowflakecomputing.com" \
+        --snowflake.to.gcs.sf.user="test" \
+        --snowflake.to.gcs.sf.password="pwd1234" \
+        --snowflake.to.gcs.sf.database="SNOWFLAKE_SAMPLE_DATA" \
+        --snowflake.to.gcs.sf.schema="TPCDS_SF100TCL" \
+        --snowflake.to.gcs.sf.table="CALL_CENTER" \
+        --snowflake.to.gcs.sf.autopushdown="off" \
+        --snowflake.to.gcs.output.location="gs://test-bucket/snowflake" \
+        --snowflake.to.gcs.output.format="avro" \
+        --snowflake.to.gcs.partition.column="CC_CALL_CENTER_SK"
 ```

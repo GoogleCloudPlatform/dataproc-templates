@@ -1,4 +1,4 @@
-# Redshift To Cloud Storage
+# Redshift To Cloud Storage (Deprecated and will be removed in Q1 2025)
 
 Template for reading data from Redshift table and writing into files in Google Cloud Storage. It supports reading partition tables and supports writing in JSON, CSV, Parquet and Avro formats.
 
