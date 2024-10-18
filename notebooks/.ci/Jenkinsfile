@@ -11,7 +11,7 @@ pipeline {
 
 
         GIT_BRANCH_LOCAL = sh (
-            script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|860-integration-tests-notebook|'",  // Remove "origin/" and set the default branch to main
+            script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
             returnStdout: true
         ).trim()
     }
@@ -87,6 +87,7 @@ pipeline {
                                                         --mysql.database="${DB_NAME}" \
                                                         --mysql.table.list="employee" \
                                                         --mysql.read.partition.columns="{}" \
+                                                        --use.cloud.sql.proxy="true" \
                                                         --spanner.instance="dataproc-spark-test" \
                                                         --spanner.database="spark-ci-db" \
                                                         --spanner.table.primary.keys="{\\"employee\\":\\"empno\\"}"

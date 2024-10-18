@@ -71,7 +71,6 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             required=True,
             help="MySQL database name",
         )
-
         parser.add_argument(
             f"--{constants.MYSQL_TABLE_LIST_ARG}",
             dest=constants.MYSQL_TABLE_LIST,
@@ -89,6 +88,14 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             help="Spanner output write mode (Default: overwrite). "
             "Use append when schema already exists in Spanner",
             choices=[constants.OUTPUT_MODE_OVERWRITE, constants.OUTPUT_MODE_APPEND],
+        )
+
+        parser.add_argument(
+            f"--{constants.USE_CLOUD_SQL_PROXY_ARG}",
+            dest=constants.USE_CLOUD_SQL_PROXY,
+            default="false",
+            required=False,
+            help="Flag to reach mysql instance using cloud sql proxy"
         )
 
         parser.add_argument(
