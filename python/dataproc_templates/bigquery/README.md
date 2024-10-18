@@ -105,16 +105,10 @@ options:
   --bigquery.gcs.output.timestampntzformat BIGQUERY.GCS.OUTPUT.TIMESTAMPNTZFORMAT
                         Sets the string that indicates a timestamp without timezone format
 ```
-
-## Required JAR files
-
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
-
 ## Example submission
 
 ```
 export GCP_PROJECT=my-project
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 export GCS_STAGING_LOCATION="gs://my-bucket"
 export REGION=us-central1
 
