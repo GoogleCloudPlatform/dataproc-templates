@@ -75,7 +75,7 @@ bin/start.sh \
 --templateProperty bigquery.jdbc.url='jdbc:mysql://IPAddress:portNumber/databaseName?user=user_id&password=PASSWORD' \
 --templateProperty bigquery.jdbc.batch.size=100 \
 --templateProperty bigquery.jdbc.output.driver='com.mysql.jdbc.Driver' \
---templateProperty bigquery.jdbc.output.mode=Append
+--templateProperty bigquery.jdbc.output.mode=Overwrite
 ```
 
 There are two optional properties as well with "BigQuery to JDBC" Template. Please find below the details :-
