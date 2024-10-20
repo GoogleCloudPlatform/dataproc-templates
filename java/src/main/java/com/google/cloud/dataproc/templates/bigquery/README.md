@@ -77,3 +77,9 @@ bin/start.sh \
 --templateProperty bigquery.jdbc.output.driver='com.mysql.jdbc.Driver' \
 --templateProperty bigquery.jdbc.output.mode=Append
 ```
+
+There are two optional properties as well with "BigQuery to JDBC" Template. Please find below the details :-
+```
+--templateProperty bigquery.jdbc.temp.table='temporary_view_name'
+--templateProperty bigquery.jdbc.temp.query='select * from global_temp.temporary_view_name'
+```

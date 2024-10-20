@@ -336,6 +336,8 @@ public interface TemplateConstants {
   String BQ_JDBC_OUTPUT_BATCH_SIZE = "bigquery.jdbc.batch.size";
   String BQ_JDBC_OUTPUT_DRIVER = "bigquery.jdbc.output.driver";
   String BQ_JDBC_OUTPUT_MODE = "bigquery.jdbc.output.mode";
+  String BQ_JDBC_TEMP_TABLE = "bigquery.jdbc.temp.table";
+  String BQ_JDBC_TEMP_QUERY = "bigquery.jdbc.temp.query";
 
   /** RedShift to GCS properties */
   String REDSHIFT_AWS_INPUT_URL = "redshift.aws.input.url";

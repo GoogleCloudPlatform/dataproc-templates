@@ -36,6 +36,8 @@ public class BigQueryToJDBC implements BaseTemplate {
   private final String outputBatchSize;
   private final String outputJDBCDriver;
   private final String outputSaveMode;
+  private final String tempTable;
+  private final String tempQuery;
   private final String sparkLogLevel;
 
   public BigQueryToJDBC() {
@@ -45,6 +47,8 @@ public class BigQueryToJDBC implements BaseTemplate {
     outputJDBCDriver = getProperties().getProperty(BQ_JDBC_OUTPUT_DRIVER);
     outputTableName = getProperties().getProperty(BQ_JDBC_OUTPUT_TABLE_NAME);
     outputSaveMode = getProperties().getProperty(BQ_JDBC_OUTPUT_MODE);
+    tempTable = getProperties().getProperty(BQ_JDBC_TEMP_TABLE);
+    tempQuery = getProperties().getProperty(BQ_JDBC_TEMP_QUERY);
     sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
   }
 
@@ -57,6 +61,10 @@ public class BigQueryToJDBC implements BaseTemplate {
     spark.sparkContext().setLogLevel(sparkLogLevel);
 
     Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
+    if (StringUtils.isNotBlank(tempTable) && StringUtils.isNotBlank(tempQuery)) {
+      inputData.createOrReplaceGlobalTempView(tempTable);
+      inputData = spark.sql(tempQuery);
+    }
     write(inputData);
   }
 
