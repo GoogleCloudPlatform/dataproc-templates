@@ -664,10 +664,6 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 
 Template for reading data from JDBC table and writing into files in Google Cloud BigQuery. It supports reading partition tables.
 
-## Required JAR files
-
-This template requires the JBDC jar files mentioned, and also the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
-
 ## Arguments
 
 * `jdbc.bigquery.input.url`: JDBC input URL
@@ -753,7 +749,7 @@ export GCP_PROJECT=<gcp-project-id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs staging location>
 export SUBNET=<subnet>
-export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar,<gcs_path_to_jdbc_jar_files>/spark-bigquery-latest_2.12.jar"
+export JARS="<gcs_path_to_jdbc_jar_files>/mysql-connector-java-8.0.29.jar"
 
 
 ./bin/start.sh \
@@ -786,7 +782,7 @@ export GCP_PROJECT=my-gcp-proj
 export REGION=us-central1
 export GCS_STAGING_LOCATION=gs://my-gcp-proj/staging
 export SUBNET=projects/my-gcp-proj/regions/us-central1/subnetworks/default
-export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar,gs://my-gcp-proj/jars/spark-bigquery-latest_2.12.jar"
+export JARS="gs://my-gcp-proj/jars/mysql-connector-java-8.0.29.jar"
 ```
 
 * MySQL to BigQuery
