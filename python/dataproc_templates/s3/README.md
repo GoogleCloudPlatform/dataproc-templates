@@ -2,8 +2,6 @@
 
 Template for reading files from Amazon S3 and writing them to a BigQuery table. It supports reading JSON, CSV, Parquet and Avro formats.
 
-It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for writing to BigQuery.
-
 ## Arguments
 
 * `s3.bq.input.location` : Amazon S3 input location. Input location must begin with `s3a://`
@@ -60,7 +58,6 @@ export GCS_STAGING_LOCATION=<gcs-bucket-name>
 export GCP_PROJECT=my-project
 export REGION=us-west1
 export GCS_STAGING_LOCATION=my-staging-bucket 
-export JARS=gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar 
 
 ./bin/start.sh \
 -- --template=S3TOBIGQUERY \

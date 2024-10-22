@@ -595,7 +595,7 @@ pipeline {
                                         --s3.bq.output.dataset.name="dataproc_templates" \
                                         --s3.bq.output.table.name="s3_to_bq_avro_py" \
                                         --s3.bq.output.mode="overwrite" \
-                                        --s3.bq.temp.bucket.name="${GCS_STAGING_LOCATION}"
+                                        --s3.bq.temp.bucket.name="python-dataproc-templates-temp"
                             '''
                             }
                         }
