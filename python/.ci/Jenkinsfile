@@ -605,85 +605,85 @@ pipeline {
         }
         stage('Parallel Execution 7'){
             parallel{
-                stage('Hbase TO GCS (Manual)') {    
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                python3.8 -m pip install --user virtualenv    
+                // stage('Hbase TO GCS (Manual)') {    
+                //     when {
+                //         // Run this stage only if JOB_TYPE is not set to CLUSTER
+                //         expression { env.JOB_TYPE != "CLUSTER" }
+                //     }
+                //     steps{
+                //         retry(count: stageRetryCount) {
+                //             sh '''
+                //                 python3.8 -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
-                                source env/bin/activate
+                //                 python3.8 -m venv env
+                //                 source env/bin/activate
                                 
-                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
-                                export SKIP_BUILD=true
+                //                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                //                 export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+                //                 export SKIP_BUILD=true
                                 
-                                cd python
+                //                 cd python
                                 
-                                ./bin/start.sh \
-                                    --container-image="gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.2" \
-                                    --properties="spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/" \
-                                    -- --template=HBASETOGCS \
-                                    --hbase.gcs.output.location="gs://python-dataproc-templates/hbase-gcs-output" \
-                                    --hbase.gcs.output.format="csv" \
-                                    --hbase.gcs.output.mode="overwrite" \
-                                    --hbase.gcs.catalog.json=\'\'\'{
-                                            "table":{"namespace":"default","name":"my_table"},
-                                            "rowkey":"key",
-                                            "columns":{
-                                            "key":{"cf":"rowkey", "col":"key", "type":"string"},
-                                            "name":{"cf":"cf", "col":"name", "type":"string"}
-                                            }
-                                            }\'\'\'
-                            '''
-                        }
-                    }
-                }
+                //                 ./bin/start.sh \
+                //                     --container-image="gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.2" \
+                //                     --properties="spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/" \
+                //                     -- --template=HBASETOGCS \
+                //                     --hbase.gcs.output.location="gs://python-dataproc-templates/hbase-gcs-output" \
+                //                     --hbase.gcs.output.format="csv" \
+                //                     --hbase.gcs.output.mode="overwrite" \
+                //                     --hbase.gcs.catalog.json=\'\'\'{
+                //                             "table":{"namespace":"default","name":"my_table"},
+                //                             "rowkey":"key",
+                //                             "columns":{
+                //                             "key":{"cf":"rowkey", "col":"key", "type":"string"},
+                //                             "name":{"cf":"cf", "col":"name", "type":"string"}
+                //                             }
+                //                             }\'\'\'
+                //             '''
+                //         }
+                //     }
+                // }
                     
-                stage('Hbase TO GCS (Automated)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                whoami
-                                sudo su
+                // stage('Hbase TO GCS (Automated)') {
+                //     when {
+                //         // Run this stage only if JOB_TYPE is not set to CLUSTER
+                //         expression { env.JOB_TYPE != "CLUSTER" }
+                //     }
+                //     steps{
+                //         retry(count: stageRetryCount) {
+                //             sh '''
+                //                 whoami
+                //                 sudo su
 
-                                python3.8 -m pip install --user virtualenv    
+                //                 python3.8 -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                //                 python3.8 -m venv env
 
-                                source env/bin/activate
+                //                 source env/bin/activate
 
-                                gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
+                //                 gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
                                 
-                                export GCS_STAGING_LOCATION=gs://python-dataproc-templates-temp
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.2
-                                export HBASE_SITE_PATH=../hbase-site.xml
-                                export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
-                                export SKIP_IMAGE_BUILD=TRUE
+                //                 export GCS_STAGING_LOCATION=gs://python-dataproc-templates-temp
+                //                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                //                 export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.2
+                //                 export HBASE_SITE_PATH=../hbase-site.xml
+                //                 export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
+                //                 export SKIP_IMAGE_BUILD=TRUE
 
-                                cd python
+                //                 cd python
 
-                                ./bin/start.sh \
-                                    --container-image=$IMAGE \
-                                    --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
-                                    -- --template=HBASETOGCS \
-                                    --hbase.gcs.output.location=gs://python-dataproc-templates/hbase-gcs-output \
-                                    --hbase.gcs.output.format=csv \
-                                    --hbase.gcs.output.mode=overwrite \
-                                    --hbase.gcs.catalog.json=$CATALOG
-                            '''
-                        }
-                    }
-                }
+                //                 ./bin/start.sh \
+                //                     --container-image=$IMAGE \
+                //                     --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
+                //                     -- --template=HBASETOGCS \
+                //                     --hbase.gcs.output.location=gs://python-dataproc-templates/hbase-gcs-output \
+                //                     --hbase.gcs.output.format=csv \
+                //                     --hbase.gcs.output.mode=overwrite \
+                //                     --hbase.gcs.catalog.json=$CATALOG
+                //             '''
+                //         }
+                //     }
+                // }
                 stage('GCS TO Bigtable') {
                     steps{
                         retry(count: stageRetryCount) {
