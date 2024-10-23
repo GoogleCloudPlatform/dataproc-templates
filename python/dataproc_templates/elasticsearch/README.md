@@ -663,8 +663,8 @@ It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.ht
 - `es.bt.input.index`: Elasticsearch Input Index Name (format: <index>/<type>)
 - `es.bt.input.user`: Elasticsearch Username
 - `es.bt.input.password`: Elasticsearch Password
-- `es.bt.project.id`: GCP project where BigTable instance is running
-- `es.bt.instance.id`: BigTable instance id
+- `spark.bigtable.project.id`: GCP project where BigTable instance is running
+- `spark.bigtable.instance.id`: BigTable instance id
 - `es.bt.catalog.json`: BigTable catalog inline json
 #### Optional Arguments
 - `es.bt.input.es.nodes.path.prefix`: Prefix to add to all requests made to Elasticsearch
@@ -714,8 +714,8 @@ It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.ht
 - `es.bt.input.es.net.proxy.socks.use.system.props`: Whether use the system Socks proxy properties (namely socksProxyHost and socksProxyHost) or not (default yes)
 - `es.bt.flatten.struct.fields`: Flatten the struct fields
 - `es.bt.flatten.array.fields`: Flatten the n-D array fields to 1-D array fields, it needs es.bt.flatten.struct.fields option to be passed
-- `es.bt.create.new.table`: Set True if you want to create a BigTable table from catalog. Default value is False means table must be present.
-- `es.bt.batch.mutate.size`: BigTable batch mutation size. Maximum allowed value is `100000`. Default is `100`. Rererence [documentation](https://github.com/GoogleCloudDataproc/spark-bigtable-connector/blob/main/spark-bigtable_2.12/src/main/scala/com/google/cloud/spark/bigtable/datasources/BigtableSparkConf.scala#L86)
+- `spark.bigtable.create.new.table`: Set True if you want to create a BigTable table from catalog. Default value is False means table must be present.
+- `spark.bigtable.batch.mutate.size`: BigTable batch mutation size. Maximum allowed value is `100000`. Default is `100`. Rererence [documentation](https://github.com/GoogleCloudDataproc/spark-bigtable-connector/blob/main/spark-bigtable_2.12/src/main/scala/com/google/cloud/spark/bigtable/datasources/BigtableSparkConf.scala#L86)
 
 ## Usage
 
@@ -727,8 +727,8 @@ usage: main.py [-h]
                --es.bt.input.index ES.BT.INPUT.INDEX
                --es.bt.input.user ES.BT.INPUT.USER
                --es.bt.input.password ES.BT.INPUT.PASSWORD
-               --es.bt.project.id ES.BT.PROJECT.ID
-               --es.bt.instance.id ES.BT.INSTANCE.ID
+               --spark.bigtable.project.id ES.BT.PROJECT.ID
+               --spark.bigtable.instance.id ES.BT.INSTANCE.ID
                --es.bt.catalog.json ES.BT.CATALOG.JSON
                [--es.bt.input.es.nodes.path.prefix ES.BT.INPUT.ES.NODES.PATH.PREFIX]
                [--es.bt.input.es.query ES.BT.INPUT.ES.QUERY]
@@ -777,8 +777,8 @@ usage: main.py [-h]
                [--es.bt.input.es.net.proxy.socks.use.system.props ES.BT.INPUT.ES.NET.PROXY.SOCKS.USE.SYSTEM.PROPS]
                [--es.bt.flatten.struct.fields]
                [--es.bt.flatten.array.fields]
-               [--es.bt.create.new.table ES.BT.CREATE.NEW.TABLE]
-               [--es.bt.batch.mutate.size ES.BT.BATCH.MUTATE.SIZE]
+               [--spark.bigtable.create.new.table ES.BT.CREATE.NEW.TABLE]
+               [--spark.bigtable.batch.mutate.size ES.BT.BATCH.MUTATE.SIZE]
                
 
 options:
@@ -885,9 +885,9 @@ options:
                         Flatten the struct fields
   --es.bt.flatten.array.fields
                         Flatten the n-D array fields to 1-D array fields, it needs es.bt.flatten.struct.fields option to be passed
-  --es.bt.project.id ES.BT.PROJECT.ID
+  --spark.bigtable.project.id ES.BT.PROJECT.ID
                         GCP project id where BigTable instance is running
-  --es.bt.instance.id ES.BT.INSTANCE.ID
+  --spark.bigtable.instance.id ES.BT.INSTANCE.ID
                         BigTable instance id
   --es.bt.catalog.json ES.BT.CATALOG.JSON
                         BigTable catalog inline json
@@ -908,8 +908,8 @@ export SPARK_PROPERTIES="spark.jars.packages=org.slf4j:slf4j-reload4j:1.7.36"
    --es.bt.input.index="demo" \
    --es.bt.input.user="demo" \
    --es.bt.input.password="demo" \
-   --es.bt.project.id="demo-project" \
-   --es.bt.instance.id="bt-instance-id" \
+   --spark.bigtable.project.id="demo-project" \
+   --spark.bigtable.instance.id="bt-instance-id" \
    --es.bt.catalog.json='''{
                         "table":{"name":"my_table"},
                         "rowkey":"key",
