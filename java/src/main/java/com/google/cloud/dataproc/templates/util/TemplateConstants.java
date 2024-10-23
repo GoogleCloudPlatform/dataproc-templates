@@ -328,15 +328,6 @@ public interface TemplateConstants {
   String BQ_GCS_OUTPUT_LOCATION = "bigquery.gcs.output.location";
   String BQ_GCS_OUTPUT_MODE = "bigquery.gcs.output.mode";
 
-  /** Bigquery to JDBC properties */
-  String BQ_JDBC_INPUT_TABLE_NAME = "bigquery.jdbc.input.table";
-
-  String BQ_JDBC_OUTPUT_TABLE_NAME = "bigquery.jdbc.output.table";
-  String BQ_JDBC_OUTPUT_URL = "bigquery.jdbc.url";
-  String BQ_JDBC_OUTPUT_BATCH_SIZE = "bigquery.jdbc.batch.size";
-  String BQ_JDBC_OUTPUT_DRIVER = "bigquery.jdbc.output.driver";
-  String BQ_JDBC_OUTPUT_MODE = "bigquery.jdbc.output.mode";
-
   /** RedShift to GCS properties */
   String REDSHIFT_AWS_INPUT_URL = "redshift.aws.input.url";
 

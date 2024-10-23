@@ -99,7 +99,7 @@ public class DataProcTemplate {
           .put(TemplateName.KAFKATOBQ, (args) -> new KafkaToBQ())
           .put(TemplateName.KAFKATOGCS, (args) -> new KafkaToGCS())
           .put(TemplateName.GCSTOJDBC, GCSToJDBC::of)
-          .put(TemplateName.BIGQUERYTOJDBC, (args) -> new BigQueryToJDBC())
+          .put(TemplateName.BIGQUERYTOJDBC, BigQueryToJDBC::of)
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)

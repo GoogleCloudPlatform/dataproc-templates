@@ -18,7 +18,8 @@ package com.google.cloud.dataproc.templates.bigquery;
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import org.apache.commons.lang3.StringUtils;
+import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -30,23 +31,17 @@ import org.slf4j.LoggerFactory;
 public class BigQueryToJDBC implements BaseTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(BigQueryToJDBC.class);
+  private final BigQueryToJDBCConfig config;
 
-  private final String inputTableName;
-  private final String outputTableName;
-  private final String outputJDBCURL;
-  private final String outputBatchSize;
-  private final String outputJDBCDriver;
-  private final String outputSaveMode;
-  private final String sparkLogLevel;
+  public BigQueryToJDBC(BigQueryToJDBCConfig config) {
+    this.config = config;
+  }
 
-  public BigQueryToJDBC() {
-    inputTableName = getProperties().getProperty(BQ_JDBC_INPUT_TABLE_NAME);
-    outputJDBCURL = getProperties().getProperty(BQ_JDBC_OUTPUT_URL);
-    outputBatchSize = getProperties().getProperty(BQ_JDBC_OUTPUT_BATCH_SIZE);
-    outputJDBCDriver = getProperties().getProperty(BQ_JDBC_OUTPUT_DRIVER);
-    outputTableName = getProperties().getProperty(BQ_JDBC_OUTPUT_TABLE_NAME);
-    outputSaveMode = getProperties().getProperty(BQ_JDBC_OUTPUT_MODE);
-    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
+  public static BigQueryToJDBC of(String... args) {
+    BigQueryToJDBCConfig config = BigQueryToJDBCConfig.fromProperties(PropertyUtil.getProperties());
+    ValidationUtil.validateOrThrow(config);
+    LOGGER.info("Config loaded\n{}", config);
+    return new BigQueryToJDBC(config);
   }
 
   @Override
@@ -63,9 +58,10 @@ public class BigQueryToJDBC implements BaseTemplate {
     SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
 
     // Set Spark properties for performance optimization
-    spark.sparkContext().setLogLevel(sparkLogLevel);
+    spark.sparkContext().setLogLevel(config.getSparklogLevel());
 
-    Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
+    Dataset<Row> inputData =
+        spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(config.getInputTableName());
     write(inputData);
   }
 
@@ -73,29 +69,13 @@ public class BigQueryToJDBC implements BaseTemplate {
     dataset
         .write()
         .format("jdbc")
-        .option(JDBCOptions.JDBC_URL(), outputJDBCURL)
-        .option(JDBCOptions.JDBC_TABLE_NAME(), outputTableName)
-        .option(JDBCOptions.JDBC_BATCH_INSERT_SIZE(), outputBatchSize)
-        .option(JDBCOptions.JDBC_DRIVER_CLASS(), outputJDBCDriver)
-        .mode(outputSaveMode)
+        .option(JDBCOptions.JDBC_URL(), config.getOutputJDBCURL())
+        .option(JDBCOptions.JDBC_TABLE_NAME(), config.getOutputTableName())
+        .option(JDBCOptions.JDBC_BATCH_INSERT_SIZE(), config.getOutputBatchSize())
+        .option(JDBCOptions.JDBC_DRIVER_CLASS(), config.getOutputJDBCDriver())
+        .mode(config.getOutputSaveMode())
         .save();
   }
 
-  public void validateInput() {
-    if (StringUtils.isAllBlank(inputTableName)
-        || StringUtils.isAllBlank(outputJDBCURL)
-        || StringUtils.isAllBlank(outputJDBCDriver)
-        || StringUtils.isAllBlank(outputTableName)) {
-      LOGGER.error(
-          "{},{},{},{} are required parameter. ",
-          BQ_JDBC_INPUT_TABLE_NAME,
-          BQ_JDBC_OUTPUT_URL,
-          BQ_JDBC_OUTPUT_DRIVER,
-          BQ_JDBC_OUTPUT_TABLE_NAME);
-      throw new IllegalArgumentException(
-          "Required parameters for BigQueryToJDBC not passed. "
-              + "Set mandatory parameter for BigQueryToJDBC template "
-              + "in resources/conf/template.properties file.");
-    }
-  }
+  public void validateInput() {}
 }
