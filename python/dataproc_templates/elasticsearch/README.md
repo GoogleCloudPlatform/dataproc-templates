@@ -616,7 +616,7 @@ Template for exporting an Elasticsearch Index to a BigTable table.
 
 It uses the Spark BigTable Connector to write to Bigtable.
 
-Here in this template, you will notice that there are different configuration steps for the PySpark job to successfully run using Dataproc Serverless, connecting to Bigtable using connector.
+Here in this template, you will notice that there are different configuration steps for the PySpark job to successfully run using Dataproc Serverless, connecting to Bigtable using Bigtable connector.
 
 You can also check out the [differences between HBase and Cloud Bigtable](https://cloud.google.com/bigtable/docs/hbase-differences).
 
