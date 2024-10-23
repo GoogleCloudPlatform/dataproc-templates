@@ -35,16 +35,16 @@ class TestElasticsearchToBigTableTemplate:
              "--es.bt.input.index=demo",
              "--es.bt.input.user=demo",
              "--es.bt.input.password=demo",
-             "--es.bt.project.id=GCP_PROJECT",
-             "--es.bt.instance.id=BIGTABLE_INSTANCE_ID",
+             "--spark.bigtable.project.id=GCP_PROJECT",
+             "--spark.bigtable.instance.id=BIGTABLE_INSTANCE_ID",
              "--es.bt.catalog.json={key:value}"])
 
         assert parsed_args["es.bt.input.node"] == "xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243"
         assert parsed_args["es.bt.input.index"] == "demo"
         assert parsed_args["es.bt.input.user"] == "demo"
         assert parsed_args["es.bt.input.password"] == "demo"
-        assert parsed_args["es.bt.project.id"] == "GCP_PROJECT"
-        assert parsed_args["es.bt.instance.id"] == "BIGTABLE_INSTANCE_ID"
+        assert parsed_args["spark.bigtable.project.id"] == "GCP_PROJECT"
+        assert parsed_args["spark.bigtable.instance.id"] == "BIGTABLE_INSTANCE_ID"
         assert parsed_args["es.bt.catalog.json"] == '{key:value}'
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
@@ -58,8 +58,8 @@ class TestElasticsearchToBigTableTemplate:
              "--es.bt.input.index=demo",
              "--es.bt.input.user=demo",
              "--es.bt.input.password=demo",
-              "--es.bt.project.id=GCP_PROJECT",
-             "--es.bt.instance.id=BIGTABLE_INSTANCE_ID",
+             "--spark.bigtable.project.id=GCP_PROJECT",
+             "--spark.bigtable.instance.id=BIGTABLE_INSTANCE_ID",
              "--es.bt.catalog.json={key:value}"])
 
         mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
