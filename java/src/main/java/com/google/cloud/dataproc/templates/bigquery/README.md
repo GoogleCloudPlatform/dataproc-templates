@@ -66,6 +66,18 @@ export REGION=us-central1
 export SUBNET=projects/myproject/regions/us-central1/subnetworks/default
 export GCS_STAGING_LOCATION=gs://staging
 
+Example 1 :-
+
+bin/start.sh \
+-- --template BIGQUERYTOJDBC \
+--templateProperty project.id=myproject \
+--templateProperty bigquery.jdbc.input.table=myproject:myDataset.empTable \
+--templateProperty bigquery.jdbc.output.table=targetTable \
+--templateProperty bigquery.jdbc.url='jdbc:mysql://IPAddress:portNumber/databaseName?user=user_id&password=PASSWORD' \
+--templateProperty bigquery.jdbc.output.driver='com.mysql.jdbc.Driver' \
+--templateProperty bigquery.jdbc.output.mode=Append 
+
+Example 2 :-
 
 bin/start.sh \
 -- --template BIGQUERYTOJDBC \
@@ -75,5 +87,7 @@ bin/start.sh \
 --templateProperty bigquery.jdbc.url='jdbc:mysql://IPAddress:portNumber/databaseName?user=user_id&password=PASSWORD' \
 --templateProperty bigquery.jdbc.batch.size=100 \
 --templateProperty bigquery.jdbc.output.driver='com.mysql.jdbc.Driver' \
---templateProperty bigquery.jdbc.output.mode=Append
+--templateProperty bigquery.jdbc.output.mode=Append \
+--templateProperty bigquery.jdbc.temp.table='temporary_view_name' \
+--templateProperty bigquery.jdbc.temp.query='select * from global_temp.temporary_view_name where id>=5'
 ```
