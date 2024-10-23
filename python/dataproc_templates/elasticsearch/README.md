@@ -595,7 +595,7 @@ options:
 
 ```
 export GCP_PROJECT=my-project
-export JARS="gs://spark-lib/elasticsearch/elasticsearch-spark-30_2.12-8.11.4.jar,gs://spark-lib/bigquery/spark-3.3-bigquery-0.39.0.jar"
+export JARS="gs://spark-lib/elasticsearch/elasticsearch-spark-30_2.12-8.11.4.jar"
 export REGION=us-central1
 export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 

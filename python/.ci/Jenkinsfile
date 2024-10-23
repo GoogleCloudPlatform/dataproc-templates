@@ -67,45 +67,6 @@ pipeline {
                     }
             }
         }
-        stage('Parallel Execution 0'){
-            parallel{
-                stage('Elasticsearch to GCS'){
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                python3.8 -m pip install --user virtualenv    
-
-                                python3.8 -m venv env
-
-                                source env/bin/activate
-
-                                gsutil cp gs://dataproc-templates/conf/elastic.jks /tmp/
-                                
-                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export SKIP_BUILD=true
-                                export JARS="gs://dataproc-templates/jars/elasticsearch-spark-20_2.12-8.15.3.jar"
-                                export FILES="/tmp/elastic.jks"
-
-                                cd python
-                                
-                                ./bin/start.sh \
-                                    --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit' \
-                                    -- --template=ELASTICSEARCHTOGCS \
-                                    --es.gcs.input.node=${ELASTIC_INPUT_NODE} \
-                                    --es.gcs.input.index="books" \
-                                    --es.gcs.input.user=${ELASTIC_USER} \
-                                    --es.gcs.input.password=${ELASTIC_PASSWORD} \
-                                    --es.gcs.output.format="parquet" \
-                                    --es.gcs.output.location="gs://dataproc-templates/integration-testing/output/ELASTICSEARCHTOGCS" \
-                                    --es.gcs.output.mode="overwrite" \
-                                    --es.gcs.input.es.net.ssl="true" \
-                                    --es.gcs.input.es.net.ssl.cert.allow.self.signed="true"
-                            '''
-                        }
-                    }
-                }
-            }
-        }
         stage('Parallel Execution 1'){
             parallel{ 
                 stage('Hive TO GCS') {
@@ -758,6 +719,45 @@ pipeline {
                                         "State":{"cf":"place", "col":"State", "type":"string"}
                                     }
                                 }\'\'\'
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 8'){
+            parallel{
+                stage('Elasticsearch to GCS'){
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
+
+                                source env/bin/activate
+
+                                gsutil cp gs://dataproc-templates/conf/elastic.jks /tmp/
+                                
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export SKIP_BUILD=true
+                                export JARS="gs://dataproc-templates/jars/elasticsearch-spark-20_2.12-8.15.3.jar"
+                                export FILES="/tmp/elastic.jks"
+
+                                cd python
+                                
+                                ./bin/start.sh \
+                                    --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit' \
+                                    -- --template=ELASTICSEARCHTOGCS \
+                                    --es.gcs.input.node=${ELASTIC_INPUT_NODE} \
+                                    --es.gcs.input.index="books" \
+                                    --es.gcs.input.user=${ELASTIC_USER} \
+                                    --es.gcs.input.password=${ELASTIC_PASSWORD} \
+                                    --es.gcs.output.format="parquet" \
+                                    --es.gcs.output.location="gs://dataproc-templates/integration-testing/output/ELASTICSEARCHTOGCS" \
+                                    --es.gcs.output.mode="overwrite" \
+                                    --es.gcs.input.es.net.ssl="true" \
+                                    --es.gcs.input.es.net.ssl.cert.allow.self.signed="true"
                             '''
                         }
                     }
