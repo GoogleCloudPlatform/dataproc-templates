@@ -85,11 +85,11 @@ pipeline {
                                 export SKIP_BUILD=true
                                 export JARS="gs://dataproc-templates/jars/elasticsearch-spark-20_2.12-8.15.3.jar"
                                 export FILES="/tmp/elastic.jks"
-                                export SPARK_PROPERTIES=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit'
 
                                 cd python
                                 
                                 ./bin/start.sh \
+                                    --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit'
                                     -- --template=ELASTICSEARCHTOGCS \
                                     --es.gcs.input.node=${ELASTIC_INPUT_NODE} \
                                     --es.gcs.input.index="books" \
