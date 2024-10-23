@@ -35,13 +35,17 @@ class TestElasticsearchToBigTableTemplate:
              "--es.bt.input.index=demo",
              "--es.bt.input.user=demo",
              "--es.bt.input.password=demo",
-             "--es.bt.hbase.catalog.json={key:value}"])
+             "--es.bt.project.id=GCP_PROJECT",
+             "--es.bt.instance.id=BIGTABLE_INSTANCE_ID",
+             "--es.bt.catalog.json={key:value}"])
 
         assert parsed_args["es.bt.input.node"] == "xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243"
         assert parsed_args["es.bt.input.index"] == "demo"
         assert parsed_args["es.bt.input.user"] == "demo"
         assert parsed_args["es.bt.input.password"] == "demo"
-        assert parsed_args["es.bt.hbase.catalog.json"] == '{key:value}'
+        assert parsed_args["es.bt.project.id"] == "GCP_PROJECT"
+        assert parsed_args["es.bt.instance.id"] == "BIGTABLE_INSTANCE_ID"
+        assert parsed_args["es.bt.catalog.json"] == '{key:value}'
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     @mock.patch("dataproc_templates.util.dataframe_reader_wrappers.rename_columns")
@@ -54,7 +58,9 @@ class TestElasticsearchToBigTableTemplate:
              "--es.bt.input.index=demo",
              "--es.bt.input.user=demo",
              "--es.bt.input.password=demo",
-             "--es.bt.hbase.catalog.json={key:value}"])
+              "--es.bt.project.id=GCP_PROJECT",
+             "--es.bt.instance.id=BIGTABLE_INSTANCE_ID",
+             "--es.bt.catalog.json={key:value}"])
 
         mock_spark_session.sparkContext.newAPIHadoopRDD.return_value = mock_spark_session.rdd.RDD
         mock_spark_session.read.json.return_value = mock_spark_session.dataframe.DataFrame
@@ -66,8 +72,6 @@ class TestElasticsearchToBigTableTemplate:
         mock_spark_session.read.json.assert_called_once()
         mock_rename_columns.assert_called_once()
         mock_spark_session.dataframe.DataFrame.write.format. \
-            assert_called_once_with(constants.FORMAT_HBASE)
+            assert_called_once_with(constants.FORMAT_BIGTABLE)
         mock_spark_session.dataframe.DataFrame.write.format().options. \
             assert_called_with(catalog='{key:value}')
-        mock_spark_session.dataframe.DataFrame.write.format().options().option. \
-            assert_called_once_with('hbase.spark.use.hbasecontext', "false")
