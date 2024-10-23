@@ -89,7 +89,7 @@ pipeline {
                                 cd python
                                 
                                 ./bin/start.sh \
-                                    --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit'
+                                    --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit' \
                                     -- --template=ELASTICSEARCHTOGCS \
                                     --es.gcs.input.node=${ELASTIC_INPUT_NODE} \
                                     --es.gcs.input.index="books" \
