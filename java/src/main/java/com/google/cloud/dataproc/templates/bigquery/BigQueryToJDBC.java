@@ -53,8 +53,10 @@ public class BigQueryToJDBC implements BaseTemplate {
 
     SparkSession spark = SparkSession.builder().appName("BigQuery to JDBC").getOrCreate();
 
-    // Set log level
+    // Set Spark properties for performance optimization
     spark.sparkContext().setLogLevel(sparkLogLevel);
+    spark.conf.set("viewsEnabled","true");
+    spark.conf.set("materializationDataset","<dataset>");
 
     Dataset<Row> inputData = spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(inputTableName);
     write(inputData);
