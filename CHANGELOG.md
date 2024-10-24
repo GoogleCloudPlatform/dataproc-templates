@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.1-beta...v1.0.2-beta) (2024-10-24)
+
+
+### Bug Fixes
+
+* java mvn version ([#1007](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1007)) ([5ed3d3d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5ed3d3d40116ef032e3546e65b51726d45558941))
+
 ## [1.0.1-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.0-beta...v1.0.1-beta) (2024-10-24)
 
 
