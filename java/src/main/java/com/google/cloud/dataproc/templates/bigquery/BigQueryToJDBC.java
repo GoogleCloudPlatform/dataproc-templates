@@ -20,6 +20,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -52,7 +53,7 @@ public class BigQueryToJDBC implements BaseTemplate {
         new SparkConf()
             .setAppName("BigQuery to JDBC")
             .set("spark.sql.viewsEnabled", "true")
-            .set("spark.sql.materializationDataset", "<dataset>");
+            .set("spark.sql.materializationDataset", config.getDatasetName());
 
     // Initialize SparkSession using SparkConf
     SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
@@ -62,6 +63,13 @@ public class BigQueryToJDBC implements BaseTemplate {
 
     Dataset<Row> inputData =
         spark.read().format(SPARK_READ_FORMAT_BIGQUERY).load(config.getInputTableName());
+
+    if (StringUtils.isNotBlank(config.getTempTable())
+        && StringUtils.isNotBlank(config.getTempQuery())) {
+      inputData.createOrReplaceGlobalTempView(config.getTempTable());
+      inputData = spark.sql(config.getTempQuery());
+    }
+
     write(inputData);
   }
 

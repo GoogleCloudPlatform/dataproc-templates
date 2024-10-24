@@ -34,6 +34,9 @@ public class BigQueryToJDBCConfig {
   public static final String BQ_JDBC_OUTPUT_DRIVER = "bigquery.jdbc.output.driver";
   public static final String BQ_JDBC_OUTPUT_TABLE_NAME = "bigquery.jdbc.output.table";
   public static final String BQ_JDBC_OUTPUT_MODE = "bigquery.jdbc.output.mode";
+  public static final String BQ_JDBC_DATASET_NAME = "bigquery.jdbc.dataset.name";
+  public static final String BQ_JDBC_TEMP_TABLE = "bigquery.jdbc.temp.table";
+  public static final String BQ_JDBC_TEMP_QUERY = "bigquery.jdbc.temp.query";
 
   static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -57,6 +60,16 @@ public class BigQueryToJDBCConfig {
   @JsonProperty(value = BQ_JDBC_OUTPUT_TABLE_NAME)
   @NotEmpty
   private String outputTableName;
+
+  @JsonProperty(value = BQ_JDBC_DATASET_NAME)
+  @NotEmpty
+  private String datasetName;
+
+  @JsonProperty(value = BQ_JDBC_TEMP_TABLE)
+  private String tempTable;
+
+  @JsonProperty(value = BQ_JDBC_TEMP_QUERY)
+  private String tempQuery;
 
   @JsonProperty(value = BQ_JDBC_OUTPUT_MODE)
   @NotEmpty
@@ -91,6 +104,18 @@ public class BigQueryToJDBCConfig {
     return outputSaveMode;
   }
 
+  public String getDatasetName() {
+    return datasetName;
+  }
+
+  public String getTempTable() {
+    return tempTable;
+  }
+
+  public String getTempQuery() {
+    return tempQuery;
+  }
+
   public String getSparklogLevel() {
     return sparklogLevel;
   }
@@ -104,6 +129,7 @@ public class BigQueryToJDBCConfig {
         .add("outputJDBCDriver", outputJDBCDriver)
         .add("outputTableName", outputTableName)
         .add("outputSaveMode", outputSaveMode)
+        .add("datasetName", datasetName)
         .add("sparklogLevel", sparklogLevel)
         .toString();
   }
