@@ -1,0 +1,8 @@
+google-cloud-storage
+google-cloud-aiplatform
+kfp
+google-cloud-pipeline-components
+pandas
+google-cloud-spanner
+pymysql
+SQLAlchemy
