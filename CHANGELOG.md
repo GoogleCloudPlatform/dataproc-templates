@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.0-beta...v1.0.1-beta) (2024-10-24)
+
+
+### Bug Fixes
+
+* update build versions for Java and Python ([#1005](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1005)) ([33bff2d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/33bff2de1fa13dc234df906bd05957300ce3a749))
+
 ## [1.0.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.6.0-beta...v1.0.0-beta) (2024-10-24)
 
 
