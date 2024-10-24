@@ -9,7 +9,6 @@ pipeline {
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
 
-
         GIT_BRANCH_LOCAL = sh (
             script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
             returnStdout: true
@@ -27,7 +26,6 @@ pipeline {
                     catchError {
                         sh '''
                             python3.8 -m pip install --user virtualenv
-
                             python3.8 -m venv env
                             source env/bin/activate
 
