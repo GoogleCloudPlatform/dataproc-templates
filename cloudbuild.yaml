@@ -57,9 +57,10 @@ steps:
   - name: 'docker.io/library/maven:3.8.6-openjdk-11'
     args:
       - package
-      - '-Dmaven.test.skip=true'
+      - '-DskipTests'
     dir: '${_REPO}/java'
     id: build-java-jar
+    entrypoint: mvn
   - name: gcr.io/cloud-builders/gsutil
     entrypoint: 'bash'
     args:
