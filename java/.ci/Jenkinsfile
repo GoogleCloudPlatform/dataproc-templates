@@ -1054,7 +1054,7 @@ EOF
                                     --templateProperty project.id=$GCP_PROJECT \
                                     --templateProperty bigquery.jdbc.input.table=$GCP_PROJECT:dataproc_templates.emp_table \
                                     --templateProperty bigquery.jdbc.dataset.name='dataproc_templates' \
-                                    --templateProperty bigquery.jdbc.output.table='employee' \
+                                    --templateProperty bigquery.jdbc.output.table='bq_to_jdbc_employee' \
                                     --templateProperty bigquery.jdbc.url=$TEST_JDBC_URL \
                                     --templateProperty bigquery.jdbc.batch.size=10 \
                                     --templateProperty bigquery.jdbc.output.driver='com.mysql.jdbc.Driver' \
