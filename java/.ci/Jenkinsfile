@@ -477,7 +477,7 @@ EOF
                                 --templateProperty jdbctospanner.output.database=spark-ci-db \
                                 --templateProperty jdbctospanner.output.table=employee \
                                 --templateProperty jdbctospanner.output.saveMode=Overwrite \
-                                --templateProperty jdbctospanner.output.primaryKey='empno'
+                                --templateProperty jdbctospanner.output.primaryKey='emp_id'
                             '''
                         }
                     }
