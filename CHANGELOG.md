@@ -1,5 +1,46 @@
 # Changelog
 
+## [1.0.2-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.1-beta...v1.0.2-beta) (2024-10-24)
+
+
+### Bug Fixes
+
+* java mvn version ([#1007](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1007)) ([5ed3d3d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/5ed3d3d40116ef032e3546e65b51726d45558941))
+
+## [1.0.1-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.0-beta...v1.0.1-beta) (2024-10-24)
+
+
+### Bug Fixes
+
+* update build versions for Java and Python ([#1005](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1005)) ([33bff2d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/33bff2de1fa13dc234df906bd05957300ce3a749))
+
+## [1.0.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.6.0-beta...v1.0.0-beta) (2024-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* Use spark bigtable connector instead of hbase connector ([#1004](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1004))
+* Use spark bigtable connector instead of hbase ([#989](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/989))
+* GCS to BigTable multiple column family ingestion ([#958](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/958))
+
+### Features
+
+* 965 upgrade dataproc serverless version to 1.2 python ([#995](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/995)) ([817ec52](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/817ec528d377f72ff77859621154806064cfb7d5))
+* GCS to BigTable multiple column family ingestion ([#958](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/958)) ([d92c02e](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/d92c02efe8e56943060246af16b757fb592a075d))
+* Initial commit for Spark runtime update to 1.2 ([#963](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/963)) ([c53dc88](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c53dc8867cf6660768884466120e9db71b2006d3))
+* Mongo To BigQuery java template ([#954](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/954)) ([671aa21](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/671aa21e3ef1e9199f386bcbec77d492258b9798))
+* Spanner JDBC driver can use postgresql dialect ([#957](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/957)) ([4b022fb](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/4b022fb720ea644e96af59a6c5f02e5abf83c8ee))
+* Use spark bigtable connector instead of hbase ([#989](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/989)) ([98f0caa](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/98f0caafb3c31e4d48c5a9f434d32a173e9c889e))
+* Use spark bigtable connector instead of hbase connector ([#1004](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1004)) ([3f13e3c](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3f13e3c75db668a39ebf617adf2848cf9817b993))
+
+
+### Bug Fixes
+
+* avro path fix for cluster mode ([#980](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/980)) ([2910586](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/29105868cc715bcb1163672586169adad1b0df47))
+* Deprecate TextToBigQuery and PubsubliteToBigTable ([#985](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/985)) ([06f9525](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/06f95255caf325e18419d1b3ba6ab9a811ec4807))
+* Query syntax ([#952](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/952)) ([87453fb](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/87453fb94ef2dddd0693dfeab9995ff2ee6100b9))
+* rebalanced integrations tests ([#972](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/972)) ([19e81ae](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/19e81ae2708b969d10fee6da97f5446ee8ac5a01))
+
 ## [0.5.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v0.4.0-beta...v0.5.0-beta) (2024-03-04)
 
 
