@@ -457,31 +457,6 @@ EOF
         }
         stage('Parallel Execution 4'){
             parallel{
-                stage('JDBC TO SPANNER GOOGLESQL DIALECT'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
-                                export SKIP_BUILD=true
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template JDBCTOSPANNER \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
-                                --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
-                                --templateProperty jdbctospanner.sql="select * from test.employee" \
-                                --templateProperty jdbctospanner.output.instance=$ENV_TEST_SPANNER_ID \
-                                --templateProperty jdbctospanner.output.database=spark-ci-db \
-                                --templateProperty jdbctospanner.output.table=employee \
-                                --templateProperty jdbctospanner.output.saveMode=Overwrite \
-                                --templateProperty jdbctospanner.output.primaryKey='emp_id'
-                            '''
-                        }
-                    }
-                }
                 stage('CASSANDRA TO GCS'){
                     steps {
                         retry(count: stageRetryCount) {

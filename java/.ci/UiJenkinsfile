@@ -408,34 +408,7 @@ pipeline {
                         '''
                     }
                 }
-            }            
-
-                stage('JDBC TO SPANNER'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-
-                                gcloud dataproc batches submit spark \
-                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
-                                    --project="${GCP_PROJECT}" \
-                                    --region="us-west1" \
-                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
-                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
-                                    -- --template=JDBCTOSPANNER \
-                                    --templateProperty project.id="${GCP_PROJECT}" \
-                                    --templateProperty jdbctospanner.jdbc.url="${TEST_JDBC_URL}" \
-                                    --templateProperty jdbctospanner.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
-                                    --templateProperty jdbctospanner.sql="select * from test.employee" \
-                                    --templateProperty jdbctospanner.output.instance="${ENV_TEST_SPANNER_ID}" \
-                                    --templateProperty jdbctospanner.output.database="spark-ci-db" \
-                                    --templateProperty jdbctospanner.output.table="employee" \
-                                    --templateProperty jdbctospanner.output.saveMode="Overwrite" \
-                                    --templateProperty jdbctospanner.output.primaryKey="empno"
-                            '''
-                        }
-                    }
-                }
+            }
 
                 stage('JDBC TO GCS (csv)'){
                     steps {
