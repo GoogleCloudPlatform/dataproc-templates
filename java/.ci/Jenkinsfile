@@ -464,9 +464,9 @@ EOF
 
                                 export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
-
+                                
                                 cd java
-
+                                
                                 bin/start.sh \
                                 -- --template JDBCTOSPANNER \
                                 --templateProperty project.id=$GCP_PROJECT \
@@ -486,13 +486,13 @@ EOF
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
-
+                                
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                
                                 cd java
-
+                                
                                 bin/start.sh \
                                 -- --template CASSANDRATOGCS \
                                 --templateProperty project.id=$GCP_PROJECT \
@@ -510,13 +510,13 @@ EOF
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
-
+                                
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                
                                 cd java
-
+                                
                                 bin/start.sh \
                                 -- --template CASSANDRATOBQ \
                                 --templateProperty project.id=$GCP_PROJECT \
@@ -534,13 +534,13 @@ EOF
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
-
+                                
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                
                                 cd java
-
+                                
                                 bin/start.sh \
                                 -- --template DATAPLEXGCSTOBQ \
                                 --templateProperty=project.id=$GCP_PROJECT \
@@ -563,8 +563,8 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                    
                                 cd java
 
                                 bin/start.sh \
@@ -586,13 +586,13 @@ EOF
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
-
+                                
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                
                                 cd java
-
+                                
                                 bin/start.sh \
                                 -- --template GCSTOGCS \
                                 --templateProperty project.id=$GCP_PROJECT \
@@ -647,10 +647,10 @@ EOF
                 stage('GCS TO BIGTABLE'){
                     steps {
                         retry(count: stageRetryCount) {
-                            sh '''
+                            sh '''  
                                 export SKIP_BUILD=true
 
-
+                                
 
                                 cd java
 
@@ -672,8 +672,8 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                    
                                 cd java
 
                                 bin/start.sh \
@@ -695,8 +695,8 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                    
                                 cd java
 
                                 bin/start.sh \
@@ -718,10 +718,10 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                
                                 cd java
-
+                                
                                 bin/start.sh \
                                 -- --template GCSTOBIGQUERY \
                                 --templateProperty project.id=$GCP_PROJECT \
@@ -744,8 +744,8 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                    
                                 cd java
 
                                 bin/start.sh \
@@ -767,8 +767,8 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                    
                                 cd java
 
                                 bin/start.sh \
@@ -791,8 +791,8 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                    
                                 cd java
 
                                 bin/start.sh \
@@ -817,8 +817,8 @@ EOF
                             sh '''
                                 export SKIP_BUILD=true
 
-
-
+                                
+                                    
                                 cd java
 
                                 bin/start.sh \
@@ -838,7 +838,7 @@ EOF
                             sh '''
                                 export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
                                 export SKIP_BUILD=true
-
+                                    
                                 cd java
 
                                 bin/start.sh \
@@ -849,7 +849,7 @@ EOF
                                 --templateProperty jdbctojdbc.output.url="$TEST_JDBC_URL" \
                                 --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
                                 --templateProperty jdbctojdbc.output.table="employee_output" \
-                                --templateProperty jdbctojdbc.output.mode="Overwrite"
+                                --templateProperty jdbctojdbc.output.mode="Overwrite" 
                             '''
                         }
                     }
@@ -913,7 +913,7 @@ EOF
                              sh '''
 
                                   export SKIP_BUILD=true
-
+                                  
                                   cd java
                                   bin/start.sh \
                                   -- \
@@ -939,7 +939,7 @@ EOF
                              sh '''
 
                                   export SKIP_BUILD=true
-
+                                  
                                   cd java
                                   bin/start.sh \
                                   -- \
@@ -965,7 +965,7 @@ EOF
                             sh '''
 
                                  export SKIP_BUILD=true
-
+                                 
                                  cd java
                                  bin/start.sh \
                                  -- \
@@ -1021,7 +1021,7 @@ EOF
 
                                 gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM badges;'
                                 export SKIP_BUILD=true
-
+                                
 
                                 cd java
 

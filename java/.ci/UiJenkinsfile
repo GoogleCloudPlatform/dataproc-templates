@@ -408,7 +408,7 @@ pipeline {
                         '''
                     }
                 }
-            }
+            }            
 
                 stage('JDBC TO SPANNER'){
                     steps {
