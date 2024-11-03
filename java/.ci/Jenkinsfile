@@ -99,6 +99,15 @@ EOF
         }   
         //Deploy one time so that build is copied to GCS location
         stage('JDBC TO BQ'){
+        when {
+                expression {
+                    // Check if there are any changes in Java files in the last commit
+                    return sh(
+                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        returnStatus: true
+                    ) == 0
+                }
+            }
             steps {
                 retry(count: stageRetryCount) {
                     sh '''
