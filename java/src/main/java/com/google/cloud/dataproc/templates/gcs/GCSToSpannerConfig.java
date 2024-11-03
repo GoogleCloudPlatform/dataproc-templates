@@ -49,7 +49,7 @@ public class GCSToSpannerConfig {
 
   @JsonProperty(value = GCS_SPANNER_INPUT_FORMAT)
   @NotEmpty
-  @Pattern(regexp = "avro|parquet|orc")
+  @Pattern(regexp = "avro|parquet|orc|csv")
   private String inputFormat;
 
   @JsonProperty(value = PROJECT_ID_PROP)
