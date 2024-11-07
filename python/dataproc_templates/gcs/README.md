@@ -160,8 +160,7 @@ options:
 
 ## Required JAR files
 
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example).  
-It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
+This template requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
 
 
 ## Example submission
@@ -170,7 +169,7 @@ It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.ht
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, <gs://{your_bucket}/delta-core_2.12-1.1.0.jar>"
+export JARS="gs://{your_bucket}/delta-core_2.12-1.1.0.jar"
 
 ./bin/start.sh \
 -- --template=GCSTOBIGQUERY \
@@ -211,7 +210,7 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
                     }'''
     ```
 
-3) [Create and manage](https://cloud.google.com/bigtable/docs/managing-tables) your Bigtable table schema, column families, etc, to match the provided HBase catalog.
+3) [Create and manage](https://cloud.google.com/bigtable/docs/managing-tables) your Bigtable table schema, column families, etc, to match the provided Bigtable catalog.
 
 ## Required JAR files
 
@@ -799,7 +798,7 @@ export JARS=<gcs-bucket-location-containing-jar-file>
 ```
 
 
-# Text To BigQuery
+# Text To BigQuery (Deprecated and will be removed in Q1 2025)
 
 Template for reading TEXT files from Cloud Storage and writing them to a BigQuery table. It supports reading Text files with compression GZIP, BZIP2, LZ4, DEFLATE, NONE.
 
@@ -963,18 +962,12 @@ options:
   --text.bigquery.input.delimiter TEXT.BIGQUERY.INPUT.DELIMITER
                         Input column delimiter (example: ",", ";", "|", "/","" )
 ```
-
-## Required JAR files
-
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
-
 ## Example submission
 
 ```
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 
 ./bin/start.sh \
 -- --template=TEXTTOBIGQUERY \

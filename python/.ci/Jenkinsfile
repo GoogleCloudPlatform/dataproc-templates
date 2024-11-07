@@ -21,38 +21,6 @@ pipeline {
                 git branch: "${GIT_BRANCH_LOCAL}", changelog: false, poll: false, url: 'https://github.com/GoogleCloudPlatform/dataproc-templates/'    
             }
         }
-        stage('Clean Resources'){
-            steps {
-                catchError {
-                    sh '''
-                        gcloud pubsub lite-topics publish psltobt \
-                            --location=us-west1 \
-                            --message=\'\'\'
-                            { 
-                                "rowkey":"rk1",
-                                "columns": [
-                                    {
-                                        "columnfamily":"place",
-                                        "columnname":"city",
-                                        "columnvalue":"Bangalore"
-                                    },
-                                    {
-                                        "columnfamily":"place",
-                                        "columnname":"state",
-                                        "columnvalue":"Karnataka"
-                                    },
-                                    {
-                                        "columnfamily":"date",
-                                        "columnname":"year",
-                                        "columnvalue":"2023"
-                                    }
-                                ] 
-                            }
-                            \'\'\'
-                    '''
-                }
-            }
-        }
         stage('Cluster Creation'){
             when {
                 // Run this stage only if JOB_TYPE is not set to CLUSTER
@@ -141,7 +109,6 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -189,35 +156,6 @@ pipeline {
         }
         stage('Parallel Execution 2'){
             parallel{
-                stage('TEXT TO BIGQUERY') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                            
-                                python3.8 -m pip install --user virtualenv    
-
-                                python3.8 -m venv env
-                                source env/bin/activate
-                                
-                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
-                                export SKIP_BUILD=true
-
-                                cd python
-                                
-                                ./bin/start.sh  -- \
-                                --template=TEXTTOBIGQUERY \
-                                --text.bigquery.input.compression="gzip" \
-                                --text.bigquery.input.delimiter="," \
-                                --text.bigquery.input.location="gs://python-dataproc-templates/text-bq-input/" \
-                                --text.bigquery.output.dataset="python_dataproc_templates" \
-                                --text.bigquery.output.table="python_text_bq_table" \
-                                --text.bigquery.output.mode=overwrite \
-                                --text.bigquery.temp.bucket.name="python-dataproc-templates-temp-bq"
-                            '''
-                        }
-                    }
-                }
                 stage('JDBC To JDBC') {
                     steps{
                         retry(count: stageRetryCount) {
@@ -312,7 +250,6 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -341,7 +278,6 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -369,7 +305,7 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-cassandra-connector/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://spark-cassandra-connector/jnr-posix-3.1.8.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                export JARS="gs://spark-cassandra-connector/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://spark-cassandra-connector/jnr-posix-3.1.8.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -431,7 +367,7 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://python-dataproc-templates-temp/jars/mongo-java-driver-3.9.1.jar,gs://python-dataproc-templates-temp/jars/mongo-spark-connector_2.12-2.4.0.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                export JARS="gs://python-dataproc-templates-temp/jars/mongo-java-driver-3.9.1.jar,gs://python-dataproc-templates-temp/jars/mongo-spark-connector_2.12-2.4.0.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -461,7 +397,7 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -491,7 +427,7 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar,gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
@@ -629,11 +565,16 @@ pipeline {
                         }
                     }
                 }
-                stage('PUB/SUB LITE TO BIGTABLE') {
+            }
+        }  
+         stage('Parallel Execution 6'){
+            parallel{
+                stage('S3 TO BigQuery (avro)') {    
                     steps{
                         retry(count: stageRetryCount) {
-                            sh '''
-                            
+                            withCredentials([usernamePassword(credentialsId: 'aws-s3-ro-credentials',
+                        passwordVariable: 'S3_SECRET', usernameVariable: 'S3_KEY')])
+                            {sh '''
                                 python3.8 -m pip install --user virtualenv    
 
                                 python3.8 -m venv env
@@ -641,106 +582,108 @@ pipeline {
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://spark-lib/pubsublite/pubsublite-spark-sql-streaming-LATEST-with-dependencies.jar"
                                 export SKIP_BUILD=true
 
                                 cd python
 
                                 ./bin/start.sh \
-                                -- --template=PUBSUBLITETOBIGTABLE \
-                                --pubsublite.bigtable.subscription.path=projects/$GCP_PROJECT/locations/$REGION/subscriptions/psltobt-sub \
-                                --pubsublite.bigtable.streaming.checkpoint.location="gs://dataproc-templates/integration-testing/psltobt/checkpoint" \
-                                --pubsublite.bigtable.output.project=$GCP_PROJECT \
-                                --pubsublite.bigtable.output.instance=$ENV_TEST_BIGTABLE_INSTANCE \
-                                --pubsublite.bigtable.output.table="output_table" \
-                                --pubsublite.bigtable.streaming.timeout=20
+                                    -- --template=S3TOBIGQUERY \
+                                        --s3.bq.input.location="s3a://dataproc-templates-integration-tests/cities.avro" \
+                                        --s3.bq.access.key="${S3_KEY}" \
+                                        --s3.bq.secret.key="${S3_SECRET}" \
+                                        --s3.bq.input.format="avro" \
+                                        --s3.bq.output.dataset.name="dataproc_templates" \
+                                        --s3.bq.output.table.name="s3_to_bq_avro_py" \
+                                        --s3.bq.output.mode="overwrite" \
+                                        --s3.bq.temp.bucket.name="python-dataproc-templates-temp"
                             '''
+                            }
                         }
                     }
                 }
             }
-        }  
-        stage('Parallel Execution 6'){
+        }
+        stage('Parallel Execution 7'){
             parallel{
-                stage('Hbase TO GCS (Manual)') {    
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                python3.8 -m pip install --user virtualenv    
+                // stage('Hbase TO GCS (Manual)') {    
+                //     when {
+                //         // Run this stage only if JOB_TYPE is not set to CLUSTER
+                //         expression { env.JOB_TYPE != "CLUSTER" }
+                //     }
+                //     steps{
+                //         retry(count: stageRetryCount) {
+                //             sh '''
+                //                 python3.8 -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
-                                source env/bin/activate
+                //                 python3.8 -m venv env
+                //                 source env/bin/activate
                                 
-                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
-                                export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
-                                export SKIP_BUILD=true
+                //                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                //                 export JARS="gs://deps-dataproc-template/hbase-shaded-mapreduce-2.4.12.jar,gs://deps-dataproc-template/hbase-client-2.4.12.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+                //                 export SKIP_BUILD=true
                                 
-                                cd python
+                //                 cd python
                                 
-                                ./bin/start.sh \
-                                    --container-image="gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.2" \
-                                    --properties="spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/" \
-                                    -- --template=HBASETOGCS \
-                                    --hbase.gcs.output.location="gs://python-dataproc-templates/hbase-gcs-output" \
-                                    --hbase.gcs.output.format="csv" \
-                                    --hbase.gcs.output.mode="overwrite" \
-                                    --hbase.gcs.catalog.json=\'\'\'{
-                                            "table":{"namespace":"default","name":"my_table"},
-                                            "rowkey":"key",
-                                            "columns":{
-                                            "key":{"cf":"rowkey", "col":"key", "type":"string"},
-                                            "name":{"cf":"cf", "col":"name", "type":"string"}
-                                            }
-                                            }\'\'\'
-                            '''
-                        }
-                    }
-                }
+                //                 ./bin/start.sh \
+                //                     --container-image="gcr.io/$GCP_PROJECT/hbase-to-gcs:1.0.2" \
+                //                     --properties="spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/" \
+                //                     -- --template=HBASETOGCS \
+                //                     --hbase.gcs.output.location="gs://python-dataproc-templates/hbase-gcs-output" \
+                //                     --hbase.gcs.output.format="csv" \
+                //                     --hbase.gcs.output.mode="overwrite" \
+                //                     --hbase.gcs.catalog.json=\'\'\'{
+                //                             "table":{"namespace":"default","name":"my_table"},
+                //                             "rowkey":"key",
+                //                             "columns":{
+                //                             "key":{"cf":"rowkey", "col":"key", "type":"string"},
+                //                             "name":{"cf":"cf", "col":"name", "type":"string"}
+                //                             }
+                //                             }\'\'\'
+                //             '''
+                //         }
+                //     }
+                // }
                     
-                stage('Hbase TO GCS (Automated)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                whoami
-                                sudo su
+                // stage('Hbase TO GCS (Automated)') {
+                //     when {
+                //         // Run this stage only if JOB_TYPE is not set to CLUSTER
+                //         expression { env.JOB_TYPE != "CLUSTER" }
+                //     }
+                //     steps{
+                //         retry(count: stageRetryCount) {
+                //             sh '''
+                //                 whoami
+                //                 sudo su
 
-                                python3.8 -m pip install --user virtualenv    
+                //                 python3.8 -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                //                 python3.8 -m venv env
 
-                                source env/bin/activate
+                //                 source env/bin/activate
 
-                                gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
+                //                 gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
                                 
-                                export GCS_STAGING_LOCATION=gs://python-dataproc-templates-temp
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.2
-                                export HBASE_SITE_PATH=../hbase-site.xml
-                                export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
-                                export SKIP_IMAGE_BUILD=TRUE
+                //                 export GCS_STAGING_LOCATION=gs://python-dataproc-templates-temp
+                //                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                //                 export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.2
+                //                 export HBASE_SITE_PATH=../hbase-site.xml
+                //                 export IMAGE=gcr.io/${GCP_PROJECT}/${IMAGE_NAME_VERSION}
+                //                 export SKIP_IMAGE_BUILD=TRUE
 
-                                cd python
+                //                 cd python
 
-                                ./bin/start.sh \
-                                    --container-image=$IMAGE \
-                                    --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
-                                    -- --template=HBASETOGCS \
-                                    --hbase.gcs.output.location=gs://python-dataproc-templates/hbase-gcs-output \
-                                    --hbase.gcs.output.format=csv \
-                                    --hbase.gcs.output.mode=overwrite \
-                                    --hbase.gcs.catalog.json=$CATALOG
-                            '''
-                        }
-                    }
-                }
+                //                 ./bin/start.sh \
+                //                     --container-image=$IMAGE \
+                //                     --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
+                //                     -- --template=HBASETOGCS \
+                //                     --hbase.gcs.output.location=gs://python-dataproc-templates/hbase-gcs-output \
+                //                     --hbase.gcs.output.format=csv \
+                //                     --hbase.gcs.output.mode=overwrite \
+                //                     --hbase.gcs.catalog.json=$CATALOG
+                //             '''
+                //         }
+                //     }
+                // }
                 stage('GCS TO Bigtable') {
                     steps{
                         retry(count: stageRetryCount) {
@@ -776,6 +719,45 @@ pipeline {
                                         "State":{"cf":"place", "col":"State", "type":"string"}
                                     }
                                 }\'\'\'
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 8'){
+            parallel{
+                stage('Elasticsearch to GCS'){
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
+
+                                source env/bin/activate
+
+                                gsutil cp gs://dataproc-templates/conf/elastic.jks /tmp/
+                                
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export SKIP_BUILD=true
+                                export JARS="gs://dataproc-templates/jars/elasticsearch-spark-20_2.12-8.15.3.jar"
+                                export FILES="/tmp/elastic.jks"
+
+                                cd python
+                                
+                                ./bin/start.sh \
+                                    --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit' \
+                                    -- --template=ELASTICSEARCHTOGCS \
+                                    --es.gcs.input.node=${ELASTIC_INPUT_NODE} \
+                                    --es.gcs.input.index="books" \
+                                    --es.gcs.input.user=${ELASTIC_USER} \
+                                    --es.gcs.input.password=${ELASTIC_PASSWORD} \
+                                    --es.gcs.output.format="parquet" \
+                                    --es.gcs.output.location="gs://dataproc-templates/integration-testing/output/ELASTICSEARCHTOGCS" \
+                                    --es.gcs.output.mode="overwrite" \
+                                    --es.gcs.input.es.net.ssl="true" \
+                                    --es.gcs.input.es.net.ssl.cert.allow.self.signed="true"
                             '''
                         }
                     }

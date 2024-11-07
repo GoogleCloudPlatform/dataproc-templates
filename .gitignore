@@ -25,3 +25,5 @@ pipeline.json
 .ipynb_checkpoints/
 .venv/
 metastore_db/
+python/elastic.jks
+python/tls.cert

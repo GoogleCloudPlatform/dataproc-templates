@@ -605,41 +605,41 @@ EOF
                         }
                     }
                 }
-                stage('HBASE TO GCS (Automated)(avro)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
+                // stage('HBASE TO GCS (Automated)(avro)') {
+                //     when {
+                //         // Run this stage only if JOB_TYPE is not set to CLUSTER
+                //         expression { env.JOB_TYPE != "CLUSTER" }
+                //     }
+                //     steps{
+                //         retry(count: stageRetryCount) {
+                //             sh '''
 
-                                gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
-                                gcloud auth configure-docker us-docker.pkg.dev
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.3
-                                export HBASE_SITE_PATH=../hbase-site.xml
-                                export IMAGE=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/${IMAGE_NAME_VERSION}
-                                export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
+                //                 gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
+                //                 gcloud auth configure-docker us-docker.pkg.dev
+                //                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                //                 export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.3
+                //                 export HBASE_SITE_PATH=../hbase-site.xml
+                //                 export IMAGE=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/${IMAGE_NAME_VERSION}
+                //                 export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
 
-                                export SKIP_IMAGE_BUILD=TRUE
-                                export SKIP_BUILD=true
+                //                 export SKIP_IMAGE_BUILD=TRUE
+                //                 export SKIP_BUILD=true
 
-                                cd java
+                //                 cd java
 
-                                bin/start.sh \
-                                --container-image=$IMAGE \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
-                                -- --template HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=avro \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/avro  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
+                //                 bin/start.sh \
+                //                 --container-image=$IMAGE \
+                //                 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
+                //                 -- --template HBASETOGCS \
+                //                 --templateProperty hbasetogcs.output.fileformat=avro \
+                //                 --templateProperty hbasetogcs.output.savemode=overwrite \
+                //                 --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/avro  \
+                //                 --templateProperty hbasetogcs.table.catalog=$CATALOG
 
-                            '''
-                        }
-                    }
-                }
+                //             '''
+                //         }
+                //     }
+                // }
             }
         }
         stage('Parallel Execution 6'){
@@ -877,32 +877,32 @@ EOF
                         }
                     }
                 }
-                stage('HBASE TO GCS (Manual)(avro)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
+                // stage('HBASE TO GCS (Manual)(avro)') {
+                //     when {
+                //         // Run this stage only if JOB_TYPE is not set to CLUSTER
+                //         expression { env.JOB_TYPE != "CLUSTER" }
+                //     }
+                //     steps{
+                //         retry(count: stageRetryCount) {
+                //             sh '''
+                //                 export SKIP_BUILD=true
+                //                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                //                 export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
 
-                                cd java
+                //                 cd java
 
-                                bin/start.sh \
-                                --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.3 \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
-                                -- --template=HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=avro \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/avro  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
-                            '''
-                        }
-                    }
-                }
+                //                 bin/start.sh \
+                //                 --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.3 \
+                //                 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
+                //                 -- --template=HBASETOGCS \
+                //                 --templateProperty hbasetogcs.output.fileformat=avro \
+                //                 --templateProperty hbasetogcs.output.savemode=overwrite \
+                //                 --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/avro  \
+                //                 --templateProperty hbasetogcs.table.catalog=$CATALOG
+                //             '''
+                //         }
+                //     }
+                // }
             }
         }
         stage('Parallel Execution 9'){
@@ -1040,6 +1040,30 @@ EOF
                         }
                     }
                 }
+                stage('BIGQUERY TO JDBC') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template BIGQUERYTOJDBC \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty bigquery.jdbc.input.table="$GCP_PROJECT.dataproc_templates.emp_table" \
+                                --templateProperty bigquery.jdbc.dataset.name='dataproc_templates' \
+                                --templateProperty bigquery.jdbc.url="$TEST_JDBC_URL" \
+                                --templateProperty bigquery.jdbc.output.table='emp_table' \
+                                --templateProperty bigquery.jdbc.batch.size=10 \
+                                --templateProperty bigquery.jdbc.output.driver='com.mysql.jdbc.Driver' \
+                                --templateProperty bigquery.jdbc.output.mode='Overwrite'
+                            '''
+                        }
+                    }
+                }
                 stage('JDBC TO SPANNER POSTGRESQL DIALECT'){
                     steps {
                         retry(count: stageRetryCount) {
@@ -1067,66 +1091,66 @@ EOF
                         }
                     }
                 }
-                stage('HBASE TO GCS (Manual)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
+                // stage('HBASE TO GCS (Manual)') {
+                //     when {
+                //         // Run this stage only if JOB_TYPE is not set to CLUSTER
+                //         expression { env.JOB_TYPE != "CLUSTER" }
+                //     }
+                //     steps{
+                //         retry(count: stageRetryCount) {
+                //             sh '''
+                //                 export SKIP_BUILD=true
+                //                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                //                 export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
 
-                                cd java
+                //                 cd java
 
-                                bin/start.sh \
-                                --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.3 \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
-                                -- --template=HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=csv \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/csv  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
-                            '''
-                        }
-                    }
-                }
-                stage('HBASE TO GCS (Automated)') {
-                    when {
-                        // Run this stage only if JOB_TYPE is not set to CLUSTER
-                        expression { env.JOB_TYPE != "CLUSTER" }
-                    }
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
-                                gcloud auth configure-docker us-docker.pkg.dev
-                                export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                                export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.3
-                                export HBASE_SITE_PATH=../hbase-site.xml
-                                export IMAGE=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/${IMAGE_NAME_VERSION}
-                                export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
+                //                 bin/start.sh \
+                //                 --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.3 \
+                //                 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
+                //                 -- --template=HBASETOGCS \
+                //                 --templateProperty hbasetogcs.output.fileformat=csv \
+                //                 --templateProperty hbasetogcs.output.savemode=overwrite \
+                //                 --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/csv  \
+                //                 --templateProperty hbasetogcs.table.catalog=$CATALOG
+                //             '''
+                //         }
+                //     }
+                // }
+                // stage('HBASE TO GCS (Automated)') {
+                //     when {
+                //         // Run this stage only if JOB_TYPE is not set to CLUSTER
+                //         expression { env.JOB_TYPE != "CLUSTER" }
+                //     }
+                //     steps{
+                //         retry(count: stageRetryCount) {
+                //             sh '''
+                //                 gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
+                //                 gcloud auth configure-docker us-docker.pkg.dev
+                //                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
+                //                 export IMAGE_NAME_VERSION=hbase-to-gcs:1.0.3
+                //                 export HBASE_SITE_PATH=../hbase-site.xml
+                //                 export IMAGE=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/${IMAGE_NAME_VERSION}
+                //                 export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
 
-                                export SKIP_IMAGE_BUILD=TRUE
-                                export SKIP_BUILD=true
+                //                 export SKIP_IMAGE_BUILD=TRUE
+                //                 export SKIP_BUILD=true
 
-                                cd java
+                //                 cd java
 
-                                bin/start.sh \
-                                --container-image=$IMAGE \
-                                --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
-                                -- --template HBASETOGCS \
-                                --templateProperty hbasetogcs.output.fileformat=csv \
-                                --templateProperty hbasetogcs.output.savemode=overwrite \
-                                --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/csv  \
-                                --templateProperty hbasetogcs.table.catalog=$CATALOG
+                //                 bin/start.sh \
+                //                 --container-image=$IMAGE \
+                //                 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'  \
+                //                 -- --template HBASETOGCS \
+                //                 --templateProperty hbasetogcs.output.fileformat=csv \
+                //                 --templateProperty hbasetogcs.output.savemode=overwrite \
+                //                 --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_automated/csv  \
+                //                 --templateProperty hbasetogcs.table.catalog=$CATALOG
 
-                            '''
-                        }
-                    }
-                }
+                //             '''
+                //         }
+                //     }
+                // }
             }
         }
     }

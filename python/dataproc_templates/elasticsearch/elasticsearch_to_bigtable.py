@@ -80,10 +80,36 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
             )
         )
         parser.add_argument(
-            f'--{constants.ES_BT_HBASE_CATALOG_JSON}',
-            dest=constants.ES_BT_HBASE_CATALOG_JSON,
+            f'--{constants.ES_BT_PROJECT_ID}',
+            dest=constants.ES_BT_PROJECT_ID,
             required=True,
-            help='HBase catalog inline json'
+            help='BigTable project ID'
+        )
+        parser.add_argument(
+            f'--{constants.ES_BT_INSTANCE_ID}',
+            dest=constants.ES_BT_INSTANCE_ID,
+            required=True,
+            help='BigTable instance ID'
+        )
+        parser.add_argument(
+            f'--{constants.ES_BT_CREATE_NEW_TABLE}',
+            dest=constants.ES_BT_CREATE_NEW_TABLE,
+            required=False,
+            help='BigTable create new table flag. Default is false.',
+            default=False
+        )
+        parser.add_argument(
+            f'--{constants.ES_BT_BATCH_MUTATE_SIZE}',
+            dest=constants.ES_BT_BATCH_MUTATE_SIZE,
+            required=False,
+            help='BigTable batch mutate size. Maximum allowed size is 100000. Default is 100.',
+            default=100
+        )
+        parser.add_argument(
+            f'--{constants.ES_BT_CATALOG_JSON}',
+            dest=constants.ES_BT_CATALOG_JSON,
+            required=True,
+            help='BigTable catalog inline json'
         )
 
         known_args: argparse.Namespace
@@ -102,7 +128,11 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
         es_password: str = args[constants.ES_BT_NODE_PASSWORD]
         flatten_struct = args[constants.ES_BT_FLATTEN_STRUCT]
         flatten_array = args[constants.ES_BT_FLATTEN_ARRAY]
-        catalog: str = ''.join(args[constants.ES_BT_HBASE_CATALOG_JSON].split())
+        catalog: str = ''.join(args[constants.ES_BT_CATALOG_JSON].split())
+        project_id: str = args[constants.ES_BT_PROJECT_ID]
+        instance_id: str = args[constants.ES_BT_INSTANCE_ID]
+        create_new_table: bool = args[constants.ES_BT_CREATE_NEW_TABLE]
+        batch_mutate_size: int = args[constants.ES_BT_BATCH_MUTATE_SIZE]
 
         ignore_keys = {constants.ES_BT_NODE_PASSWORD}
         filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
@@ -130,7 +160,10 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
 
         # Write
         input_data.write \
-            .format(constants.FORMAT_HBASE) \
+            .format(constants.FORMAT_BIGTABLE) \
             .options(catalog=catalog) \
-            .option('hbase.spark.use.hbasecontext', "false") \
+            .option(constants.ES_BT_PROJECT_ID, project_id) \
+            .option(constants.ES_BT_INSTANCE_ID, instance_id) \
+            .option(constants.ES_BT_CREATE_NEW_TABLE, create_new_table) \
+            .option(constants.ES_BT_BATCH_MUTATE_SIZE, batch_mutate_size) \
             .save()

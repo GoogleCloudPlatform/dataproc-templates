@@ -54,10 +54,18 @@ public class GCSToSpanner implements BaseTemplate {
     try (SparkSession spark = SparkSession.builder().appName("GCS to Spanner").getOrCreate()) {
       // Set log level
       spark.sparkContext().setLogLevel(config.getSparkLogLevel());
-
-      Dataset<Row> dataset =
-          spark.read().format(config.getInputFormat()).load(config.getInputLocation());
-
+      Dataset<Row> dataset;
+      if ("csv".equalsIgnoreCase(config.getInputFormat())) {
+        dataset =
+            spark
+                .read()
+                .format(config.getInputFormat())
+                .option("header", "true")
+                .option("inferSchema", "true")
+                .load(config.getInputLocation());
+      } else {
+        dataset = spark.read().format(config.getInputFormat()).load(config.getInputLocation());
+      }
       write(dataset);
     }
   }
