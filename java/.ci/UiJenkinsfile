@@ -76,6 +76,15 @@ pipeline {
                 }
         }
         stage('Parallel Execution 1'){
+        when {
+                expression {
+                    // Check if there are any changes in Java files in the last commit
+                    return sh(
+                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        returnStatus: true
+                    ) == 0
+                }
+            }
             parallel{
                 stage('SPANNER TO GCS'){
                     steps {
@@ -173,6 +182,15 @@ pipeline {
             }
         }
         stage('Parallel Execution 2'){
+        when {
+                expression {
+                    // Check if there are any changes in Java files in the last commit
+                    return sh(
+                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        returnStatus: true
+                    ) == 0
+                }
+            }
             parallel{
                 stage('GCS TO GCS (csv)'){
                     steps {
@@ -266,6 +284,15 @@ pipeline {
             }
         }
         stage('Parallel Execution 3'){
+        when {
+                expression {
+                    // Check if there are any changes in Java files in the last commit
+                    return sh(
+                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        returnStatus: true
+                    ) == 0
+                }
+            }
             parallel{
                 stage('SPANNER TO GCS (csv)'){
                     steps {
@@ -337,6 +364,15 @@ pipeline {
             }
         }
         stage('Parallel Execution 4'){
+        when {
+                expression {
+                    // Check if there are any changes in Java files in the last commit
+                    return sh(
+                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        returnStatus: true
+                    ) == 0
+                }
+            }
             parallel{
                 stage('JDBC To JDBC'){
                     steps {
@@ -386,6 +422,15 @@ pipeline {
             }
         }
         stage('Parallel Execution 5'){
+        when {
+                expression {
+                    // Check if there are any changes in Java files in the last commit
+                    return sh(
+                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        returnStatus: true
+                    ) == 0
+                }
+            }
             parallel{
                 stage('JDBC TO BQ'){
                     steps {
