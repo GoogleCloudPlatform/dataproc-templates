@@ -16,6 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
+import sys
 
 from pyspark.sql import SparkSession, DataFrameWriter
 
@@ -59,6 +60,11 @@ class ElasticsearchToGCSTemplate(BaseTemplate):
             f'--{constants.ES_GCS_NODE_PASSWORD}',
             dest=constants.ES_GCS_NODE_PASSWORD,
             help='Elasticsearch Node Password'
+        )
+        parser.add_argument(
+            f'--{constants.ES_GCS_NODE_API_KEY}',
+            dest=constants.ES_GCS_NODE_API_KEY,
+            help='Elasticsearch Node API Key'
         )
 
         add_es_spark_connector_options(parser, constants.get_es_spark_connector_input_options("es.gcs.input."))
@@ -121,6 +127,20 @@ class ElasticsearchToGCSTemplate(BaseTemplate):
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
+        if (not getattr(known_args, constants.ES_GCS_NODE_API_KEY)
+            and (not getattr(known_args, constants.ES_GCS_NODE_USER)
+            or not getattr(known_args, constants.ES_GCS_NODE_PASSWORD))):
+
+            sys.exit("ArgumentParser Error: Either of es.gcs.input.user and es.gcs.input.password "
+                        + "OR es.gcs.input.api.key needs to be provided as argument to read data from Elasticsearch")
+
+        elif (getattr(known_args, constants.ES_GCS_NODE_API_KEY)
+            and (getattr(known_args, constants.ES_GCS_NODE_USER)
+            or getattr(known_args, constants.ES_GCS_NODE_PASSWORD))):
+
+            sys.exit("ArgumentParser Error: Both es.gcs.input.user and es.gcs.input.password "
+                        + "AND es.gcs.input.api.key cannot be provided as arguments at the same time.")
+
         return vars(known_args)
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
@@ -132,13 +152,14 @@ class ElasticsearchToGCSTemplate(BaseTemplate):
         es_index: str = args[constants.ES_GCS_INPUT_INDEX]
         es_user: str = args[constants.ES_GCS_NODE_USER]
         es_password: str = args[constants.ES_GCS_NODE_PASSWORD]
+        es_api_key: str = args[constants.ES_GCS_NODE_API_KEY]
         flatten_struct = args[constants.ES_GCS_FLATTEN_STRUCT]
         flatten_array = args[constants.ES_GCS_FLATTEN_ARRAY]
         output_format: str = args[constants.ES_GCS_OUTPUT_FORMAT]
         output_mode: str = args[constants.ES_GCS_OUTPUT_MODE]
         output_location: str = args[constants.ES_GCS_OUTPUT_LOCATION]
 
-        ignore_keys = {constants.ES_GCS_NODE_PASSWORD}
+        ignore_keys = {constants.ES_GCS_NODE_PASSWORD, constants.ES_GCS_NODE_API_KEY}
         filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting ElasticSearch to Cloud Storage Spark job with parameters:\n"
@@ -147,7 +168,7 @@ class ElasticsearchToGCSTemplate(BaseTemplate):
 
         # Read
         input_data = ingest_dataframe_from_elasticsearch(
-            spark, es_node, es_index, es_user, es_password, args, "es.gcs.input."
+            spark, es_node, es_index, es_user, es_password, es_api_key, args, "es.gcs.input."
         )
 
         if flatten_struct:

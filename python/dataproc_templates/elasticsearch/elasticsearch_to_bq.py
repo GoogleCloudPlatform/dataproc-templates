@@ -16,6 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
+import sys
 
 from pyspark.sql import SparkSession
 
@@ -58,6 +59,11 @@ class ElasticsearchToBQTemplate(BaseTemplate):
             f'--{constants.ES_BQ_NODE_PASSWORD}',
             dest=constants.ES_BQ_NODE_PASSWORD,
             help='Elasticsearch Node Password'
+        )
+        parser.add_argument(
+            f'--{constants.ES_BQ_NODE_API_KEY}',
+            dest=constants.ES_BQ_NODE_API_KEY,
+            help='Elasticsearch Node API Key'
         )
 
         add_es_spark_connector_options(parser, constants.get_es_spark_connector_input_options("es.bq.input."))
@@ -118,6 +124,20 @@ class ElasticsearchToBQTemplate(BaseTemplate):
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
+        if (not getattr(known_args, constants.ES_BQ_NODE_API_KEY)
+            and (not getattr(known_args, constants.ES_BQ_NODE_USER)
+            or not getattr(known_args, constants.ES_BQ_NODE_PASSWORD))):
+
+            sys.exit("ArgumentParser Error: Either of es.bq.input.user and es.bq.input.password "
+                        + "OR es.bq.input.api.key needs to be provided as argument to read data from Elasticsearch")
+
+        elif (getattr(known_args, constants.ES_BQ_NODE_API_KEY)
+            and (getattr(known_args, constants.ES_BQ_NODE_USER)
+            or getattr(known_args, constants.ES_BQ_NODE_PASSWORD))):
+
+            sys.exit("ArgumentParser Error: Both es.bq.input.user and es.bq.input.password "
+                        + "AND es.bq.input.api.key cannot be provided as arguments at the same time.")
+
         return vars(known_args)
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
@@ -129,6 +149,7 @@ class ElasticsearchToBQTemplate(BaseTemplate):
         es_index: str = args[constants.ES_BQ_INPUT_INDEX]
         es_user: str = args[constants.ES_BQ_NODE_USER]
         es_password: str = args[constants.ES_BQ_NODE_PASSWORD]
+        es_api_key: str = args[constants.ES_BQ_NODE_API_KEY]
         flatten_struct = args[constants.ES_BQ_FLATTEN_STRUCT]
         flatten_array = args[constants.ES_BQ_FLATTEN_ARRAY]
         bq_temp_bucket: str = args[constants.ES_BQ_LD_TEMP_BUCKET_NAME]
@@ -136,7 +157,7 @@ class ElasticsearchToBQTemplate(BaseTemplate):
         big_query_output_dataset: str = args[constants.ES_BQ_OUTPUT_DATASET]
         big_query_output_table: str = args[constants.ES_BQ_OUTPUT_TABLE]
 
-        ignore_keys = {constants.ES_BQ_NODE_PASSWORD}
+        ignore_keys = {constants.ES_BQ_NODE_PASSWORD, constants.ES_BQ_NODE_API_KEY}
         filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting Elasticsearch to BigQuery Spark job with parameters:\n"
@@ -145,11 +166,8 @@ class ElasticsearchToBQTemplate(BaseTemplate):
 
         # Read
         input_data = ingest_dataframe_from_elasticsearch(
-            spark, es_node, es_index, es_user, es_password, args, "es.bq.input."
+            spark, es_node, es_index, es_user, es_password, es_api_key, args, "es.bq.input."
         )
-
-        print(f"Before flatten")
-        input_data.printSchema()
 
         if flatten_struct:
             # Flatten the Struct Fields
@@ -162,9 +180,6 @@ class ElasticsearchToBQTemplate(BaseTemplate):
         if not input_data.head(1):
             logger.info("No records in dataframe, Skipping the BigQuery Load")
             return
-
-        print(f"After flatten")
-        input_data.printSchema()
 
         # Write
         input_data.write \

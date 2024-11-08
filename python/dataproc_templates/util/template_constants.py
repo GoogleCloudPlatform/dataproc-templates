@@ -132,7 +132,6 @@ ES_SCROLL_KEEPALIVE="es.scroll.keepalive"
 ES_SCROLL_SIZE="es.scroll.size"
 ES_SCROLL_LIMIT="es.scroll.limit"
 ES_ACTION_HEART_BEAT_LEAD="es.action.heart.beat.lead"
-ES_NET_HTTP_HEADER_AUTHORIZATION="es.net.http.header.Authorization"
 ES_NET_SSL="es.net.ssl"
 ES_NET_SSL_CERT_ALLOW_SELF_SIGNED="es.net.ssl.cert.allow.self.signed"
 ES_NET_SSL_PROTOCOL="es.net.ssl.protocol"
@@ -394,8 +393,6 @@ ES_SPARK_READER_OPTIONS = {
         {OPTION_DEFAULT: "15s",
          OPTION_HELP: "The lead to task timeout before elasticsearch-hadoop informs Hadoop "
                       "the task is still running to prevent task restart"},
-    ES_NET_HTTP_HEADER_AUTHORIZATION:
-        {OPTION_HELP: "API Key for Elasticsearch Authorization"},
     ES_NET_SSL:
         {OPTION_DEFAULT: "false",
          OPTION_HELP: "Enable SSL"},
@@ -471,7 +468,6 @@ def get_es_spark_connector_input_options(prefix):
         ES_SCROLL_SIZE,
         ES_SCROLL_LIMIT,
         ES_ACTION_HEART_BEAT_LEAD,
-        ES_NET_HTTP_HEADER_AUTHORIZATION,
         ES_NET_SSL,
         ES_NET_SSL_CERT_ALLOW_SELF_SIGNED,
         ES_NET_SSL_PROTOCOL,
@@ -507,6 +503,7 @@ ES_GCS_INPUT_NODE = "es.gcs.input.node"
 ES_GCS_INPUT_INDEX = "es.gcs.input.index"
 ES_GCS_NODE_USER = "es.gcs.input.user"
 ES_GCS_NODE_PASSWORD = "es.gcs.input.password"
+ES_GCS_NODE_API_KEY = "es.gcs.input.api.key"
 ES_GCS_OUTPUT_FORMAT = "es.gcs.output.format"
 ES_GCS_OUTPUT_LOCATION = "es.gcs.output.location"
 ES_GCS_OUTPUT_MODE = "es.gcs.output.mode"
@@ -518,6 +515,7 @@ ES_BQ_INPUT_NODE = "es.bq.input.node"
 ES_BQ_INPUT_INDEX = "es.bq.input.index"
 ES_BQ_NODE_USER = "es.bq.input.user"
 ES_BQ_NODE_PASSWORD = "es.bq.input.password"
+ES_BQ_NODE_API_KEY = "es.bq.input.api.key"
 ES_BQ_OUTPUT_DATASET = "es.bq.output.dataset"
 ES_BQ_OUTPUT_TABLE = "es.bq.output.table"
 ES_BQ_TEMP_BUCKET = "temporaryGcsBucket"
@@ -531,6 +529,7 @@ ES_BT_INPUT_NODE = "es.bt.input.node"
 ES_BT_INPUT_INDEX = "es.bt.input.index"
 ES_BT_NODE_USER = "es.bt.input.user"
 ES_BT_NODE_PASSWORD = "es.bt.input.password"
+ES_BT_NODE_API_KEY = "es.bt.input.api.key"
 ES_BT_FLATTEN_STRUCT = "es.bt.flatten.struct.fields"
 ES_BT_FLATTEN_ARRAY = "es.bt.flatten.array.fields"
 ES_BT_CATALOG_JSON = "es.bt.catalog.json"
