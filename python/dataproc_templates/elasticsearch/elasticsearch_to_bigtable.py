@@ -16,6 +16,7 @@ from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
 import pprint
+import sys
 
 from pyspark.sql import SparkSession
 
@@ -52,14 +53,17 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
         parser.add_argument(
             f'--{constants.ES_BT_NODE_USER}',
             dest=constants.ES_BT_NODE_USER,
-            required=True,
             help='Elasticsearch Node User'
         )
         parser.add_argument(
             f'--{constants.ES_BT_NODE_PASSWORD}',
             dest=constants.ES_BT_NODE_PASSWORD,
-            required=True,
             help='Elasticsearch Node Password'
+        )
+        parser.add_argument(
+            f'--{constants.ES_BT_NODE_API_KEY}',
+            dest=constants.ES_BT_NODE_API_KEY,
+            help='Elasticsearch Node API Key'
         )
 
         add_es_spark_connector_options(parser, constants.get_es_spark_connector_input_options("es.bt.input."))
@@ -117,6 +121,20 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
+        if (not getattr(known_args, constants.ES_BT_NODE_API_KEY)
+            and (not getattr(known_args, constants.ES_BT_NODE_USER)
+            or not getattr(known_args, constants.ES_BT_NODE_PASSWORD))):
+
+            sys.exit("ArgumentParser Error: Either of es.bt.input.user and es.bt.input.password "
+                        + "OR es.bt.input.api.key needs to be provided as argument to read data from Elasticsearch")
+
+        elif (getattr(known_args, constants.ES_BT_NODE_API_KEY)
+            and (getattr(known_args, constants.ES_BT_NODE_USER)
+            or getattr(known_args, constants.ES_BT_NODE_PASSWORD))):
+
+            sys.exit("ArgumentParser Error: Both es.bt.input.user and es.bt.input.password "
+                        + "AND es.bt.input.api.key cannot be provided as arguments at the same time.")
+
         return vars(known_args)
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
@@ -128,6 +146,7 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
         es_index: str = args[constants.ES_BT_INPUT_INDEX]
         es_user: str = args[constants.ES_BT_NODE_USER]
         es_password: str = args[constants.ES_BT_NODE_PASSWORD]
+        es_api_key: str = args[constants.ES_BT_NODE_API_KEY]
         flatten_struct = args[constants.ES_BT_FLATTEN_STRUCT]
         flatten_array = args[constants.ES_BT_FLATTEN_ARRAY]
         catalog: str = ''.join(args[constants.ES_BT_CATALOG_JSON].split())
@@ -136,7 +155,7 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
         create_new_table: bool = args[constants.ES_BT_CREATE_NEW_TABLE]
         batch_mutate_size: int = args[constants.ES_BT_BATCH_MUTATE_SIZE]
 
-        ignore_keys = {constants.ES_BT_NODE_PASSWORD}
+        ignore_keys = {constants.ES_BT_NODE_PASSWORD, constants.ES_BT_NODE_API_KEY}
         filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
         logger.info(
             "Starting Elasticsearch to BigTable Spark job with parameters:\n"
@@ -145,7 +164,7 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
 
         # Read
         input_data = ingest_dataframe_from_elasticsearch(
-            spark, es_node, es_index, es_user, es_password, args, "es.bt.input."
+            spark, es_node, es_index, es_user, es_password, es_api_key, args, "es.bt.input."
         )
 
         if flatten_struct:
@@ -155,6 +174,10 @@ class ElasticsearchToBigTableTemplate(BaseTemplate):
             if flatten_array:
                 # Flatten the n-D array fields to 1-D array fields
                 input_data = flatten_array_fields(input_data)
+
+        if not input_data.head(1):
+            logger.info("No records in dataframe, Skipping the BigTable Load")
+            return
 
         # Write
         input_data.write \
