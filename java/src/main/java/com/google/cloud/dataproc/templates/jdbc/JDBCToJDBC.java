@@ -15,6 +15,10 @@
  */
 package com.google.cloud.dataproc.templates.jdbc;
 
+import com.google.cloud.dataproc.dialects.SpannerJdbcDialect;
+import com.google.cloud.dataproc.jdbc.writer.LenientJdbcWriter;
+import org.apache.spark.sql.jdbc.JdbcDialects;
+
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
@@ -56,6 +60,7 @@ public class JDBCToJDBC implements BaseTemplate {
     SparkSession spark = SparkSession.builder().appName("JDBC to JDBC").getOrCreate();
     // Set log level
     spark.sparkContext().setLogLevel(config.getSparkLogLevel());
+    JdbcDialects.registerDialect(new SpannerJdbcDialect());
     Dataset<Row> inputData = load(spark);
     write(inputData);
 
@@ -80,7 +85,8 @@ public class JDBCToJDBC implements BaseTemplate {
     if (StringUtils.isNotBlank(config.getJdbcNumPartitions())) {
       inputData
           .write()
-          .format("jdbc")
+//          .format("jdbc")
+          .format(LenientJdbcWriter.class.getCanonicalName())
           .option(JDBCOptions.JDBC_URL(), config.getJdbcOutputURL())
           .option(JDBCOptions.JDBC_TABLE_NAME(), config.getJdbcOutputTable())
           .option(JDBCOptions.JDBC_DRIVER_CLASS(), config.getJdbcOutputDriver())
