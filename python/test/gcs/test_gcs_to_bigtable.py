@@ -35,7 +35,7 @@ class TestGCSToBigTableTemplate:
              "--gcs.bigtable.input.location=gs://test",
              "--spark.bigtable.project.id=GCP_PROJECT",
              "--spark.bigtable.instance.id=BIGTABLE_INSTANCE_ID",
-             "--gcs.bigtable.catalog.json={key:value}"])
+             "--gcs.bigtable.catalog.json=gs://catalog/catalog.json"])
 
         assert parsed_args["gcs.bigtable.input.format"] == "parquet"
         assert parsed_args["gcs.bigtable.input.location"] == "gs://test"
