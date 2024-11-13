@@ -41,7 +41,7 @@ class TestGCSToBigTableTemplate:
         assert parsed_args["gcs.bigtable.input.location"] == "gs://test"
         assert parsed_args["spark.bigtable.project.id"] == "GCP_PROJECT"
         assert parsed_args["spark.bigtable.instance.id"] == "BIGTABLE_INSTANCE_ID"
-        assert parsed_args["gcs.bigtable.catalog.json"] == '{key:value}'
+        assert parsed_args["gcs.bigtable.catalog.json"] == 'gs://catalog/catalog.json'
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run(self, mock_spark_session):
@@ -53,7 +53,7 @@ class TestGCSToBigTableTemplate:
              "--gcs.bigtable.input.location=gs://test",
              "--spark.bigtable.project.id=GCP_PROJECT",
              "--spark.bigtable.instance.id=BIGTABLE_INSTANCE_ID",
-             "--gcs.bigtable.catalog.json={key:value}"])
+             "--gcs.bigtable.catalog.json=gs://catalog/catalog.json"])
         mock_spark_session.read.parquet.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_bigtable_template.run(mock_spark_session, mock_parsed_args)
 
@@ -61,7 +61,7 @@ class TestGCSToBigTableTemplate:
         mock_spark_session.dataframe.DataFrame.write.format. \
             assert_called_once_with(constants.FORMAT_BIGTABLE)
         mock_spark_session.dataframe.DataFrame.write.format().options. \
-            assert_called_with(catalog='{key:value}')
+            assert_called_with(catalog='gs://catalog/catalog.json')
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_csv1(self, mock_spark_session):
@@ -74,7 +74,7 @@ class TestGCSToBigTableTemplate:
              "--gcs.bigtable.input.header=false",
              "--spark.bigtable.project.id=GCP_PROJECT",
              "--spark.bigtable.instance.id=BIGTABLE_INSTANCE_ID",
-             "--gcs.bigtable.catalog.json={key:value}"])
+             "--gcs.bigtable.catalog.json=gs://catalog/catalog.json"])
         mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_bigtable_template.run(mock_spark_session, mock_parsed_args)
 
@@ -88,7 +88,7 @@ class TestGCSToBigTableTemplate:
         mock_spark_session.dataframe.DataFrame.write.format. \
             assert_called_once_with(constants.FORMAT_BIGTABLE)
         mock_spark_session.dataframe.DataFrame.write.format().options. \
-            assert_called_with(catalog='{key:value}')
+            assert_called_with(catalog='gs://catalog/catalog.json')
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_csv2(self, mock_spark_session):
@@ -104,7 +104,7 @@ class TestGCSToBigTableTemplate:
              "--gcs.bigtable.input.timestampntzformat=yyyy-MM-dd'T'HH:mm:ss",
              "--spark.bigtable.project.id=GCP_PROJECT",
              "--spark.bigtable.instance.id=BIGTABLE_INSTANCE_ID",
-             "--gcs.bigtable.catalog.json={key:value}"])
+             "--gcs.bigtable.catalog.json=gs://catalog/catalog.json"])
         mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
         gcs_to_bigtable_template.run(mock_spark_session, mock_parsed_args)
 
@@ -121,4 +121,4 @@ class TestGCSToBigTableTemplate:
         mock_spark_session.dataframe.DataFrame.write.format. \
             assert_called_once_with(constants.FORMAT_BIGTABLE)
         mock_spark_session.dataframe.DataFrame.write.format().options. \
-            assert_called_with(catalog='{key:value}')
+            assert_called_with(catalog='gs://catalog/catalog.json')
