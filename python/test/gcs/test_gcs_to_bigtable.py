@@ -61,7 +61,7 @@ class TestGCSToBigTableTemplate:
         mock_spark_session.dataframe.DataFrame.write.format. \
             assert_called_once_with(constants.FORMAT_BIGTABLE)
         mock_spark_session.dataframe.DataFrame.write.format().options. \
-            assert_called_with(catalog='gs://catalog/catalog.json')
+            assert_called_with(catalog='{key:value}')
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_csv1(self, mock_spark_session):
@@ -88,7 +88,7 @@ class TestGCSToBigTableTemplate:
         mock_spark_session.dataframe.DataFrame.write.format. \
             assert_called_once_with(constants.FORMAT_BIGTABLE)
         mock_spark_session.dataframe.DataFrame.write.format().options. \
-            assert_called_with(catalog='gs://catalog/catalog.json')
+            assert_called_with(catalog='{key:value}')
 
     @mock.patch.object(pyspark.sql, 'SparkSession')
     def test_run_csv2(self, mock_spark_session):
@@ -121,4 +121,4 @@ class TestGCSToBigTableTemplate:
         mock_spark_session.dataframe.DataFrame.write.format. \
             assert_called_once_with(constants.FORMAT_BIGTABLE)
         mock_spark_session.dataframe.DataFrame.write.format().options. \
-            assert_called_with(catalog='gs://catalog/catalog.json')
+            assert_called_with(catalog='{key:value}')
