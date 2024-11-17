@@ -78,9 +78,9 @@ pipeline {
         stage('Parallel Execution 1'){
         when {
                 expression {
-                    // Check if there are any changes in Java files in the last commit
+                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
                     return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
                         returnStatus: true
                     ) == 0
                 }
@@ -184,9 +184,9 @@ pipeline {
         stage('Parallel Execution 2'){
         when {
                 expression {
-                    // Check if there are any changes in Java files in the last commit
+                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
                     return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
                         returnStatus: true
                     ) == 0
                 }
@@ -286,9 +286,9 @@ pipeline {
         stage('Parallel Execution 3'){
         when {
                 expression {
-                    // Check if there are any changes in Java files in the last commit
+                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
                     return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
                         returnStatus: true
                     ) == 0
                 }
@@ -366,9 +366,9 @@ pipeline {
         stage('Parallel Execution 4'){
         when {
                 expression {
-                    // Check if there are any changes in Java files in the last commit
+                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
                     return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
                         returnStatus: true
                     ) == 0
                 }
@@ -424,9 +424,9 @@ pipeline {
         stage('Parallel Execution 5'){
         when {
                 expression {
-                    // Check if there are any changes in Java files in the last commit
+                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
                     return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".java"',
+                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
                         returnStatus: true
                     ) == 0
                 }
