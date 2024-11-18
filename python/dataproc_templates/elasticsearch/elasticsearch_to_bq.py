@@ -21,7 +21,7 @@ import sys
 from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
-from dataproc_templates.util.argument_parsing import add_es_spark_connector_options
+from dataproc_templates.util.argument_parsing import add_spark_options, add_es_spark_connector_options
 from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_elasticsearch
 from dataproc_templates.util.elasticsearch_transformations import flatten_struct_fields, flatten_array_fields
 import dataproc_templates.util.template_constants as constants
@@ -98,12 +98,6 @@ class ElasticsearchToBQTemplate(BaseTemplate):
             help='BigQuery Output Table Name'
         )
         parser.add_argument(
-            f'--{constants.ES_BQ_LD_TEMP_BUCKET_NAME}',
-            dest=constants.ES_BQ_LD_TEMP_BUCKET_NAME,
-            required=True,
-            help='Spark BigQuery connector temporary bucket'
-        )
-        parser.add_argument(
             f'--{constants.ES_BQ_OUTPUT_MODE}',
             dest=constants.ES_BQ_OUTPUT_MODE,
             required=False,
@@ -120,6 +114,8 @@ class ElasticsearchToBQTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+
+        add_spark_options(parser, constants.get_bq_output_spark_options("es.bq.output."))
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
@@ -152,7 +148,6 @@ class ElasticsearchToBQTemplate(BaseTemplate):
         es_api_key: str = args[constants.ES_BQ_NODE_API_KEY]
         flatten_struct = args[constants.ES_BQ_FLATTEN_STRUCT]
         flatten_array = args[constants.ES_BQ_FLATTEN_ARRAY]
-        bq_temp_bucket: str = args[constants.ES_BQ_LD_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.ES_BQ_OUTPUT_MODE]
         big_query_output_dataset: str = args[constants.ES_BQ_OUTPUT_DATASET]
         big_query_output_table: str = args[constants.ES_BQ_OUTPUT_TABLE]
@@ -180,12 +175,15 @@ class ElasticsearchToBQTemplate(BaseTemplate):
         if not input_data.head(1):
             logger.info("No records in dataframe, Skipping the BigQuery Load")
             return
+        
+        bq_output_constant_options: dict = constants.get_bq_output_spark_options("es.bq.output.")
+        spark_options = {bq_output_constant_options[k]: v for k, v in args.items() if k in bq_output_constant_options and v}
 
         # Write
         input_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, big_query_output_dataset + "." + big_query_output_table) \
-            .option(constants.ES_BQ_TEMP_BUCKET, bq_temp_bucket) \
             .option("enableListInference", True) \
             .mode(output_mode) \
+            .options(**spark_options) \
             .save()

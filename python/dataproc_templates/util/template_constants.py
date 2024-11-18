@@ -150,13 +150,30 @@ ES_NET_PROXY_SOCKS_PORT="es.net.proxy.socks.port"
 ES_NET_PROXY_SOCKS_USER="es.net.proxy.socks.user"
 ES_NET_PROXY_SOCKS_PASS="es.net.proxy.socks.pass"
 ES_NET_PROXY_SOCKS_USE_SYSTEM_PROPS="es.net.proxy.socks.use.system.props"
+BQ_TABLE_LABEL="bigQueryTableLabel"
+BQ_CREATE_DISPOSITION="createDisposition"
+BQ_TEMPORARY_GCS_BUCKET="temporaryGcsBucket"
+BQ_PERSISTENT_GCS_BUCKET="persistentGcsBucket"
+BQ_PERSISTENT_GCS_PATH="persistentGcsPath"
+BQ_DATE_PARTITION="datePartition"
+BQ_PARTITION_FIELD="partitionField"
+BQ_PARTITION_EXPIRATION_MS="partitionExpirationMs"
+BQ_PARTITION_TYPE="partitionType"
+BQ_PARTITION_RANGE_START="partitionRangeStart"
+BQ_PARTITION_RANGE_END="partitionRangeEnd"
+BQ_PARTITION_RANGE_INTERVAL="partitionRangeInterval"
+BQ_CLUSTERED_FIELDS="clusteredFields"
+BQ_ALLOW_FIELD_ADDITION="allowFieldAddition"
+BQ_ALLOW_FIELD_RELAXATION="allowFieldRelaxation"
+BQ_BIGNUMERIC_DEFAULT_PRECISION="bigNumericDefaultPrecision"
+BQ_BIGNUMERIC_DEFAULT_SCALE="bigNumericDefaultScale"
 
 OPTION_DEFAULT = "default"
 OPTION_HELP = "help"
 OPTION_READ_HELP = "read_help"
 OPTION_WRITE_HELP = "write_help"
 
-# At the moment this is just a map of CSV related options but it will be expanded as required for other uses.
+# At the moment this is just a map of CSV and BigQuery related options but it will be expanded as required for other uses.
 SPARK_OPTIONS = {
     CSV_CHARTOESCAPEQUOTEESCAPING:
         {OPTION_HELP: "Sets a single character used for escaping the escape for the quote character. "
@@ -247,6 +264,64 @@ SPARK_OPTIONS = {
     CSV_UNESCAPEDQUOTEHANDLING:
         {OPTION_READ_HELP: "Defines how the CsvParser will handle values with unescaped quotes."
                            "Valid values are: STOP_AT_CLOSING_QUOTE, BACK_TO_DELIMITER, STOP_AT_DELIMITER, SKIP_VALUE, RAISE_ERROR"},
+    BQ_TABLE_LABEL:
+        {OPTION_READ_HELP: "Used to add labels to the table while writing to a table. Multiple labels can be set."},
+    BQ_CREATE_DISPOSITION:
+        {OPTION_DEFAULT: "CREATE_IF_NEEDED",
+         OPTION_READ_HELP: "Specifies whether the job is allowed to create new tables"
+                           "Default to CREATE_IF_NEEDED"},
+    BQ_TEMPORARY_GCS_BUCKET:
+        {OPTION_READ_HELP: "The GCS bucket that temporarily holds the data before it is loaded to BigQuery."},
+    BQ_PERSISTENT_GCS_BUCKET:
+        {OPTION_READ_HELP: "The GCS bucket that holds the data before it is loaded to BigQuery." 
+                           "If informed, the data won't be deleted after write data into BigQuery."},
+    BQ_PERSISTENT_GCS_PATH:
+        {OPTION_READ_HELP: "The GCS path that holds the data before it is loaded to BigQuery." 
+                           "Used only with es.bq.output.persistentgcsbucket"},
+    BQ_DATE_PARTITION:
+        {OPTION_READ_HELP: "The date partition the data is going to be written to." 
+                           "Should be a date string given in the format YYYYMMDD"},
+    BQ_PARTITION_FIELD:
+        {OPTION_READ_HELP: "If this field is specified, the table is partitioned by this field."},
+    BQ_PARTITION_EXPIRATION_MS:
+        {OPTION_READ_HELP: "Number of milliseconds for which to keep the storage for partitions in the table."
+                           "The storage in a partition will have an expiration time of its partition time plus this value."},
+    BQ_PARTITION_TYPE:
+        {OPTION_READ_HELP: "Used to specify Time partitioning."
+                           "This option is mandatory for a target table to be Time partitioned."
+                           "Supported types are: HOUR, DAY, MONTH, YEAR"
+                           "Defaults to DAY if es.bq.output.partitionfield is specified"},
+    BQ_PARTITION_RANGE_START:
+        {OPTION_READ_HELP: "Used to specify Integer-range partitioning."
+                           "This option is mandatory for a target table to be Integer-range partitioned."
+                           "Pass es.bq.output.partitionrangeend and es.bq.output.partitionrangeinterval along with this option."},
+    BQ_PARTITION_RANGE_END:
+        {OPTION_READ_HELP: "Used to specify Integer-range partitioning."
+                           "This option is mandatory for a target table to be Integer-range partitioned."
+                           "Pass es.bq.output.partitionrangestart and es.bq.output.partitionrangeinterval along with this option."},
+    BQ_PARTITION_RANGE_INTERVAL:
+        {OPTION_READ_HELP: "Used to specify Integer-range partitioning."
+                           "This option is mandatory for a target table to be Integer-range partitioned."
+                           "Pass es.bq.output.partitionrangestart and es.bq.output.partitionrangeend along with this option."},
+    BQ_CLUSTERED_FIELDS:
+        {OPTION_READ_HELP: "A string of non-repeated, top level columns seperated by comma."},
+    BQ_ALLOW_FIELD_ADDITION:
+        {OPTION_DEFAULT: "false",
+         OPTION_READ_HELP: "Adds the ALLOW_FIELD_ADDITION SchemaUpdateOption to the BigQuery LoadJob."
+                           "Allowed values are true and false."
+                           "Default to false"},
+    BQ_ALLOW_FIELD_RELAXATION:
+        {OPTION_DEFAULT: "false",
+         OPTION_READ_HELP: "Adds the ALLOW_FIELD_RELAXATION SchemaUpdateOption to the BigQuery LoadJob."
+                           "Allowed values are true and false."},
+    BQ_BIGNUMERIC_DEFAULT_PRECISION:
+        {OPTION_READ_HELP: "An alternative default precision for BigNumeric fields, as the BigQuery default is too wide for Spark."
+                           "Values can be between 1 and 38."},
+    BQ_BIGNUMERIC_DEFAULT_SCALE:
+        {OPTION_READ_HELP: "An alternative default scale for BigNumeric fields."
+                           "Values can be between 0 and 38, and less than bigNumericFieldsPrecision."
+                           "This default is used only when the field has an unparameterized BigNumeric type."}
+
 }
 
 # Helper functions for applying SPARK_OPTIONS to templates
@@ -309,6 +384,31 @@ def get_csv_output_spark_options(prefix):
     }
     spark_options = {(prefix + _).lower(): _ for _ in output_options}
     return spark_options
+
+
+def get_bq_output_spark_options(prefix):
+    output_options = {
+        BQ_TABLE_LABEL,
+        BQ_CREATE_DISPOSITION,
+        BQ_TEMPORARY_GCS_BUCKET,
+        BQ_PERSISTENT_GCS_BUCKET,
+        BQ_PERSISTENT_GCS_PATH,
+        BQ_DATE_PARTITION,
+        BQ_PARTITION_FIELD,
+        BQ_PARTITION_EXPIRATION_MS,
+        BQ_PARTITION_TYPE,
+        BQ_PARTITION_RANGE_START,
+        BQ_PARTITION_RANGE_END,
+        BQ_PARTITION_RANGE_INTERVAL,
+        BQ_CLUSTERED_FIELDS,
+        BQ_ALLOW_FIELD_ADDITION,
+        BQ_ALLOW_FIELD_RELAXATION,
+        BQ_BIGNUMERIC_DEFAULT_PRECISION,
+        BQ_BIGNUMERIC_DEFAULT_SCALE,
+    }
+    spark_options = {(prefix + _).lower(): _ for _ in output_options}
+    return spark_options
+
 
 # A map of Elasticsearch Spark Connector related options.
 ES_SPARK_READER_OPTIONS = {
