@@ -64,6 +64,7 @@ def ingest_dataframe_from_elasticsearch(
     es_index: str,
     es_user: str,
     es_password: str,
+    es_api_key: str,
     args: dict,
     prefix: str,
 ) -> DataFrame:
@@ -77,14 +78,21 @@ def ingest_dataframe_from_elasticsearch(
 
     # Making Spark Case Sensitive
     spark.conf.set('spark.sql.caseSensitive', True)
-
-    es_conf_json = {
-        "es.nodes": es_node,
-        "es.resource": es_index,
-        "es.net.http.auth.user": es_user,
-        "es.net.http.auth.pass": es_password,
-        "es.output.json": "true"
-    }
+    if es_api_key is not None:
+        es_conf_json = {
+            "es.nodes": es_node,
+            "es.resource": es_index,
+            "es.net.http.header.Authorization": es_api_key,
+            "es.output.json": "true"
+        }
+    else:
+        es_conf_json = {
+            "es.nodes": es_node,
+            "es.resource": es_index,
+            "es.net.http.auth.user": es_user,
+            "es.net.http.auth.pass": es_password,
+            "es.output.json": "true"
+        }
 
     # Merging the Required and Optional attributes
     es_conf_json.update(es_spark_connector_options)

@@ -83,7 +83,7 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 bin/start.sh \
 -- --template GCSTOSPANNER \
 --templateProperty project.id=<gcp-project-id> \
---templateProperty gcs.spanner.input.format=<avro | parquet | orc> \
+--templateProperty gcs.spanner.input.format=<avro | parquet | orc | csv> \
 --templateProperty gcs.spanner.input.location=<gcs path> \
 --templateProperty gcs.spanner.output.instance=<spanner instance id> \
 --templateProperty gcs.spanner.output.database=<spanner database id> \
@@ -101,7 +101,7 @@ GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
 bin/start.sh \
 -- --template GCSTOSPANNER \
 --templateProperty project.id=<gcp-project-id> \
---templateProperty gcs.spanner.input.format=<avro | parquet | orc> \
+--templateProperty gcs.spanner.input.format=<avro | parquet | orc | csv> \
 --templateProperty gcs.spanner.input.location=<gcs path> \
 --templateProperty gcs.spanner.output.instance=<spanner instance id> \
 --templateProperty gcs.spanner.output.database=<spanner database id> \
@@ -111,6 +111,9 @@ bin/start.sh \
 --templateProperty gcs.spanner.output.batchInsertSize=<optional integer> \
 --templateProperty spanner.jdbc.dialect=postgresql
 ```
+
+Note :- While running GCS to Spanner template with CSV file formats, header should be specified in CSV file and the Spark inferred data types should be in alignment with the data types of Spanner Tables. Otherwise, the job would fail.
+As for other file formats all this information is by default being covered in their respective file formats like parquet / orc / avro.
 
 ## 4. Cloud Storage to JDBC
 
