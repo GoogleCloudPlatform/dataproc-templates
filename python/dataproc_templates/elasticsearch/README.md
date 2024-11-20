@@ -363,7 +363,8 @@ This template has been tested with the following versions of the above mentioned
 - `es.bq.input.api.key`: API Key for Elasticsearch Authorization 
 - `es.bq.output.dataset`: BigQuery dataset id (format: Dataset_id)
 - `es.bq.output.table`: BigQuery table name (format: Table_name)
-- `es.bq.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
+- `es.bq.output.temporarygcsbucket`: The GCS bucket that temporarily holds the data before it is loaded to BigQuery
+- `es.bq.output.persistentgcsbucket`: The GCS bucket that holds the data before it is loaded to BigQuery. If informed, the data won't be deleted after write data into BigQuery.
 
 #### Optional Arguments
 
@@ -414,8 +415,25 @@ This template has been tested with the following versions of the above mentioned
 - `es.bq.flatten.struct.fields`: Flatten the struct fields
 - `es.bq.flatten.array.fields`: Flatten the n-D array fields to 1-D array fields, it needs es.bq.flatten.struct.fields option to be passed
 - `es.bq.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+- `es.bq.output.bigquerytablelabel`: Used to add labels to the table while writing to a table. Multiple labels can be set.
+- `es.bq.output.createdisposition`: Specifies whether the job is allowed to create new tables.
+- `es.bq.output.persistentgcspath`: The GCS path that holds the data before it is loaded to BigQuery. Used only with es.bq.output.persistentgcsbucket
+- `es.bq.output.datepartition`: The date partition the data is going to be written to.
+- `es.bq.output.partitionfield`: If this field is specified, the table is partitioned by this field.
+- `es.bq.output.partitionexpirationms`: Number of milliseconds for which to keep the storage for partitions in the table.
+- `es.bq.output.partitiontype`: Used to specify Time partitioning. Supported types are: HOUR, DAY, MONTH, YEAR. This option is mandatory for a target table to be Time partitioned. Defaults to DAY if es.bq.output.partitionfield is specified
+- `es.bq.output.partitionrangestart`: Used to specify Integer-range partitioning. This option is mandatory for a target table to be Integer-range partitioned. Pass es.bq.output.partitionrangeend and es.bq.output.partitionrangeinterval along with this option.
+- `es.bq.output.partitionrangeend`: Used to specify Integer-range partitioning. This option is mandatory for a target table to be Integer-range partitioned. Pass es.bq.output.partitionrangestart and es.bq.output.partitionrangeinterval along with this option.
+- `es.bq.output.partitionrangeinterval`: Used to specify Integer-range partitioning. This option is mandatory for a target table to be Integer-range partitioned. Pass es.bq.output.partitionrangestart and es.bq.output.partitionrangeend along with this option.
+- `es.bq.output.clusteredfields`: A string of non-repeated, top level columns seperated by comma.
+- `es.bq.output.allowfieldaddition`: Adds the ALLOW_FIELD_ADDITION SchemaUpdateOption to the BigQuery LoadJob. Allowed values are true and false. Default to false
+- `es.bq.output.allowfieldrelaxation`: Adds the ALLOW_FIELD_RELAXATION SchemaUpdateOption to the BigQuery LoadJob. Allowed values are true and false.
+- `es.bq.output.bignumericdefaultprecision`: An alternative default precision for BigNumeric fields, as the BigQuery default is too wide for Spark. Values can be between 1 and 38.
+- `es.bq.output.bignumericdefaultscale`: An alternative default scale for BigNumeric fields. Values can be between 0 and 38, and less than bigNumericFieldsPrecision. This default is used only when the field has an unparameterized BigNumeric type.
 
 **Note:** Make sure that either ```es.bq.input.api.key``` or both ```es.bq.input.user``` and ```es.bq.input.password``` is provided. Setting or not setting all three properties at the same time will throw an error.
+
+Pass either ```es.bq.output.temporarygcsbucket``` or ```es.bq.output.persistentgcsbucket```.
 
 ## Usage
 
@@ -429,7 +447,8 @@ usage: main.py [-h]
                --es.bq.input.api.key ES.BQ.INPUT.API.KEY
                --es.bq.output.dataset ES.BQ.OUTPUT.DATASET
                --es.bq.output.table ES.BQ.OUTPUT.TABLE
-               --es.bq.temp.bucket.name ES.BQ.TEMP.BUCKET.NAME
+               --es.bq.output.temporarygcsbucket ES.BQ.OUTPUT.TEMPORARYGCSBUCKET
+               --es.bq.output.persistentgcsbucket ES.BQ.OUTPUT.PERSISTENTGCSBUCKET
                --es.bq.output.mode {overwrite,append,ignore,errorifexists}
                [--es.bq.input.es.nodes.path.prefix ES.BQ.INPUT.ES.NODES.PATH.PREFIX]
                [--es.bq.input.es.query ES.BQ.INPUT.ES.QUERY]
@@ -477,6 +496,21 @@ usage: main.py [-h]
                [--es.bq.input.es.net.proxy.socks.use.system.props ES.BQ.INPUT.ES.NET.PROXY.SOCKS.USE.SYSTEM.PROPS]
                [--es.bq.flatten.struct.fields]
                [--es.bq.flatten.array.fields]
+               [--es.bq.output.bigquerytablelabel ES.BQ.OUTPUT.BIGQUERYTABLELABEL]
+               [--es.bq.output.createdisposition ES.BQ.OUTPUT.CREATEDISPOSITION]
+               [--es.bq.output.persistentgcspath ES.BQ.OUTPUT.PERSISTENTGCSPATH]
+               [--es.bq.output.datepartition ES.BQ.OUTPUT.DATEPARTITION]
+               [--es.bq.output.partitionfield ES.BQ.OUTPUT.PARTITIONFIELD]
+               [--es.bq.output.partitionexpirationms ES.BQ.OUTPUT.PARTITIONEXPIRATIONMS]
+               [--es.bq.output.partitiontype ES.BQ.OUTPUT.PARTITIONTYPE]
+               [--es.bq.output.partitionrangestart ES.BQ.OUTPUT.PARTITIONRANGESTART]
+               [--es.bq.output.partitionrangeend ES.BQ.OUTPUT.PARTITIONRANGEEND]
+               [--es.bq.output.partitionrangeinterval ES.BQ.OUTPUT.PARTITIONRANGEINTERVAL]
+               [--es.bq.output.clusteredfields ES.BQ.OUTPUT.CLUSTEREDFIELDS]
+               [--es.bq.output.allowfieldaddition ES.BQ.OUTPUT.ALLOWFIELDADDITION]
+               [--es.bq.output.allowfieldrelaxation ES.BQ.OUTPUT.ALLOWFIELDRELAXATION]
+               [--es.bq.output.bignumericdefaultprecision ES.BQ.OUTPUT.BIGNUMERICDEFAULTPRECISION]
+               [--es.bq.output.bignumericdefaultscale ES.BQ.OUTPUT.BIGNUMERICDEFAULTSCALE]
 
 options:
   -h, --help            show this help message and exit
@@ -586,12 +620,45 @@ options:
                         BigQuery Output Dataset Name
   --es.bq.output.table ES.BQ.OUTPUT.TABLE
                         BigQuery Output Table Name
-  --es.bq.temp.bucket.name ES.BIGQUERY.TEMP.BUCKET.NAME
-                        Spark BigQuery connector temporary bucket
   --es.bq.output.mode {overwrite,append,ignore,errorifexists}
                         BigQuery Output write mode (one of:
                         append,overwrite,ignore,errorifexists) (Defaults to
                         append)
+  --es.bq.output.temporarygcsbucket ES.BQ.OUTPUT.TEMPORARYGCSBUCKET
+                        The GCS bucket that temporarily holds the data before it is loaded to BigQuery
+  --es.bq.output.persistentgcsbucket ES.BQ.OUTPUT.PERSISTENTGCSBUCKET
+                        The GCS bucket that holds the data before it is loaded to BigQuery. If informed, the data won't be deleted after write data into BigQuery.
+  --es.bq.output.bigquerytablelabel ES.BQ.OUTPUT.BIGQUERYTABLELABEL
+                        Used to add labels to the table while writing to a table. Multiple labels can be set.
+  --es.bq.output.createdisposition ES.BQ.OUTPUT.CREATEDISPOSITION
+                        Specifies whether the job is allowed to create new tables.
+  --es.bq.output.persistentgcspath ES.BQ.OUTPUT.PERSISTENTGCSPATH
+                        The GCS path that holds the data before it is loaded to BigQuery.
+                        Used only with es.bq.output.persistentgcsbucket
+  --es.bq.output.datepartition ES.BQ.OUTPUT.DATEPARTITION
+                        The date partition the data is going to be written to.
+  --es.bq.output.partitionfield ES.BQ.OUTPUT.PARTITIONFIELD
+                        If this field is specified, the table is partitioned by this field.
+  --es.bq.output.partitionexpirationms ES.BQ.OUTPUT.PARTITIONEXPIRATIONMS
+                        Number of milliseconds for which to keep the storage for partitions in the table.
+  --es.bq.output.partitiontype ES.BQ.OUTPUT.PARTITIONTYPE
+                        Used to specify Time partitioning. Supported types are: HOUR, DAY, MONTH, YEAR. This option is mandatory for a target table to be Time partitioned. Defaults to DAY if es.bq.output.partitionfield is specified
+  --es.bq.output.partitionrangestart ES.BQ.OUTPUT.PARTITIONRANGESTART
+                        Used to specify Integer-range partitioning. This option is mandatory for a target table to be Integer-range partitioned. Pass es.bq.output.partitionrangeend and es.bq.output.partitionrangeinterval along with this option.
+  --es.bq.output.partitionrangeend ES.BQ.OUTPUT.PARTITIONRANGEEND
+                        Used to specify Integer-range partitioning. This option is mandatory for a target table to be Integer-range partitioned. Pass es.bq.output.partitionrangestart and es.bq.output.partitionrangeinterval along with this option.
+  --es.bq.output.partitionrangeinterval ES.BQ.OUTPUT.PARTITIONRANGEINTERVAL
+                        Used to specify Integer-range partitioning. This option is mandatory for a target table to be Integer-range partitioned. Pass es.bq.output.partitionrangestart and es.bq.output.partitionrangeend along with this option.
+  --es.bq.output.clusteredfields ES.BQ.OUTPUT.CLUSTEREDFIELDS
+                        A string of non-repeated, top level columns seperated by comma.
+  --es.bq.output.allowfieldaddition ES.BQ.OUTPUT.ALLOWFIELDADDITION
+                        Adds the ALLOW_FIELD_ADDITION SchemaUpdateOption to the BigQuery LoadJob. Allowed values are true and false. Default to false
+  --es.bq.output.allowfieldrelaxation ES.BQ.OUTPUT.ALLOWFIELDRELAXATION
+                        Adds the ALLOW_FIELD_RELAXATION SchemaUpdateOption to the BigQuery LoadJob. Allowed values are true and false.
+  --es.bq.output.bignumericdefaultprecision ES.BQ.OUTPUT.BIGNUMERICDEFAULTPRECISION
+                        An alternative default precision for BigNumeric fields, as the BigQuery default is too wide for Spark. Values can be between 1 and 38.
+  --es.bq.output.bignumericdefaultscale ES.BQ.OUTPUT.BIGNUMERICDEFAULTSCALE
+                        An alternative default scale for BigNumeric fields. Values can be between 0 and 38, and less than bigNumericFieldsPrecision. This default is used only when the field has an unparameterized BigNumeric type.
 
 ```
 
@@ -612,7 +679,7 @@ export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
     --es.bq.input.password="demo" \
     --es.bq.output.dataset="my-project.test_dataset" \
     --es.bq.output.table="dummyusers" \
-    --es.bq.temp.bucket.name="<temp-bq-bucket-name>" \
+    --es.bq.output.temporarygcsbucket="<temp-bq-bucket-name>" \
     --es.bq.output.mode="append"
 ```
 # Elasticsearch To Bigtable
