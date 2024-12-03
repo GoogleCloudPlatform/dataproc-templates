@@ -69,14 +69,14 @@ pipeline {
         }
         stage('Parallel Execution 1'){
             when {
-                expression {
-                    // Check if there are any changes in Python files in the last commit
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".py"',
-                        returnStatus: true
-                    ) == 0
+                    expression {
+                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
+                        return sh(
+                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
+                            returnStatus: true
+                        ) == 0
+                    }
                 }
-            }
             parallel{ 
                 stage('Hive TO GCS') {
                     steps{
@@ -165,14 +165,14 @@ pipeline {
         }
         stage('Parallel Execution 2'){
             when {
-                expression {
-                    // Check if there are any changes in Python files in the last commit
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".py"',
-                        returnStatus: true
-                    ) == 0
+                    expression {
+                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
+                        return sh(
+                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
+                            returnStatus: true
+                        ) == 0
+                    }
                 }
-            }
             parallel{
                 stage('JDBC To JDBC') {
                     steps{
@@ -257,14 +257,14 @@ pipeline {
         }
         stage('Parallel Execution 3'){
             when {
-                expression {
-                    // Check if there are any changes in Python files in the last commit
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".py"',
-                        returnStatus: true
-                    ) == 0
+                    expression {
+                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
+                        return sh(
+                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
+                            returnStatus: true
+                        ) == 0
+                    }
                 }
-            }
             parallel{
                 stage('GCS TO BIGQUERY') {
                     steps{
@@ -353,14 +353,14 @@ pipeline {
         }
         stage('Parallel Execution 4'){
             when {
-                expression {
-                    // Check if there are any changes in Python files in the last commit
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".py"',
-                        returnStatus: true
-                    ) == 0
+                    expression {
+                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
+                        return sh(
+                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
+                            returnStatus: true
+                        ) == 0
+                    }
                 }
-            }
             parallel{
                 stage('MONGO TO GCS') {
                     steps{
@@ -514,14 +514,14 @@ pipeline {
         }
         stage('Parallel Execution 5'){
             when {
-                expression {
-                    // Check if there are any changes in Python files in the last commit
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".py"',
-                        returnStatus: true
-                    ) == 0
+                    expression {
+                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
+                        return sh(
+                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
+                            returnStatus: true
+                        ) == 0
+                    }
                 }
-            }
             parallel{
                 stage('JDBC TO GCS') {
                     steps{
@@ -614,14 +614,14 @@ pipeline {
         }  
          stage('Parallel Execution 6'){
              when {
-                 expression {
-                     // Check if there are any changes in Python files in the last commit
-                     return sh(
-                         script: 'git diff --name-only HEAD~1 | grep -q ".py"',
-                         returnStatus: true
-                     ) == 0
+                     expression {
+                         // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
+                         return sh(
+                             script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
+                             returnStatus: true
+                         ) == 0
+                     }
                  }
-             }
             parallel{
                 stage('S3 TO BigQuery (avro)') {    
                     steps{
@@ -659,14 +659,14 @@ pipeline {
         }
         stage('Parallel Execution 7'){
             when {
-                expression {
-                    // Check if there are any changes in Python files in the last commit
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".py"',
-                        returnStatus: true
-                    ) == 0
+                    expression {
+                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
+                        return sh(
+                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
+                            returnStatus: true
+                        ) == 0
+                    }
                 }
-            }
             parallel{
                 // stage('Hbase TO GCS (Manual)') {    
                 //     when {
@@ -751,7 +751,76 @@ pipeline {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                            
+
+cat > /tmp/cities.json << EOF
+{
+    "table": {
+        "name": "cities"
+    },
+    "rowkey": "key",
+    "columns": {
+        "key": {
+            "cf": "rowkey",
+            "col": "key",
+            "type": "string"
+        },
+        "LatD": {
+            "cf": "lat",
+            "col": "LatD",
+            "type": "string"
+        },
+        "LatM": {
+            "cf": "lat",
+            "col": "LatM",
+            "type": "string"
+        },
+        "LatS": {
+            "cf": "lat",
+            "col": "LatS",
+            "type": "string"
+        },
+        "NS": {
+            "cf": "lat",
+            "col": "NS",
+            "type": "string"
+        },
+        "LonD": {
+            "cf": "lon",
+            "col": "LonD",
+            "type": "string"
+        },
+        "LonM": {
+            "cf": "lon",
+            "col": "LonM",
+            "type": "string"
+        },
+        "LonS": {
+            "cf": "lon",
+            "col": "LonS",
+            "type": "string"
+        },
+        "EW": {
+            "cf": "lon",
+            "col": "EW",
+            "type": "string"
+        },
+        "City": {
+            "cf": "place",
+            "col": "City",
+            "type": "string"
+        },
+        "State": {
+            "cf": "place",
+            "col": "State",
+            "type": "string"
+        }
+    }
+}
+EOF
+
+
+                                cat /tmp/cities.json
+                                gsutil cp /tmp/cities.json gs://dataproc-templates/conf/
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
                                 export SKIP_BUILD=true
                                 export JARS="gs://spark-lib/bigtable/spark-bigtable_2.12-0.1.0.jar"
@@ -765,23 +834,7 @@ pipeline {
                                 --gcs.bigtable.input.location="gs://dataproc-templates/data/csv/cities.csv" \
                                 --spark.bigtable.project.id=$GCP_PROJECT \
                                 --spark.bigtable.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
-                                --gcs.bigtable.catalog.json=\'\'\'{
-                                    "table":{"name":"cities"},
-                                    "rowkey":"key",
-                                    "columns":{
-                                        "key":{"cf":"rowkey", "col":"key", "type":"string"},
-                                        "LatD":{"cf":"lat", "col":"LatD", "type":"string"},
-                                        "LatM":{"cf":"lat", "col":"LatM", "type":"string"},
-                                        "LatS":{"cf":"lat", "col":"LatS", "type":"string"},
-                                        "NS":{"cf":"lat", "col":"NS", "type":"string"},
-                                        "LonD":{"cf":"lon", "col":"LonD", "type":"string"},
-                                        "LonM":{"cf":"lon", "col":"LonM", "type":"string"},
-                                        "LonS":{"cf":"lon", "col":"LonS", "type":"string"},
-                                        "EW":{"cf":"lon", "col":"EW", "type":"string"},
-                                        "City":{"cf":"place", "col":"City", "type":"string"},
-                                        "State":{"cf":"place", "col":"State", "type":"string"}
-                                    }
-                                }\'\'\'
+                                --gcs.bigtable.catalog.json="gs://dataproc-templates/conf/cities.json"
                             '''
                         }
                     }
@@ -790,14 +843,14 @@ pipeline {
         }
         stage('Parallel Execution 8'){
             when {
-                expression {
-                    // Check if there are any changes in Python files in the last commit
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -q ".py"',
-                        returnStatus: true
-                    ) == 0
+                    expression {
+                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
+                        return sh(
+                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
+                            returnStatus: true
+                        ) == 0
+                    }
                 }
-            }
             parallel{
                 stage('Elasticsearch to GCS'){
                     steps{

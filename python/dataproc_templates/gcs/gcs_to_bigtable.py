@@ -23,6 +23,7 @@ from dataproc_templates import BaseTemplate
 from dataproc_templates.util.argument_parsing import add_spark_options
 from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
 import dataproc_templates.util.template_constants as constants
+from google.cloud import storage
 
 
 __all__ = ['GCSToBigTableTemplate']
@@ -87,7 +88,7 @@ class GCSToBigTableTemplate(BaseTemplate):
             f'--{constants.GCS_BT_CATALOG_JSON}',
             dest=constants.GCS_BT_CATALOG_JSON,
             required=True,
-            help='BigTable catalog inline json'
+            help='BigTable catalog json stored file GCS location'
         )
 
         known_args: argparse.Namespace
@@ -102,7 +103,6 @@ class GCSToBigTableTemplate(BaseTemplate):
         # Arguments
         input_location: str = args[constants.GCS_BT_INPUT_LOCATION]
         input_format: str = args[constants.GCS_BT_INPUT_FORMAT]
-        catalog: str = ''.join(args[constants.GCS_BT_CATALOG_JSON].split())
         project_id: str = args[constants.GCS_BT_PROJECT_ID]
         instance_id: str = args[constants.GCS_BT_INSTANCE_ID]
         create_new_table: bool = args[constants.GCS_BT_CREATE_NEW_TABLE]
@@ -113,6 +113,15 @@ class GCSToBigTableTemplate(BaseTemplate):
             "Starting Cloud Storage to BigTable Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
+
+        # Read Catalog From GCS
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(args[constants.GCS_BT_CATALOG_JSON].split('/')[2])
+        blob = bucket.blob('/'.join(args[constants.GCS_BT_CATALOG_JSON].split('/')[3:]))
+        catalog = blob.download_as_text()
+
+        logger.info(f"Catalog: {catalog}")
+
 
         # Read
         input_data = ingest_dataframe_from_cloud_storage(
