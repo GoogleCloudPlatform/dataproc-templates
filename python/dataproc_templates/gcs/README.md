@@ -229,7 +229,7 @@ It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.ht
 * `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
 * `spark.bigtable.project.id`: GCP project where BigTable instance is running
 * `spark.bigtable.instance.id`: BigTable instance id
-* `gcs.bigtable.catalog.json`: BigTable catalog inline json
+* `gcs.bigtable.catalog.json`: BigTable catalog json file GCS path
 #### Optional Arguments
 * `gcs.bigtable.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `gcs.bigtable.input.columnnameofcorruptrecord`: Allows renaming the new field having malformed string created by PERMISSIVE mode
@@ -373,7 +373,7 @@ options:
   --spark.bigtable.instance.id SPARK.BIGTABLE.INSTANCE.ID
                         BigTable instance id
   --gcs.bigtable.catalog.json GCS.BT.CATALOG.JSON
-                        BigTable catalog inline json
+                        BigTable catalog json file GCS path
 ```
 
 ## Example submission
@@ -392,14 +392,7 @@ export SPARK_PROPERTIES="spark.jars.packages=org.slf4j:slf4j-reload4j:1.7.36"
    --gcs.bigtable.input.header="false" \
    --spark.bigtable.project.id="<GCP_PROJECT>" \
    --spark.bigtable.instance.id="<BIGTABLE_INSTANCE_ID>" \
-   --gcs.bigtable.catalog.json='''{
-                        "table":{"name":"my_table"},
-                        "rowkey":"key",
-                        "columns":{
-                        "key":{"cf":"rowkey", "col":"key", "type":"string"},
-                        "name":{"cf":"cf", "col":"name", "type":"string"}
-                        }
-                    }'''
+   --gcs.bigtable.catalog.json="<gs://bucket/path>"
 ```
 
 
