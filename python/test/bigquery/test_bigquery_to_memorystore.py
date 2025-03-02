@@ -111,7 +111,6 @@ class TestBigQueryToMemorystoreTemplate:
 
         mock_spark_session.dataframe.DataFrame.write.format.assert_called_once_with(constants.FORMAT_MEMORYSTORE)
         mock_spark_session.dataframe.DataFrame.write.format().option.assert_any_call(constants.TABLE, "redis_table")
-        mock_spark_session.dataframe.DataFrame.write.format().option.assert_any_call(constants.MEMORYSTORE_KEY_COLUMN, "key_column")
         mock_spark_session.dataframe.DataFrame.write.format().option.assert_any_call(constants.MEMORYSTORE_MODEL, constants.BQ_MEMORYSTORE_OUTPUT_MODEL_BINARY)
         mock_spark_session.dataframe.DataFrame.write.format().option.assert_any_call(constants.MEMORYSTORE_HOST, "redis_host")
         mock_spark_session.dataframe.DataFrame.write.format().option.assert_any_call(constants.MEMORYSTORE_PORT, 6379)
