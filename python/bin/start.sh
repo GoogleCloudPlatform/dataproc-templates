@@ -36,6 +36,8 @@ if [ -z "$SKIP_BUILD" ]; then
     python3 ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
 fi
 
+ls -lrt $PACKAGE_EGG_FILE
+
 if [ $4 = "--template=HBASETOGCS" ]; then
   OPT_SPARK_VERSION="--version=1.0.29"
 else
