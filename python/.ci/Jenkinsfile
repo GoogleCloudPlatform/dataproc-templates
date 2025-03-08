@@ -45,7 +45,7 @@ pipeline {
                     --num-workers 2 \
                     --worker-machine-type n1-standard-2 \
                     --worker-boot-disk-size 500 \
-                    --image-version 2.1-debian11 \
+                    --image-version 2.2-debian12 \
                     --optional-components ZOOKEEPER \
                     --max-idle 1800s \
                     --project $GCP_PROJECT

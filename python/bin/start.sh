@@ -44,12 +44,11 @@ fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
-#OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
-# OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar"
-# if [[ $OPT_SPARK_VERSION == *"=1.1"* || $JOB_TYPE == "CLUSTER" ]]; then
-#   echo "Dataproc Serverless Runtime 1.1 or CLUSTER Job Type Detected"
-# 	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
-# fi
+OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar"
+if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
+  echo "Dataproc Serverless Runtime 1.1 or CLUSTER Job Type Detected"
+	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
+fi
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
 OPT_PY_FILES="--py-files=${PROJECT_ROOT_DIR}/${PACKAGE_EGG_FILE}"
@@ -68,7 +67,7 @@ if [ -n "${METASTORE_SERVICE}" ]; then
   OPT_METASTORE_SERVICE="--metastore-service=${METASTORE_SERVICE}"
 fi
 if [ -n "${JARS}" ]; then
-  OPT_JARS="--jars=${JARS}"
+  OPT_JARS="${OPT_JARS},${JARS}"
 fi
 if [ -n "${FILES}" ]; then
   OPT_FILES="--files=${FILES}"
