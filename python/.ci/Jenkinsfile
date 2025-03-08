@@ -57,15 +57,18 @@ pipeline {
             steps {
                     catchError {
                         sh '''
-                            $PYTHON_EXECUTABLE -m pip install --user virtualenv    
+                            $PYTHON_EXECUTABLE -m pip install --user virtualenv
 
                             $PYTHON_EXECUTABLE -m venv env
                             source env/bin/activate
-                            
-                            export PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
 
                             cd python
-                            python setup.py bdist_egg --output=$PACKAGE_EGG_FILE
+
+                            $PYTHON_EXECUTABLE -m pip install -r requirements.txt
+
+                            export PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
+
+                            $PYTHON_EXECUTABLE setup.py bdist_egg --output=$PACKAGE_EGG_FILE
                         '''
                     }
             }
