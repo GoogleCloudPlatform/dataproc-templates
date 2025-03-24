@@ -6,6 +6,7 @@
 
 - [AzureBlobStorageToBigQuery](/python/dataproc_templates/azure#azure-blob-storage-to-bigquery)
 - [BigQueryToGCS](/python/dataproc_templates/bigquery#bigquery-to-gcs) (blogpost [link](https://medium.com/google-cloud/moving-data-from-bigquery-to-gcs-using-gcp-dataproc-serverless-and-pyspark-f6481b86bcd1))
+- [BigQueryToMemorystore](/python/dataproc_templates/bigquery#bigquery-to-memorystore)
 - [CassandraToBigquery](/python/dataproc_templates/cassandra#cassandra-to-bigquery)
 - [CassandraToGCS](/python/dataproc_templates/cassandra#cassandra-to-gcs) (blogpost [link](https://medium.com/google-cloud/export-data-from-cassandra-to-google-cloud-storage-using-dataproc-serverless-2569a00e17fe))
 - [ElasticsearchToBigQuery](/python/dataproc_templates/elasticsearch#elasticsearch-to-bq) (blogpost [link](https://medium.com/@anujrohilla197/exporting-data-from-elasticsearch-to-bigquery-using-pyspark-on-dataproc-serverless-47633f620ce3))
