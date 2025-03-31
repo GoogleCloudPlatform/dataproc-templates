@@ -194,12 +194,6 @@ class JDBCToBigQueryTemplate(BaseTemplate):
         upperbound_list = input_jdbc_upperbound.split(";")
         counter = len(source_tables_list)
 
-        print("source_tables_list", source_tables_list)
-        print("target_tables_list", target_tables_list)
-        print("partitioncolumn_list", partitioncolumn_list)
-        print("lowerbound_list", lowerbound_list)
-        print("upperbound_list", upperbound_list)
-
         if len(target_tables_list)==counter and (len(partitioncolumn_list)==counter or partitioncolumn_list==['']) and (len(lowerbound_list)==counter or lowerbound_list==['']) and (len(upperbound_list)==counter or upperbound_list==['']):
             i = 0
             while i < counter:
