@@ -924,6 +924,37 @@ EOF
                         }
                     }
                 }
+                stage('BigQuery to Memorystore'){
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                python3.8 -m pip install --user virtualenv    
+
+                                python3.8 -m venv env
+
+                                source env/bin/activate
+
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export SKIP_BUILD=true
+                                export JARS="gs://vbhatia_test/jars/spark-redis_2.12-3.0.0-jar-with-dependencies.jar"
+
+                                cd python
+                                
+                                ./bin/start.sh \
+                                    -- --template=BIGQUERYTOMEMORYSTORE \
+                                    --bigquery.memorystore.input.table=bigquery-public-data.fcc_political_ads.file_history \
+                                    --bigquery.memorystore.output.host=10.0.0.17 \
+                                    --bigquery.memorystore.output.port=6379 \
+                                    --bigquery.memorystore.output.table=file_history \
+                                    --bigquery.memorystore.output.key.column=fileHistoryId \
+                                    --bigquery.memorystore.output.model=hash \
+                                    --bigquery.memorystore.output.mode=overwrite \
+                                    --bigquery.memorystore.output.ttl=3600 \
+                                    --bigquery.memorystore.output.dbnum=0
+                            '''
+                        }
+                    }
+                }
             }
         }
     }
