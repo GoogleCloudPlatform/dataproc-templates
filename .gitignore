@@ -27,3 +27,5 @@ pipeline.json
 metastore_db/
 python/elastic.jks
 python/tls.cert
+
+python/venv**
