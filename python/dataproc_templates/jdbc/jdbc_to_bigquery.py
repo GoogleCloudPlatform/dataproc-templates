@@ -225,4 +225,5 @@ class JDBCToBigQueryTemplate(BaseTemplate):
                 i += 1
         else:
             logger.info("There is some issue either with the list of source or target tables or with respect to the parameters provided")
+            exit(1)
 
