@@ -5,6 +5,9 @@ pipeline {
     agent any
     
     environment {
+
+        PYTHON_EXECUTABLE = "/opt/python3.12/bin/python3.12"
+
         DATAPROC_TELEPORT_WEBHOOK_URL = credentials('dataproc-teleport-webhook-url')
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
@@ -42,7 +45,7 @@ pipeline {
                     --num-workers 2 \
                     --worker-machine-type n1-standard-2 \
                     --worker-boot-disk-size 500 \
-                    --image-version 2.1-debian11 \
+                    --image-version 2.2-debian12 \
                     --optional-components ZOOKEEPER \
                     --max-idle 1800s \
                     --project $GCP_PROJECT
@@ -54,15 +57,18 @@ pipeline {
             steps {
                     catchError {
                         sh '''
-                            python3.8 -m pip install --user virtualenv    
+                            $PYTHON_EXECUTABLE -m pip install --user virtualenv
 
-                            python3.8 -m venv env
+                            $PYTHON_EXECUTABLE -m venv env
                             source env/bin/activate
-                            
-                            export PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
 
                             cd python
-                            python setup.py bdist_egg --output=$PACKAGE_EGG_FILE
+
+                            $PYTHON_EXECUTABLE -m pip install -r requirements.txt
+
+                            export PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
+
+                            $PYTHON_EXECUTABLE setup.py bdist_egg --output=$PACKAGE_EGG_FILE
                         '''
                     }
             }
@@ -83,9 +89,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -111,9 +117,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -271,9 +277,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
@@ -298,9 +304,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -325,9 +331,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -367,9 +373,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -396,9 +402,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -426,9 +432,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -456,9 +462,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -486,9 +492,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh'''
 
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -528,9 +534,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -557,9 +563,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -586,9 +592,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -629,9 +635,9 @@ pipeline {
                             withCredentials([usernamePassword(credentialsId: 'aws-s3-ro-credentials',
                         passwordVariable: 'S3_SECRET', usernameVariable: 'S3_KEY')])
                             {sh '''
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -676,9 +682,9 @@ pipeline {
                 //     steps{
                 //         retry(count: stageRetryCount) {
                 //             sh '''
-                //                 python3.8 -m pip install --user virtualenv    
+                //                 $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                //                 python3.8 -m venv env
+                //                 $PYTHON_EXECUTABLE -m venv env
                 //                 source env/bin/activate
                                 
                 //                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
@@ -718,9 +724,9 @@ pipeline {
                 //                 whoami
                 //                 sudo su
 
-                //                 python3.8 -m pip install --user virtualenv    
+                //                 $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                //                 python3.8 -m venv env
+                //                 $PYTHON_EXECUTABLE -m venv env
 
                 //                 source env/bin/activate
 
@@ -856,9 +862,9 @@ EOF
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
 
@@ -891,9 +897,9 @@ EOF
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
 
