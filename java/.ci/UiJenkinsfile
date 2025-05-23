@@ -1,19 +1,48 @@
+// Helper function to check for specific file changes
+def shouldRunOnChangeInUi() {
+    // If the current branch is main, always run the stages
+    if (env.GIT_BRANCH_LOCAL == 'main') {
+        echo "[Change Detection - UI] Current branch is 'main'. Stage will run."
+        return true
+    }
+    try {
+        echo "[Change Detection - UI] Checking for changes in relevant files..."
+        // Script to check for changes, handles first commit
+        def checkScript = '''
+            if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+                # Not the first commit, diff against parent
+                git diff --name-only HEAD~1 HEAD
+            else
+                # First commit, list all files in the commit (as all are "new")
+                git diff-tree --no-commit-id --name-only -r HEAD
+            fi | grep -Eq ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"
+        '''
+        // sh(...) returns 0 if grep finds a match (success), non-zero otherwise.
+        def exitCode = sh(script: checkScript, returnStatus: true)
+        echo "[Change Detection - UI] Script exit code: ${exitCode} (0 means changes detected and stage should run)"
+        return exitCode == 0
+    } catch (Exception e) {
+        echo "[Change Detection - UI] Error during change detection: ${e.getMessage()}. Defaulting to false (skip stage)."
+        return false // Default to not running the stage if there's an error in the check
+    }
+}
+
 def stageRetryCount = 3
 
 pipeline {
-    
+
     agent any
 
     environment {
         DATAPROC_TELEPORT_WEBHOOK_URL = credentials('dataproc-teleport-webhook-url')
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
-        
+
         GIT_BRANCH_LOCAL = sh (
             script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
             returnStdout: true
         ).trim()
-        
+
         MAVEN_HOME = "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven"
         PATH = "$PATH:$MAVEN_HOME/bin"
 
@@ -44,7 +73,7 @@ pipeline {
         stage('Build Jar'){
             steps {
                 sh '''
-                    cd java                
+                    cd java
                     java --version
                     java_status=$?
                     if [ "$java_status" -eq 0 ];
@@ -54,7 +83,7 @@ pipeline {
                         printf "Java is not installed on this machine, thus we need to install that first"
                         exit 1
                     fi
-                    
+
                     mvn --version
                     mvn_status=$?
                     if [ "$java_status" -eq 0 ];
@@ -72,18 +101,12 @@ pipeline {
 
                     gsutil cp ${LOCAL_JAR_Path} ${jarPath}
                 '''
-                            
+
                 }
         }
         stage('Parallel Execution 1'){
-        when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
+            when {
+                expression { return shouldRunOnChangeInUi() }
             }
             parallel{
                 stage('SPANNER TO GCS'){
@@ -135,7 +158,7 @@ pipeline {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                                
+
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --version="1.1" \
@@ -183,20 +206,14 @@ pipeline {
         }
         stage('Parallel Execution 2'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
+                expression { return shouldRunOnChangeInUi() }
             }
             parallel{
                 stage('GCS TO GCS (csv)'){
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
-                                
+
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --version="1.1" \
@@ -218,7 +235,7 @@ pipeline {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                                
+
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --project="${GCP_PROJECT}" \
@@ -242,7 +259,7 @@ pipeline {
                     steps {
                         retry(count: stageRetryCount) {
                             sh '''
-                                
+
                                gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --version="1.1" \
@@ -285,13 +302,7 @@ pipeline {
         }
         stage('Parallel Execution 3'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
+                expression { return shouldRunOnChangeInUi() }
             }
             parallel{
                 stage('SPANNER TO GCS (csv)'){
@@ -365,13 +376,7 @@ pipeline {
         }
         stage('Parallel Execution 4'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
+                expression { return shouldRunOnChangeInUi() }
             }
             parallel{
                 stage('JDBC To JDBC'){
@@ -393,7 +398,7 @@ pipeline {
                                     --templateProperty jdbctojdbc.output.url="${TEST_JDBC_URL}" \
                                     --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
                                     --templateProperty jdbctojdbc.output.table="employee_output" \
-                                    --templateProperty jdbctojdbc.output.mode="Overwrite" \
+                                    --templateProperty jdbctojdbc.output.mode="Overwrite"
                             '''
                         }
                     }
@@ -414,22 +419,16 @@ pipeline {
                                     --templateProperty pubsubtogcs.gcs.bucket.name="pubsubtogcs_dev" \
                                     --templateProperty pubsubtogcs.gcs.output.data.format="JSON" \
                                     --templateProperty pubsubtogcs.batch.size="50"
-                            ''' 
+                            '''
                         }
                     }
                 }
-                   
+
             }
         }
         stage('Parallel Execution 5'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
+                expression { return shouldRunOnChangeInUi() }
             }
             parallel{
                 stage('JDBC TO BQ'){
@@ -453,7 +452,7 @@ pipeline {
                         '''
                     }
                 }
-            }            
+            }
 
                 stage('JDBC TO SPANNER'){
                     steps {
@@ -500,7 +499,7 @@ pipeline {
                                     --templateProperty jdbctogcs.output.format="csv" \
                                     --templateProperty jdbctogcs.output.location="gs://dataproc-templates/integration-testing/output/JDBCTOGCS/csv" \
                                     --templateProperty jdbctogcs.sql="select * from test.employee" \
-                                    --templateProperty jdbctogcs.write.mode="overwrite" 
+                                    --templateProperty jdbctogcs.write.mode="overwrite"
                             '''
                         }
                     }
@@ -553,5 +552,5 @@ pipeline {
             }
         }
     }
-    
+
 }
