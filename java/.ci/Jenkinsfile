@@ -1,3 +1,31 @@
+// Helper function to check for specific file changes
+def shouldRunOnChange() {
+    // If the current branch is main, always run the stages
+    if (env.GIT_BRANCH_LOCAL == 'main') {
+        echo "[Change Detection] Current branch is 'main'. Stage will run."
+        return true
+    }
+    try {
+        echo "[Change Detection] Checking for changes in relevant files..."
+        def checkScript = '''
+            if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+                # Not the first commit, diff against parent
+                git diff --name-only HEAD~1 HEAD
+            else
+                # First commit, list all files in the commit (as all are "new")
+                git diff-tree --no-commit-id --name-only -r HEAD
+            fi | grep -Eq ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"
+        '''
+        // sh(...) returns 0 if grep finds a match (success), non-zero otherwise.
+        def exitCode = sh(script: checkScript, returnStatus: true)
+        echo "[Change Detection] Script exit code: ${exitCode} (0 means changes detected and stage should run)"
+        return exitCode == 0
+    } catch (Exception e) {
+        echo "[Change Detection] Error during change detection: ${e.getMessage()}. Defaulting to false (skip stage)."
+        return false // Default to not running the stage if there's an error in the check
+    }
+}
+
 def stageRetryCount = 3
 
 pipeline {
@@ -100,14 +128,8 @@ EOF
         //Deploy one time so that build is copied to GCS location
         stage('JDBC TO BQ'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             steps {
                 retry(count: stageRetryCount) {
                     sh '''
@@ -129,14 +151,8 @@ EOF
         }
         stage('Parallel Execution 1'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('GCS TO BIGQUERY(avro)') {
                     steps{
@@ -261,14 +277,8 @@ EOF
         }
         stage('Parallel Execution 2'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('GCS TO JDBC') {
                     steps{
@@ -390,14 +400,8 @@ EOF
         }
         stage('Parallel Execution 3'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('Hive TO GCS'){
                     steps {
@@ -493,14 +497,8 @@ EOF
         }
         stage('Parallel Execution 4'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('JDBC TO SPANNER GOOGLESQL DIALECT'){
                     steps {
@@ -602,14 +600,8 @@ EOF
         }
         stage('Parallel Execution 5'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('KAFKA TO GCS'){
                     steps {
@@ -698,14 +690,8 @@ EOF
         }
         stage('Parallel Execution 6'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('GCS TO BIGTABLE'){
                     steps {
@@ -801,14 +787,8 @@ EOF
         }
         stage('Parallel Execution 7'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('Cassandra to GCS (avro)'){
                     steps {
@@ -883,14 +863,8 @@ EOF
         }
         stage('Parallel Execution 8'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('BIGQUERY TO GCS (csv)'){
                     steps {
@@ -988,14 +962,8 @@ EOF
         }
         stage('Parallel Execution 9'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('KAFKA TO BQ via Dstream'){
                      steps {
@@ -1104,14 +1072,8 @@ EOF
         }
         stage('Parallel Execution 10'){
         when {
-                expression {
-                    // Check for changes in .java files, the pom.xml file, or the two Jenkinsfiles in their specific paths
-                    return sh(
-                        script: 'git diff --name-only HEAD~1 | grep -E ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"',
-                        returnStatus: true
-                    ) == 0
-                }
-            }
+                        expression { return shouldRunOnChange() }
+             }
             parallel{
                 stage('GCS TO SPANNER POSTGRESQL DIALECT') {
                     steps{

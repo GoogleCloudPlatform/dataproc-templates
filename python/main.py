@@ -29,6 +29,7 @@ from dataproc_templates.gcs.gcs_to_gcs import GCSToGCSTemplate
 from dataproc_templates.gcs.gcs_to_mongo import GCSToMONGOTemplate
 from dataproc_templates.gcs.gcs_to_bigtable import GCSToBigTableTemplate
 from dataproc_templates.bigquery.bigquery_to_gcs import BigQueryToGCSTemplate
+from dataproc_templates.bigquery.bigquery_to_memorystore import BigQueryToMemorystoreTemplate
 from dataproc_templates.hive.hive_to_bigquery import HiveToBigQueryTemplate
 from dataproc_templates.hive.hive_to_gcs import HiveToGCSTemplate
 from dataproc_templates.gcs.text_to_bigquery import TextToBigQueryTemplate
@@ -60,6 +61,7 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.GCSTOGCS: GCSToGCSTemplate,
     TemplateName.GCSTOBIGTABLE: GCSToBigTableTemplate,
     TemplateName.BIGQUERYTOGCS: BigQueryToGCSTemplate,
+    TemplateName.BIGQUERYTOMEMORYSTORE: BigQueryToMemorystoreTemplate,
     TemplateName.HIVETOBIGQUERY: HiveToBigQueryTemplate,
     TemplateName.HIVETOGCS: HiveToGCSTemplate,
     TemplateName.TEXTTOBIGQUERY: TextToBigQueryTemplate,

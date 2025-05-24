@@ -13,3 +13,4 @@
 # limitations under the License.
 
 from .bigquery_to_gcs import BigQueryToGCSTemplate
+from .bigquery_to_memorystore import BigQueryToMemorystoreTemplate

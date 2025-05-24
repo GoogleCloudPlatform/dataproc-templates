@@ -1,3 +1,33 @@
+// Helper function to check for specific file changes
+def shouldRunOnChange() {
+    // If the current branch is main, always run the stages
+    if (env.GIT_BRANCH_LOCAL == 'main') {
+        echo "[Change Detection - Python] Current branch is 'main'. Stage will run."
+        return true
+    }
+    try {
+        echo "[Change Detection - Python] Checking for changes in relevant files..."
+        // Script to check for changes, handles first commit
+        // Looks for .py files, the Python Jenkinsfile, or requirements.txt
+        def checkScript = '''
+            if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+                # Not the first commit, diff against parent
+                git diff --name-only HEAD~1 HEAD
+            else
+                # First commit, list all files in the commit (as all are "new")
+                git diff-tree --no-commit-id --name-only -r HEAD
+            fi | grep -Eq "\\.py$|python/\\.ci/Jenkinsfile|python/requirements\\.txt"
+        '''
+        // sh(...) returns 0 if grep finds a match (success), non-zero otherwise.
+        def exitCode = sh(script: checkScript, returnStatus: true)
+        echo "[Change Detection - Python] Script exit code: ${exitCode} (0 means changes detected and stage should run)"
+        return exitCode == 0
+    } catch (Exception e) {
+        echo "[Change Detection - Python] Error during change detection: ${e.getMessage()}. Defaulting to false (skip stage)."
+        return false // Default to not running the stage if there's an error in the check
+    }
+}
+
 def stageRetryCount = 3
 
 pipeline {
@@ -5,6 +35,9 @@ pipeline {
     agent any
     
     environment {
+
+        PYTHON_EXECUTABLE = "/opt/python3.12/bin/python3.12"
+
         DATAPROC_TELEPORT_WEBHOOK_URL = credentials('dataproc-teleport-webhook-url')
 
         TEST_JDBC_URL = credentials('env-test-jdbc-url')
@@ -42,7 +75,7 @@ pipeline {
                     --num-workers 2 \
                     --worker-machine-type n1-standard-2 \
                     --worker-boot-disk-size 500 \
-                    --image-version 2.1-debian11 \
+                    --image-version 2.2-debian12 \
                     --optional-components ZOOKEEPER \
                     --max-idle 1800s \
                     --project $GCP_PROJECT
@@ -54,38 +87,33 @@ pipeline {
             steps {
                     catchError {
                         sh '''
-                            python3.8 -m pip install --user virtualenv    
+                            $PYTHON_EXECUTABLE -m pip install --user virtualenv
 
-                            python3.8 -m venv env
+                            $PYTHON_EXECUTABLE -m venv env
                             source env/bin/activate
-                            
-                            export PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
 
                             cd python
-                            python setup.py bdist_egg --output=$PACKAGE_EGG_FILE
+
+                            $PYTHON_EXECUTABLE -m pip install -r requirements.txt
+
+                            export PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
+
+                            $PYTHON_EXECUTABLE setup.py bdist_egg --output=$PACKAGE_EGG_FILE
                         '''
                     }
             }
         }
         stage('Parallel Execution 1'){
-            when {
-                    expression {
-                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
-                        return sh(
-                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
-                            returnStatus: true
-                        ) == 0
-                    }
-                }
+            when { expression { return shouldRunOnChange() }}
             parallel{ 
                 stage('Hive TO GCS') {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -111,9 +139,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -164,15 +192,7 @@ pipeline {
             }
         }
         stage('Parallel Execution 2'){
-            when {
-                    expression {
-                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
-                        return sh(
-                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
-                            returnStatus: true
-                        ) == 0
-                    }
-                }
+            when { expression { return shouldRunOnChange() }}
             parallel{
                 stage('JDBC To JDBC') {
                     steps{
@@ -256,24 +276,16 @@ pipeline {
             }
         }
         stage('Parallel Execution 3'){
-            when {
-                    expression {
-                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
-                        return sh(
-                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
-                            returnStatus: true
-                        ) == 0
-                    }
-                }
+            when { expression { return shouldRunOnChange() }}
             parallel{
                 stage('GCS TO BIGQUERY') {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
                                 source env/bin/activate
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
@@ -298,9 +310,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -325,9 +337,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -352,24 +364,16 @@ pipeline {
             }
         }
         stage('Parallel Execution 4'){
-            when {
-                    expression {
-                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
-                        return sh(
-                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
-                            returnStatus: true
-                        ) == 0
-                    }
-                }
+            when { expression { return shouldRunOnChange() }}
             parallel{
                 stage('MONGO TO GCS') {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -396,9 +400,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -426,9 +430,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -456,9 +460,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -486,9 +490,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh'''
 
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -513,24 +517,16 @@ pipeline {
             }
         }
         stage('Parallel Execution 5'){
-            when {
-                    expression {
-                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
-                        return sh(
-                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
-                            returnStatus: true
-                        ) == 0
-                    }
-                }
+            when { expression { return shouldRunOnChange() }}
             parallel{
                 stage('JDBC TO GCS') {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -557,9 +553,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -586,9 +582,9 @@ pipeline {
                         retry(count: stageRetryCount) {
                             sh '''
                             
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -613,15 +609,7 @@ pipeline {
             }
         }  
          stage('Parallel Execution 6'){
-             when {
-                     expression {
-                         // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
-                         return sh(
-                             script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
-                             returnStatus: true
-                         ) == 0
-                     }
-                 }
+            when { expression { return shouldRunOnChange() }}
             parallel{
                 stage('S3 TO BigQuery (avro)') {    
                     steps{
@@ -629,9 +617,9 @@ pipeline {
                             withCredentials([usernamePassword(credentialsId: 'aws-s3-ro-credentials',
                         passwordVariable: 'S3_SECRET', usernameVariable: 'S3_KEY')])
                             {sh '''
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
                                 
@@ -658,15 +646,7 @@ pipeline {
             }
         }
         stage('Parallel Execution 7'){
-            when {
-                    expression {
-                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
-                        return sh(
-                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
-                            returnStatus: true
-                        ) == 0
-                    }
-                }
+            when { expression { return shouldRunOnChange() }}
             parallel{
                 // stage('Hbase TO GCS (Manual)') {    
                 //     when {
@@ -676,9 +656,9 @@ pipeline {
                 //     steps{
                 //         retry(count: stageRetryCount) {
                 //             sh '''
-                //                 python3.8 -m pip install --user virtualenv    
+                //                 $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                //                 python3.8 -m venv env
+                //                 $PYTHON_EXECUTABLE -m venv env
                 //                 source env/bin/activate
                                 
                 //                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
@@ -718,9 +698,9 @@ pipeline {
                 //                 whoami
                 //                 sudo su
 
-                //                 python3.8 -m pip install --user virtualenv    
+                //                 $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                //                 python3.8 -m venv env
+                //                 $PYTHON_EXECUTABLE -m venv env
 
                 //                 source env/bin/activate
 
@@ -751,7 +731,76 @@ pipeline {
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                            
+
+cat > /tmp/cities.json << EOF
+{
+    "table": {
+        "name": "cities"
+    },
+    "rowkey": "key",
+    "columns": {
+        "key": {
+            "cf": "rowkey",
+            "col": "key",
+            "type": "string"
+        },
+        "LatD": {
+            "cf": "lat",
+            "col": "LatD",
+            "type": "string"
+        },
+        "LatM": {
+            "cf": "lat",
+            "col": "LatM",
+            "type": "string"
+        },
+        "LatS": {
+            "cf": "lat",
+            "col": "LatS",
+            "type": "string"
+        },
+        "NS": {
+            "cf": "lat",
+            "col": "NS",
+            "type": "string"
+        },
+        "LonD": {
+            "cf": "lon",
+            "col": "LonD",
+            "type": "string"
+        },
+        "LonM": {
+            "cf": "lon",
+            "col": "LonM",
+            "type": "string"
+        },
+        "LonS": {
+            "cf": "lon",
+            "col": "LonS",
+            "type": "string"
+        },
+        "EW": {
+            "cf": "lon",
+            "col": "EW",
+            "type": "string"
+        },
+        "City": {
+            "cf": "place",
+            "col": "City",
+            "type": "string"
+        },
+        "State": {
+            "cf": "place",
+            "col": "State",
+            "type": "string"
+        }
+    }
+}
+EOF
+
+
+                                cat /tmp/cities.json
+                                gsutil cp /tmp/cities.json gs://dataproc-templates/conf/
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
                                 export SKIP_BUILD=true
                                 export JARS="gs://spark-lib/bigtable/spark-bigtable_2.12-0.1.0.jar"
@@ -765,23 +814,7 @@ pipeline {
                                 --gcs.bigtable.input.location="gs://dataproc-templates/data/csv/cities.csv" \
                                 --spark.bigtable.project.id=$GCP_PROJECT \
                                 --spark.bigtable.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
-                                --gcs.bigtable.catalog.json=\'\'\'{
-                                    "table":{"name":"cities"},
-                                    "rowkey":"key",
-                                    "columns":{
-                                        "key":{"cf":"rowkey", "col":"key", "type":"string"},
-                                        "LatD":{"cf":"lat", "col":"LatD", "type":"string"},
-                                        "LatM":{"cf":"lat", "col":"LatM", "type":"string"},
-                                        "LatS":{"cf":"lat", "col":"LatS", "type":"string"},
-                                        "NS":{"cf":"lat", "col":"NS", "type":"string"},
-                                        "LonD":{"cf":"lon", "col":"LonD", "type":"string"},
-                                        "LonM":{"cf":"lon", "col":"LonM", "type":"string"},
-                                        "LonS":{"cf":"lon", "col":"LonS", "type":"string"},
-                                        "EW":{"cf":"lon", "col":"EW", "type":"string"},
-                                        "City":{"cf":"place", "col":"City", "type":"string"},
-                                        "State":{"cf":"place", "col":"State", "type":"string"}
-                                    }
-                                }\'\'\'
+                                --gcs.bigtable.catalog.json="gs://dataproc-templates/conf/cities.json"
                             '''
                         }
                     }
@@ -789,23 +822,15 @@ pipeline {
             }
         }
         stage('Parallel Execution 8'){
-            when {
-                    expression {
-                        // Check for changes in .py files, python/.ci/Jenkinsfile, or python/requirements.txt
-                        return sh(
-                            script: 'git diff --name-only HEAD~1 | grep -E ".py$|python/.ci/Jenkinsfile|python/requirements.txt"',
-                            returnStatus: true
-                        ) == 0
-                    }
-                }
+            when { expression { return shouldRunOnChange() }}
             parallel{
                 stage('Elasticsearch to GCS'){
                     steps{
                         retry(count: stageRetryCount) {
                             sh '''
-                                python3.8 -m pip install --user virtualenv    
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
 
-                                python3.8 -m venv env
+                                $PYTHON_EXECUTABLE -m venv env
 
                                 source env/bin/activate
 
@@ -830,6 +855,37 @@ pipeline {
                                     --es.gcs.output.mode="overwrite" \
                                     --es.gcs.input.es.net.ssl="true" \
                                     --es.gcs.input.es.net.ssl.cert.allow.self.signed="true"
+                            '''
+                        }
+                    }
+                }
+                stage('BigQuery to Memorystore'){
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
+
+                                $PYTHON_EXECUTABLE -m venv env
+
+                                source env/bin/activate
+
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export SKIP_BUILD=true
+                                export JARS="gs://vbhatia_test/jars/spark-redis_2.12-3.0.0-jar-with-dependencies.jar"
+
+                                cd python
+                                
+                                ./bin/start.sh \
+                                    -- --template=BIGQUERYTOMEMORYSTORE \
+                                    --bigquery.memorystore.input.table=bigquery-public-data.fcc_political_ads.file_history \
+                                    --bigquery.memorystore.output.host=10.0.0.17 \
+                                    --bigquery.memorystore.output.port=6379 \
+                                    --bigquery.memorystore.output.table=file_history \
+                                    --bigquery.memorystore.output.key.column=fileHistoryId \
+                                    --bigquery.memorystore.output.model=hash \
+                                    --bigquery.memorystore.output.mode=overwrite \
+                                    --bigquery.memorystore.output.ttl=3600 \
+                                    --bigquery.memorystore.output.dbnum=0
                             '''
                         }
                     }
