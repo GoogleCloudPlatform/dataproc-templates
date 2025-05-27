@@ -76,12 +76,12 @@
     <spanner.jdbc.version>2.14.0</spanner.jdbc.version>
     <google.cloud.pubsub.version>1.132.0</google.cloud.pubsub.version>
     <google.cloud.pubsublite.version>1.14.0</google.cloud.pubsublite.version>
-    <google.cloud.bigtable.version>2.42.0</google.cloud.bigtable.version>
+    <google.cloud.bigtable.version>2.54.0</google.cloud.bigtable.version>
     <google.oauth.client.version>1.36.0</google.oauth.client.version>
     <google.api.client.version>2.7.0</google.api.client.version>
     <spark.bigquery.connector.version>0.36.4</spark.bigquery.connector.version>
     <pubsublite.spark.sql.streaming.version>1.0.0</pubsublite.spark.sql.streaming.version>
-    <spark.bigtable.connector.version>0.2.1</spark.bigtable.connector.version>
+    <spark.bigtable.connector.version>0.4.0</spark.bigtable.connector.version>
     <spark.streaming.pubsub.version>2.4.0</spark.streaming.pubsub.version>
 
     <!-- Spark Kafka Streaming Dependency. Aligned with Spark 3.5.1 -->
