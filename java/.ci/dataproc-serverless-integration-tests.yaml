@@ -35,7 +35,7 @@ steps:
       #!/usr/bin/env bash
       apt install maven -y
       cd java
-      mvn install -DskipTests
+      mvn install spotless:check
       echo "copying the build into staging location:" ${GCS_STAGING_LOCATION}   
       gsutil cp target/$JAR_FILE ${GCS_STAGING_LOCATION}/$JAR_FILE
         

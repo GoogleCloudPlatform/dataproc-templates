@@ -413,7 +413,6 @@
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>${hibernate.validator.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
@@ -424,7 +423,6 @@
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator-cdi</artifactId>
       <version>${hibernate.validator.version}</version>
-      <scope>test</scope>
     </dependency>
 
     <!-- yaml parsing of config, and ensure related jackson libraries use same version -->
