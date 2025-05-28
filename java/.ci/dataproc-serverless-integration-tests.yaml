@@ -157,6 +157,30 @@ steps:
           --templateProperty spanner.gcs.output.gcs.format=parquet
     waitFor: ['build-and-upload']
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: spangress-to-gcs-parquet
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running SPANNER TO GCS export in parquet"
+      cd java
+      
+      bin/start.sh \
+          -- --template SPANNERTOGCS \
+          --templateProperty project.id=${_GCP_PROJECT} \
+          --templateProperty spanner.gcs.input.spanner.id=${_ENV_TEST_SPANNER_ID} \
+          --templateProperty spanner.gcs.input.database.id=pgsqltest \
+          --templateProperty "spanner.gcs.input.table.id=(SELECT * FROM sparktest LIMIT 1000)" \
+          --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates_cloudbuild/integration-testing/output/SPANNERTOGCS/pgsql/parquet \
+          --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+          --templateProperty spanner.gcs.output.gcs.format=parquet
+          --templateProperty spanner.jdbc.dialect=postgresql
+    waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: bigquery-to-gcs-avro

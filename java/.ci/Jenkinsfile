@@ -178,31 +178,6 @@ EOF
                         }
                     }
                 }
-                stage('SPANNER TO GCS POSTGRESQL DIALECT'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-
-                                export SKIP_BUILD=true
-
-                                
-
-                                cd java
-
-                                bin/start.sh \
-                                -- --template SPANNERTOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
-                                --templateProperty spanner.gcs.input.database.id=pgsqltest \
-                                --templateProperty "spanner.gcs.input.table.id=(SELECT * FROM sparktest LIMIT 1000)" \
-                                --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/pgsql/parquet \
-                                --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
-                                --templateProperty spanner.gcs.output.gcs.format=parquet \
-                                --templateProperty spanner.jdbc.dialect=postgresql
-                            '''
-                        }
-                    }
-                }
                 stage('HIVE TO BIGQUERY'){
                     steps {
                         retry(count: stageRetryCount) {
