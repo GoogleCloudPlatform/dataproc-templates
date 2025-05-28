@@ -413,6 +413,7 @@
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
       <version>${hibernate.validator.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish</groupId>
@@ -423,6 +424,7 @@
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator-cdi</artifactId>
       <version>${hibernate.validator.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- yaml parsing of config, and ensure related jackson libraries use same version -->
@@ -466,16 +468,6 @@
           <artifactId>slf4j-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>${log4j.version}</version>
     </dependency>
     <!-- Rely on Spark to provide dependencies from upstream -->
     <dependency>
