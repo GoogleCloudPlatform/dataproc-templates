@@ -205,29 +205,6 @@ EOF
                         }
                     }
                 }
-                stage('JDBC TO GCS (csv)'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
-                                export SKIP_BUILD=true
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template JDBCTOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty jdbctogcs.jdbc.url="$TEST_JDBC_URL" \
-                                --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.jdbc.Driver \
-                                --templateProperty jdbctogcs.output.location=gs://dataproc-templates/integration-testing/output/JDBCTOGCS/csv \
-                                --templateProperty jdbctogcs.output.format=csv \
-                                --templateProperty jdbctogcs.write.mode=overwrite \
-                                --templateProperty jdbctogcs.sql="select * from test.employee" 
-                            '''
-                        }
-                    }
-                }
                 stage('S3 TO BigQuery (avro)'){
                     steps {
                         retry(count: stageRetryCount) {
@@ -302,30 +279,6 @@ EOF
                                 --templateProperty kafka.bq.table=integration-test \
                                 --templateProperty kafka.bq.temp.gcs.bucket=dataproc-templates-kafkatobq \
                                 --templateProperty kafka.bq.await.termination.timeout=60000
-                            '''
-                        }
-                    }
-                }
-                stage('GCS TO GCS (avro)'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
-                                export SKIP_BUILD=true
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template GCSTOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty gcs.gcs.input.location=gs://dataproc-templates/data/avro/empavro \
-                                --templateProperty gcs.gcs.input.format=avro \
-                                --templateProperty gcs.gcs.output.location=gs://dataproc-templates/integration-testing/output/GCSTOGCS/avro \
-                                --templateProperty gcs.gcs.output.format=csv \
-                                --templateProperty gcs.gcs.write.mode=overwrite \
-                                --templateProperty gcs.gcs.temp.table=dataset \
-                                --templateProperty gcs.gcs.temp.query='select * from global_temp.dataset where sal>1500'
                             '''
                         }
                     }
@@ -461,29 +414,6 @@ EOF
                     }
                 }
 
-                stage('GCS TO GCS (csv)'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template GCSTOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty gcs.gcs.input.location=gs://dataproc-templates/integration-testing/gcstogcs/csvtoavro/csv/cities.csv \
-                                --templateProperty gcs.gcs.input.format=csv \
-                                --templateProperty gcs.gcs.output.location=gs://dataproc-templates/integration-testing/output/GCSTOGCS/avro \
-                                --templateProperty gcs.gcs.output.format=avro \
-                                --templateProperty gcs.gcs.write.mode=overwrite
-                            '''
-                        }
-                    }
-                }
                 // stage('HBASE TO GCS (Automated)(avro)') {
                 //     when {
                 //         // Run this stage only if JOB_TYPE is not set to CLUSTER
