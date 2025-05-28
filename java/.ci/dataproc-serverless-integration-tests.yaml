@@ -27,6 +27,22 @@ availableSecrets:
 
 steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: build-and-upload
+    entrypoint: 'bash'
+    env:
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+    args:
+      - '-c'
+      - |
+        apt install maven -y
+        echo "Running GCS TO BIGQUERY(avro) job"
+        cd java
+        mvn install
+        JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
+        gsutil cp target/${JAR_FILE} ${GCS_STAGING_LOCATION}/${JAR_FILE}
+        
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-bigquery-avro
     entrypoint: 'bash'
     env:
@@ -50,6 +66,8 @@ steps:
         --templateProperty gcs.bigquery.output.table="gcs_to_bq_avro" \
         --templateProperty gcs.bigquery.output.mode="Overwrite" \
         --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates_cloudbuild
+    waitFor: ['build-and-upload']
+
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-spanner-googlesql
@@ -76,7 +94,7 @@ steps:
             --templateProperty gcs.spanner.output.table=badges \
             --templateProperty gcs.spanner.output.saveMode=Overwrite \
             --templateProperty gcs.spanner.output.primaryKey=empno
-    waitFor: ['gcs-to-bigquery-avro']
+    waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: spanner-to-gcs-csv
@@ -103,7 +121,7 @@ steps:
             --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates_cloudbuild/integration-testing/output/SPANNERTOGCS/csv \
             --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
             --templateProperty spanner.gcs.output.gcs.format=csv
-    waitFor: ['gcs-to-bigquery-avro']
+    waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: bigquery-to-gcs-avro
@@ -128,7 +146,7 @@ steps:
           --templateProperty bigquery.gcs.output.partition.col=emp_city \
           --templateProperty bigquery.gcs.output.mode=Overwrite \
           --templateProperty bigquery.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/output/BIGQUERYTOGCS/avro
-    waitFor: ['gcs-to-bigquery-avro']
+    waitFor: ['build-and-upload']
 
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -157,6 +175,7 @@ steps:
         --templateProperty jdbctobq.write.mode=overwrite \
         --templateProperty jdbctobq.temp.gcs.bucket=dataproc-templates_cloudbuild/integration-testing/output/JDBCTOBIGQUERY
     secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
 
 options:
   logging: CLOUD_LOGGING_ONLY
