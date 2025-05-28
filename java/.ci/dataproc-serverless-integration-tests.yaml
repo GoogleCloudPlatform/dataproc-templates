@@ -4,7 +4,7 @@ substitutions:
   _CLUSTER: 'your-dataproc-cluster-name' # Specify your Dataproc cluster
   _SUBNET: 'default' # Specify your subnet
   _JOB_TYPE: 'DEFAULT' # Set to 'CLUSTER' to enable cluster creation logic
-  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates' # Base GCS path for staging
+  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/$BRANCH_NAME' # Base GCS path for staging
   _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
   _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
 
@@ -76,6 +76,32 @@ steps:
             --templateProperty gcs.spanner.output.table=badges \
             --templateProperty gcs.spanner.output.saveMode=Overwrite \
             --templateProperty gcs.spanner.output.primaryKey=empno
+    waitFor: ['gcs-to-bigquery-avro']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-spanner-googlesql
+    entrypoint: 'bash'
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    args:
+      - |
+        echo "Running GCS TO SPANNER GOOGLESQL DIALECT job"
+        apt install maven -y
+        cd java
+        
+        bin/start.sh \
+            -- --template SPANNERTOGCS \
+            --templateProperty project.id=${_GCP_PROJECT} \
+            --templateProperty spanner.gcs.input.spanner.id=${_ENV_TEST_SPANNER_ID} \
+            --templateProperty spanner.gcs.input.database.id=spark-ci-db \
+            --templateProperty spanner.gcs.input.table.id=movies \
+            --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates_cloudbuild/integration-testing/output/SPANNERTOGCS/csv \
+            --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+            --templateProperty spanner.gcs.output.gcs.format=csv
     waitFor: ['gcs-to-bigquery-avro']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
