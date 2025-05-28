@@ -147,7 +147,7 @@ steps:
         bin/start.sh \
         -- --template JDBCTOBIGQUERY \
         --templateProperty jdbctobq.bigquery.location=${_GCP_PROJECT}.dataproc_templates.jdbctobq \
-        --templateProperty jdbctobq.jdbc.url="$$TEST_JDBC_URL" \
+        --templateProperty jdbctobq.jdbc.url="${TEST_JDBC_URL}" \
         --templateProperty jdbctobq.jdbc.driver.class.name=com.mysql.jdbc.Driver \
         --templateProperty jdbctobq.sql="select * from test.employee" \
         --templateProperty jdbctobq.write.mode=overwrite \
@@ -157,5 +157,5 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  machineType: 'E2_HIGHCPU_32'
+  machineType: 'E2_HIGHCPU_8'
   automapSubstitutions: true
