@@ -41,16 +41,13 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-bigquery-avro
-    entrypoint: 'bash'
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    args:
-      - '-c'
-      - |
+    script: |
         apt install maven -y
         echo "Running GCS TO BIGQUERY(avro) job"
         cd java
@@ -68,16 +65,13 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-spanner-googlesql
-    entrypoint: 'bash'
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    args:
-      - '-c'
-      - |
+    script: |
         echo "Running GCS TO SPANNER GOOGLESQL DIALECT job"
         apt install maven -y
         cd java
@@ -95,16 +89,13 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: spanner-to-gcs-csv
-    entrypoint: 'bash'
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    args:
-      - '-c'
-      - |
+    script: |
         echo "Running GCS TO SPANNER GOOGLESQL DIALECT job"
         apt install maven -y
         cd java
@@ -122,16 +113,13 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: bigquery-to-gcs-avro
-    entrypoint: 'bash'
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    args:
-      - '-c'
-      - |
+    script: |
         echo "Running BigQuery TO GCS avro"
         apt install maven -y
         cd java
@@ -148,7 +136,6 @@ steps:
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: jdbc-to-bq
-    entrypoint: 'bash'
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' # Consistent with other steps, start.sh might use it
@@ -157,9 +144,7 @@ steps:
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
       # TEST_JDBC_URL will be injected by secretEnv
-    args:
-      - '-c'
-      - |
+    script: |
         apt install maven -y
         echo "Running JDBC TO BQ job"
         cd java
