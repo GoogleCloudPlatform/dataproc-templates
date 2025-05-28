@@ -157,4 +157,4 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  machineType: 'E2_HIGHCPU_16'
+  machineType: 'E2_HIGHCPU_8'
