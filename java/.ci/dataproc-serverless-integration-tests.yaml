@@ -4,7 +4,7 @@ substitutions:
   _CLUSTER: 'your-dataproc-cluster-name' # Specify your Dataproc cluster
   _SUBNET: 'default' # Specify your subnet
   _JOB_TYPE: 'DEFAULT' # Set to 'CLUSTER' to enable cluster creation logic
-  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/$BRANCH_NAME' # Base GCS path for staging
+  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
   _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
   _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
 
@@ -88,6 +88,7 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     args:
+      - '-c'
       - |
         echo "Running GCS TO SPANNER GOOGLESQL DIALECT job"
         apt install maven -y
