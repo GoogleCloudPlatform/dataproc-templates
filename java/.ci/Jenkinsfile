@@ -667,29 +667,6 @@ EOF
                         }
                     }
                 }
-                stage('SPANNER TO GCS (csv)'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-
-                                
-                                    
-                                cd java
-
-                                bin/start.sh \
-                                -- --template SPANNERTOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
-                                --templateProperty spanner.gcs.input.database.id=test-db \
-                                --templateProperty spanner.gcs.input.table.id=shakespeare \
-                                --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/csv \
-                                --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
-                                --templateProperty spanner.gcs.output.gcs.format=csv
-                            '''
-                        }
-                    }
-                }
                 stage('SPANNER TO GCS (avro)'){
                     steps {
                         retry(count: stageRetryCount) {
@@ -710,7 +687,7 @@ EOF
                                 --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
                                 --templateProperty spanner.gcs.output.gcs.format=avro
                             '''
-                        }
+                        }    --templateProperty "gcs.spanner.input.location=gs://dataproc-templates_cloudbuild/integration-testing/tmp/part-00000-677ba61f-0048-49e0-b26f-e3b62fafdd76-c000.avro"
                     }
                 }
                 stage('GCS TO BIGQUERY(csv)') {
