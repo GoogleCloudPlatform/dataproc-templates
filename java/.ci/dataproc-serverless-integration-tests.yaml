@@ -79,7 +79,7 @@ steps:
     waitFor: ['gcs-to-bigquery-avro']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: gcs-to-spanner-googlesql
+    id: spanner-to-gcs-csv
     entrypoint: 'bash'
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
