@@ -383,5 +383,6 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+  pubsubTopic: projects/dataproc-templates/topics/dpt-build
   machineType: 'E2_HIGHCPU_8'
   automapSubstitutions: true
