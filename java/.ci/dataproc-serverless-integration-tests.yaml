@@ -205,7 +205,7 @@ steps:
           --templateProperty "spanner.gcs.input.table.id=(SELECT * FROM sparktest LIMIT 1000)" \
           --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates_cloudbuild/integration-testing/output/SPANNERTOGCS/pgsql/parquet \
           --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
-          --templateProperty spanner.gcs.output.gcs.format=parquet
+          --templateProperty spanner.gcs.output.gcs.format=parquet \
           --templateProperty spanner.jdbc.dialect=postgresql
     waitFor: ['build-and-upload']
 
