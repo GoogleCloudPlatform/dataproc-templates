@@ -32,11 +32,12 @@ steps:
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
       - 'JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar'
     script: |
-        #!/usr/bin/env bash
-        apt install maven -y
-        cd java
-        mvn spotless:check install
-        gsutil cp target/$JAR_FILE ${GCS_STAGING_LOCATION}/$JAR_FILE
+      #!/usr/bin/env bash
+      apt install maven -y
+      cd java
+      mvn install -DskipTests
+      echo "copying the build into staging location:" ${GCS_STAGING_LOCATION}   
+      gsutil cp target/$JAR_FILE ${GCS_STAGING_LOCATION}/$JAR_FILE
         
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -48,7 +49,6 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     script: |
-        apt install maven -y
         echo "Running GCS TO BIGQUERY(avro) job"
         cd java
         bin/start.sh \
@@ -73,7 +73,6 @@ steps:
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     script: |
         echo "Running GCS TO SPANNER GOOGLESQL DIALECT job"
-        apt install maven -y
         cd java
         bin/start.sh \
             -- --template GCSTOSPANNER \
@@ -96,8 +95,7 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     script: |
-        echo "Running GCS TO SPANNER GOOGLESQL DIALECT job"
-        apt install maven -y
+        echo "Running SPANNER TO GCS export in CSV"
         cd java
         
         bin/start.sh \
@@ -121,7 +119,6 @@ steps:
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     script: |
         echo "Running BigQuery TO GCS avro"
-        apt install maven -y
         cd java
         bin/start.sh \
           -- --template=BIGQUERYTOGCS \
@@ -145,7 +142,6 @@ steps:
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
       # TEST_JDBC_URL will be injected by secretEnv
     script: |
-        apt install maven -y
         echo "Running JDBC TO BQ job"
         cd java
         bin/start.sh \
