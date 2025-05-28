@@ -33,7 +33,7 @@ steps:
       - 'JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar'
     script: |
       #!/usr/bin/env bash
-      apt install maven -y
+      #apt install maven -y
       cd java
       mvn install spotless:check
       echo "copying the build into staging location:" ${GCS_STAGING_LOCATION}   
