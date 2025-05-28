@@ -1,0 +1,135 @@
+substitutions:
+  _GCP_PROJECT: 'dataproc-templates' # Default to project running the build
+  _REGION: 'us-central1' # Specify your Dataproc region
+  _CLUSTER: 'your-dataproc-cluster-name' # Specify your Dataproc cluster
+  _SUBNET: 'default' # Specify your subnet
+  _JOB_TYPE: 'DEFAULT' # Set to 'CLUSTER' to enable cluster creation logic
+  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates' # Base GCS path for staging
+  _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
+  _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
+
+  # Secrets (provide names of secrets stored in Secret Manager)
+  _DATAPROC_TELEPORT_WEBHOOK_URL_SECRET: 'dataproc-teleport-webhook-url'
+  _ENV_TEST_MONGO_DB_URI_SECRET: 'env-test-mongo-db-uri'
+  _S3_ACCESS_KEY_ID_SECRET: 'aws-s3-access-key-id'
+  _S3_SECRET_ACCESS_KEY_SECRET: 'aws-s3-secret-access-key'
+
+  # Other environment variables from Jenkins
+  _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
+  _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://your-hive-metastore-uri:9083'
+  _ENV_TEST_KAFKA_BOOTSTRAP_SERVERS: 'your-kafka-broker1:9092,your-kafka-broker2:9092'
+  _ENV_TEST_CASSANDRA_HOST: 'your-cassandra-host'
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/TEST_JDBC_URL/versions/latest
+      env: 'TEST_JDBC_URL'
+
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-bigquery-avro
+    entrypoint: 'bash'
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=false'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    args:
+      - '-c'
+      - |
+        apt install maven -y
+        echo "Running GCS TO BIGQUERY(avro) job"
+        cd java
+        bin/start.sh \
+        -- --template GCSTOBIGQUERY \
+        --templateProperty project.id=${_GCP_PROJECT} \
+        --templateProperty gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/integration-testing/gcstobigquery/cities.avro" \
+        --templateProperty gcs.bigquery.input.format=avro \
+        --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
+        --templateProperty gcs.bigquery.output.table="gcs_to_bq_avro" \
+        --templateProperty gcs.bigquery.output.mode="Overwrite" \
+        --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates_cloudbuild
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-spanner-googlesql
+    entrypoint: 'bash'
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    args:
+      - '-c'
+      - |
+        echo "Running GCS TO SPANNER GOOGLESQL DIALECT job"
+        apt install maven -y
+        cd java
+        bin/start.sh \
+            -- --template GCSTOSPANNER \
+            --templateProperty project.id=${_GCP_PROJECT} \
+            --templateProperty gcs.spanner.input.format=avro \
+            --templateProperty gcs.spanner.input.location=gs://dataproc-templates_cloudbuild/integration-testing/gcstospanner/emp.avro \
+            --templateProperty gcs.spanner.output.instance=${_ENV_TEST_SPANNER_ID} \
+            --templateProperty gcs.spanner.output.database=spark-ci-db   \
+            --templateProperty gcs.spanner.output.table=badges \
+            --templateProperty gcs.spanner.output.saveMode=Overwrite \
+            --templateProperty gcs.spanner.output.primaryKey=empno
+    waitFor: ['gcs-to-bigquery-avro']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: bigquery-to-gcs-avro
+    entrypoint: 'bash'
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    args:
+      - '-c'
+      - |
+        echo "Running BigQuery TO GCS avro"
+        apt install maven -y
+        cd java
+        bin/start.sh \
+          -- --template=BIGQUERYTOGCS \
+          --templateProperty project.id=${_GCP_PROJECT} \
+          --templateProperty bigquery.gcs.input.table=${_GCP_PROJECT}:dataproc_templates.emp_table \
+          --templateProperty bigquery.gcs.output.format=avro \
+          --templateProperty bigquery.gcs.output.partition.col=emp_city \
+          --templateProperty bigquery.gcs.output.mode=Overwrite \
+          --templateProperty bigquery.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/output/BIGQUERYTOGCS/avro
+    waitFor: ['gcs-to-bigquery-avro']
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-bq
+    entrypoint: 'bash'
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' # Consistent with other steps, start.sh might use it
+      - 'REGION=${_REGION}' # Consistent with other steps
+      - 'SKIP_BUILD=false' # Assumes this is the first template job, so a build is needed
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+      # TEST_JDBC_URL will be injected by secretEnv
+    args:
+      - '-c'
+      - |
+        apt install maven -y
+        echo "Running JDBC TO BQ job"
+        cd java
+        bin/start.sh \
+        -- --template JDBCTOBIGQUERY \
+        --templateProperty jdbctobq.bigquery.location=${_GCP_PROJECT}.dataproc_templates.jdbctobq \
+        --templateProperty jdbctobq.jdbc.url="$$TEST_JDBC_URL" \
+        --templateProperty jdbctobq.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+        --templateProperty jdbctobq.sql="select * from test.employee" \
+        --templateProperty jdbctobq.write.mode=overwrite \
+        --templateProperty jdbctobq.temp.gcs.bucket=dataproc-templates/integration-testing/output/JDBCTOBIGQUERY
+    secretEnv: ['TEST_JDBC_URL']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
