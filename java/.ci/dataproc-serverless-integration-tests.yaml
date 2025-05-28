@@ -39,7 +39,7 @@ steps:
         cd java
         mvn install
         JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
-        gsutil cp target/${JAR_FILE} ${GCS_STAGING_LOCATION}/${JAR_FILE}
+        gsutil cp target/$JAR_FILE ${GCS_STAGING_LOCATION}/$JAR_FILE
         
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
