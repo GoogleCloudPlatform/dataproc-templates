@@ -154,54 +154,6 @@ EOF
                         expression { return shouldRunOnChange() }
              }
             parallel{
-                stage('GCS TO BIGQUERY(avro)') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template GCSTOBIGQUERY \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty gcs.bigquery.input.location="gs://dataproc-templates/integration-testing/gcstobigquery/cities.avro" \
-                                --templateProperty gcs.bigquery.input.format=avro \
-                                --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
-                                --templateProperty gcs.bigquery.output.table="gcs_to_bq_avro" \
-                                --templateProperty gcs.bigquery.output.mode="Overwrite" \
-                                --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates
-                            '''
-                        }
-                    }
-                }
-                stage('GCS TO SPANNER GOOGLESQL DIALECT') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                
-                                export SKIP_BUILD=true
-
-                                
-
-                                cd java
-                                
-                                bin/start.sh \
-                                    -- --template GCSTOSPANNER \
-                                    --templateProperty project.id=$GCP_PROJECT \
-                                    --templateProperty gcs.spanner.input.format=avro \
-                                    --templateProperty gcs.spanner.input.location=gs://dataproc-templates/data/avro/empavro \
-                                    --templateProperty gcs.spanner.output.instance=$ENV_TEST_SPANNER_ID \
-                                    --templateProperty gcs.spanner.output.database=spark-ci-db   \
-                                    --templateProperty gcs.spanner.output.table=badges \
-                                    --templateProperty gcs.spanner.output.saveMode=Overwrite \
-                                    --templateProperty gcs.spanner.output.primaryKey=empno
-                            '''
-                        }
-                    }
-                }
                 stage('SPANNER TO GCS GOOGLESQL DIALECT'){
                     steps {
                         retry(count: stageRetryCount) {
@@ -833,28 +785,6 @@ EOF
                                 --templateProperty kafka.gcs.output.format=avro \
                                 --templateProperty kafka.message.format=bytes \
                                 --templateProperty kafka.gcs.await.termination.timeout.ms=60000
-                            '''
-                        }
-                    }
-                }
-                stage('BIGQUERY TO GCS (avro)'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-
-                                
-                                    
-                                cd java
-
-                                bin/start.sh \
-                                -- --template=BIGQUERYTOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty bigquery.gcs.input.table=$GCP_PROJECT:dataproc_templates.emp_table \
-                                --templateProperty bigquery.gcs.output.format=avro \
-                                --templateProperty bigquery.gcs.output.partition.col=emp_city \
-                                --templateProperty bigquery.gcs.output.mode=Overwrite \
-                                --templateProperty bigquery.gcs.output.location=gs://dataproc-templates/integration-testing/output/BIGQUERYTOGCS/avro
                             '''
                         }
                     }

@@ -128,7 +128,7 @@ steps:
         --templateProperty jdbctobq.jdbc.driver.class.name=com.mysql.jdbc.Driver \
         --templateProperty jdbctobq.sql="select * from test.employee" \
         --templateProperty jdbctobq.write.mode=overwrite \
-        --templateProperty jdbctobq.temp.gcs.bucket=dataproc-templates/integration-testing/output/JDBCTOBIGQUERY
+        --templateProperty jdbctobq.temp.gcs.bucket=dataproc-templates_cloudbuild/integration-testing/output/JDBCTOBIGQUERY
     secretEnv: ['TEST_JDBC_URL']
 
 options:
