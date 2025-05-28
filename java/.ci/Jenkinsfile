@@ -667,28 +667,6 @@ EOF
                         }
                     }
                 }
-                stage('GCS TO BIGQUERY(csv)') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template GCSTOBIGQUERY \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty gcs.bigquery.input.location=gs://dataproc-templates/integration-testing/gcstobigquery/cities.csv \
-                                --templateProperty gcs.bigquery.input.format=csv \
-                                --templateProperty gcs.bigquery.output.dataset=dataproc_templates \
-                                --templateProperty gcs.bigquery.output.table=gcs_bq_cities \
-                                --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates
-                            '''
-                        }
-                    }
-                }
             }
         }
         stage('Parallel Execution 7'){

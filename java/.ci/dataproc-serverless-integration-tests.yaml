@@ -62,6 +62,27 @@ steps:
         --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates_cloudbuild
     waitFor: ['build-and-upload']
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-bigquery-csv
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      echo "Running GCS TO BIGQUERY(csv) job"
+      cd java
+      bin/start.sh \
+      -- --template GCSTOBIGQUERY \
+      --templateProperty project.id=${_GCP_PROJECT} \
+      --templateProperty gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/integration-testing/gcstobigquery/cities.csv" \
+      --templateProperty gcs.bigquery.input.format=csv \
+      --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
+      --templateProperty gcs.bigquery.output.table="gcs_bq_cities" \
+      --templateProperty gcs.bigquery.output.mode="Overwrite" \
+      --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates_cloudbuild
+    waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-spanner-googlesql
@@ -118,7 +139,7 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     script: |
-      echo "Running SPANNER TO GCS export in CSV"
+      echo "Running SPANNER TO GCS export in parquet"
       cd java
       bin/start.sh \
           -- --template SPANNERTOGCS \
