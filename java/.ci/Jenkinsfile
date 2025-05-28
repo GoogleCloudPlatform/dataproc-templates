@@ -228,29 +228,6 @@ EOF
                         }
                     }
                 }
-                stage('JDBC TO GCS (avro)'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
-                                export SKIP_BUILD=true
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template JDBCTOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty jdbctogcs.jdbc.url="$TEST_JDBC_URL" \
-                                --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.jdbc.Driver \
-                                --templateProperty jdbctogcs.output.location=gs://dataproc-templates/integration-testing/output/JDBCTOGCS/avro \
-                                --templateProperty jdbctogcs.output.format=avro \
-                                --templateProperty jdbctogcs.write.mode=overwrite \
-                                --templateProperty jdbctogcs.sql="select * from test.employee" 
-                            '''
-                        }
-                    }
-                }
                 stage('S3 TO BigQuery (avro)'){
                     steps {
                         retry(count: stageRetryCount) {

@@ -285,6 +285,31 @@ steps:
     secretEnv: ['TEST_JDBC_URL']
     waitFor: ['build-and-upload']
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-gcs-avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' # Consistent with other steps, start.sh might use it
+      - 'REGION=${_REGION}' # Consistent with other steps
+      - 'SKIP_BUILD=true' # Assumes this is the first template job, so a build is needed
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO GCS Avro job"
+      cd java
+      bin/start.sh \
+        -- --template JDBCTOGCS \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
+        --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+        --templateProperty jdbctogcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/JDBCTOGCS/avro \
+        --templateProperty jdbctogcs.output.format=avro \
+        --templateProperty jdbctogcs.write.mode=overwrite \
+        --templateProperty jdbctogcs.sql="select * from test.employee"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
 options:
   logging: CLOUD_LOGGING_ONLY
   machineType: 'E2_HIGHCPU_8'
