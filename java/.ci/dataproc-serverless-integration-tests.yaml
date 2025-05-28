@@ -120,22 +120,12 @@ steps:
     script: |
       echo "Running SPANNER TO GCS export in CSV"
       cd java
-      
-            bin/start.sh \
-      -- --template SPANNERTOGCS \
-      --templateProperty project.id=$GCP_PROJECT \
-      --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
-      --templateProperty spanner.gcs.input.database.id=spark-ci-db \
-      --templateProperty "spanner.gcs.input.table.id=(select id,name from badges2 where name = 'Teacher' limit 10000)" \
-      --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/parquet \
-      --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
-      --templateProperty spanner.gcs.output.gcs.format=parquet
       bin/start.sh \
           -- --template SPANNERTOGCS \
           --templateProperty project.id=${_GCP_PROJECT} \
           --templateProperty spanner.gcs.input.spanner.id=${_ENV_TEST_SPANNER_ID} \
           --templateProperty spanner.gcs.input.database.id=spark-ci-db \
-          --templateProperty spanner.gcs.input.table.id=movies \
+          --templateProperty "spanner.gcs.input.table.id=(select id,name,year,rank from movies where rank < 5)" \
           --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates_cloudbuild/integration-testing/output/SPANNERTOGCS/parquet \
           --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
           --templateProperty spanner.gcs.output.gcs.format=parquet
