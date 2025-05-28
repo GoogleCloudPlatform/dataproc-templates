@@ -154,30 +154,6 @@ EOF
                         expression { return shouldRunOnChange() }
              }
             parallel{
-                stage('SPANNER TO GCS GOOGLESQL DIALECT'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template SPANNERTOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty spanner.gcs.input.spanner.id=$ENV_TEST_SPANNER_ID \
-                                --templateProperty spanner.gcs.input.database.id=spark-ci-db \
-                                --templateProperty "spanner.gcs.input.table.id=(select id,name from badges2 where name = 'Teacher' limit 10000)" \
-                                --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/parquet \
-                                --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
-                                --templateProperty spanner.gcs.output.gcs.format=parquet
-                            '''
-                        }
-                    }
-                }
                 stage('HIVE TO BIGQUERY'){
                     steps {
                         retry(count: stageRetryCount) {
@@ -207,28 +183,6 @@ EOF
                         expression { return shouldRunOnChange() }
              }
             parallel{
-                stage('GCS TO JDBC') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar"
-                                export SKIP_BUILD=true
-
-                                cd java
-                                
-                                bin/start.sh \
-                                    -- --template GCSTOJDBC \
-                                    --templateProperty project.id=$GCP_PROJECT \
-                                    --templateProperty gcs.jdbc.input.location=gs://dataproc-templates/data/avro/empavro \
-                                    --templateProperty gcs.jdbc.input.format=avro \
-                                    --templateProperty gcs.jdbc.output.table=avrodemo \
-                                    --templateProperty gcs.jdbc.output.saveMode=Overwrite   \
-                                    --templateProperty gcs.jdbc.output.url="$TEST_JDBC_URL" \
-                                    --templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver'
-                            '''
-                        }
-                    }
-                }
                 stage('PUBSUB TO GCS') {
                     steps{
                         retry(count: stageRetryCount) {

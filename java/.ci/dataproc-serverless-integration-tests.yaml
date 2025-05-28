@@ -111,6 +111,33 @@ steps:
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-jdbc
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' # Consistent with other steps, start.sh might use it
+      - 'REGION=${_REGION}' # Consistent with other steps
+      - 'SKIP_BUILD=true' # Assumes this is the first template job, so a build is needed
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+      # TEST_JDBC_URL will be injected by secretEnv
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO JDBC"
+      cd java
+      
+      bin/start.sh \
+        -- --template GCSTOJDBC \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty gcs.jdbc.input.location=gs://dataproc-templates_cloudbuild/integration-testing/gcstojdbc/emp.avro \
+        --templateProperty gcs.jdbc.input.format=avro \
+        --templateProperty gcs.jdbc.output.table=avrodemo \
+        --templateProperty gcs.jdbc.output.saveMode=Overwrite   \
+        --templateProperty gcs.jdbc.output.url="${TEST_JDBC_URL}" \
+        --templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver'
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: spanner-to-gcs-csv
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
@@ -167,7 +194,7 @@ steps:
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     script: |
       #!/usr/bin/env bash
-      echo "Running SPANNER TO GCS export in parquet"
+      echo "Running SPANNER Postgresql Interface TO GCS export in parquet"
       cd java
       
       bin/start.sh \
