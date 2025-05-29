@@ -48,7 +48,11 @@ steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-bigquery-avro
     env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     script: |
       #!/usr/bin/env bash
       echo "Running GCS TO BIGQUERY(avro) job"
