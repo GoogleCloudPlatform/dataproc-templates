@@ -410,6 +410,7 @@ steps:
       - 'S3_SECRET_ACCESS_KEY'
     waitFor: ['build-and-upload']
 
+
 options:
   logging: CLOUD_LOGGING_ONLY
   pubsubTopic: projects/dataproc-templates/topics/dpt-build
