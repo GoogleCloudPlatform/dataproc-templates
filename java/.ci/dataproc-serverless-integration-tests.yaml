@@ -7,7 +7,7 @@ substitutions:
   _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
   _GCS_STAGING_LOCATION: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
   _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
-  _SERVICE_ACCOUNT_NAME: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
+  _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
 
   # Secrets (provide names of secrets stored in Secret Manager)
   _DATAPROC_TELEPORT_WEBHOOK_URL_SECRET: 'dataproc-teleport-webhook-url'
