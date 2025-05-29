@@ -205,6 +205,32 @@ EOF
                         }
                     }
                 }
+            stage('S3 TO BigQuery (avro)'){
+                                steps {
+                                    retry(count: stageRetryCount) {
+                                    withCredentials([usernamePassword(credentialsId: 'aws-s3-ro-credentials',
+                                    passwordVariable: 'S3_SECRET', usernameVariable: 'S3_KEY')]) {
+                                        sh '''
+                                            export SKIP_BUILD=true
+
+                                            cd java
+
+                                            bin/start.sh \
+                                            -- --template S3TOBIGQUERY \
+                                            --templateProperty project.id=$GCP_PROJECT \
+                                            --templateProperty s3.bq.access.key=$S3_KEY \
+                                            --templateProperty s3.bq.secret.key=$S3_SECRET \
+                                            --templateProperty s3.bq.input.format=avro \
+                                            --templateProperty s3.bq.input.location=s3a://dataproc-templates-integration-tests/cities.avro \
+                                            --templateProperty s3.bq.output.dataset.name=dataproc_templates \
+                                            --templateProperty s3.bq.output.table.name=s3_to_bq_avro \
+                                            --templateProperty s3.bq.output.mode=Overwrite \
+                                            --templateProperty s3.bq.ld.temp.bucket.name=dataproc-templates
+                                        '''
+                                       }
+                                    }
+                                }
+                            }
             }
         }
         stage('Parallel Execution 3'){
