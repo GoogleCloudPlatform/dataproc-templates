@@ -24,6 +24,10 @@ availableSecrets:
   secretManager:
     - versionName: projects/$PROJECT_ID/secrets/TEST_JDBC_URL/versions/latest
       env: 'TEST_JDBC_URL'
+    - versionName: projects/$PROJECT_ID/secrets/S3_ACCESS_KEY_ID/versions/latest
+      env: 'S3_ACCESS_KEY_ID'
+    - versionName: projects/$PROJECT_ID/secrets/S3_SECRET_ACCESS_KEY/versions/latest
+      env: 'S3_SECRET_ACCESS_KEY'
 
 steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -405,7 +409,9 @@ steps:
       --templateProperty s3.bq.output.table.name="s3_to_bq_avro" \
       --templateProperty s3.bq.output.mode="Overwrite" \
       --templateProperty s3.bq.ld.temp.bucket.name="dataproc-templates_cloudbuild"
-    secretEnv: ['S3_ACCESS_KEY_ID','S3_SECRET_ACCESS_KEY']
+    secretEnv:
+      - 'S3_ACCESS_KEY_ID'
+      - 'S3_SECRET_ACCESS_KEY'
     waitFor: ['build-and-upload']
 
 
