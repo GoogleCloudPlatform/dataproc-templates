@@ -37,13 +37,13 @@
   <properties>
     <!-- https://cloud.google.com/dataproc-serverless/docs/concepts/versions/spark-runtime-versions#spark_runtime_version_12 -->
     <!-- Java & Scala Version Aligned with Dataproc Serverless Spark Runtime 1.2 -->
-    <java.version>11</java.version>
+    <java.version>17</java.version>
     <scala.binary.version>2.12</scala.binary.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <!-- Spark Version Aligned with Dataproc Serverless Spark Runtime 1.2 -->
-    <spark.version>3.3.4</spark.version>
+    <spark.version>3.5.1</spark.version>
 
     <!-- GCP Dependencies. Only change when it is aligned with Spark -->
     <aopalliance.version>1.0</aopalliance.version>
@@ -81,7 +81,7 @@
     <google.api.client.version>2.7.0</google.api.client.version>
     <spark.bigquery.connector.version>0.36.4</spark.bigquery.connector.version>
     <pubsublite.spark.sql.streaming.version>1.0.0</pubsublite.spark.sql.streaming.version>
-    <spark.bigtable.connector.version>0.4.0</spark.bigtable.connector.version>
+    <spark.bigtable.connector.version>0.6.0</spark.bigtable.connector.version>
     <spark.streaming.pubsub.version>2.4.0</spark.streaming.pubsub.version>
 
     <!-- Spark Kafka Streaming Dependency. Aligned with Spark 3.5.1 -->
