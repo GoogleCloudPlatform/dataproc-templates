@@ -1,12 +1,15 @@
 substitutions:
   _GCP_PROJECT: 'dataproc-templates' # Default to project running the build
+  GCP_PROJECT: 'dataproc-templates' # Default to project running the build
   _REGION: 'us-central1' # Specify your Dataproc region
+  REGION: 'us-central1' # Specify your Dataproc region
   _CLUSTER: 'your-dataproc-cluster-name' # Specify your Dataproc cluster
-  _SUBNET: 'default' # Specify your subnet
+  SUBNET: 'default' # Specify your subnet
   _JOB_TYPE: 'DEFAULT' # Set to 'CLUSTER' to enable cluster creation logic
   _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
+  GCS_STAGING_LOCATION: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
   _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
-  _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
+  SERVICE_ACCOUNT_NAME: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
 
   # Secrets (provide names of secrets stored in Secret Manager)
   _DATAPROC_TELEPORT_WEBHOOK_URL_SECRET: 'dataproc-teleport-webhook-url'
@@ -47,11 +50,7 @@ steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-bigquery-avro
     env:
-      - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
-      - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
-      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     script: |
       #!/usr/bin/env bash
       echo "Running GCS TO BIGQUERY(avro) job"
