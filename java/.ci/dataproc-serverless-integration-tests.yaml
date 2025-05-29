@@ -4,7 +4,7 @@ substitutions:
   _REGION: 'us-central1' # Specify your Dataproc region
   REGION: 'us-central1' # Specify your Dataproc region
   _CLUSTER: 'your-dataproc-cluster-name' # Specify your Dataproc cluster
-  SUBNET: 'default' # Specify your subnet
+  _SUBNET: 'default' # Specify your subnet
   _JOB_TYPE: 'DEFAULT' # Set to 'CLUSTER' to enable cluster creation logic
   _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
   GCS_STAGING_LOCATION: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
