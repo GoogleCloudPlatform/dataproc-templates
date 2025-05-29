@@ -116,7 +116,7 @@ pipeline {
 
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath}" \
@@ -138,7 +138,7 @@ pipeline {
                             sh '''
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
@@ -161,7 +161,7 @@ pipeline {
 
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
@@ -185,7 +185,7 @@ pipeline {
 
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
@@ -216,7 +216,7 @@ pipeline {
 
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
@@ -240,7 +240,7 @@ pipeline {
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar,gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template=GCSTOJDBC \
@@ -262,7 +262,7 @@ pipeline {
 
                                gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath}" \
@@ -283,7 +283,7 @@ pipeline {
                             sh '''
                                gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
@@ -311,7 +311,7 @@ pipeline {
                             sh '''
                                     gcloud dataproc batches submit spark \
                                         --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                        --version="1.1" \
+                                        --version="1.2" \
                                         --project="${GCP_PROJECT}" \
                                         --region="us-west1" \
                                         --jars="${jarPath}" \
@@ -333,7 +333,7 @@ pipeline {
                             sh '''
                                     gcloud dataproc batches submit spark \
                                         --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                        --version="1.1" \
+                                        --version="1.2" \
                                         --project="${GCP_PROJECT}" \
                                         --region="us-west1" \
                                         --jars="${jarPath},file:///usr/lib/spark/external/spark-avro.jar" \
@@ -356,7 +356,7 @@ pipeline {
 
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath}" \
@@ -387,7 +387,7 @@ pipeline {
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template JDBCTOJDBC \
@@ -409,7 +409,7 @@ pipeline {
                             sh '''
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath}" \
@@ -437,7 +437,7 @@ pipeline {
                         sh '''
                             gcloud dataproc batches submit spark \
                                 --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                --version="1.1" \
+                                --version="1.2" \
                                 --project="${GCP_PROJECT}" \
                                 --region="us-west1" \
                                 --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
@@ -461,7 +461,7 @@ pipeline {
 
                                 gcloud dataproc batches submit spark \
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
@@ -489,7 +489,7 @@ pipeline {
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template=JDBCTOGCS \
@@ -512,7 +512,7 @@ pipeline {
                                     --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --version="1.1" \
+                                    --version="1.2" \
                                     --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/external/spark-avro.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template=JDBCTOGCS \
