@@ -141,7 +141,7 @@ pipeline {
                                     --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --jars="${jarPath}" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
                                     -- --template=GCSTOBIGQUERY \
                                     --templateProperty project.id="${GCP_PROJECT}" \
                                     --templateProperty gcs.bigquery.input.location="gs://dataproc-templates/integration-testing/gcstobigquery/cities.avro" \
@@ -164,7 +164,7 @@ pipeline {
                                     --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --jars="${jarPath}" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
                                     -- --template GCSTOSPANNER \
                                     --templateProperty project.id="${GCP_PROJECT}" \
                                     --templateProperty gcs.spanner.input.format="avro" \
@@ -188,7 +188,7 @@ pipeline {
                                     --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --jars="${jarPath}" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
                                     -- --template=GCSTOGCS \
                                     --templateProperty project.id="${GCP_PROJECT}" \
                                     --templateProperty gcs.gcs.input.location="gs://dataproc-templates/data/avro/empavro" \
@@ -219,7 +219,7 @@ pipeline {
                                     --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --jars="${jarPath}" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
                                     -- --template=GCSTOGCS \
                                     --templateProperty project.id="${GCP_PROJECT}" \
                                     --templateProperty gcs.gcs.input.location="gs://dataproc-templates/integration-testing/gcstogcs/csvtoavro/csv/cities.csv" \
@@ -241,7 +241,7 @@ pipeline {
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --version="1.2" \
-                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar,gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template=GCSTOJDBC \
                                     --templateProperty project.id="${GCP_PROJECT}" \
@@ -286,7 +286,7 @@ pipeline {
                                     --version="1.2" \
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
-                                    --jars="${jarPath}" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     --properties="spark.hadoop.hive.metastore.uris=${ENV_TEST_HIVE_METASTORE_URIS}" \
                                     -- --template=HIVETOGCS \
@@ -336,7 +336,7 @@ pipeline {
                                         --version="1.2" \
                                         --project="${GCP_PROJECT}" \
                                         --region="us-west1" \
-                                        --jars="${jarPath}" \
+                                        --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
                                         -- --template=SPANNERTOGCS \
                                         --templateProperty project.id="${GCP_PROJECT}" \
                                         --templateProperty spanner.gcs.input.spanner.id="${ENV_TEST_SPANNER_ID}" \
@@ -513,7 +513,7 @@ pipeline {
                                     --project="${GCP_PROJECT}" \
                                     --region="us-west1" \
                                     --version="1.2" \
-                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/connector/spark-avro.jar" \
                                     --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
                                     -- --template=JDBCTOGCS \
                                     --templateProperty project.id="${GCP_PROJECT}" \
