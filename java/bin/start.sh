@@ -64,6 +64,7 @@ if [ -z "$SKIP_BUILD" ]; then
 
 fi
 
+
 OPT_SPARK_VERSION="--version=1.2"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
