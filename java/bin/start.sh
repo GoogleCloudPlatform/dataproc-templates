@@ -18,17 +18,9 @@ set -e
 #Initialize functions and Constants
 echo "Script Started Execution"
 
-java --version
-java_status=$?
 
 BIN_DIR="$(dirname "$BASH_SOURCE")"
 source ${BIN_DIR}/dataproc_template_functions.sh
-check_status $java_status "\n Java is installed, thus we are good to go \n" "\n Java is not installed on this machine, thus we need to install that first \n"
-
-mvn --version
-mvn_status=$?
-
-check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
 
 PROJECT_ROOT_DIR=${BIN_DIR}/..
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
@@ -48,6 +40,14 @@ GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION | sed 's/\/*$//'`
 # Do not rebuild when SKIP_BUILD is specified
 # Usage: export SKIP_BUILD=true
 if [ -z "$SKIP_BUILD" ]; then
+  java --version
+  java_status=$?
+  check_status $java_status "\n Java is installed, thus we are good to go \n" "\n Java is not installed on this machine, thus we need to install that first \n"
+
+  mvn --version
+  mvn_status=$?
+
+  check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
 
   #Change PWD to root folder for Maven Build
   cd ${PROJECT_ROOT_DIR}
