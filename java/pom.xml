@@ -37,7 +37,8 @@
   <properties>
     <!-- https://cloud.google.com/dataproc-serverless/docs/concepts/versions/spark-runtime-versions#spark_runtime_version_12 -->
     <!-- Java & Scala Version Aligned with Dataproc Serverless Spark Runtime 1.2 -->
-    <java.version>17</java.version>
+    <!-- Java & Scala Version Aligned with Dataproc Cluster Image 2.2-debian12 -->
+    <java.version>11</java.version>
     <scala.binary.version>2.12</scala.binary.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
