@@ -2,20 +2,13 @@ substitutions:
   _GCP_PROJECT: 'dataproc-templates' # Default to project running the build
   _REGION: 'us-central1' # Specify your Dataproc region
   _CLUSTER: 'your-dataproc-cluster-name' # Specify your Dataproc cluster
-  _SUBNET: 'default' # Specify your subnet
   _JOB_TYPE: 'DEFAULT' # Set to 'CLUSTER' to enable cluster creation logic
   _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
   _GCS_STAGING_LOCATION: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
   _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
   _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
 
-  # Secrets (provide names of secrets stored in Secret Manager)
-  _DATAPROC_TELEPORT_WEBHOOK_URL_SECRET: 'dataproc-teleport-webhook-url'
-  _ENV_TEST_MONGO_DB_URI_SECRET: 'env-test-mongo-db-uri'
-  _S3_ACCESS_KEY_ID_SECRET: 'aws-s3-access-key-id'
-  _S3_SECRET_ACCESS_KEY_SECRET: 'aws-s3-secret-access-key'
-
-  # Other environment variables from Jenkins
+  # Other environment variables
   _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
   _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://your-hive-metastore-uri:9083'
   _ENV_TEST_KAFKA_BOOTSTRAP_SERVERS: 'your-kafka-broker1:9092,your-kafka-broker2:9092'
@@ -421,3 +414,4 @@ options:
   pubsubTopic: projects/dataproc-templates/topics/dpt-build
   machineType: 'E2_HIGHCPU_8'
   automapSubstitutions: true
+  timeout: 1800s
