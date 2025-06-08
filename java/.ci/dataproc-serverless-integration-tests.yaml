@@ -414,4 +414,4 @@ options:
   pubsubTopic: projects/dataproc-templates/topics/dpt-build
   machineType: 'E2_HIGHCPU_8'
   automapSubstitutions: true
-  timeout: 1800s
+timeout: 1800s
