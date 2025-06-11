@@ -1,0 +1,13 @@
+apiVersion: cloud-build-notifiers/v1
+kind: GoogleChatNotifier
+metadata:
+  name: example-googlechat-notifier
+spec:
+  notification:
+    filter: build.substitutions["BRANCH_NAME"] == "main" && build.status in [Build.Status.FAILURE, Build.Status.TIMEOUT, Build.Status.INTERNAL_ERROR]
+    delivery:
+      webhookUrl:
+        secretRef: webhook-url
+  secrets:
+    - name: webhook-url
+      value: projects/852233039732/secrets/cloudbuild-gchat-webhook/versions/latest
