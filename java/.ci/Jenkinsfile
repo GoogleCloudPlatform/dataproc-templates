@@ -149,35 +149,6 @@ EOF
                 }
             }
         }
-        stage('Parallel Execution 1'){
-        when {
-                        expression { return shouldRunOnChange() }
-             }
-            parallel{
-                stage('HIVE TO BIGQUERY'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
-                                -- --template HIVETOBIGQUERY \
-                                --templateProperty hivetobq.bigquery.location=$GCP_PROJECT.dataproc_templates.test \
-                                --templateProperty hivetobq.sql="select * from default.employee" \
-                                --templateProperty hivetobq.write.mode=Overwrite \
-                                --templateProperty hivetobq.temp.gcs.bucket=dataproc-templates/integration-testing/output/HIVETOBIGQUERY
-                            '''
-                        }
-                    }
-                }
-            }
-        }
         stage('Parallel Execution 2'){
         when {
                         expression { return shouldRunOnChange() }
@@ -238,26 +209,6 @@ EOF
                         expression { return shouldRunOnChange() }
              }
             parallel{
-                stage('Hive TO GCS'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
-                                -- --template HIVETOGCS \
-                                --templateProperty hive.input.table=employee \
-                                --templateProperty hive.input.db=default \
-                                --templateProperty hive.gcs.output.path=gs://dataproc-templates/integration-testing/output/HIVETOGCS
-                            '''
-                        }
-                    }
-                }
                 stage('KAFKA TO BQ'){
                     steps {
                         retry(count: stageRetryCount) {

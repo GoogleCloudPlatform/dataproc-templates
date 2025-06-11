@@ -10,7 +10,8 @@ substitutions:
 
   # Other environment variables
   _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
-  _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://your-hive-metastore-uri:9083'
+  _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
+  _ENV_DATAPROC_METASTORE_SERVICE: 'projects/dataproc-templates/locations/us-central1/services/metastore-thrift-integration-test'
   _ENV_TEST_KAFKA_BOOTSTRAP_SERVERS: 'your-kafka-broker1:9092,your-kafka-broker2:9092'
   _ENV_TEST_CASSANDRA_HOST: 'your-cassandra-host'
 
@@ -158,9 +159,9 @@ steps:
     id: gcs-to-jdbc
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' # Consistent with other steps, start.sh might use it
-      - 'REGION=${_REGION}' # Consistent with other steps
-      - 'SKIP_BUILD=true' # Assumes this is the first template job, so a build is needed
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
       # TEST_JDBC_URL will be injected by secretEnv
@@ -280,9 +281,9 @@ steps:
     id: jdbc-to-bq
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' # Consistent with other steps, start.sh might use it
-      - 'REGION=${_REGION}' # Consistent with other steps
-      - 'SKIP_BUILD=true' # Assumes this is the first template job, so a build is needed
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
       # TEST_JDBC_URL will be injected by secretEnv
@@ -305,9 +306,9 @@ steps:
     id: jdbc-to-spanner
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' # Consistent with other steps, start.sh might use it
-      - 'REGION=${_REGION}' # Consistent with other steps
-      - 'SKIP_BUILD=true' # Assumes this is the first template job, so a build is needed
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
       # TEST_JDBC_URL will be injected by secretEnv
@@ -333,9 +334,9 @@ steps:
     id: jdbc-to-gcs-avro
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' # Consistent with other steps, start.sh might use it
-      - 'REGION=${_REGION}' # Consistent with other steps
-      - 'SKIP_BUILD=true' # Assumes this is the first template job, so a build is needed
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
     script: |
@@ -358,9 +359,9 @@ steps:
     id: jdbc-to-gcs-csv
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' # Consistent with other steps, start.sh might use it
-      - 'REGION=${_REGION}' # Consistent with other steps
-      - 'SKIP_BUILD=true' # Assumes this is the first template job, so a build is needed
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
     script: |
@@ -378,6 +379,55 @@ steps:
         --templateProperty jdbctogcs.sql="select * from test.employee"
     secretEnv: ['TEST_JDBC_URL']
     waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: hive-to-bq
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+      - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Hive TO BQ job"
+      cd java
+      bin/start.sh \
+        --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
+        -- --template HIVETOBIGQUERY \
+        --templateProperty hivetobq.bigquery.location=$GCP_PROJECT.dataproc_templates.hivetobq_test \
+        --templateProperty hivetobq.sql="select * from test_db.employees" \
+        --templateProperty hivetobq.write.mode=Overwrite \
+        --templateProperty hivetobq.temp.gcs.bucket=dataproc-templates_cloudbuild/integration-testing/HIVETOBIGQUERY/output
+
+    waitFor: ['build-and-upload']
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: hive-to-gcs-avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+      - 'DATAPROC_METASTORE_SERVICE=${_ENV_DATAPROC_METASTORE_SERVICE}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Hive TO GCS job"
+      cd java
+      bin/start.sh \
+        --metastore-service=$DATAPROC_METASTORE_SERVICE \
+        -- --template HIVETOGCS \
+        --templateProperty hive.input.table=employee \
+        --templateProperty hive.input.db=default \
+        --templateProperty hive.gcs.output.path=gs://dataproc-templates/integration-testing/HIVETOGCS/output \
+        --templateProperty hive.gcs.output.format=avro
+    waitFor: ['build-and-upload']
+
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: s3-to-bigquery-avro
