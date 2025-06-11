@@ -422,8 +422,8 @@ steps:
       bin/start.sh \
         --metastore-service=$DATAPROC_METASTORE_SERVICE \
         -- --template HIVETOGCS \
-        --templateProperty hive.input.table=employee \
-        --templateProperty hive.input.db=default \
+        --templateProperty hive.input.table=employees \
+        --templateProperty hive.input.db=test_db \
         --templateProperty hive.gcs.output.path=gs://dataproc-templates/integration-testing/HIVETOGCS/output \
         --templateProperty hive.gcs.output.format=avro
     waitFor: ['build-and-upload']
