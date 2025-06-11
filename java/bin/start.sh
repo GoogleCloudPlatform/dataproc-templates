@@ -68,9 +68,18 @@ OPT_SPARK_VERSION="--version=1.2"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
 OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
-if [[ $OPT_SPARK_VERSION == *"=1.1"* || $JOB_TYPE == "CLUSTER" ]]; then
+if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
   echo "Dataproc Serverless Runtime 1.1 or CLUSTER Job Type Detected"
 	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+fi
+if [[ $JOB_TYPE == "CLUSTER" ]]; then
+  if [[ -n "${CLUSTER}" ]]; then
+    CLUSTER_IMAGE_VERSION=$(gcloud dataproc clusters describe "${CLUSTER}" --project="${GCP_PROJECT}" --region="${REGION}" --format="value(config.softwareConfig.imageVersion)")
+    if [[ $CLUSTER_IMAGE_VERSION == *"2.0"* || $CLUSTER_IMAGE_VERSION == *"2.1"* ]]; then
+      echo "Dataproc Cluster Image ${CLUSTER_IMAGE_VERSION} Detected"
+      OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+    fi
+  fi
 fi
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
