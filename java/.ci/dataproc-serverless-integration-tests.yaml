@@ -362,7 +362,6 @@ steps:
       - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-      # TEST_JDBC_URL will be injected by secretEnv
     script: |
       #!/usr/bin/env bash
       echo "Running JDBC TO Spanner job"
@@ -371,13 +370,43 @@ steps:
         -- --template JDBCTOSPANNER \
         --templateProperty project.id=$GCP_PROJECT \
         --templateProperty jdbctospanner.jdbc.url="${TEST_JDBC_URL}" \
-        --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+        --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.cj.jdbc.Driver \
         --templateProperty jdbctospanner.sql="select * from test.employee" \
         --templateProperty jdbctospanner.output.instance=${_ENV_TEST_SPANNER_ID} \
         --templateProperty jdbctospanner.output.database=spark-ci-db \
         --templateProperty jdbctospanner.output.table=employee \
         --templateProperty jdbctospanner.output.saveMode=Overwrite \
         --templateProperty jdbctospanner.output.primaryKey='empno'
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-spangress
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO Spanner Postgresql job"
+      cd java
+      gcloud spanner databases execute-sql pgsqltest --instance=${_ENV_TEST_SPANNER_ID} --sql='DELETE FROM pgdialect;'
+      
+      bin/start.sh \
+        -- --template JDBCTOSPANNER \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
+        --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.cj.jdbc.Driver \
+        --templateProperty jdbctospanner.sql="select * from test.pgdialect" \
+        --templateProperty jdbctospanner.output.instance=${_ENV_TEST_SPANNER_ID} \
+        --templateProperty jdbctospanner.output.database=pgsqltest \
+        --templateProperty jdbctospanner.output.table=pgdialect \
+        --templateProperty jdbctospanner.output.saveMode=Append \
+        --templateProperty jdbctospanner.output.primaryKey='empno' \
+        --templateProperty spanner.jdbc.dialect=postgresql
     secretEnv: ['TEST_JDBC_URL']
     waitFor: ['build-and-upload']
 
