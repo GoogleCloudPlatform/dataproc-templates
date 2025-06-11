@@ -337,7 +337,6 @@ steps:
       - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-      # TEST_JDBC_URL will be injected by secretEnv
     script: |
       #!/usr/bin/env bash
       echo "Running JDBC TO BQ job"
@@ -538,7 +537,58 @@ steps:
       - 'S3_SECRET_ACCESS_KEY'
     waitFor: ['build-and-upload']
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: pubsub-to-gcs-json
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      
+      #TODO: Although this test passes, but there are lots of errors in the logs and no data is moving (as of 6/11/25).
+      
+      echo "Running PubSub TO GCS avro"
+      gcloud pubsub topics publish pubsub-to-gcs --message='{"Template": "PUBSUBTOGCS", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT
+      
+      cd java
+      bin/start.sh \
+        -- --template PUBSUBTOGCS \
+        --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
+        --templateProperty pubsubtogcs.input.subscription=subs-pubsub-to-gcs \
+        --templateProperty pubsubtogcs.gcs.bucket.name=dataproc-templates_cloudbuild \
+        --templateProperty pubsubtogcs.gcs.output.data.format=JSON \
+        --templateProperty pubsubtogcs.batch.size=50
+    waitFor: ['build-and-upload']
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: pubsub-to-bq
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      
+      #TODO: Although this test passes, but there are lots of errors in the logs and no data is moving (as of 6/11/25).
+      
+      echo "Running PubSub TO GCS avro"
+      gcloud pubsub topics publish pubsub-to-bq --message='{"Template": "PUBSUBTOBQ", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT
+         
+      
+      cd java
+      bin/start.sh \
+        -- --template PUBSUBTOBQ \
+        --templateProperty pubsub.input.subscription=subs-pubsub-to-gcs  \
+        --templateProperty pubsub.input.project.id=$GCP_PROJECT \
+        --templateProperty pubsub.bq.output.project.id=$GCP_PROJECT \
+        --templateProperty pubsub.bq.output.dataset=dataproc_templates \
+        --templateProperty pubsub.bq.output.table=pubsubtobq
+    waitFor: ['build-and-upload']
 options:
   logging: CLOUD_LOGGING_ONLY
   pubsubTopic: projects/dataproc-templates/topics/dpt-build

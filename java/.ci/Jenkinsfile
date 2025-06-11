@@ -149,35 +149,6 @@ EOF
                 }
             }
         }
-        stage('Parallel Execution 2'){
-        when {
-                        expression { return shouldRunOnChange() }
-             }
-            parallel{
-                stage('PUBSUB TO GCS') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-            
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template PUBSUBTOGCS \
-                                --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
-                                --templateProperty pubsubtogcs.input.subscription=pubsubtogcsv3-sub \
-                                --templateProperty pubsubtogcs.gcs.bucket.name=pubsubtogcs_dev \
-                                --templateProperty pubsubtogcs.gcs.output.data.format=JSON \
-                                --templateProperty pubsubtogcs.batch.size=50
-                            ''' 
-                        }
-                    }
-                }
-            }
-        }
         stage('Parallel Execution 3'){
         when {
                         expression { return shouldRunOnChange() }
@@ -204,27 +175,6 @@ EOF
                                 --templateProperty kafka.bq.table=integration-test \
                                 --templateProperty kafka.bq.temp.gcs.bucket=dataproc-templates-kafkatobq \
                                 --templateProperty kafka.bq.await.termination.timeout=60000
-                            '''
-                        }
-                    }
-                }
-                stage('PUBSUB TO BQ'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''                                
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template PUBSUBTOBQ \
-                                --templateProperty pubsub.input.subscription=test-subscriber-pubsub-bq \
-                                --templateProperty pubsub.input.project.id=$GCP_PROJECT \
-                                --templateProperty pubsub.bq.output.project.id=$GCP_PROJECT \
-                                --templateProperty pubsub.bq.output.dataset=dataproc_templates \
-                                --templateProperty pubsub.bq.output.table=pubsubtobq
                             '''
                         }
                     }
