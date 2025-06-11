@@ -424,7 +424,7 @@ steps:
         -- --template HIVETOGCS \
         --templateProperty hive.input.table=employees \
         --templateProperty hive.input.db=test_db \
-        --templateProperty hive.gcs.output.path=gs://dataproc-templates/integration-testing/HIVETOGCS/output \
+        --templateProperty hive.gcs.output.path=gs://dataproc-templates_cloudbuild/integration-testing/HIVETOGCS/output \
         --templateProperty hive.gcs.output.format=avro
     waitFor: ['build-and-upload']
 
