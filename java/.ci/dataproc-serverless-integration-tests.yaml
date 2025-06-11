@@ -276,6 +276,57 @@ steps:
         --templateProperty bigquery.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/output/BIGQUERYTOGCS/avro
     waitFor: ['build-and-upload']
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: bq-to-jdbc
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO BQ job"
+      cd java
+      bin/start.sh \
+        -- --template BIGQUERYTOJDBC \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty bigquery.jdbc.input.table="$GCP_PROJECT.dataproc_templates.emp_table" \
+        --templateProperty bigquery.jdbc.dataset.name='dataproc_templates' \
+        --templateProperty bigquery.jdbc.url="$TEST_JDBC_URL" \
+        --templateProperty bigquery.jdbc.output.table='bq_emp_table' \
+        --templateProperty bigquery.jdbc.batch.size=10 \
+        --templateProperty bigquery.jdbc.output.driver='com.mysql.cj.jdbc.Driver' \
+        --templateProperty bigquery.jdbc.output.mode='Overwrite'
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-jdbc
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO JDBC job"
+      cd java      
+      bin/start.sh \
+        -- --template JDBCTOJDBC \
+        --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
+        --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+        --templateProperty jdbctojdbc.input.table="employee" \
+        --templateProperty jdbctojdbc.output.url="$TEST_JDBC_URL" \
+        --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+        --templateProperty jdbctojdbc.output.table="employee_output" \
+        --templateProperty jdbctojdbc.output.mode="Overwrite"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: jdbc-to-bq
@@ -295,7 +346,7 @@ steps:
       -- --template JDBCTOBIGQUERY \
       --templateProperty jdbctobq.bigquery.location=${_GCP_PROJECT}.dataproc_templates.jdbctobq \
       --templateProperty jdbctobq.jdbc.url="${TEST_JDBC_URL}" \
-      --templateProperty jdbctobq.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+      --templateProperty jdbctobq.jdbc.driver.class.name=com.mysql.cj.jdbc.Driver \
       --templateProperty jdbctobq.sql="select * from test.employee" \
       --templateProperty jdbctobq.write.mode=overwrite \
       --templateProperty jdbctobq.temp.gcs.bucket=dataproc-templates_cloudbuild/integration-testing/output/JDBCTOBIGQUERY

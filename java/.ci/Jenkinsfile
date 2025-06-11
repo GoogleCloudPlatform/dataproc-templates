@@ -176,32 +176,6 @@ EOF
                         }
                     }
                 }
-            stage('S3 TO BigQuery (avro)'){
-                                steps {
-                                    retry(count: stageRetryCount) {
-                                    withCredentials([usernamePassword(credentialsId: 'aws-s3-ro-credentials',
-                                    passwordVariable: 'S3_SECRET', usernameVariable: 'S3_KEY')]) {
-                                        sh '''
-                                            export SKIP_BUILD=true
-
-                                            cd java
-
-                                            bin/start.sh \
-                                            -- --template S3TOBIGQUERY \
-                                            --templateProperty project.id=$GCP_PROJECT \
-                                            --templateProperty s3.bq.access.key=$S3_KEY \
-                                            --templateProperty s3.bq.secret.key=$S3_SECRET \
-                                            --templateProperty s3.bq.input.format=avro \
-                                            --templateProperty s3.bq.input.location=s3a://dataproc-templates-integration-tests/cities.avro \
-                                            --templateProperty s3.bq.output.dataset.name=dataproc_templates \
-                                            --templateProperty s3.bq.output.table.name=s3_to_bq_avro \
-                                            --templateProperty s3.bq.output.mode=Overwrite \
-                                            --templateProperty s3.bq.ld.temp.bucket.name=dataproc-templates
-                                        '''
-                                       }
-                                    }
-                                }
-                            }
             }
         }
         stage('Parallel Execution 3'){
@@ -511,28 +485,6 @@ EOF
                     }
                 }
 
-                stage('JDBC To JDBC'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
-                                export SKIP_BUILD=true
-                                    
-                                cd java
-
-                                bin/start.sh \
-                                -- --template JDBCTOJDBC \
-                                --templateProperty jdbctojdbc.input.url="$TEST_JDBC_URL" \
-                                --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
-                                --templateProperty jdbctojdbc.input.table="employee" \
-                                --templateProperty jdbctojdbc.output.url="$TEST_JDBC_URL" \
-                                --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
-                                --templateProperty jdbctojdbc.output.table="employee_output" \
-                                --templateProperty jdbctojdbc.output.mode="Overwrite" 
-                            '''
-                        }
-                    }
-                }
                 stage('GCS TO Mongo') {
                     steps{
                         retry(count: stageRetryCount) {
@@ -721,30 +673,6 @@ EOF
                                     --templateProperty gcs.spanner.output.saveMode=Append \
                                     --templateProperty gcs.spanner.output.primaryKey=empno \
                                     --templateProperty spanner.jdbc.dialect=postgresql
-                            '''
-                        }
-                    }
-                }
-                stage('BIGQUERY TO JDBC') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-
-                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
-                                export SKIP_BUILD=true
-
-                                cd java
-
-                                bin/start.sh \
-                                -- --template BIGQUERYTOJDBC \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty bigquery.jdbc.input.table="$GCP_PROJECT.dataproc_templates.emp_table" \
-                                --templateProperty bigquery.jdbc.dataset.name='dataproc_templates' \
-                                --templateProperty bigquery.jdbc.url="$TEST_JDBC_URL" \
-                                --templateProperty bigquery.jdbc.output.table='emp_table' \
-                                --templateProperty bigquery.jdbc.batch.size=10 \
-                                --templateProperty bigquery.jdbc.output.driver='com.mysql.jdbc.Driver' \
-                                --templateProperty bigquery.jdbc.output.mode='Overwrite'
                             '''
                         }
                     }
