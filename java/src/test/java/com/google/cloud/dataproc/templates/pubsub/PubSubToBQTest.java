@@ -19,6 +19,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,8 +35,9 @@ public class PubSubToBQTest {
     PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_PROJECT_ID_PROP, "some value");
     PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP, "some value");
     PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP, "some value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPOUT_DATASET_PROP, "some value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPOUT_TABLE_PROP, "some value");
+    PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPUT_DATASET_PROP, "some value");
+    PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPUT_TABLE_PROP, "some value");
+    PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPUT_GCS_CHECKPOINT_PROP, "some value");
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
 
@@ -43,9 +45,15 @@ public class PubSubToBQTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
 
-    PropertyUtil.getProperties().setProperty(propKey, "someValue");
+    Properties props = PropertyUtil.getProperties();
+    props.setProperty(PUBSUB_INPUT_PROJECT_ID_PROP, "test-project-id");
+    props.setProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP, "test-subscription");
+    props.setProperty(PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP, "test-project-id");
+    props.setProperty(PUBSUB_BQ_OUTPUT_DATASET_PROP, "test-dataset");
+    props.setProperty(PUBSUB_BQ_OUTPUT_TABLE_PROP, "test-table");
+    props.setProperty(PUBSUB_BQ_OUTPUT_GCS_CHECKPOINT_PROP, "test-checkpoint");
 
-    pubSubToBQ = new PubSubToBQ();
+    pubSubToBQ = new PubSubToBQ(PubSubToBQConfig.fromProperties(props));
     assertDoesNotThrow(pubSubToBQ::validateInput);
   }
 
@@ -53,7 +61,7 @@ public class PubSubToBQTest {
   @MethodSource("propertyKeys")
   void runTemplateWithInvalidParameters(String propKey) {
     PropertyUtil.getProperties().setProperty(propKey, "");
-    pubSubToBQ = new PubSubToBQ();
+    pubSubToBQ = new PubSubToBQ(PubSubToBQConfig.fromProperties(PropertyUtil.getProperties()));
 
     Exception exception =
         assertThrows(IllegalArgumentException.class, () -> pubSubToBQ.validateInput());
@@ -69,7 +77,8 @@ public class PubSubToBQTest {
         PUBSUB_INPUT_PROJECT_ID_PROP,
         PUBSUB_INPUT_SUBSCRIPTION_PROP,
         PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP,
-        PUBSUB_BQ_OUTPOUT_DATASET_PROP,
-        PUBSUB_BQ_OUTPOUT_TABLE_PROP);
+        PUBSUB_BQ_OUTPUT_DATASET_PROP,
+        PUBSUB_BQ_OUTPUT_TABLE_PROP,
+        PUBSUB_BQ_OUTPUT_GCS_CHECKPOINT_PROP);
   }
 }

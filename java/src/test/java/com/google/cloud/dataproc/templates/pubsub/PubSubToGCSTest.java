@@ -19,6 +19,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,9 +43,14 @@ public class PubSubToGCSTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
 
-    PropertyUtil.getProperties().setProperty(propKey, "someValue");
+    Properties props = PropertyUtil.getProperties();
+    PropertyUtil.getProperties().setProperty(PROJECT_ID_PROP, "projectID");
+    props.setProperty(PUBSUB_GCS_INPUT_PROJECT_ID_PROP, "test-project-id");
+    props.setProperty(PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP, "test-subscription");
+    props.setProperty(PUBSUB_GCS_BUCKET_NAME, "test-bucket");
+    props.setProperty(PUBSUB_GCS_OUTPUT_DATA_FORMAT, "json");
 
-    pubSubToGCS = new PubSubToGCS();
+    pubSubToGCS = new PubSubToGCS(PubSubToGCSConfig.fromProperties(props));
     assertDoesNotThrow(pubSubToGCS::validateInput);
   }
 
@@ -52,7 +58,7 @@ public class PubSubToGCSTest {
   @MethodSource("propertyKeys")
   void runTemplateWithInvalidParameters(String propKey) {
     PropertyUtil.getProperties().setProperty(propKey, "");
-    pubSubToGCS = new PubSubToGCS();
+    pubSubToGCS = new PubSubToGCS(PubSubToGCSConfig.fromProperties(PropertyUtil.getProperties()));
 
     Exception exception =
         assertThrows(IllegalArgumentException.class, () -> pubSubToGCS.validateInput());

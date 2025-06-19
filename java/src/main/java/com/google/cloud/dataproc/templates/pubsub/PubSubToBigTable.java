@@ -16,186 +16,244 @@
 package com.google.cloud.dataproc.templates.pubsub;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
+import static org.apache.spark.sql.functions.*;
 
-import com.google.cloud.bigtable.data.v2.BigtableDataClient;
-import com.google.cloud.bigtable.data.v2.models.RowMutation;
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import java.util.Iterator;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.VoidFunction;
-import org.apache.spark.storage.StorageLevel;
-import org.apache.spark.streaming.Seconds;
-import org.apache.spark.streaming.api.java.JavaDStream;
-import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.apache.spark.streaming.pubsub.PubsubUtils;
-import org.apache.spark.streaming.pubsub.SparkGCPCredentials;
-import org.apache.spark.streaming.pubsub.SparkPubsubMessage;
-import org.json.JSONArray;
+import com.google.cloud.dataproc.templates.pubsub.internal.PubSubAcker;
+import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
+import java.util.*;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.StreamingQuery;
+import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PubSubToBigTable implements BaseTemplate {
   private static final Logger LOGGER = LoggerFactory.getLogger(PubSubToBigTable.class);
-  private String inputProjectID;
-  private String pubsubInputSubscription;
-  private long timeoutMs;
-  private int streamingDuration;
-  private int totalReceivers;
-  private String pubSubBigTableOutputInstanceId;
-  private String pubSubBigTableOutputProjectId;
-  private String pubSubBigTableOutputTable;
-  private final String sparkLogLevel;
+  private final Map<String, String> catalogColumns;
 
-  public PubSubToBigTable() {
-    inputProjectID = getProperties().getProperty(PUBSUB_INPUT_PROJECT_ID_PROP);
-    pubsubInputSubscription = getProperties().getProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP);
-    timeoutMs = Long.parseLong(getProperties().getProperty(PUBSUB_TIMEOUT_MS_PROP));
-    streamingDuration =
-        Integer.parseInt(getProperties().getProperty(PUBSUB_STREAMING_DURATION_SECONDS_PROP));
-    totalReceivers = Integer.parseInt(getProperties().getProperty(PUBSUB_TOTAL_RECEIVERS_PROP));
-    pubSubBigTableOutputInstanceId =
-        getProperties().getProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP);
-    pubSubBigTableOutputProjectId =
-        getProperties().getProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP);
-    pubSubBigTableOutputTable = getProperties().getProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
-    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
+  private final PubSubToBigTableConfig pubSubToBigTableConfig;
+  private volatile long lastActivityTime = System.currentTimeMillis();
+
+  public static PubSubToBigTable of(String... args) {
+    PubSubToBigTableConfig pubSubToBigTableConfig =
+        PubSubToBigTableConfig.fromProperties(PropertyUtil.getProperties());
+    LOGGER.info("Config loaded\n{}", pubSubToBigTableConfig);
+    return new PubSubToBigTable(pubSubToBigTableConfig);
+  }
+
+  public PubSubToBigTable(PubSubToBigTableConfig pubSubToBigTableConfig) {
+
+    this.pubSubToBigTableConfig = pubSubToBigTableConfig;
+    this.catalogColumns = new HashMap<>();
+  }
+
+  @Override
+  public void validateInput() throws IllegalArgumentException {
+    ValidationUtil.validateOrThrow(pubSubToBigTableConfig);
   }
 
   @Override
   public void runTemplate() throws InterruptedException {
 
-    JavaStreamingContext jsc;
+    LOGGER.info("Initialize Spark Session");
+    SparkSession sparkSession =
+        SparkSession.builder().appName("PubSubToBigTable Dataproc Job").getOrCreate();
 
-    SparkConf sparkConf = new SparkConf().setAppName("PubSubToBigTable Dataproc Job");
-    jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
+    LOGGER.info("Set Log Level {}", pubSubToBigTableConfig.getSparkLogLevel());
+    sparkSession.sparkContext().setLogLevel(pubSubToBigTableConfig.getSparkLogLevel());
 
-    // Set log level
-    jsc.sparkContext().setLogLevel(sparkLogLevel);
+    LOGGER.info("Prepare Properties");
+    Map<String, String> pubsubOptions = new HashMap<>();
+    pubsubOptions.put("projectId", pubSubToBigTableConfig.getInputProjectID());
+    pubsubOptions.put("subscriptionId", pubSubToBigTableConfig.getPubsubInputSubscription());
+    String batchSize =
+        pubSubToBigTableConfig.getBatchSize() <= 0
+            ? "1000"
+            : String.valueOf(pubSubToBigTableConfig.getBatchSize());
+    pubsubOptions.put("maxMessagesPerPull", batchSize);
+    String totalReceivers =
+        pubSubToBigTableConfig.getTotalReceivers() <= 0
+            ? "4"
+            : String.valueOf(pubSubToBigTableConfig.getTotalReceivers());
+    pubsubOptions.put("numPartitions", totalReceivers);
+    long timeoutMs =
+        pubSubToBigTableConfig.getTimeoutMs() <= 0 ? 2000L : pubSubToBigTableConfig.getTimeoutMs();
 
-    JavaDStream<SparkPubsubMessage> stream = null;
-    for (int i = 0; i < totalReceivers; i += 1) {
-      JavaDStream<SparkPubsubMessage> pubSubReciever =
-          PubsubUtils.createStream(
-              jsc,
-              inputProjectID,
-              pubsubInputSubscription,
-              new SparkGCPCredentials.Builder().build(),
-              StorageLevel.MEMORY_AND_DISK_SER());
-      if (stream == null) {
-        stream = pubSubReciever;
-      } else {
-        stream = stream.union(pubSubReciever);
+    try {
+
+      LOGGER.info("Retrieve BigTable Schema");
+      String catalog = getBigTableCatalog();
+
+      LOGGER.info("Retrieved Schema: {}", catalog);
+      JSONObject jsonObject = new JSONObject(catalog);
+      JSONObject columns = jsonObject.getJSONObject("columns");
+      Iterator<String> keys = columns.keys();
+      while (keys.hasNext()) {
+        String key = keys.next();
+        JSONObject column = columns.getJSONObject(key);
+        catalogColumns.put(key, column.getString("type"));
       }
-    }
 
-    LOGGER.info("Writing data to outputPath: {}", pubSubBigTableOutputTable);
+      LOGGER.info("Available Columns and types: {}", catalogColumns);
+      LOGGER.info("Create Spark Schema");
+      List<StructField> fields = new ArrayList<>();
+      for (String key : catalogColumns.keySet()) {
 
-    writeToBigTable(
-        stream,
-        pubSubBigTableOutputInstanceId,
-        pubSubBigTableOutputProjectId,
-        pubSubBigTableOutputTable);
+        fields.add(
+            DataTypes.createStructField(key, getSparkDataType(catalogColumns.get(key)), true));
+      }
+      StructType schema = DataTypes.createStructType(fields);
+      LOGGER.info("Spark Schema: {}", schema);
 
-    jsc.start();
-    jsc.awaitTerminationOrTimeout(timeoutMs);
+      LOGGER.info("Starting Spark Read Stream");
+      Dataset<Row> dataset =
+          sparkSession
+              .readStream()
+              .format(PUBSUB_DATASOURCE_SHORT_NAME)
+              .options(pubsubOptions)
+              .load();
 
-    LOGGER.info("PubSubToBigTable job completed.");
-    jsc.stop();
-  }
+      LOGGER.info("Start Writing Data");
+      StreamingQuery streamingQuery =
+          dataset
+              .writeStream()
+              .foreachBatch(
+                  (df, batchId) -> {
+                    LOGGER.info("Processing Batch ID: {}", batchId);
+                    if (!df.isEmpty()) {
 
-  public static void writeToBigTable(
-      JavaDStream<SparkPubsubMessage> pubSubStream,
-      String pubSubBigTableOutputInstanceId,
-      String pubSubBigTableOutputProjectId,
-      String pubSubBigTableOutputTable) {
-    pubSubStream.foreachRDD(
-        new VoidFunction<JavaRDD<SparkPubsubMessage>>() {
-          @Override
-          public void call(JavaRDD<SparkPubsubMessage> sparkPubsubMessageJavaRDD) throws Exception {
-            sparkPubsubMessageJavaRDD.foreachPartition(
-                new VoidFunction<Iterator<SparkPubsubMessage>>() {
-                  @Override
-                  public void call(Iterator<SparkPubsubMessage> sparkPubsubMessageIterator)
-                      throws Exception {
+                      LOGGER.info("Data is available to write for batch id: {}", batchId);
+                      Dataset<Row> df_data = df.select("data");
 
-                    BigtableDataClient dataClient =
-                        BigtableDataClient.create(
-                            pubSubBigTableOutputProjectId, pubSubBigTableOutputInstanceId);
+                      LOGGER.info("Parse JSON Columns Data");
+                      Dataset<Row> json_df =
+                          df_data
+                              .withColumn("parsed_json", from_json(col("data"), schema))
+                              .select("parsed_json.*");
 
-                    while (sparkPubsubMessageIterator.hasNext()) {
-                      SparkPubsubMessage message = sparkPubsubMessageIterator.next();
+                      // This is micro batching hence we assume table is already there.
+                      // BigTable throws an error if you try to re-create an existing table again.
+                      LOGGER.info("Write To BigTable");
+                      json_df
+                          .write()
+                          .format(SPARK_BIGTABLE_FORMAT)
+                          .option(SPARK_BIGTABLE_CATALOG, catalog)
+                          .option(
+                              SPARK_BIGTABLE_PROJECT_ID,
+                              pubSubToBigTableConfig.getPubSubBigTableOutputProjectId())
+                          .option(
+                              SPARK_BIGTABLE_INSTANCE_ID,
+                              pubSubToBigTableConfig.getPubSubBigTableOutputInstanceId())
+                          .option(SPARK_BIGTABLE_CREATE_NEW_TABLE, "false")
+                          .save();
 
-                      JSONObject record = new JSONObject(new String(message.getData()));
-                      long timestamp = System.currentTimeMillis() * 1000;
+                      LOGGER.info("Start Acknowledgement For Batch ID: {}", batchId);
+                      PubSubAcker.acknowledge(df, pubsubOptions);
 
-                      RowMutation rowMutation =
-                          RowMutation.create(pubSubBigTableOutputTable, record.getString(ROWKEY));
-                      JSONArray columnarray = record.getJSONArray(COLUMNS);
+                      lastActivityTime = System.currentTimeMillis();
 
-                      for (int i = 0; i < columnarray.length(); i++) {
-                        rowMutation.setCell(
-                            columnarray.getJSONObject(i).getString(COLUMN_FAMILY),
-                            columnarray.getJSONObject(i).getString(COLUMN_NAME),
-                            timestamp,
-                            columnarray.getJSONObject(i).getString(COLUMN_VALUE));
-                      }
-                      dataClient.mutateRow(rowMutation);
+                    } else {
+                      LOGGER.info("No data available for batch id: {}", batchId);
                     }
 
-                    dataClient.close();
-                  }
-                });
-          }
-        });
+                    long currentTime = System.currentTimeMillis();
+                    long inactiveDurationMillis = currentTime - lastActivityTime;
+
+                    if (inactiveDurationMillis > timeoutMs) {
+                      LOGGER.info(
+                          "No new messages for {} milliseconds. Stopping stream...", timeoutMs);
+                      LOGGER.info("Throwing StreamingQueryException to stop the query gracefully");
+                      throw new StreamingQueryException(
+                          "Inactivity timeout reached, stopping stream.",
+                          "Inactivity timeout reached, stopping stream.",
+                          new Exception("Inactivity timeout reached, stopping stream."),
+                          null,
+                          null,
+                          null,
+                          null);
+                    }
+                  })
+              .start();
+
+      try {
+        streamingQuery.awaitTermination();
+      } catch (StreamingQueryException e) {
+        LOGGER.error("Streaming Query stopped due to : ", e);
+      }
+
+      LOGGER.info("Spark Session Stop");
+      sparkSession.stop();
+
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
-  public void validateInput() {
-    if (StringUtils.isAllBlank(inputProjectID)
-        || StringUtils.isAllBlank(pubsubInputSubscription)
-        || StringUtils.isAllBlank(pubSubBigTableOutputInstanceId)
-        || StringUtils.isAllBlank(pubSubBigTableOutputProjectId)
-        || StringUtils.isAllBlank(pubSubBigTableOutputTable)) {
-      LOGGER.error(
-          "{},{},{},{},{} are required parameter. ",
-          PUBSUB_INPUT_PROJECT_ID_PROP,
-          PUBSUB_INPUT_SUBSCRIPTION_PROP,
-          PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
-          PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
-          PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
-      throw new IllegalArgumentException(
-          "Required parameters for PubSubToBigTable not passed. "
-              + "Set mandatory parameter for PubSubToBigTable template "
-              + "in resources/conf/template.properties file.");
-    }
+  private String getBigTableCatalog() {
+    LOGGER.info("Create Storage Object");
+    Storage storage =
+        StorageOptions.newBuilder()
+            .setProjectId(pubSubToBigTableConfig.getInputProjectID())
+            .build()
+            .getService();
+    Blob blob =
+        storage.get(
+            BlobId.fromGsUtilUri(pubSubToBigTableConfig.getPubSubBigTableCatalogLocation()));
 
-    LOGGER.info(
-        "Starting PubSub to BigTable spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}"
-            + "5. {},{}"
-            + "6. {},{}"
-            + "7. {},{}"
-            + "8. {},{}",
-        PUBSUB_INPUT_PROJECT_ID_PROP,
-        inputProjectID,
-        PUBSUB_INPUT_SUBSCRIPTION_PROP,
-        pubsubInputSubscription,
-        PUBSUB_TIMEOUT_MS_PROP,
-        timeoutMs,
-        PUBSUB_STREAMING_DURATION_SECONDS_PROP,
-        streamingDuration,
-        PUBSUB_TOTAL_RECEIVERS_PROP,
-        totalReceivers,
-        PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
-        pubSubBigTableOutputInstanceId,
-        PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
-        pubSubBigTableOutputProjectId,
-        PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP,
-        pubSubBigTableOutputTable);
+    return new String(blob.getContent());
+  }
+
+  /**
+   * Please check out <a
+   * href="https://github.com/GoogleCloudDataproc/spark-bigtable-connector?tab=readme-ov-file#simple-data-type-serialization">Spark_BigTable_DataType_Mapping</a>
+   * for BigTable and Spark Data Type matching
+   *
+   * @param bigTableDataType BigTable Data Type
+   * @return Corresponding Spark Data Type
+   */
+  private DataType getSparkDataType(String bigTableDataType) {
+
+    switch (bigTableDataType) {
+      case "boolean":
+        return DataTypes.BooleanType;
+
+      case "byte":
+        return DataTypes.ByteType;
+
+      case "short":
+        return DataTypes.ShortType;
+
+      case "int":
+        return DataTypes.IntegerType;
+
+      case "long":
+        return DataTypes.LongType;
+
+      case "float":
+        return DataTypes.FloatType;
+
+      case "double":
+        return DataTypes.DoubleType;
+
+      case "binary":
+        return DataTypes.BinaryType;
+
+        // Treat rest all others as a string type
+      default:
+        return DataTypes.StringType;
+    }
   }
 }

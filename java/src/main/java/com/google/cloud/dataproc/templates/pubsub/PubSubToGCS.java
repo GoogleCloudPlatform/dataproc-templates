@@ -16,202 +16,159 @@
 package com.google.cloud.dataproc.templates.pubsub;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
-import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageOptions;
-import java.util.Iterator;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.spark.SparkConf;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.VoidFunction;
-import org.apache.spark.storage.StorageLevel;
-import org.apache.spark.streaming.Seconds;
-import org.apache.spark.streaming.api.java.JavaDStream;
-import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.apache.spark.streaming.pubsub.PubsubUtils;
-import org.apache.spark.streaming.pubsub.SparkGCPCredentials;
-import org.apache.spark.streaming.pubsub.SparkPubsubMessage;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.cloud.dataproc.templates.pubsub.internal.PubSubAcker;
+import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.streaming.StreamingQuery;
+import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PubSubToGCS implements BaseTemplate {
   private static final Logger LOGGER =
       LoggerFactory.getLogger(com.google.cloud.dataproc.templates.pubsub.PubSubToGCS.class);
-  private String inputProjectID;
-  private String pubsubInputSubscription;
-  private long timeoutMs;
-  private int streamingDuration;
-  private int totalReceivers;
-  private String gcsBucketName;
-  private int batchSize;
-  private String outputDataFormat;
-  private final String sparkLogLevel;
+  private final PubSubToGCSConfig pubSubToGCSConfig;
 
-  public PubSubToGCS() {
-    inputProjectID = getProperties().getProperty(PUBSUB_GCS_INPUT_PROJECT_ID_PROP);
-    pubsubInputSubscription = getProperties().getProperty(PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP);
-    timeoutMs = Long.parseLong(getProperties().getProperty(PUBSUB_GCS_TIMEOUT_MS_PROP));
-    streamingDuration =
-        Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_STREAMING_DURATION_SECONDS_PROP));
-    totalReceivers = Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_TOTAL_RECEIVERS_PROP));
-    gcsBucketName = getProperties().getProperty(PUBSUB_GCS_BUCKET_NAME);
-    batchSize = Integer.parseInt(getProperties().getProperty(PUBSUB_GCS_BATCH_SIZE_PROP));
-    outputDataFormat = getProperties().getProperty(PUBSUB_GCS_OUTPUT_DATA_FORMAT);
-    sparkLogLevel = getProperties().getProperty(SPARK_LOG_LEVEL);
+  private volatile long lastActivityTime = System.currentTimeMillis();
+
+  public static PubSubToGCS of(String... args) {
+    PubSubToGCSConfig pubSubToGCSConfig =
+        PubSubToGCSConfig.fromProperties(PropertyUtil.getProperties());
+    LOGGER.info("Config loaded\n{}", pubSubToGCSConfig);
+    return new PubSubToGCS(pubSubToGCSConfig);
+  }
+
+  public PubSubToGCS(PubSubToGCSConfig pubSubToGCSConfig) {
+    this.pubSubToGCSConfig = pubSubToGCSConfig;
   }
 
   @Override
-  public void runTemplate() throws InterruptedException {
-
-    JavaStreamingContext jsc;
-
-    SparkConf sparkConf = new SparkConf().setAppName("PubSubToGCS Dataproc Job");
-    jsc = new JavaStreamingContext(sparkConf, Seconds.apply(streamingDuration));
-
-    // Set log level
-    jsc.sparkContext().setLogLevel(sparkLogLevel);
-
-    JavaDStream<SparkPubsubMessage> stream = null;
-    for (int i = 0; i < totalReceivers; i += 1) {
-      JavaDStream<SparkPubsubMessage> pubSubReciever =
-          PubsubUtils.createStream(
-              jsc,
-              inputProjectID,
-              pubsubInputSubscription,
-              new SparkGCPCredentials.Builder().build(),
-              StorageLevel.MEMORY_AND_DISK_SER());
-      if (stream == null) {
-        stream = pubSubReciever;
-      } else {
-        stream = stream.union(pubSubReciever);
-      }
-    }
-
-    LOGGER.info("Writing data to output GCS Bucket: {}", gcsBucketName);
-    Storage storage = StorageOptions.getDefaultInstance().getService();
-    Bucket bucket = storage.get(gcsBucketName);
-    writeToGCS(stream, gcsBucketName, batchSize, outputDataFormat, bucket);
-
-    jsc.start();
-    jsc.awaitTerminationOrTimeout(timeoutMs);
-
-    LOGGER.info("PubSubToGCS job completed.");
-    jsc.stop();
+  public void validateInput() throws IllegalArgumentException {
+    ValidationUtil.validateOrThrow(pubSubToGCSConfig);
   }
 
-  public void validateInput() {
-    if (StringUtils.isAllBlank(inputProjectID)
-        || StringUtils.isAllBlank(pubsubInputSubscription)
-        || StringUtils.isAllBlank(gcsBucketName)
-        || StringUtils.isAllBlank(outputDataFormat)) {
-      LOGGER.error(
-          "{},{},{},{},{} are required parameter. ",
-          PUBSUB_GCS_INPUT_PROJECT_ID_PROP,
-          PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP,
-          PUBSUB_GCS_BUCKET_NAME,
-          PUBSUB_GCS_OUTPUT_DATA_FORMAT);
-      throw new IllegalArgumentException(
-          "Required parameters for PubSubToGCS not passed. "
-              + "Set mandatory parameter for PubSubToGCS template "
-              + "in resources/conf/template.properties file.");
-    }
-    LOGGER.info(
-        "Starting PubSub to GCS spark job with following parameters:"
-            + "1. {}:{}"
-            + "2. {}:{}"
-            + "3. {}:{}"
-            + "4. {},{}"
-            + "5. {},{}"
-            + "6. {},{}"
-            + "7. {},{}"
-            + "8. {},{}"
-            + "9. {},{}",
-        PUBSUB_GCS_INPUT_PROJECT_ID_PROP,
-        inputProjectID,
-        PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP,
-        pubsubInputSubscription,
-        PUBSUB_GCS_TIMEOUT_MS_PROP,
-        timeoutMs,
-        PUBSUB_GCS_STREAMING_DURATION_SECONDS_PROP,
-        streamingDuration,
-        PUBSUB_GCS_TOTAL_RECEIVERS_PROP,
-        totalReceivers,
-        PUBSUB_GCS_BUCKET_NAME,
-        gcsBucketName,
-        PUBSUB_GCS_BATCH_SIZE_PROP,
-        batchSize,
-        PUBSUB_GCS_OUTPUT_DATA_FORMAT,
-        outputDataFormat);
-  }
+  @Override
+  public void runTemplate() throws InterruptedException, TimeoutException {
 
-  public static void writeToGCS(
-      JavaDStream<SparkPubsubMessage> pubSubStream,
-      String gcsBucketName,
-      Integer batchSize,
-      String outputDataFormat,
-      Bucket bucket) {
-    pubSubStream.foreachRDD(
-        new VoidFunction<JavaRDD<SparkPubsubMessage>>() {
-          @Override
-          public void call(JavaRDD<SparkPubsubMessage> sparkPubsubMessageJavaRDD) throws Exception {
-            sparkPubsubMessageJavaRDD.foreachPartition(
-                new VoidFunction<Iterator<SparkPubsubMessage>>() {
-                  @Override
-                  public void call(Iterator<SparkPubsubMessage> sparkPubsubMessageIterator)
-                      throws Exception {
-                    if (outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_AVRO_EXTENSION)
-                        || outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_JSON_EXTENSION)) {
-                      JSONArray jsonArr = new JSONArray();
-                      while (sparkPubsubMessageIterator.hasNext()) {
-                        SparkPubsubMessage message = sparkPubsubMessageIterator.next();
-                        if (outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_AVRO_EXTENSION)) {
-                          writeAvroToGCS(message, bucket);
-                        } else if (outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_JSON_EXTENSION)) {
-                          JSONObject record = new JSONObject(new String(message.getData()));
-                          jsonArr.put(record);
-                          if (jsonArr.length() == batchSize && jsonArr.length() > 0) {
-                            writeJsonArrayToGCS(jsonArr, bucket);
-                            jsonArr = new JSONArray();
-                          }
-                        }
-                      } // end while
-                      if (jsonArr.length() > 0
-                          && outputDataFormat.equalsIgnoreCase(PUBSUB_GCS_JSON_EXTENSION)) {
-                        // If any Json objects were missed including in the last batch
-                        writeJsonArrayToGCS(jsonArr, bucket);
-                        jsonArr = new JSONArray();
+    LOGGER.info("Initialize Spark Session");
+    SparkSession sparkSession =
+        SparkSession.builder().appName("PubSubToGCS Dataproc Job").getOrCreate();
+
+    LOGGER.info("Set Log Level {}", pubSubToGCSConfig.getSparkLogLevel());
+    sparkSession.sparkContext().setLogLevel(pubSubToGCSConfig.getSparkLogLevel());
+
+    LOGGER.info("Prepare Properties");
+    Map<String, String> pubsubOptions = new HashMap<>();
+    pubsubOptions.put("projectId", pubSubToGCSConfig.getInputProjectID());
+    pubsubOptions.put("subscriptionId", pubSubToGCSConfig.getPubsubInputSubscription());
+    String batchSize =
+        pubSubToGCSConfig.getBatchSize() <= 0
+            ? "1000"
+            : String.valueOf(pubSubToGCSConfig.getBatchSize());
+    pubsubOptions.put("maxMessagesPerPull", batchSize);
+    String totalReceivers =
+        pubSubToGCSConfig.getTotalReceivers() <= 0
+            ? "4"
+            : String.valueOf(pubSubToGCSConfig.getTotalReceivers());
+    pubsubOptions.put("numPartitions", totalReceivers);
+
+    LOGGER.info("Spark Streaming Configs: {}", pubsubOptions);
+    long timeoutMs =
+        pubSubToGCSConfig.getTimeoutMs() <= 0 ? 2000L : pubSubToGCSConfig.getTimeoutMs();
+
+    try {
+
+      LOGGER.info("Starting Spark Read Stream");
+      Dataset<Row> dataset =
+          sparkSession
+              .readStream()
+              .format(PUBSUB_DATASOURCE_SHORT_NAME)
+              .options(pubsubOptions)
+              .load();
+
+      LOGGER.info("Start Writing Data");
+      StreamingQuery streamingQuery =
+          dataset
+              .writeStream()
+              .foreachBatch(
+                  (df, batchId) -> {
+                    LOGGER.info("Processing Batch ID: {}", batchId);
+                    if (!df.isEmpty()) {
+
+                      LOGGER.info("Data is available to write for batch id: {}", batchId);
+                      Dataset<Row> df_data = df.select("data");
+
+                      switch (pubSubToGCSConfig.getOutputDataFormat()) {
+                        case PUBSUB_GCS_AVRO_EXTENSION:
+                          df_data
+                              .write()
+                              .mode(SaveMode.Append)
+                              .format("avro")
+                              .save(pubSubToGCSConfig.getGcsBucketName());
+                          break;
+
+                        case PUBSUB_GCS_JSON_EXTENSION:
+                          df_data
+                              .write()
+                              .mode(SaveMode.Append)
+                              .json(pubSubToGCSConfig.getGcsBucketName());
+                          break;
+
+                        default:
+                          LOGGER.info(
+                              "Unsupported DataFormat {}. Discarding current dataset.",
+                              pubSubToGCSConfig.getOutputDataFormat());
+                          break;
                       }
+
+                      LOGGER.info("Start Acknowledgement For Batch ID: {}", batchId);
+                      PubSubAcker.acknowledge(df, pubsubOptions);
+
+                      lastActivityTime = System.currentTimeMillis();
+
                     } else {
-                      LOGGER.error(outputDataFormat + " is not supported...");
+                      LOGGER.info("No data available for batch id: {}", batchId);
                     }
-                  }
-                });
-          }
-        });
-  }
 
-  public static void writeAvroToGCS(SparkPubsubMessage message, Bucket bucket) {
-    LOGGER.info("PubSubToGCS message Avro start...");
-    bucket.create(
-        PUBSUB_GCS_BUCKET_OUTPUT_PATH + message.getMessageId() + "." + PUBSUB_GCS_AVRO_EXTENSION,
-        message.getData());
-    LOGGER.info("PubSubToGCS message Avro end...");
-  }
+                    long currentTime = System.currentTimeMillis();
+                    long inactiveDurationMillis = currentTime - lastActivityTime;
 
-  public static void writeJsonArrayToGCS(JSONArray jsonArr, Bucket bucket) {
-    LOGGER.info("PubSubToGCS message Json Array start...");
-    bucket.create(
-        PUBSUB_GCS_BUCKET_OUTPUT_PATH
-            + "batch_"
-            + System.nanoTime()
-            + "."
-            + PUBSUB_GCS_JSON_EXTENSION,
-        jsonArr.toString().getBytes(UTF_8));
-    LOGGER.info("PubSubToGCS message Json Array end...");
+                    if (inactiveDurationMillis > timeoutMs) {
+                      LOGGER.info(
+                          "No new messages for {} milliseconds. Stopping stream...", timeoutMs);
+                      LOGGER.info("Throwing StreamingQueryException to stop the query gracefully");
+                      throw new StreamingQueryException(
+                          "Inactivity timeout reached, stopping stream.",
+                          "Inactivity timeout reached, stopping stream.",
+                          new Exception("Inactivity timeout reached, stopping stream."),
+                          null,
+                          null,
+                          null,
+                          null);
+                    }
+                  })
+              .start();
+
+      try {
+        streamingQuery.awaitTermination();
+      } catch (StreamingQueryException e) {
+        LOGGER.error("Streaming Query stopped due to : ", e);
+      }
+
+      LOGGER.info("Spark Session Stop");
+      sparkSession.stop();
+
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }

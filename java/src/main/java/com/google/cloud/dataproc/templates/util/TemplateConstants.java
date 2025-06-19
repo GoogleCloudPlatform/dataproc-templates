@@ -169,9 +169,10 @@ public interface TemplateConstants {
   // Project that contains the output table
   String PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP = "pubsub.bq.output.project.id";
   // BigQuery output dataset
-  String PUBSUB_BQ_OUTPOUT_DATASET_PROP = "pubsub.bq.output.dataset";
+  String PUBSUB_BQ_OUTPUT_DATASET_PROP = "pubsub.bq.output.dataset";
   // BigQuery output table
-  String PUBSUB_BQ_OUTPOUT_TABLE_PROP = "pubsub.bq.output.table";
+  String PUBSUB_BQ_OUTPUT_TABLE_PROP = "pubsub.bq.output.table";
+  String PUBSUB_BQ_OUTPUT_GCS_CHECKPOINT_PROP = "pubsub.bq.output.gcs.checkpoint";
   // Number of records to be written per message to BigQuery
   String PUBSUB_BQ_BATCH_SIZE_PROP = "pubsub.bq.batch.size";
 
@@ -182,6 +183,8 @@ public interface TemplateConstants {
   String PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP = "pubsub.bigtable.output.project.id";
   // Project that contains the output table
   String PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP = "pubsub.bigtable.output.table";
+  String PUBSUB_BIGTABLE_BATCH_SIZE_PROP = "pubsub.bigtable.batch.size";
+  String PUBSUB_BIGTABLE_CATALOG_LOCATION_PROP = "pubsub.bigtable.catalog.location";
   // BigTable table name
   String ROWKEY = "rowkey";
   String COLUMN_FAMILY = "columnfamily";
@@ -543,4 +546,7 @@ public interface TemplateConstants {
   String SPARK_BIGTABLE_PROJECT_ID = "spark.bigtable.project.id";
   String SPARK_BIGTABLE_INSTANCE_ID = "spark.bigtable.instance.id";
   String SPARK_BIGTABLE_CATALOG = "catalog";
+
+  /** Please don't change it. It is a custom PubSub reader DataSource format name. */
+  String PUBSUB_DATASOURCE_SHORT_NAME = "pubsub";
 }
