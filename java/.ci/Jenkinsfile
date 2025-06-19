@@ -299,7 +299,8 @@ EOF
                                 --templateProperty pubsub.input.project.id=$GCP_PROJECT \
                                 --templateProperty pubsub.bq.output.project.id=$GCP_PROJECT \
                                 --templateProperty pubsub.bq.output.dataset=dataproc_templates \
-                                --templateProperty pubsub.bq.output.table=pubsubtobq
+                                --templateProperty pubsub.bq.output.table=pubsubtobq \
+                                --templateProperty pubsub.bq.output.gcs.checkpoint=gs://dataproc-templates/checkpoint/
                             '''
                         }
                     }
