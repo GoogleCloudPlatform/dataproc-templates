@@ -19,6 +19,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
@@ -63,13 +64,8 @@ public class PubSubToBQTest {
     PropertyUtil.getProperties().setProperty(propKey, "");
     pubSubToBQ = new PubSubToBQ(PubSubToBQConfig.fromProperties(PropertyUtil.getProperties()));
 
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> pubSubToBQ.validateInput());
-    assertEquals(
-        "Required parameters for PubSubToBQ not passed. "
-            + "Set mandatory parameter for PubSubToBQ template "
-            + "in resources/conf/template.properties file.",
-        exception.getMessage());
+    ValidationUtil.ValidationException exception =
+        assertThrows(ValidationUtil.ValidationException.class, pubSubToBQ::validateInput);
   }
 
   static Stream<String> propertyKeys() {

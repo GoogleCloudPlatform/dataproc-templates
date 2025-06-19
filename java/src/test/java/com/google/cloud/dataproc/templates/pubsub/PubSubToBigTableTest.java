@@ -17,10 +17,10 @@ package com.google.cloud.dataproc.templates.pubsub;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
@@ -67,13 +67,8 @@ public class PubSubToBigTableTest {
     pubSubToBigTableTest =
         new PubSubToBigTable(PubSubToBigTableConfig.fromProperties(PropertyUtil.getProperties()));
 
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> pubSubToBigTableTest.validateInput());
-    assertEquals(
-        "Required parameters for PubSubToBigTable not passed. "
-            + "Set mandatory parameter for PubSubToBigTable template "
-            + "in resources/conf/template.properties file.",
-        exception.getMessage());
+    ValidationUtil.ValidationException exception =
+        assertThrows(ValidationUtil.ValidationException.class, pubSubToBigTableTest::validateInput);
   }
 
   static Stream<String> propertyKeys() {
