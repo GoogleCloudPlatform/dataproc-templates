@@ -63,10 +63,6 @@ public class PubSubToBQConfig {
   @NotEmpty
   private String pubSubBQOutputTable;
 
-  @JsonProperty(value = PUBSUB_BQ_OUTPUT_GCS_CHECKPOINT_PROP)
-  @NotEmpty
-  private String pubSubBQOutputGCSCheckpoint;
-
   @JsonProperty(value = PUBSUB_BQ_BATCH_SIZE_PROP)
   private int batchSize;
 
@@ -106,10 +102,6 @@ public class PubSubToBQConfig {
     return pubSubBQOutputTable;
   }
 
-  public @NotEmpty String getPubSubBQOutputGCSCheckpoint() {
-    return pubSubBQOutputGCSCheckpoint;
-  }
-
   public int getBatchSize() {
     return batchSize;
   }
@@ -142,9 +134,6 @@ public class PubSubToBQConfig {
         + ", pubSubBQOutputTable='"
         + pubSubBQOutputTable
         + '\''
-        + ", pubSubBQOutputGCSCheckpoint='"
-        + pubSubBQOutputGCSCheckpoint
-        + '\''
         + ", batchSize="
         + batchSize
         + ", sparkLogLevel='"
@@ -165,7 +154,6 @@ public class PubSubToBQConfig {
         && StringUtils.isNotBlank(pubsubInputSubscription)
         && StringUtils.isNotBlank(outputProjectID)
         && StringUtils.isNotBlank(pubSubBQOutputDataset)
-        && StringUtils.isNotBlank(pubSubBQOutputTable)
-        && StringUtils.isNotBlank(pubSubBQOutputGCSCheckpoint);
+        && StringUtils.isNotBlank(pubSubBQOutputTable);
   }
 }

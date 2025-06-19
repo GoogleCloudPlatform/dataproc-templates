@@ -109,7 +109,7 @@ public class PubSubToBQ implements BaseTemplate {
       StreamingQuery streamingQuery =
           dataset
               .writeStream()
-              .option("checkpointLocation", pubSubToBQConfig.getPubSubBQOutputGCSCheckpoint())
+              .queryName("PubSubToBQStreamingQuery")
               .foreachBatch(
                   (df, batchId) -> {
                     LOGGER.info("Processing Batch ID: {}", batchId);

@@ -130,6 +130,7 @@ public class PubSubToBigTable implements BaseTemplate {
       StreamingQuery streamingQuery =
           dataset
               .writeStream()
+              .queryName("PubSubToBigTableStreamingQuery")
               .foreachBatch(
                   (df, batchId) -> {
                     LOGGER.info("Processing Batch ID: {}", batchId);

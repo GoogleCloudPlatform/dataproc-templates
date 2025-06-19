@@ -38,7 +38,6 @@ public class PubSubToBQTest {
     PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP, "some value");
     PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPUT_DATASET_PROP, "some value");
     PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPUT_TABLE_PROP, "some value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BQ_OUTPUT_GCS_CHECKPOINT_PROP, "some value");
     SparkSession spark = SparkSession.builder().master("local").getOrCreate();
   }
 
@@ -52,7 +51,6 @@ public class PubSubToBQTest {
     props.setProperty(PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP, "test-project-id");
     props.setProperty(PUBSUB_BQ_OUTPUT_DATASET_PROP, "test-dataset");
     props.setProperty(PUBSUB_BQ_OUTPUT_TABLE_PROP, "test-table");
-    props.setProperty(PUBSUB_BQ_OUTPUT_GCS_CHECKPOINT_PROP, "test-checkpoint");
 
     pubSubToBQ = new PubSubToBQ(PubSubToBQConfig.fromProperties(props));
     assertDoesNotThrow(pubSubToBQ::validateInput);
@@ -74,7 +72,6 @@ public class PubSubToBQTest {
         PUBSUB_INPUT_SUBSCRIPTION_PROP,
         PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP,
         PUBSUB_BQ_OUTPUT_DATASET_PROP,
-        PUBSUB_BQ_OUTPUT_TABLE_PROP,
-        PUBSUB_BQ_OUTPUT_GCS_CHECKPOINT_PROP);
+        PUBSUB_BQ_OUTPUT_TABLE_PROP);
   }
 }

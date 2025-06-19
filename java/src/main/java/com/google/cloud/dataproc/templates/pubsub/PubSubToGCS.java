@@ -99,6 +99,7 @@ public class PubSubToGCS implements BaseTemplate {
       StreamingQuery streamingQuery =
           dataset
               .writeStream()
+              .queryName("PubSubToGCSStreamingQuery")
               .foreachBatch(
                   (df, batchId) -> {
                     LOGGER.info("Processing Batch ID: {}", batchId);

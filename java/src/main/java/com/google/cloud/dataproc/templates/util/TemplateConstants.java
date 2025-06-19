@@ -172,7 +172,6 @@ public interface TemplateConstants {
   String PUBSUB_BQ_OUTPUT_DATASET_PROP = "pubsub.bq.output.dataset";
   // BigQuery output table
   String PUBSUB_BQ_OUTPUT_TABLE_PROP = "pubsub.bq.output.table";
-  String PUBSUB_BQ_OUTPUT_GCS_CHECKPOINT_PROP = "pubsub.bq.output.gcs.checkpoint";
   // Number of records to be written per message to BigQuery
   String PUBSUB_BQ_BATCH_SIZE_PROP = "pubsub.bq.batch.size";
 
