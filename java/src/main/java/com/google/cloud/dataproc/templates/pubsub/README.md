@@ -134,11 +134,11 @@ pubsub.bigtable.output.instance.id=<bigtable instance id>
 pubsub.bigtable.output.table=<bigtable output table>
 ## BigTable table catalog
 pubsub.bigtable.catalog.location=<bigtable catalog location>
-
+```
 Please refer our public [documentation](https://cloud.google.com/bigtable/docs/use-bigtable-spark-connector) for more details around spark bigtable connector.
 
 The input message has to be in the following format for one rowkey.
-```
+
 ```json
 {
   "table": {"name": "employee"},
@@ -153,4 +153,15 @@ The input message has to be in the following format for one rowkey.
 ```
 ```
 (Pleaes note that the table in Bigtable should exist with required column family, before executing the template)
+```
+We have provided robust logging messages. Spark Streaming application will run on various dataproc workers nodes. Usually Spark application prints messages on a driver as well as executors.
+It is tough to check logs directly on the driver side for troubleshooting. Please use below sample Cloud Logging query which will print all messages from the driver and executors.
+```
+resource.type="cloud_dataproc_batch"
+resource.labels.project_id="YOUR_PROJECT_ID"
+resource.labels.location="DATAPROC_SERVERLESS_JOB_REGION"
+resource.labels.batch_id="JOB_BATCH_ID"
+timestamp>="START_TIMESTAMP"
+timestamp<="END_TIMESTAMP"
+severity>=DEFAULT
 ```
