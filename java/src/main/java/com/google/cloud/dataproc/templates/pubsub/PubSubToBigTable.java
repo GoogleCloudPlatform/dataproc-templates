@@ -19,6 +19,7 @@ import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.apache.spark.sql.functions.*;
 
 import com.google.cloud.dataproc.templates.BaseTemplate;
+import com.google.cloud.dataproc.templates.pubsub.internal.GracefulStopException;
 import com.google.cloud.dataproc.templates.pubsub.internal.PubSubAcker;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
@@ -31,7 +32,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQuery;
-import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.apache.spark.sql.types.DataType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
@@ -176,23 +176,21 @@ public class PubSubToBigTable implements BaseTemplate {
                     if (inactiveDurationMillis > timeoutMs) {
                       LOGGER.info(
                           "No new messages for {} milliseconds. Stopping stream...", timeoutMs);
-                      LOGGER.info("Throwing StreamingQueryException to stop the query gracefully");
-                      throw new StreamingQueryException(
-                          "Inactivity timeout reached, stopping stream.",
-                          "Inactivity timeout reached, stopping stream.",
-                          new Exception("Inactivity timeout reached, stopping stream."),
-                          null,
-                          null,
-                          null,
-                          null);
+                      LOGGER.info("Throwing GracefulStopException to stop the query gracefully");
+                      throw new GracefulStopException(
+                          "Inactivity timeout reached, stopping stream.");
                     }
                   })
               .start();
 
       try {
         streamingQuery.awaitTermination();
-      } catch (StreamingQueryException e) {
-        LOGGER.error("Streaming Query stopped due to : ", e);
+      } catch (Exception e) {
+        if (e.getCause() instanceof GracefulStopException) {
+          LOGGER.warn("Inactivity timeout reached, stopping stream.");
+        } else {
+          LOGGER.error("Streaming Query stopped due to : ", e);
+        }
       }
 
       LOGGER.info("Spark Session Stop");
