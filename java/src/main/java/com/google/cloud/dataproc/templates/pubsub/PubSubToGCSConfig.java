@@ -60,7 +60,7 @@ public class PubSubToGCSConfig {
 
   @JsonProperty(value = PUBSUB_GCS_OUTPUT_DATA_FORMAT)
   @NotEmpty
-  @Pattern(regexp = "avro|json")
+  @Pattern(regexp = "avro|json", flags = Pattern.Flag.CASE_INSENSITIVE)
   private String outputDataFormat;
 
   @JsonProperty(value = SPARK_LOG_LEVEL)

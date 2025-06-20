@@ -87,6 +87,14 @@ public class PubSubToGCS implements BaseTemplate {
 
     try {
 
+      LOGGER.info("Config GCS Bucket");
+      String gcsBucket;
+      if(pubSubToGCSConfig.getGcsBucketName().startsWith("gs://")){
+        gcsBucket = pubSubToGCSConfig.getGcsBucketName();
+      }else{
+        gcsBucket = "gs://" + pubSubToGCSConfig.getGcsBucketName();
+      }
+
       LOGGER.info("Starting Spark Read Stream");
       Dataset<Row> dataset =
           sparkSession
@@ -108,20 +116,20 @@ public class PubSubToGCS implements BaseTemplate {
                       LOGGER.info("Data is available to write for batch id: {}", batchId);
                       Dataset<Row> df_data = df.select("data");
 
-                      switch (pubSubToGCSConfig.getOutputDataFormat()) {
+                      switch (pubSubToGCSConfig.getOutputDataFormat().toLowerCase()) {
                         case PUBSUB_GCS_AVRO_EXTENSION:
                           df_data
                               .write()
                               .mode(SaveMode.Append)
                               .format("avro")
-                              .save(pubSubToGCSConfig.getGcsBucketName());
+                              .save(gcsBucket);
                           break;
 
                         case PUBSUB_GCS_JSON_EXTENSION:
                           df_data
                               .write()
                               .mode(SaveMode.Append)
-                              .json(pubSubToGCSConfig.getGcsBucketName());
+                              .json(gcsBucket);
                           break;
 
                         default:
