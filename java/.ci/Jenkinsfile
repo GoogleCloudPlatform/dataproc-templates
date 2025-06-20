@@ -70,6 +70,7 @@ pipeline {
                                 sh '''
                                     gcloud pubsub topics publish pubsubtogcsv3 --message='{"Name": "NewMsg", "Age": 10}'
                                     gcloud pubsub topics publish test-pubsub-bq --message='{"Name": "Another message", "Age": 18}' 2> /dev/null || true
+                                    gcloud pubsub topics publish pubsub_bt --message='{"key": "1000", "name": "dataproc_pubsub_bt_test", "address": "GCP Cloud", "emp_no": "10"}' 2> /dev/null || true
 
                                     gsutil rm -r gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
@@ -198,14 +199,37 @@ EOF
                                 -- --template PUBSUBTOGCS \
                                 --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
                                 --templateProperty pubsubtogcs.input.subscription=pubsubtogcsv3-sub \
-                                --templateProperty pubsubtogcs.gcs.bucket.name=pubsubtogcs_dev \
-                                --templateProperty pubsubtogcs.gcs.output.data.format=JSON \
+                                --templateProperty pubsubtogcs.gcs.bucket.name=gs://pubsubtogcs_dev/dpjson/ \
+                                --templateProperty pubsubtogcs.gcs.output.data.format=json \
                                 --templateProperty pubsubtogcs.batch.size=50
                             ''' 
                         }
                     }
                 }
-            stage('S3 TO BigQuery (avro)'){
+                stage('PUBSUB TO BIGTABLE') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                export SKIP_BUILD=true
+
+
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template PUBSUBTOBIGTABLE \
+                                --templateProperty pubsub.input.project.id=$GCP_PROJECT \
+                                --templateProperty pubsub.input.subscription=pubsub_bt-sub \
+                                --templateProperty pubsub.bigtable.output.project.id=$GCP_PROJECT \
+                                --templateProperty pubsub.bigtable.output.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
+                                --templateProperty pubsub.bigtable.output.table=employee \
+                                --templateProperty pubsub.bigtable.catalog.location="gs://dataproc-templates/conf/employeecatalog.json"
+                            '''
+                        }
+                    }
+                }
+                stage('S3 TO BigQuery (avro)'){
                                 steps {
                                     retry(count: stageRetryCount) {
                                     withCredentials([usernamePassword(credentialsId: 'aws-s3-ro-credentials',
