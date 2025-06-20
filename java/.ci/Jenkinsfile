@@ -70,6 +70,7 @@ pipeline {
                                 sh '''
                                     gcloud pubsub topics publish pubsubtogcsv3 --message='{"Name": "NewMsg", "Age": 10}'
                                     gcloud pubsub topics publish test-pubsub-bq --message='{"Name": "Another message", "Age": 18}' 2> /dev/null || true
+                                    gcloud pubsub topics publish pubsub_bt --message='{"key": "1000", "name": "dataproc_pubsub_bt_test", "address": "GCP Cloud", "emp_no": "10"}' 2> /dev/null || true
 
                                     gsutil rm -r gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
@@ -149,11 +150,115 @@ EOF
                 }
             }
         }
+        stage('Parallel Execution 1'){
+        when {
+                        expression { return shouldRunOnChange() }
+             }
+            parallel{
+                stage('HIVE TO BIGQUERY'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                
+                                export SKIP_BUILD=true
+
+                                
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
+                                -- --template HIVETOBIGQUERY \
+                                --templateProperty hivetobq.bigquery.location=$GCP_PROJECT.dataproc_templates.test \
+                                --templateProperty hivetobq.sql="select * from default.employee" \
+                                --templateProperty hivetobq.write.mode=Overwrite \
+                                --templateProperty hivetobq.temp.gcs.bucket=dataproc-templates/integration-testing/output/HIVETOBIGQUERY
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 2'){
+        when {
+                        expression { return shouldRunOnChange() }
+             }
+            parallel{
+                stage('PUBSUB TO GCS') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+            
+                                export SKIP_BUILD=true
+
+                                
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template PUBSUBTOGCS \
+                                --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
+                                --templateProperty pubsubtogcs.input.subscription=pubsubtogcsv3-sub \
+                                --templateProperty pubsubtogcs.gcs.bucket.name=pubsubtogcs_dev \
+                                --templateProperty pubsubtogcs.gcs.output.data.format=JSON \
+                                --templateProperty pubsubtogcs.batch.size=50
+                            ''' 
+                        }
+                    }
+                }
+            stage('S3 TO BigQuery (avro)'){
+                                steps {
+                                    retry(count: stageRetryCount) {
+                                    withCredentials([usernamePassword(credentialsId: 'aws-s3-ro-credentials',
+                                    passwordVariable: 'S3_SECRET', usernameVariable: 'S3_KEY')]) {
+                                        sh '''
+                                            export SKIP_BUILD=true
+
+                                            cd java
+
+                                            bin/start.sh \
+                                            -- --template S3TOBIGQUERY \
+                                            --templateProperty project.id=$GCP_PROJECT \
+                                            --templateProperty s3.bq.access.key=$S3_KEY \
+                                            --templateProperty s3.bq.secret.key=$S3_SECRET \
+                                            --templateProperty s3.bq.input.format=avro \
+                                            --templateProperty s3.bq.input.location=s3a://dataproc-templates-integration-tests/cities.avro \
+                                            --templateProperty s3.bq.output.dataset.name=dataproc_templates \
+                                            --templateProperty s3.bq.output.table.name=s3_to_bq_avro \
+                                            --templateProperty s3.bq.output.mode=Overwrite \
+                                            --templateProperty s3.bq.ld.temp.bucket.name=dataproc-templates
+                                        '''
+                                       }
+                                    }
+                                }
+                            }
+            }
+        }
         stage('Parallel Execution 3'){
         when {
                         expression { return shouldRunOnChange() }
              }
             parallel{
+                stage('Hive TO GCS'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export SKIP_BUILD=true
+
+                                
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
+                                -- --template HIVETOGCS \
+                                --templateProperty hive.input.table=employee \
+                                --templateProperty hive.input.db=default \
+                                --templateProperty hive.gcs.output.path=gs://dataproc-templates/integration-testing/output/HIVETOGCS
+                            '''
+                        }
+                    }
+                }
                 stage('KAFKA TO BQ'){
                     steps {
                         retry(count: stageRetryCount) {
@@ -175,6 +280,27 @@ EOF
                                 --templateProperty kafka.bq.table=integration-test \
                                 --templateProperty kafka.bq.temp.gcs.bucket=dataproc-templates-kafkatobq \
                                 --templateProperty kafka.bq.await.termination.timeout=60000
+                            '''
+                        }
+                    }
+                }
+                stage('PUBSUB TO BQ'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''                                
+                                export SKIP_BUILD=true
+
+                                
+                                
+                                cd java
+                                
+                                bin/start.sh \
+                                -- --template PUBSUBTOBQ \
+                                --templateProperty pubsub.input.subscription=test-subscriber-pubsub-bq \
+                                --templateProperty pubsub.input.project.id=$GCP_PROJECT \
+                                --templateProperty pubsub.bq.output.project.id=$GCP_PROJECT \
+                                --templateProperty pubsub.bq.output.dataset=dataproc_templates \
+                                --templateProperty pubsub.bq.output.table=pubsubtobq
                             '''
                         }
                     }
@@ -435,6 +561,28 @@ EOF
                     }
                 }
 
+                stage('JDBC To JDBC'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
+                                export SKIP_BUILD=true
+                                    
+                                cd java
+
+                                bin/start.sh \
+                                -- --template JDBCTOJDBC \
+                                --templateProperty jdbctojdbc.input.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+                                --templateProperty jdbctojdbc.input.table="employee" \
+                                --templateProperty jdbctojdbc.output.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+                                --templateProperty jdbctojdbc.output.table="employee_output" \
+                                --templateProperty jdbctojdbc.output.mode="Overwrite" 
+                            '''
+                        }
+                    }
+                }
                 stage('GCS TO Mongo') {
                     steps{
                         retry(count: stageRetryCount) {
@@ -623,6 +771,57 @@ EOF
                                     --templateProperty gcs.spanner.output.saveMode=Append \
                                     --templateProperty gcs.spanner.output.primaryKey=empno \
                                     --templateProperty spanner.jdbc.dialect=postgresql
+                            '''
+                        }
+                    }
+                }
+                stage('BIGQUERY TO JDBC') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template BIGQUERYTOJDBC \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty bigquery.jdbc.input.table="$GCP_PROJECT.dataproc_templates.emp_table" \
+                                --templateProperty bigquery.jdbc.dataset.name='dataproc_templates' \
+                                --templateProperty bigquery.jdbc.url="$TEST_JDBC_URL" \
+                                --templateProperty bigquery.jdbc.output.table='emp_table' \
+                                --templateProperty bigquery.jdbc.batch.size=10 \
+                                --templateProperty bigquery.jdbc.output.driver='com.mysql.jdbc.Driver' \
+                                --templateProperty bigquery.jdbc.output.mode='Overwrite'
+                            '''
+                        }
+                    }
+                }
+                stage('JDBC TO SPANNER POSTGRESQL DIALECT'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud spanner databases execute-sql pgsqltest --instance=$ENV_TEST_SPANNER_ID --sql='DELETE FROM pgdialect;'
+                                export JARS="gs://dataproc-templates/jars/mysql-connector-java.jar"
+                                export SKIP_BUILD=true
+
+                                cd java
+
+                                bin/start.sh \
+                                -- --template JDBCTOSPANNER \
+                                --templateProperty project.id=$GCP_PROJECT \
+                                --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
+                                --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+                                --templateProperty jdbctospanner.sql="select * from test.pgdialect" \
+                                --templateProperty jdbctospanner.output.instance=$ENV_TEST_SPANNER_ID \
+                                --templateProperty jdbctospanner.output.database=pgsqltest \
+                                --templateProperty jdbctospanner.output.table=pgdialect \
+                                --templateProperty jdbctospanner.output.saveMode=Append \
+                                --templateProperty jdbctospanner.output.primaryKey='empno' \
+                                --templateProperty spanner.jdbc.dialect=postgresql
                             '''
                         }
                     }
