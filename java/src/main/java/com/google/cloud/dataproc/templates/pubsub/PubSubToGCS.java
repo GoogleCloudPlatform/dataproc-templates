@@ -89,9 +89,9 @@ public class PubSubToGCS implements BaseTemplate {
 
       LOGGER.info("Config GCS Bucket");
       String gcsBucket;
-      if(pubSubToGCSConfig.getGcsBucketName().startsWith("gs://")){
+      if (pubSubToGCSConfig.getGcsBucketName().startsWith("gs://")) {
         gcsBucket = pubSubToGCSConfig.getGcsBucketName();
-      }else{
+      } else {
         gcsBucket = "gs://" + pubSubToGCSConfig.getGcsBucketName();
       }
 
@@ -118,18 +118,11 @@ public class PubSubToGCS implements BaseTemplate {
 
                       switch (pubSubToGCSConfig.getOutputDataFormat().toLowerCase()) {
                         case PUBSUB_GCS_AVRO_EXTENSION:
-                          df_data
-                              .write()
-                              .mode(SaveMode.Append)
-                              .format("avro")
-                              .save(gcsBucket);
+                          df_data.write().mode(SaveMode.Append).format("avro").save(gcsBucket);
                           break;
 
                         case PUBSUB_GCS_JSON_EXTENSION:
-                          df_data
-                              .write()
-                              .mode(SaveMode.Append)
-                              .json(gcsBucket);
+                          df_data.write().mode(SaveMode.Append).json(gcsBucket);
                           break;
 
                         default:
