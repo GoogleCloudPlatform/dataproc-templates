@@ -183,6 +183,56 @@ steps:
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-mongo
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO Mongo"
+      cd java
+      bin/start.sh \
+        -- --template GCSTOMONGO \
+        --templateProperty gcs.mongodb.input.format=avro \
+        --templateProperty gcs.mongodb.input.location=gs://dataproc-templates_cloudbuild/integration-testing/gcstomongo/emp.avro \
+        --templateProperty gcs.mongodb.output.uri="mongodb://10.128.0.8:27017" \
+        --templateProperty gcs.mongodb.output.database=demo \
+        --templateProperty gcs.mongodb.output.collection=test \
+        --templateProperty gcs.mongo.output.mode=overwrite
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: mongo-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Mongo TO Bigquery"
+      cd java
+      bin/start.sh \
+        -- \
+        --template MongoToBQ \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty mongo.bq.input.uri="mongodb://10.128.0.8:27017" \
+        --templateProperty mongo.bq.input.database=demo \
+        --templateProperty mongo.bq.input.collection=dummyusers \
+        --templateProperty mongo.bq.output.dataset=dataproc_templates \
+        --templateProperty mongo.bq.output.table=mongotobq \
+        --templateProperty mongo.bq.output.mode=Overwrite \
+        --templateProperty mongo.bq.temp.bucket.name=dataproc-templates_cloudbuild/integration-testing/mongotobq
+    waitFor: ['build-and-upload']
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: spanner-to-gcs-csv
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'

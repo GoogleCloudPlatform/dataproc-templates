@@ -406,63 +406,6 @@ EOF
                 }
             }
         }
-        stage('Parallel Execution 8'){
-        when {
-                        expression { return shouldRunOnChange() }
-             }
-            parallel{
-
-                stage('GCS TO Mongo') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-
-                                export SKIP_BUILD=true
-                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar"
-
-                                cd java
-
-                                bin/start.sh \
-                                -- --template GCSTOMONGO \
-                                --templateProperty gcs.mongodb.input.format=avro \
-                                --templateProperty gcs.mongodb.input.location=gs://dataproc-templates/data/avro/empavro \
-                                --templateProperty gcs.mongodb.output.uri="$ENV_TEST_MONGO_DB_URI" \
-                                --templateProperty gcs.mongodb.output.database=demo \
-                                --templateProperty gcs.mongodb.output.collection=test \
-                                --templateProperty gcs.mongo.output.mode=overwrite
-
-                            '''
-                        }
-                    }
-                }
-                // stage('HBASE TO GCS (Manual)(avro)') {
-                //     when {
-                //         // Run this stage only if JOB_TYPE is not set to CLUSTER
-                //         expression { env.JOB_TYPE != "CLUSTER" }
-                //     }
-                //     steps{
-                //         retry(count: stageRetryCount) {
-                //             sh '''
-                //                 export SKIP_BUILD=true
-                //                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
-                //                 export JARS="gs://deps-dataproc-template/hbase-spark-protocol-shaded-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/hbase-spark-1.0.1-spark_3.2-scala_2.12.jar,gs://deps-dataproc-template/protobuf-java-2.5.0.jar,gs://deps-dataproc-template/htrace-core4-4.2.0-incubating.jar"
-
-                //                 cd java
-
-                //                 bin/start.sh \
-                //                 --container-image=us-docker.pkg.dev/${GCP_PROJECT}/dataproc-cicd/hbase-to-gcs:1.0.3 \
-                //                 --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \
-                //                 -- --template=HBASETOGCS \
-                //                 --templateProperty hbasetogcs.output.fileformat=avro \
-                //                 --templateProperty hbasetogcs.output.savemode=overwrite \
-                //                 --templateProperty hbasetogcs.output.path=gs://dataproc-templates/integration-testing/output/HBASETOGCS_manual/avro  \
-                //                 --templateProperty hbasetogcs.table.catalog=$CATALOG
-                //             '''
-                //         }
-                //     }
-                // }
-            }
-        }
         stage('Parallel Execution 9'){
         when {
                         expression { return shouldRunOnChange() }
@@ -543,30 +486,6 @@ EOF
                                  --templateProperty kafka.schema.url=gs://dataproc-templates/integration-testing/schema.json \
                                  --templateProperty kafka.gcs.output.format=parquet \
                                  --templateProperty kafka.gcs.await.termination.timeout.ms=60000
-                            '''
-                        }
-                    }
-                }
-                stage('MONGO TO BIGQUERY'){
-                    steps{
-                        retry(count: stageRetryCount){
-                            sh'''
-
-                                export SKIP_BUILD=true
-                                export JARS="gs://dataproc-templates/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar"
-
-                                cd java
-                                bin/start.sh \
-                                -- \
-                                --template MongoToBQ \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty mongo.bq.input.uri="$ENV_TEST_MONGO_DB_URI" \
-                                --templateProperty mongo.bq.input.database=demo \
-                                --templateProperty mongo.bq.input.collection=dummyusers \
-                                --templateProperty mongo.bq.output.dataset=dataproc_templates \
-                                --templateProperty mongo.bq.output.table=mongotobq \
-                                --templateProperty mongo.bq.output.mode=Append \
-                                --templateProperty mongo.bq.temp.bucket.name=dataproc-templates/integration-testing/mongotobq
                             '''
                         }
                     }
