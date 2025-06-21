@@ -146,20 +146,6 @@ EOF
                 }
             }
         }
-        stage('Parallel Execution 1'){
-        when {
-                        expression { return shouldRunOnChange() }
-             }
-            parallel{
-            }
-        }
-        stage('Parallel Execution 2'){
-        when {
-                        expression { return shouldRunOnChange() }
-             }
-            parallel{
-            }
-        }
         stage('Parallel Execution 3'){
         when {
                         expression { return shouldRunOnChange() }
