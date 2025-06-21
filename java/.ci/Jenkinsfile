@@ -68,10 +68,6 @@ pipeline {
                     steps {
                             catchError {
                                 sh '''
-                                    gcloud pubsub topics publish pubsubtogcsv3 --message='{"Name": "NewMsg", "Age": 10}'
-                                    gcloud pubsub topics publish test-pubsub-bq --message='{"Name": "Another message", "Age": 18}' 2> /dev/null || true
-                                    gcloud pubsub topics publish pubsub_bt --message='{"key": "1000", "name": "dataproc_pubsub_bt_test", "address": "GCP Cloud", "emp_no": "10"}' 2> /dev/null || true
-
                                     gsutil rm -r gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
                                     gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream 2> /dev/null || true
@@ -184,28 +180,6 @@ EOF
                         expression { return shouldRunOnChange() }
              }
             parallel{
-                stage('PUBSUB TO GCS') {
-                    steps{
-                        retry(count: stageRetryCount) {
-                            sh '''
-            
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template PUBSUBTOGCS \
-                                --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
-                                --templateProperty pubsubtogcs.input.subscription=pubsubtogcsv3-sub \
-                                --templateProperty pubsubtogcs.gcs.bucket.name=pubsubtogcs_dev \
-                                --templateProperty pubsubtogcs.gcs.output.data.format=JSON \
-                                --templateProperty pubsubtogcs.batch.size=50
-                            ''' 
-                        }
-                    }
-                }
             stage('S3 TO BigQuery (avro)'){
                                 steps {
                                     retry(count: stageRetryCount) {
@@ -280,27 +254,6 @@ EOF
                                 --templateProperty kafka.bq.table=integration-test \
                                 --templateProperty kafka.bq.temp.gcs.bucket=dataproc-templates-kafkatobq \
                                 --templateProperty kafka.bq.await.termination.timeout=60000
-                            '''
-                        }
-                    }
-                }
-                stage('PUBSUB TO BQ'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''                                
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template PUBSUBTOBQ \
-                                --templateProperty pubsub.input.subscription=test-subscriber-pubsub-bq \
-                                --templateProperty pubsub.input.project.id=$GCP_PROJECT \
-                                --templateProperty pubsub.bq.output.project.id=$GCP_PROJECT \
-                                --templateProperty pubsub.bq.output.dataset=dataproc_templates \
-                                --templateProperty pubsub.bq.output.table=pubsubtobq
                             '''
                         }
                     }
