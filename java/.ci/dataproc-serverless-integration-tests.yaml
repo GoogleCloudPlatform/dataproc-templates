@@ -36,7 +36,22 @@ steps:
       mvn install spotless:check
       echo "copying the build into staging location:" ${GCS_STAGING_LOCATION}   
       gsutil cp target/$JAR_FILE ${GCS_STAGING_LOCATION}/$JAR_FILE
-        
+      
+      cat > /tmp/employeecatalog.json << EOF
+        {
+          "table": {"name": "employee"},
+          "rowkey": "id_rowkey",
+          "columns": {
+            "key": {"cf": "rowkey", "col": "id_rowkey", "type": "string"},
+            "name": {"cf": "personal", "col": "name", "type": "string"},
+            "address": {"cf": "personal", "col": "address", "type": "string"},
+            "empno": {"cf": "professional", "col": "empno", "type": "string"}
+          }
+        }
+      EOF
+      cat /tmp/employeecatalog.json
+      gsutil cp /tmp/employeecatalog.json gs://dataproc-templates_cloudbuild/integration-testing/bigtable/employeecatalog.json
+
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-bigquery-avro
@@ -59,6 +74,29 @@ steps:
       --templateProperty gcs.bigquery.output.table="gcs_to_bq_avro" \
       --templateProperty gcs.bigquery.output.mode="Overwrite" \
       --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates_cloudbuild
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-bigtable
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO BigTable"
+      
+      cd java
+      bin/start.sh \
+        -- --template GCSTOBIGTABLE \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty gcs.bigtable.input.location=gs://dataproc-templates_cloudbuild/integration-testing/GCSTOBIGTABLE/input/parquet/ \
+        --templateProperty gcs.bigtable.input.format=parquet \
+        --templateProperty gcs.bigtable.output.instance.id=bt-int-test \
+        --templateProperty gcs.bigtable.output.project.id=$GCP_PROJECT \
+        --templateProperty gcs.bigtable.catalog.location="gs://dataproc-templates_cloudbuild/integration-testing/bigtable/employeecatalog.json"
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -147,11 +185,39 @@ steps:
           --templateProperty project.id=${_GCP_PROJECT} \
           --templateProperty gcs.spanner.input.format=avro \
           --templateProperty gcs.spanner.input.location=gs://dataproc-templates_cloudbuild/integration-testing/gcstospanner/emp.avro \
-          --templateProperty gcs.spanner.output.instance=${_ENV_TEST_SPANNER_ID} \
+          --templateProperty gcs.spanner.output.instance=$_ENV_TEST_SPANNER_ID \
           --templateProperty gcs.spanner.output.database=spark-ci-db   \
           --templateProperty gcs.spanner.output.table=badges \
           --templateProperty gcs.spanner.output.saveMode=Overwrite \
           --templateProperty gcs.spanner.output.primaryKey=empno
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-spanner-postgres
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO SPANNER Postgres DIALECT job"
+      
+      gcloud spanner databases execute-sql pgsqltest --instance=$_ENV_TEST_SPANNER_ID --sql='DELETE FROM badges;'
+      
+      cd java
+      bin/start.sh \
+        -- --template GCSTOSPANNER \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty gcs.spanner.input.format=avro \
+        --templateProperty gcs.spanner.input.location=gs://dataproc-templates_cloudbuild/integration-testing/gcstospanner/emp.avro \
+        --templateProperty gcs.spanner.output.instance=$_ENV_TEST_SPANNER_ID \
+        --templateProperty gcs.spanner.output.database=pgsqltest   \
+        --templateProperty gcs.spanner.output.table=badges \
+        --templateProperty gcs.spanner.output.saveMode=Append \
+        --templateProperty gcs.spanner.output.primaryKey=empno \
+        --templateProperty spanner.jdbc.dialect=postgresql
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
