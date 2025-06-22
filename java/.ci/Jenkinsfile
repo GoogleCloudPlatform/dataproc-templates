@@ -183,54 +183,6 @@ EOF
                         expression { return shouldRunOnChange() }
              }
             parallel{
-                stage('CASSANDRA TO GCS'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template CASSANDRATOGCS \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty cassandratogcs.input.keyspace=testkeyspace \
-                                --templateProperty cassandratogcs.input.table=emp \
-                                --templateProperty cassandratogcs.input.host=$ENV_TEST_CASSANDRA_HOST \
-                                --templateProperty cassandratogcs.output.format=csv \
-                                --templateProperty cassandratogcs.output.savemode=Overwrite \
-                                --templateProperty cassandratogcs.output.path=gs://dataproc-templates/integration-testing/output/CASSANDRATOGCS/csv
-                            '''
-                        }
-                    }
-                }
-                stage('CASSANDRA TO BigQuery'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                
-                                export SKIP_BUILD=true
-
-                                
-                                
-                                cd java
-                                
-                                bin/start.sh \
-                                -- --template CASSANDRATOBQ \
-                                --templateProperty project.id=$GCP_PROJECT \
-                                --templateProperty cassandratobq.input.keyspace=testkeyspace \
-                                --templateProperty cassandratobq.input.table=emp \
-                                --templateProperty cassandratobq.input.host=$ENV_TEST_CASSANDRA_HOST \
-                                --templateProperty cassandratobq.bigquery.location=dataproc_templates.cassandra_bq_emp_table \
-                                --templateProperty cassandratobq.output.mode=Overwrite \
-                                --templateProperty cassandratobq.temp.gcs.location=temp-bucket-for-files
-                            '''
-                        }
-                    }
-                }
                 stage('DATAPLEX GCS TO BIGQUERY'){
                     steps {
                         retry(count: stageRetryCount) {
@@ -357,29 +309,6 @@ EOF
                         expression { return shouldRunOnChange() }
              }
             parallel{
-                stage('Cassandra to GCS (avro)'){
-                    steps {
-                        retry(count: stageRetryCount) {
-                            sh '''
-                                export SKIP_BUILD=true
-
-                                
-                                    
-                                cd java
-
-                                bin/start.sh \
-                                    -- --template CASSANDRATOGCS \
-                                    --templateProperty project.id=$GCP_PROJECT \
-                                    --templateProperty cassandratogcs.input.keyspace=testkeyspace \
-                                    --templateProperty cassandratogcs.input.table=emp \
-                                    --templateProperty cassandratogcs.input.host=$ENV_TEST_CASSANDRA_HOST \
-                                    --templateProperty cassandratogcs.output.format=avro \
-                                    --templateProperty cassandratogcs.output.savemode=Overwrite \
-                                    --templateProperty cassandratogcs.output.path=gs://dataproc-templates/integration-testing/output/CASSANDRATOGCS/java_avro
-                            '''
-                        }
-                    }
-                }
                 stage('KAFKA TO GCS (avro)'){
                     steps {
                         retry(count: stageRetryCount) {

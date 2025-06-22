@@ -13,7 +13,6 @@ substitutions:
   _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
   _ENV_DATAPROC_METASTORE_SERVICE: 'projects/dataproc-templates/locations/us-central1/services/metastore-thrift-integration-test'
   _ENV_TEST_KAFKA_BOOTSTRAP_SERVERS: 'your-kafka-broker1:9092,your-kafka-broker2:9092'
-  _ENV_TEST_CASSANDRA_HOST: 'your-cassandra-host'
 
 availableSecrets:
   secretManager:
@@ -231,6 +230,52 @@ steps:
         --templateProperty mongo.bq.temp.bucket.name=dataproc-templates_cloudbuild/integration-testing/mongotobq
     waitFor: ['build-and-upload']
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: cassandra-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Cassandra TO GCS"
+      cd java
+      bin/start.sh \
+        -- --template CASSANDRATOGCS \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty cassandratogcs.input.keyspace=testkeyspace \
+        --templateProperty cassandratogcs.input.table=emp \
+        --templateProperty cassandratogcs.input.host=10.128.0.19 \
+        --templateProperty cassandratogcs.output.format=csv \
+        --templateProperty cassandratogcs.output.savemode=Overwrite \
+        --templateProperty cassandratogcs.output.path=gs://dataproc-templates_cloudbuild/integration-testing/CASSANDRATOGCS/output/csv
+    waitFor: ['build-and-upload']
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: cassandra-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Cassandra TO BigQuery"
+      cd java
+      bin/start.sh \
+        -- --template CASSANDRATOBQ \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty cassandratobq.input.keyspace=testkeyspace \
+        --templateProperty cassandratobq.input.table=emp \
+        --templateProperty cassandratobq.input.host=10.128.0.19 \
+        --templateProperty cassandratobq.bigquery.location=dataproc_templates.cassandra_bq_emp_table \
+        --templateProperty cassandratobq.output.mode=Overwrite \
+        --templateProperty cassandratobq.temp.gcs.location=dataproc-templates_cloudbuild
+    waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: spanner-to-gcs-csv
