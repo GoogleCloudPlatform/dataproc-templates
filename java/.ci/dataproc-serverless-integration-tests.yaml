@@ -12,7 +12,7 @@ substitutions:
   _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
   _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
   _ENV_DATAPROC_METASTORE_SERVICE: 'projects/dataproc-templates/locations/us-central1/services/metastore-thrift-integration-test'
-  _ENV_TEST_KAFKA_BOOTSTRAP_SERVERS: 'your-kafka-broker1:9092,your-kafka-broker2:9092'
+  _ENV_TEST_KAFKA_BOOTSTRAP_SERVERS: '10.128.0.58:9093'
 
 availableSecrets:
   secretManager:
@@ -642,9 +642,6 @@ steps:
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
     script: |
       #!/usr/bin/env bash
-      
-      #TODO: Although this test passes, but there are lots of errors in the logs and no data is moving (as of 6/11/25).
-      
       echo "Running PubSub TO GCS avro"
       gcloud pubsub topics publish pubsub-to-gcs --message='{"Template": "PUBSUBTOGCS", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT
       
@@ -669,12 +666,8 @@ steps:
     script: |
       #!/usr/bin/env bash
       
-      #TODO: Although this test passes, but there are lots of errors in the logs and no data is moving (as of 6/11/25).
-      
       echo "Running PubSub TO GCS avro"
-      gcloud pubsub topics publish pubsub-to-bq --message='{"Template": "PUBSUBTOBQ", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT
-         
-      
+      gcloud pubsub topics publish pubsub-to-bq --message='{"Template": "PUBSUBTOBQ", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT      
       cd java
       bin/start.sh \
         -- --template PUBSUBTOBQ \
@@ -684,6 +677,145 @@ steps:
         --templateProperty pubsub.bq.output.dataset=dataproc_templates \
         --templateProperty pubsub.bq.output.table=pubsubtobq
     waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: kafka-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Kafka TO BigQuery"
+      
+      cd java
+      bin/start.sh \
+        -- \
+        --template KAFKATOBQ \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.bq.checkpoint.location=gs://dataproc-templates_cloudbuild/integration-testing/KAFKATOBQ/checkpoint \
+        --templateProperty kafka.bq.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.bq.topic=integration-test-kafka-bq \
+        --templateProperty kafka.bq.dataset=dataproc_templates \
+        --templateProperty kafka.bq.table=kafkatobq-integration-test \
+        --templateProperty kafka.bq.temp.gcs.bucket=dataproc-templates_cloudbuild \
+        --templateProperty kafka.bq.await.termination.timeout=60000
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: kafka-dstream-to-bq
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Kafka Dstream TO BigQuery"
+      
+      cd java
+      bin/start.sh \
+        -- \
+        --template KafkaToBQDstream \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.topic=integration-test-kafka-bq-dstream \
+        --templateProperty kafka.bq.dataset=dataproc_templates \
+        --templateProperty kafka.starting.offset=latest \
+        --templateProperty kafka.bq.batch.interval=60000 \
+        --templateProperty kafka.bq.consumer.group.id=testgroup \
+        --templateProperty kafka.bq.stream.output.mode=append \
+        --templateProperty kafka.bq.table=kafka-dstream-int-test \
+        --templateProperty kafka.bq.temp.gcs.bucket=dataproc-templates_cloudbuild \
+        --templateProperty kafka.bq.await.termination.timeout=60000
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: kafka-to-gcs-avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Kafka TO GCS"
+      
+      cd java
+      bin/start.sh \
+        -- --template KAFKATOGCS \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/KAFKATOGCS/avro/ \
+        --templateProperty kafka.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.topic=integration-test-kafka-gcs \
+        --templateProperty kafka.starting.offset=earliest \
+        --templateProperty kafka.gcs.output.format=avro \
+        --templateProperty kafka.message.format=bytes \
+        --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: kafka-dstream-to-gcs-parquet
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Kafka Dstream TO GCS"
+      
+      cd java
+      bin/start.sh \
+        -- \
+        --template KafkaToGCSDstream \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.topic=integration-test-kafka-gcs-dstream \
+        --templateProperty kafka.starting.offset=latest \
+        --templateProperty kafka.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/KAFKATOGCS_DStream/output/parquet/ \
+        --templateProperty kafka.gcs.batch.interval=60000 \
+        --templateProperty kafka.gcs.consumer.group.id=testgroupgcs \
+        --templateProperty kafka.gcs.write.mode=append \
+        --templateProperty kafka.message.format=bytes \
+        --templateProperty kafka.gcs.output.format=parquet \
+        --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: kafka-dstream-to-gcs-json
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Kafka Dstream TO GCS (JSON)"
+      
+      cd java
+      bin/start.sh \
+        -- \
+        --template KafkaToGCSDstream \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.topic=integration-test-kafka-gcs-dstream \
+        --templateProperty kafka.starting.offset=latest \
+        --templateProperty kafka.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/KAFKATOGCS_DStream/output/json/ \
+        --templateProperty kafka.gcs.batch.interval=60000 \
+        --templateProperty kafka.gcs.consumer.group.id=testgroupgcs \
+        --templateProperty kafka.gcs.write.mode=append \
+        --templateProperty kafka.message.format=bytes \
+        --templateProperty kafka.gcs.output.format=json \
+        --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+    waitFor: ['build-and-upload']
+
 options:
   logging: CLOUD_LOGGING_ONLY
   pubsubTopic: projects/dataproc-templates/topics/dpt-build
