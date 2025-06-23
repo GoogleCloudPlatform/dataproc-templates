@@ -17,10 +17,11 @@ package com.google.cloud.dataproc.templates.pubsub;
 
 import static com.google.cloud.dataproc.templates.util.TemplateConstants.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
+import com.google.cloud.dataproc.templates.util.ValidationUtil;
+import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,13 +46,16 @@ public class PubSubToBigTableTest {
   @Test
   void runTemplateWithValidParameters() {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_PROJECT_ID_PROP, "some-value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP, "some-value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP, "some-value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP, "some-value");
-    PropertyUtil.getProperties().setProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP, "some-value");
 
-    pubSubToBigTableTest = new PubSubToBigTable();
+    Properties props = PropertyUtil.getProperties();
+    props.setProperty(PUBSUB_INPUT_PROJECT_ID_PROP, "some-value");
+    props.setProperty(PUBSUB_INPUT_SUBSCRIPTION_PROP, "some-value");
+    props.setProperty(PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP, "some-value");
+    props.setProperty(PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP, "some-value");
+    props.setProperty(PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP, "some-value");
+    props.setProperty(PUBSUB_BIGTABLE_CATALOG_LOCATION_PROP, "some-value");
+
+    pubSubToBigTableTest = new PubSubToBigTable(PubSubToBigTableConfig.fromProperties(props));
     assertDoesNotThrow(pubSubToBigTableTest::validateInput);
   }
 
@@ -60,15 +64,11 @@ public class PubSubToBigTableTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     PropertyUtil.getProperties().setProperty(propKey, "");
-    pubSubToBigTableTest = new PubSubToBigTable();
+    pubSubToBigTableTest =
+        new PubSubToBigTable(PubSubToBigTableConfig.fromProperties(PropertyUtil.getProperties()));
 
-    Exception exception =
-        assertThrows(IllegalArgumentException.class, () -> pubSubToBigTableTest.validateInput());
-    assertEquals(
-        "Required parameters for PubSubToBigTable not passed. "
-            + "Set mandatory parameter for PubSubToBigTable template "
-            + "in resources/conf/template.properties file.",
-        exception.getMessage());
+    ValidationUtil.ValidationException exception =
+        assertThrows(ValidationUtil.ValidationException.class, pubSubToBigTableTest::validateInput);
   }
 
   static Stream<String> propertyKeys() {
@@ -77,6 +77,7 @@ public class PubSubToBigTableTest {
         PUBSUB_INPUT_SUBSCRIPTION_PROP,
         PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP,
         PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP,
-        PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP);
+        PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP,
+        PUBSUB_BIGTABLE_CATALOG_LOCATION_PROP);
   }
 }

@@ -37,13 +37,14 @@
   <properties>
     <!-- https://cloud.google.com/dataproc-serverless/docs/concepts/versions/spark-runtime-versions#spark_runtime_version_12 -->
     <!-- Java & Scala Version Aligned with Dataproc Serverless Spark Runtime 1.2 -->
+    <!-- Java & Scala Version Aligned with Dataproc Cluster Image 2.2-debian12 -->
     <java.version>11</java.version>
     <scala.binary.version>2.12</scala.binary.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <!-- Spark Version Aligned with Dataproc Serverless Spark Runtime 1.2 -->
-    <spark.version>3.3.4</spark.version>
+    <spark.version>3.5.1</spark.version>
 
     <!-- GCP Dependencies. Only change when it is aligned with Spark -->
     <aopalliance.version>1.0</aopalliance.version>
@@ -76,12 +77,12 @@
     <spanner.jdbc.version>2.14.0</spanner.jdbc.version>
     <google.cloud.pubsub.version>1.132.0</google.cloud.pubsub.version>
     <google.cloud.pubsublite.version>1.14.0</google.cloud.pubsublite.version>
-    <google.cloud.bigtable.version>2.42.0</google.cloud.bigtable.version>
+    <google.cloud.bigtable.version>2.54.0</google.cloud.bigtable.version>
     <google.oauth.client.version>1.36.0</google.oauth.client.version>
     <google.api.client.version>2.7.0</google.api.client.version>
     <spark.bigquery.connector.version>0.36.4</spark.bigquery.connector.version>
     <pubsublite.spark.sql.streaming.version>1.0.0</pubsublite.spark.sql.streaming.version>
-    <spark.bigtable.connector.version>0.2.1</spark.bigtable.connector.version>
+    <spark.bigtable.connector.version>0.6.0</spark.bigtable.connector.version>
     <spark.streaming.pubsub.version>2.4.0</spark.streaming.pubsub.version>
 
     <!-- Spark Kafka Streaming Dependency. Aligned with Spark 3.5.1 -->
@@ -110,7 +111,7 @@
     <!-- Logging Dependencies -->
     <logback.classic.version>1.5.8</logback.classic.version>
     <log4j.version>2.24.0</log4j.version>
-    <slf4j.version>1.7.16</slf4j.version>
+    <slf4j.version>1.7.34</slf4j.version>
     <jnr.posix.version>3.1.19</jnr.posix.version>
 
     <!-- Other Dependencies -->
@@ -289,11 +290,7 @@
       <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.bahir</groupId>
-      <artifactId>spark-streaming-pubsub_${scala.binary.version}</artifactId>
-      <version>${spark.streaming.pubsub.version}</version>
-    </dependency>
+
 
     <!-- Required by spark streaming kafka -->
     <dependency>
@@ -467,26 +464,10 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-api</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-      <version>${log4j.version}</version>
-    </dependency>
     <!-- Rely on Spark to provide dependencies from upstream -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -497,11 +478,11 @@
       <artifactId>commons-cli</artifactId>
       <version>${commons.cli.version}</version>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>org.json</groupId>-->
-    <!--      <artifactId>json</artifactId>-->
-    <!--      <version>${json.version}</version>-->
-    <!--    </dependency>-->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${json.version}</version>
+    </dependency>
     <!--    <dependency>-->
     <!--      <groupId>com.github.ben-manes.caffeine</groupId>-->
     <!--      <artifactId>caffeine</artifactId>-->
