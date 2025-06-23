@@ -46,7 +46,7 @@ OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
 #OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
 OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar"
-if [[ $OPT_SPARK_VERSION == *"=1.1"* || $JOB_TYPE == "CLUSTER" ]]; then
+if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
   echo "Dataproc Serverless Runtime 1.1 or CLUSTER Job Type Detected"
 	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
 fi
