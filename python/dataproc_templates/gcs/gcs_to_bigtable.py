@@ -23,6 +23,7 @@ from dataproc_templates import BaseTemplate
 from dataproc_templates.util.argument_parsing import add_spark_options
 from dataproc_templates.util.dataframe_reader_wrappers import ingest_dataframe_from_cloud_storage
 import dataproc_templates.util.template_constants as constants
+from google.cloud import storage
 
 
 __all__ = ['GCSToBigTableTemplate']
@@ -56,12 +57,38 @@ class GCSToBigTableTemplate(BaseTemplate):
                 constants.FORMAT_DELTA
             ]
         )
+        parser.add_argument(
+            f'--{constants.GCS_BT_PROJECT_ID}',
+            dest=constants.GCS_BT_PROJECT_ID,
+            required=True,
+            help='BigTable project ID'
+        )
+        parser.add_argument(
+            f'--{constants.GCS_BT_INSTANCE_ID}',
+            dest=constants.GCS_BT_INSTANCE_ID,
+            required=True,
+            help='BigTable instance ID'
+        )
+        parser.add_argument(
+            f'--{constants.GCS_BT_CREATE_NEW_TABLE}',
+            dest=constants.GCS_BT_CREATE_NEW_TABLE,
+            required=False,
+            help='BigTable create new table flag. Default is false.',
+            default=False
+        )
+        parser.add_argument(
+            f'--{constants.GCS_BT_BATCH_MUTATE_SIZE}',
+            dest=constants.GCS_BT_BATCH_MUTATE_SIZE,
+            required=False,
+            help='BigTable batch mutate size. Maximum allowed size is 100000. Default is 100.',
+            default=100
+        )
         add_spark_options(parser, constants.get_csv_input_spark_options("gcs.bigtable.input."))
         parser.add_argument(
-            f'--{constants.GCS_BT_HBASE_CATALOG_JSON}',
-            dest=constants.GCS_BT_HBASE_CATALOG_JSON,
+            f'--{constants.GCS_BT_CATALOG_JSON}',
+            dest=constants.GCS_BT_CATALOG_JSON,
             required=True,
-            help='HBase catalog inline json'
+            help='BigTable catalog json stored file GCS location'
         )
 
         known_args: argparse.Namespace
@@ -76,12 +103,25 @@ class GCSToBigTableTemplate(BaseTemplate):
         # Arguments
         input_location: str = args[constants.GCS_BT_INPUT_LOCATION]
         input_format: str = args[constants.GCS_BT_INPUT_FORMAT]
-        catalog: str = ''.join(args[constants.GCS_BT_HBASE_CATALOG_JSON].split())
+        project_id: str = args[constants.GCS_BT_PROJECT_ID]
+        instance_id: str = args[constants.GCS_BT_INSTANCE_ID]
+        create_new_table: bool = args[constants.GCS_BT_CREATE_NEW_TABLE]
+        batch_mutate_size: int = args[constants.GCS_BT_BATCH_MUTATE_SIZE]
+
 
         logger.info(
             "Starting Cloud Storage to BigTable Spark job with parameters:\n"
             f"{pprint.pformat(args)}"
         )
+
+        # Read Catalog From GCS
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(args[constants.GCS_BT_CATALOG_JSON].split('/')[2])
+        blob = bucket.blob('/'.join(args[constants.GCS_BT_CATALOG_JSON].split('/')[3:]))
+        catalog = blob.download_as_text()
+
+        logger.info(f"Catalog: {catalog}")
+
 
         # Read
         input_data = ingest_dataframe_from_cloud_storage(
@@ -90,7 +130,10 @@ class GCSToBigTableTemplate(BaseTemplate):
 
         # Write
         input_data.write \
-            .format(constants.FORMAT_HBASE) \
+            .format(constants.FORMAT_BIGTABLE) \
             .options(catalog=catalog) \
-            .option('hbase.spark.use.hbasecontext', "false") \
+            .option(constants.GCS_BT_PROJECT_ID, project_id) \
+            .option(constants.GCS_BT_INSTANCE_ID, instance_id) \
+            .option(constants.GCS_BT_CREATE_NEW_TABLE, create_new_table) \
+            .option(constants.GCS_BT_BATCH_MUTATE_SIZE, batch_mutate_size) \
             .save()

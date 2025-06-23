@@ -30,10 +30,11 @@ FORMAT_TXT = "txt"
 FORMAT_AVRO = "avro"
 FORMAT_PRQT = "parquet"
 FORMAT_AVRO_EXTD = "com.databricks.spark.avro"
-FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery"
+FORMAT_BIGQUERY = "bigquery"
 FORMAT_JDBC = "jdbc"
 FORMAT_PUBSUBLITE = "pubsublite"
 FORMAT_REDSHIFT = "io.github.spark_redshift_community.spark.redshift"
+FORMAT_MEMORYSTORE = "org.apache.spark.sql.redis"
 JDBC_URL = "url"
 JDBC_TABLE = "dbtable"
 JDBC_QUERY = "query"
@@ -78,8 +79,10 @@ CSV_TIMESTAMPFORMAT = "timestampFormat"
 CSV_TIMESTAMPNTZFORMAT = "timestampNTZFormat"
 CSV_UNESCAPEDQUOTEHANDLING = "unescapedQuoteHandling"
 FORMAT_HBASE = "org.apache.hadoop.hbase.spark"
+FORMAT_BIGTABLE = "bigtable"
 TABLE = "table"
 TEMP_GCS_BUCKET = "temporaryGcsBucket"
+WRITE_METHOD="writeMethod"
 MONGO_URL = "spark.mongodb.output.uri"
 MONGO_INPUT_URI = "spark.mongodb.input.uri"
 MONGO_DATABASE = "database"
@@ -87,7 +90,13 @@ MONGO_COLLECTION = "collection"
 FORMAT_MONGO = "com.mongodb.spark.sql.DefaultSource"
 MONGO_DEFAULT_BATCH_SIZE = 512
 MONGO_BATCH_SIZE = "maxBatchSize"
-FORMAT_SNOWFLAKE = "net.snowflake.spark.snowflake"
+MEMORYSTORE_KEY_COLUMN = "key.column"
+MEMORYSTORE_MODEL = "model"
+MEMORYSTORE_HOST = "host"
+MEMORYSTORE_PORT = "port"
+MEMORYSTORE_DBNUM = "dbNum"
+MEMORYSTORE_TTL = "ttl"
+FORMAT_SNOWFLAKE = "snowflake"
 REDSHIFT_TEMPDIR = "tempdir"
 REDSHIFT_IAMROLE = "aws_iam_role"
 AWS_S3ACCESSKEY = "fs.s3a.access.key"
@@ -101,13 +110,77 @@ PUBSUBLITE_SUBSCRIPTION = "pubsublite.subscription"
 PUBSUBLITE_CHECKPOINT_LOCATION = "checkpointLocation"
 STREAM_PATH = "path"
 STREAM_CHECKPOINT_LOCATION = "checkpointLocation"
+FORMAT_ELASTICSEARCH="org.elasticsearch.hadoop.mr.EsInputFormat"
+ELASTICSEARCH_KEY_CLASS="org.apache.hadoop.io.NullWritable"
+ELASTICSEARCH_VALUE_CLASS="org.elasticsearch.hadoop.mr.LinkedMapWritable"
+ES_NODES_PATH_PREFIX="es.nodes.path.prefix"
+ES_QUERY="es.query"
+ES_MAPPING_DATE_RICH="es.mapping.date.rich"
+ES_READ_FIELD_INCLUDE="es.read.field.include"
+ES_READ_FIELD_EXCLUDE="es.read.field.exclude"
+ES_READ_FIELD_AS_ARRAY_INCLUDE="es.read.field.as.array.include"
+ES_READ_FIELD_AS_ARRAY_EXCLUDE="es.read.field.as.array.exclude"
+ES_READ_METADATA="es.read.metadata"
+ES_READ_METADATA_FIELD="es.read.metadata.field"
+ES_READ_METADATA_VERSION="es.read.metadata.version"
+ES_INDEX_READ_MISSING_AS_EMPTY="es.index.read.missing.as.empty"
+ES_FIELD_READ_EMPTY_AS_NULL="es.field.read.empty.as.null"
+ES_READ_SHARD_PREFERENCE="es.read.shard.preference"
+ES_READ_SOURCE_FILTER="es.read.source.filter"
+ES_INDEX_READ_ALLOW_RED_STATUS="es.index.read.allow.red.status"
+ES_INPUT_MAX_DOC_PER_PARTITION="es.input.max.docs.per.partition"
+ES_NODES_DISCOVERY="es.nodes.discovery"
+ES_NODES_CLIENT_ONLY="es.nodes.client.only"
+ES_NODES_DATA_ONLY="es.nodes.data.only"
+ES_NODES_WAN_ONLY="es.nodes.wan.only"
+ES_HTTP_TIMEOUT="es.http.timeout"
+ES_HTTP_RETRIES="es.http.retries"
+ES_SCROLL_KEEPALIVE="es.scroll.keepalive"
+ES_SCROLL_SIZE="es.scroll.size"
+ES_SCROLL_LIMIT="es.scroll.limit"
+ES_ACTION_HEART_BEAT_LEAD="es.action.heart.beat.lead"
+ES_NET_SSL="es.net.ssl"
+ES_NET_SSL_CERT_ALLOW_SELF_SIGNED="es.net.ssl.cert.allow.self.signed"
+ES_NET_SSL_PROTOCOL="es.net.ssl.protocol"
+ES_NET_PROXY_HTTP_HOST="es.net.proxy.http.host"
+ES_NET_PROXY_HTTP_PORT="es.net.proxy.http.port"
+ES_NET_PROXY_HTTP_USER="es.net.proxy.http.user"
+ES_NET_PROXY_HTTP_PASS="es.net.proxy.http.pass"
+ES_NET_PROXY_HTTP_USE_SYSTEM_PROPS="es.net.proxy.http.use.system.props"
+ES_NET_PROXY_HTTPS_HOST="es.net.proxy.https.host"
+ES_NET_PROXY_HTTPS_PORT="es.net.proxy.https.port"
+ES_NET_PROXY_HTTPS_USER="es.net.proxy.https.user"
+ES_NET_PROXY_HTTPS_PASS="es.net.proxy.https.pass"
+ES_NET_PROXY_HTTPS_USE_SYSTEM_PROPS="es.net.proxy.https.use.system.props"
+ES_NET_PROXY_SOCKS_HOST="es.net.proxy.socks.host"
+ES_NET_PROXY_SOCKS_PORT="es.net.proxy.socks.port"
+ES_NET_PROXY_SOCKS_USER="es.net.proxy.socks.user"
+ES_NET_PROXY_SOCKS_PASS="es.net.proxy.socks.pass"
+ES_NET_PROXY_SOCKS_USE_SYSTEM_PROPS="es.net.proxy.socks.use.system.props"
+BQ_TABLE_LABEL="bigQueryTableLabel"
+BQ_CREATE_DISPOSITION="createDisposition"
+BQ_TEMPORARY_GCS_BUCKET="temporaryGcsBucket"
+BQ_PERSISTENT_GCS_BUCKET="persistentGcsBucket"
+BQ_PERSISTENT_GCS_PATH="persistentGcsPath"
+BQ_DATE_PARTITION="datePartition"
+BQ_PARTITION_FIELD="partitionField"
+BQ_PARTITION_EXPIRATION_MS="partitionExpirationMs"
+BQ_PARTITION_TYPE="partitionType"
+BQ_PARTITION_RANGE_START="partitionRangeStart"
+BQ_PARTITION_RANGE_END="partitionRangeEnd"
+BQ_PARTITION_RANGE_INTERVAL="partitionRangeInterval"
+BQ_CLUSTERED_FIELDS="clusteredFields"
+BQ_ALLOW_FIELD_ADDITION="allowFieldAddition"
+BQ_ALLOW_FIELD_RELAXATION="allowFieldRelaxation"
+BQ_BIGNUMERIC_DEFAULT_PRECISION="bigNumericDefaultPrecision"
+BQ_BIGNUMERIC_DEFAULT_SCALE="bigNumericDefaultScale"
 
 OPTION_DEFAULT = "default"
 OPTION_HELP = "help"
 OPTION_READ_HELP = "read_help"
 OPTION_WRITE_HELP = "write_help"
 
-# At the moment this is just a map of CSV related options but it will be expanded as required for other uses.
+# At the moment this is just a map of CSV and BigQuery related options but it will be expanded as required for other uses.
 SPARK_OPTIONS = {
     CSV_CHARTOESCAPEQUOTEESCAPING:
         {OPTION_HELP: "Sets a single character used for escaping the escape for the quote character. "
@@ -198,6 +271,64 @@ SPARK_OPTIONS = {
     CSV_UNESCAPEDQUOTEHANDLING:
         {OPTION_READ_HELP: "Defines how the CsvParser will handle values with unescaped quotes."
                            "Valid values are: STOP_AT_CLOSING_QUOTE, BACK_TO_DELIMITER, STOP_AT_DELIMITER, SKIP_VALUE, RAISE_ERROR"},
+    BQ_TABLE_LABEL:
+        {OPTION_READ_HELP: "Used to add labels to the table while writing to a table. Multiple labels can be set."},
+    BQ_CREATE_DISPOSITION:
+        {OPTION_DEFAULT: "CREATE_IF_NEEDED",
+         OPTION_READ_HELP: "Specifies whether the job is allowed to create new tables"
+                           "Default to CREATE_IF_NEEDED"},
+    BQ_TEMPORARY_GCS_BUCKET:
+        {OPTION_READ_HELP: "The GCS bucket that temporarily holds the data before it is loaded to BigQuery."},
+    BQ_PERSISTENT_GCS_BUCKET:
+        {OPTION_READ_HELP: "The GCS bucket that holds the data before it is loaded to BigQuery." 
+                           "If informed, the data won't be deleted after write data into BigQuery."},
+    BQ_PERSISTENT_GCS_PATH:
+        {OPTION_READ_HELP: "The GCS path that holds the data before it is loaded to BigQuery." 
+                           "Used only with es.bq.output.persistentgcsbucket"},
+    BQ_DATE_PARTITION:
+        {OPTION_READ_HELP: "The date partition the data is going to be written to." 
+                           "Should be a date string given in the format YYYYMMDD"},
+    BQ_PARTITION_FIELD:
+        {OPTION_READ_HELP: "If this field is specified, the table is partitioned by this field."},
+    BQ_PARTITION_EXPIRATION_MS:
+        {OPTION_READ_HELP: "Number of milliseconds for which to keep the storage for partitions in the table."
+                           "The storage in a partition will have an expiration time of its partition time plus this value."},
+    BQ_PARTITION_TYPE:
+        {OPTION_READ_HELP: "Used to specify Time partitioning."
+                           "This option is mandatory for a target table to be Time partitioned."
+                           "Supported types are: HOUR, DAY, MONTH, YEAR"
+                           "Defaults to DAY if es.bq.output.partitionfield is specified"},
+    BQ_PARTITION_RANGE_START:
+        {OPTION_READ_HELP: "Used to specify Integer-range partitioning."
+                           "This option is mandatory for a target table to be Integer-range partitioned."
+                           "Pass es.bq.output.partitionrangeend and es.bq.output.partitionrangeinterval along with this option."},
+    BQ_PARTITION_RANGE_END:
+        {OPTION_READ_HELP: "Used to specify Integer-range partitioning."
+                           "This option is mandatory for a target table to be Integer-range partitioned."
+                           "Pass es.bq.output.partitionrangestart and es.bq.output.partitionrangeinterval along with this option."},
+    BQ_PARTITION_RANGE_INTERVAL:
+        {OPTION_READ_HELP: "Used to specify Integer-range partitioning."
+                           "This option is mandatory for a target table to be Integer-range partitioned."
+                           "Pass es.bq.output.partitionrangestart and es.bq.output.partitionrangeend along with this option."},
+    BQ_CLUSTERED_FIELDS:
+        {OPTION_READ_HELP: "A string of non-repeated, top level columns seperated by comma."},
+    BQ_ALLOW_FIELD_ADDITION:
+        {OPTION_DEFAULT: "false",
+         OPTION_READ_HELP: "Adds the ALLOW_FIELD_ADDITION SchemaUpdateOption to the BigQuery LoadJob."
+                           "Allowed values are true and false."
+                           "Default to false"},
+    BQ_ALLOW_FIELD_RELAXATION:
+        {OPTION_DEFAULT: "false",
+         OPTION_READ_HELP: "Adds the ALLOW_FIELD_RELAXATION SchemaUpdateOption to the BigQuery LoadJob."
+                           "Allowed values are true and false."},
+    BQ_BIGNUMERIC_DEFAULT_PRECISION:
+        {OPTION_READ_HELP: "An alternative default precision for BigNumeric fields, as the BigQuery default is too wide for Spark."
+                           "Values can be between 1 and 38."},
+    BQ_BIGNUMERIC_DEFAULT_SCALE:
+        {OPTION_READ_HELP: "An alternative default scale for BigNumeric fields."
+                           "Values can be between 0 and 38, and less than bigNumericFieldsPrecision."
+                           "This default is used only when the field has an unparameterized BigNumeric type."}
+
 }
 
 # Helper functions for applying SPARK_OPTIONS to templates
@@ -262,6 +393,210 @@ def get_csv_output_spark_options(prefix):
     return spark_options
 
 
+def get_bq_output_spark_options(prefix):
+    output_options = {
+        BQ_TABLE_LABEL,
+        BQ_CREATE_DISPOSITION,
+        BQ_TEMPORARY_GCS_BUCKET,
+        BQ_PERSISTENT_GCS_BUCKET,
+        BQ_PERSISTENT_GCS_PATH,
+        BQ_DATE_PARTITION,
+        BQ_PARTITION_FIELD,
+        BQ_PARTITION_EXPIRATION_MS,
+        BQ_PARTITION_TYPE,
+        BQ_PARTITION_RANGE_START,
+        BQ_PARTITION_RANGE_END,
+        BQ_PARTITION_RANGE_INTERVAL,
+        BQ_CLUSTERED_FIELDS,
+        BQ_ALLOW_FIELD_ADDITION,
+        BQ_ALLOW_FIELD_RELAXATION,
+        BQ_BIGNUMERIC_DEFAULT_PRECISION,
+        BQ_BIGNUMERIC_DEFAULT_SCALE,
+    }
+    spark_options = {(prefix + _).lower(): _ for _ in output_options}
+    return spark_options
+
+
+# A map of Elasticsearch Spark Connector related options.
+ES_SPARK_READER_OPTIONS = {
+    ES_NODES_PATH_PREFIX:
+        {OPTION_HELP: "Prefix to add to all requests made to Elasticsearch"},
+    ES_QUERY:
+        {OPTION_HELP: "Holds the query used for reading data from the specified Index"},
+    ES_MAPPING_DATE_RICH:
+        {OPTION_DEFAULT: "true",
+         OPTION_HELP: "Whether to create a rich Date like object for Date fields in Elasticsearch "
+                      "or returned them as primitives (String or long)"},
+    ES_READ_FIELD_INCLUDE:
+        {OPTION_HELP: "Fields/properties that are parsed and considered when reading the "
+                      "documents from Elasticsearch. By default empty meaning all fields are considered"},
+    ES_READ_FIELD_EXCLUDE:
+        {OPTION_HELP: "Fields/properties that are discarded when reading the documents from Elasticsearch."
+                      " By default empty meaning no fields are excluded"},
+    ES_READ_FIELD_AS_ARRAY_INCLUDE:
+        {OPTION_HELP: "Fields/properties that should be considered as arrays/lists"},
+    ES_READ_FIELD_AS_ARRAY_EXCLUDE:
+        {OPTION_HELP: "Fields/properties that should not be considered as arrays/lists"},
+    ES_READ_METADATA:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether to include the document metadata (such as id and version)"
+                      " in the results or not"},
+    ES_READ_METADATA_FIELD:
+        {OPTION_DEFAULT: "_metadata",
+         OPTION_HELP: "The field under which the metadata information is placed"},
+    ES_READ_METADATA_VERSION:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether to include the document version in the returned metadata"},
+    ES_INDEX_READ_MISSING_AS_EMPTY:
+        {OPTION_DEFAULT: "no",
+         OPTION_HELP: "Whether elasticsearch-hadoop will allow reading of non existing indices"},
+    ES_FIELD_READ_EMPTY_AS_NULL:
+        {OPTION_DEFAULT: "yes",
+         OPTION_HELP: "Whether elasticsearch-hadoop will treat empty fields as null"},
+    ES_READ_SHARD_PREFERENCE:
+        {OPTION_HELP: "The value to use for the shard preference of a search operation when executing "
+                      "a scroll query"},
+    ES_READ_SOURCE_FILTER:
+        {OPTION_HELP: "Comma delimited string of field names that you would like to return from Elasticsearch"},
+    ES_INDEX_READ_ALLOW_RED_STATUS:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Fetch the data from the available shards and ignore the shards which are not reachable"},
+    ES_INPUT_MAX_DOC_PER_PARTITION:
+        {OPTION_HELP: "The maximum number of documents per input partition."
+                      " This property is a suggestion, not a guarantee"},
+    ES_NODES_DISCOVERY:
+        {OPTION_DEFAULT: "true",
+         OPTION_HELP: "Whether to discover the nodes within the Elasticsearch cluster or "
+                      "only to use the ones given in es.nodes for metadata queries"},
+    ES_NODES_CLIENT_ONLY:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether to use Elasticsearch client nodes (or load-balancers)"},
+    ES_NODES_DATA_ONLY:
+        {OPTION_DEFAULT: "true",
+         OPTION_HELP: "Whether to use Elasticsearch data nodes only"},
+    ES_NODES_WAN_ONLY:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether the connector is used against an Elasticsearch instance in "
+                      "a cloud/restricted environment over the WAN, such as Amazon Web Services, "
+                      "in order to use this option set es.gcs.input.es.nodes.discovery and "
+                      "es.gcs.input.es.nodes.data.only to false"},
+    ES_HTTP_TIMEOUT:
+        {OPTION_DEFAULT: "1m",
+         OPTION_HELP: "Timeout for HTTP/REST connections to Elasticsearch"},
+    ES_HTTP_RETRIES:
+        {OPTION_DEFAULT: "3",
+         OPTION_HELP: "Number of retries for establishing a (broken) http connection"},
+    ES_SCROLL_KEEPALIVE:
+        {OPTION_DEFAULT: "10m",
+         OPTION_HELP: "The maximum duration of result scrolls between query requests"},
+    ES_SCROLL_SIZE:
+        {OPTION_DEFAULT: "1000",
+         OPTION_HELP: "Number of results/items/documents returned per scroll request on each executor/worker/task"},
+    ES_SCROLL_LIMIT:
+        {OPTION_DEFAULT: "-1",
+         OPTION_HELP: "Number of total results/items returned by each individual scroll."
+                      " A negative value indicates that all documents that match should be returned"},
+    ES_ACTION_HEART_BEAT_LEAD:
+        {OPTION_DEFAULT: "15s",
+         OPTION_HELP: "The lead to task timeout before elasticsearch-hadoop informs Hadoop "
+                      "the task is still running to prevent task restart"},
+    ES_NET_SSL:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Enable SSL"},
+    ES_NET_SSL_CERT_ALLOW_SELF_SIGNED:
+        {OPTION_DEFAULT: "false",
+         OPTION_HELP: "Whether or not to allow self signed certificates"},
+    ES_NET_SSL_PROTOCOL:
+        {OPTION_DEFAULT: "TLS",
+         OPTION_HELP: "SSL protocol to be used"},
+    ES_NET_PROXY_HTTP_HOST:
+        {OPTION_HELP: "Http proxy host name"},
+    ES_NET_PROXY_HTTP_PORT:
+        {OPTION_HELP: "Http proxy port"},
+    ES_NET_PROXY_HTTP_USER:
+        {OPTION_HELP: "Http proxy user name"},
+    ES_NET_PROXY_HTTP_PASS:
+        {OPTION_HELP: "Http proxy password"},
+    ES_NET_PROXY_HTTP_USE_SYSTEM_PROPS:
+        {OPTION_DEFAULT: "yes",
+         OPTION_HELP: "Whether use the system Http proxy properties "
+                      "(namely http.proxyHost and http.proxyPort) or not"},
+    ES_NET_PROXY_HTTPS_HOST:
+        {OPTION_HELP: "Https proxy host name"},
+    ES_NET_PROXY_HTTPS_PORT:
+        {OPTION_HELP: "Https proxy port"},
+    ES_NET_PROXY_HTTPS_USER:
+        {OPTION_HELP: "Https proxy user name"},
+    ES_NET_PROXY_HTTPS_PASS:
+        {OPTION_HELP: "Https proxy password"},
+    ES_NET_PROXY_HTTPS_USE_SYSTEM_PROPS:
+        {OPTION_DEFAULT: "yes",
+         OPTION_HELP: "Whether use the system Https proxy properties "
+                      "(namely https.proxyHost and https.proxyPort) or not"},
+    ES_NET_PROXY_SOCKS_HOST:
+        {OPTION_HELP: "Http proxy host name"},
+    ES_NET_PROXY_SOCKS_PORT:
+        {OPTION_HELP: "Http proxy port"},
+    ES_NET_PROXY_SOCKS_USER:
+        {OPTION_HELP: "Http proxy user name"},
+    ES_NET_PROXY_SOCKS_PASS:
+        {OPTION_HELP: "Http proxy password"},
+    ES_NET_PROXY_SOCKS_USE_SYSTEM_PROPS:
+        {OPTION_DEFAULT: "yes",
+         OPTION_HELP: "Whether use the system Socks proxy properties "
+                      "(namely socksProxyHost and socksProxyHost) or not"}
+}
+
+def get_es_spark_connector_input_options(prefix):
+    input_options = [
+        ES_NODES_PATH_PREFIX,
+        ES_QUERY,
+        ES_MAPPING_DATE_RICH,
+        ES_READ_FIELD_INCLUDE,
+        ES_READ_FIELD_EXCLUDE,
+        ES_READ_FIELD_AS_ARRAY_INCLUDE,
+        ES_READ_FIELD_AS_ARRAY_EXCLUDE,
+        ES_READ_METADATA,
+        ES_READ_METADATA_FIELD,
+        ES_READ_METADATA_VERSION,
+        ES_INDEX_READ_MISSING_AS_EMPTY,
+        ES_FIELD_READ_EMPTY_AS_NULL,
+        ES_READ_SHARD_PREFERENCE,
+        ES_READ_SOURCE_FILTER,
+        ES_INDEX_READ_ALLOW_RED_STATUS,
+        ES_INPUT_MAX_DOC_PER_PARTITION,
+        ES_NODES_DISCOVERY,
+        ES_NODES_CLIENT_ONLY,
+        ES_NODES_DATA_ONLY,
+        ES_NODES_WAN_ONLY,
+        ES_HTTP_TIMEOUT,
+        ES_HTTP_RETRIES,
+        ES_SCROLL_KEEPALIVE,
+        ES_SCROLL_SIZE,
+        ES_SCROLL_LIMIT,
+        ES_ACTION_HEART_BEAT_LEAD,
+        ES_NET_SSL,
+        ES_NET_SSL_CERT_ALLOW_SELF_SIGNED,
+        ES_NET_SSL_PROTOCOL,
+        ES_NET_PROXY_HTTP_HOST,
+        ES_NET_PROXY_HTTP_PORT,
+        ES_NET_PROXY_HTTP_USER,
+        ES_NET_PROXY_HTTP_PASS,
+        ES_NET_PROXY_HTTP_USE_SYSTEM_PROPS,
+        ES_NET_PROXY_HTTPS_HOST,
+        ES_NET_PROXY_HTTPS_PORT,
+        ES_NET_PROXY_HTTPS_USER,
+        ES_NET_PROXY_HTTPS_PASS,
+        ES_NET_PROXY_HTTPS_USE_SYSTEM_PROPS,
+        ES_NET_PROXY_SOCKS_HOST,
+        ES_NET_PROXY_SOCKS_PORT,
+        ES_NET_PROXY_SOCKS_USER,
+        ES_NET_PROXY_SOCKS_PASS,
+        ES_NET_PROXY_SOCKS_USE_SYSTEM_PROPS,
+    ]
+    es_spark_connector_options = {(prefix + _).lower(): _ for _ in input_options}
+    return es_spark_connector_options
+
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
 OUTPUT_MODE_APPEND = "append"
@@ -269,6 +604,46 @@ OUTPUT_MODE_IGNORE = "ignore"
 OUTPUT_MODE_ERRORIFEXISTS = "errorifexists"
 OUTPUT_MODE_COMPLETE = "complete"
 OUTPUT_MODE_UPDATE = "update"
+
+#ES to GCS
+ES_GCS_INPUT_NODE = "es.gcs.input.node"
+ES_GCS_INPUT_INDEX = "es.gcs.input.index"
+ES_GCS_NODE_USER = "es.gcs.input.user"
+ES_GCS_NODE_PASSWORD = "es.gcs.input.password"
+ES_GCS_NODE_API_KEY = "es.gcs.input.api.key"
+ES_GCS_OUTPUT_FORMAT = "es.gcs.output.format"
+ES_GCS_OUTPUT_LOCATION = "es.gcs.output.location"
+ES_GCS_OUTPUT_MODE = "es.gcs.output.mode"
+ES_GCS_FLATTEN_STRUCT = "es.gcs.flatten.struct.fields"
+ES_GCS_FLATTEN_ARRAY = "es.gcs.flatten.array.fields"
+
+#ES to BQ
+ES_BQ_INPUT_NODE = "es.bq.input.node"
+ES_BQ_INPUT_INDEX = "es.bq.input.index"
+ES_BQ_NODE_USER = "es.bq.input.user"
+ES_BQ_NODE_PASSWORD = "es.bq.input.password"
+ES_BQ_NODE_API_KEY = "es.bq.input.api.key"
+ES_BQ_OUTPUT_DATASET = "es.bq.output.dataset"
+ES_BQ_OUTPUT_TABLE = "es.bq.output.table"
+ES_BQ_TEMP_BUCKET = "temporaryGcsBucket"
+ES_BQ_LD_TEMP_BUCKET_NAME= "es.bq.temp.bucket.name"
+ES_BQ_OUTPUT_MODE = "es.bq.output.mode"
+ES_BQ_FLATTEN_STRUCT = "es.bq.flatten.struct.fields"
+ES_BQ_FLATTEN_ARRAY = "es.bq.flatten.array.fields"
+
+#ES to BigTable
+ES_BT_INPUT_NODE = "es.bt.input.node"
+ES_BT_INPUT_INDEX = "es.bt.input.index"
+ES_BT_NODE_USER = "es.bt.input.user"
+ES_BT_NODE_PASSWORD = "es.bt.input.password"
+ES_BT_NODE_API_KEY = "es.bt.input.api.key"
+ES_BT_FLATTEN_STRUCT = "es.bt.flatten.struct.fields"
+ES_BT_FLATTEN_ARRAY = "es.bt.flatten.array.fields"
+ES_BT_CATALOG_JSON = "es.bt.catalog.json"
+ES_BT_PROJECT_ID = "spark.bigtable.project.id"
+ES_BT_INSTANCE_ID = "spark.bigtable.instance.id"
+ES_BT_CREATE_NEW_TABLE = "spark.bigtable.create.new.table"
+ES_BT_BATCH_MUTATE_SIZE = "spark.bigtable.batch.mutate.size"
 
 # GCS to BigQuery
 GCS_BQ_INPUT_LOCATION = "gcs.bigquery.input.location"
@@ -329,6 +704,11 @@ CASSANDRA_TO_BQ_INPUT_KEYSPACE = "cassandratobq.input.keyspace"
 GCS_BT_INPUT_LOCATION = "gcs.bigtable.input.location"
 GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format"
 GCS_BT_HBASE_CATALOG_JSON = "gcs.bigtable.hbase.catalog.json"
+GCS_BT_CATALOG_JSON = "gcs.bigtable.catalog.json"
+GCS_BT_CREATE_NEW_TABLE = "spark.bigtable.create.new.table"
+GCS_BT_BATCH_MUTATE_SIZE = "spark.bigtable.batch.mutate.size"
+GCS_BT_PROJECT_ID = "spark.bigtable.project.id"
+GCS_BT_INSTANCE_ID = "spark.bigtable.instance.id"
 
 # BigQuery to GCS
 BQ_GCS_INPUT_TABLE = "bigquery.gcs.input.table"
@@ -384,6 +764,7 @@ HBASE_GCS_CATALOG_JSON = "hbase.gcs.catalog.json"
 
 # JDBC to JDBC
 JDBCTOJDBC_INPUT_URL = "jdbctojdbc.input.url"
+JDBCTOJDBC_INPUT_URL_SECRET = "jdbctojdbc.input.url.secret"
 JDBCTOJDBC_INPUT_DRIVER = "jdbctojdbc.input.driver"
 JDBCTOJDBC_INPUT_TABLE = "jdbctojdbc.input.table"
 JDBCTOJDBC_INPUT_FETCHSIZE = "jdbctojdbc.input.fetchsize"
@@ -393,6 +774,7 @@ JDBCTOJDBC_INPUT_UPPERBOUND = "jdbctojdbc.input.upperbound"
 JDBCTOJDBC_SESSIONINITSTATEMENT = "jdbctojdbc.input.sessioninitstatement"
 JDBCTOJDBC_NUMPARTITIONS = "jdbctojdbc.numpartitions"
 JDBCTOJDBC_OUTPUT_URL = "jdbctojdbc.output.url"
+JDBCTOJDBC_OUTPUT_URL_SECRET = "jdbctojdbc.output.url.secret"
 JDBCTOJDBC_OUTPUT_DRIVER = "jdbctojdbc.output.driver"
 JDBCTOJDBC_OUTPUT_TABLE = "jdbctojdbc.output.table"
 JDBCTOJDBC_OUTPUT_CREATE_TABLE_OPTION = "jdbctojdbc.output.create_table.option"
@@ -403,6 +785,7 @@ JDBCTOJDBC_SQL_QUERY = "jdbctojdbc.sql.query"
 
 # JDBC to GCS
 JDBCTOGCS_INPUT_URL = "jdbctogcs.input.url"
+JDBCTOGCS_INPUT_URL_SECRET = "jdbctogcs.input.url.secret"
 JDBCTOGCS_INPUT_DRIVER = "jdbctogcs.input.driver"
 JDBCTOGCS_INPUT_TABLE = "jdbctogcs.input.table"
 JDBCTOGCS_INPUT_SQL_QUERY = "jdbctogcs.input.sql.query"
@@ -421,6 +804,7 @@ JDBCTOGCS_TEMP_SQL_QUERY = "jdbctogcs.temp.sql.query"
 
 # JDBC to BigQuery
 JDBC_BQ_INPUT_URL = "jdbc.bigquery.input.url"
+JDBC_BQ_INPUT_URL_SECRET = "jdbc.bigquery.input.url.secret"
 JDBC_BQ_INPUT_DRIVER = "jdbc.bigquery.input.driver"
 JDBC_BQ_INPUT_TABLE = "jdbc.bigquery.input.table"
 JDBC_BQ_INPUT_FETCHSIZE = "jdbc.bigquery.input.fetchsize"
@@ -546,3 +930,17 @@ AZ_BLOB_BQ_LD_TEMP_BUCKET_NAME = "azure.blob.bigquery.temp.bucket.name"
 AZ_BLOB_STORAGE_ACCOUNT = "azure.blob.storage.account"
 AZ_BLOB_CONTAINER_NAME = "azure.blob.container.name"
 AZ_BLOB_SAS_TOKEN = "azure.blob.sas.token"
+
+# BigQuery to Memorystore
+BQ_MEMORYSTORE_INPUT_TABLE = "bigquery.memorystore.input.table"
+BQ_MEMORYSTORE_OUTPUT_HOST = "bigquery.memorystore.output.host"
+BQ_MEMORYSTORE_OUTPUT_PORT = "bigquery.memorystore.output.port"
+BQ_MEMORYSTORE_OUTPUT_TABLE = "bigquery.memorystore.output.table"
+BQ_MEMORYSTORE_OUTPUT_KEY_COLUMN = "bigquery.memorystore.output.key.column"
+BQ_MEMORYSTORE_OUTPUT_MODEL = "bigquery.memorystore.output.model"
+BQ_MEMORYSTORE_OUTPUT_MODE = "bigquery.memorystore.output.mode"
+BQ_MEMORYSTORE_OUTPUT_TTL = "bigquery.memorystore.output.ttl"
+BQ_MEMORYSTORE_OUTPUT_DBNUM = "bigquery.memorystore.output.dbnum"
+
+BQ_MEMORYSTORE_OUTPUT_MODEL_HASH = "hash"
+BQ_MEMORYSTORE_OUTPUT_MODEL_BINARY = "binary"

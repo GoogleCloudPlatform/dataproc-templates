@@ -1,0 +1,68 @@
+name: Java UI Integration
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  jenkins-ui-integration-tests-java:
+    runs-on: ubuntu-latest
+    outputs:
+      BUILD_URL: ${{ steps.trigger.outputs.BUILD_URL }}
+      EXECUTABLE_URL: ${{ steps.get_executable_url.outputs.POLLING_URL }}
+    env:
+      JENKINS_URL: https://dataproctemplatesci.com/job/dataproc-templates-build/job/ad-hoc/job/ui-integration-tests-java/buildWithParameters?token=GITHUB_TOKEN&branchName=origin/${{ github.head_ref }}
+      JOB_NAME: ui-integration-tests-java
+      CREDS: ${{ secrets.JENKINS_CREDS }}
+    steps:
+      - name: Trigger Jenkins Job
+        id: trigger
+        run: |
+          echo -n "BUILD_URL=$(curl -i -s -u $CREDS $JENKINS_URL | grep "location" | awk '{printf $2}' | tr -d '\r')" >> $GITHUB_OUTPUT
+          if [[ $? != 0 ]]; then
+            echo "API request failed. Please check the Jenkins URL and API token."
+            exit 1
+          fi  
+      - name: Get the Jenkin job Execution URL
+        id: get_executable_url
+        env:
+          JOB_URL: ${{ steps.trigger.outputs.BUILD_URL }}api/json
+        run: |
+          echo "Build Job Queue URL received on Jenkins trigger: $JOB_URL"
+          EXECUTABLE_URL=$(curl -s -u $CREDS $JOB_URL | jq -r '.executable.url')
+          if [[ $? != 0 ]]; then
+            echo "API request failed. Please check the Jenkins URL and API token."
+            exit 1
+          fi           
+          echo "Executable URL received on the first attempt: [$EXECUTABLE_URL]"
+          while [[ "$EXECUTABLE_URL" == null ]]; do
+            EXECUTABLE_URL=$(curl -s -u $CREDS $JOB_URL | jq -r '.executable.url')
+            if [[ $? != 0 ]]; then
+              echo "API request failed. Please check the Jenkins URL and API token."
+              exit 1
+            fi          
+          done
+          echo "POLLING_URL=$EXECUTABLE_URL" >> $GITHUB_OUTPUT
+        
+      - name: Wait for Jenkins Job to Complete
+        id: status_check
+        env:
+          POLLING_URL: ${{ steps.get_executable_url.outputs.POLLING_URL }}api/json
+        run: |        
+          echo "Executable URL to be polled for the triggered Jenkins job: $POLLING_URL"
+          status="UNKNOWN"
+          while [[ $status != "SUCCESS" ]]; do
+            sleep 90
+            status=$(curl -s -u $CREDS $POLLING_URL | jq -r '.result')
+            if [[ $? != 0 ]]; then
+              echo "JSON data could not be parsed. Exiting..."
+              exit 1
+            fi
+            echo "Result Polled on Job Executable URL: [$status]"            
+            [ "$status" == null  ] && continue
+            if [[ $status == "FAILURE" || $status == "NOT_BUILT" || $status == "ABORTED" || $status == "UNSTABLE" ]]; then
+              echo "Jenkins job $JOB_NAME with Build URL $JOB_URL completed with status [$status]"
+              exit 99
+            fi
+          done
+          echo "Jenkins job $JOB_NAME with Build URL $JOB_URL completed with status $status"

@@ -160,8 +160,7 @@ options:
 
 ## Required JAR files
 
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example).  
-It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
+This template requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
 
 
 ## Example submission
@@ -170,7 +169,7 @@ It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.ht
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, <gs://{your_bucket}/delta-core_2.12-1.1.0.jar>"
+export JARS="gs://{your_bucket}/delta-core_2.12-1.1.0.jar"
 
 ./bin/start.sh \
 -- --template=GCSTOBIGQUERY \
@@ -187,42 +186,22 @@ export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar, <gs://{your
 
 Template for reading files from Cloud Storage and writing them to a Bigtable table. It supports reading JSON, CSV, Parquet, Avro and Delta formats.
 
-It uses the Apache HBase Spark Connector to write to Bigtable.
+It uses the Spark BigTable Connector to write to Bigtable.
 
-This [tutorial](https://cloud.google.com/dataproc/docs/tutorials/spark-hbase#dataproc_hbase_tutorial_view_code-python) shows how to run a Spark/PySpark job connecting to Bigtable.
-However, it focuses in running the job using a Dataproc cluster, and not Dataproc Serverless.
-Here in this template, you will notice that there are different configuration steps for the PySpark job to successfully run using Dataproc Serverless, connecting to Bigtable using the HBase interface.
+Here in this template, you will notice that there are different configuration steps for the PySpark job to successfully run using Dataproc Serverless, connecting to Bigtable using connector.
 
 You can also check out the [differences between HBase and Cloud Bigtable](https://cloud.google.com/bigtable/docs/hbase-differences).
 
 ## Requirements
 
-1) Configure the [hbase-site.xml](./hbase-site.xml) ([reference](https://cloud.google.com/bigtable/docs/hbase-connecting#creating_the_hbase-sitexml_file)) with your Bigtable instance reference
-    - The hbase-site.xml needs to be available in some path of the container image used by Dataproc Serverless.
-    - For that, you need to build and host a [customer container image](https://cloud.google.com/dataproc-serverless/docs/guides/custom-containers#submit_a_spark_batch_workload_using_a_custom_container_image) in GCP Container Registry.
-      - Add the following layer to the [Dockerfile](./Dockerfile), for it to copy your local hbase-site.xml to the container image (already done):
-        ```
-        COPY hbase-site.xml /etc/hbase/conf/
-        ```
-      - Build the [Dockerfile](./Dockerfile), building and pushing it to GCP Container Registry with:
-        ```
-        IMAGE=gcr.io/<your_project>/<your_custom_image>:<your_version>
-        docker build -t "${IMAGE}" .
-        docker push "${IMAGE}"
-        ```
-      - An SPARK_EXTRA_CLASSPATH environment variable should also be set to the same path when submitting the job.
-        ```
-        (./bin/start.sh ...)
-        --container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>"  # image with hbase-site.xml in /etc/hbase/conf/
-        --properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/'
-        ```
+1) `export JARS="gs://spark-lib/bigtable/spark-bigtable_2.12-0.1.0.jar"` and also required `spark.jars.packages=org.slf4j:slf4j-reload4j:1.7.36` Please refer example from official [documentation](https://github.com/GoogleCloudDataproc/spark-bigtable-connector/tree/main/examples/python).
 
-2) Configure the desired HBase catalog json to passed as an argument (table reference and schema)
-    - The hbase-catalog.json should be passed using the --gcs.bigtable.hbase.catalog.json
+2) Configure the desired BigTable catalog json to passed as an argument (table reference and schema)
+    - The catalog.json should be passed using the --gcs.bigtable.catalog.json
     ```
     (./bin/start.sh ...)
-    -- --gcs.bigtable.hbase.catalog.json='''{
-                        "table":{"namespace":"default","name":"<table_id>"},
+    -- --gcs.bigtable.catalog.json='''{
+                        "table":{"name":"<table_id>"},
                         "rowkey":"key",
                         "columns":{
                         "key":{"cf":"rowkey", "col":"key", "type":"string"},
@@ -231,27 +210,16 @@ You can also check out the [differences between HBase and Cloud Bigtable](https:
                     }'''
     ```
 
-3) [Create and manage](https://cloud.google.com/bigtable/docs/managing-tables) your Bigtable table schema, column families, etc, to match the provided HBase catalog.
+3) [Create and manage](https://cloud.google.com/bigtable/docs/managing-tables) your Bigtable table schema, column families, etc, to match the provided Bigtable catalog.
 
 ## Required JAR files
 
-Some HBase and Bigtable dependencies are required to be passed when submitting the job.
+Spark Bigtable connector dependencies are required to be passed when submitting the job.
 These dependencies need to be passed by using the --jars flag, or, in the case of Dataproc Templates, using the JARS environment variable.
 Some dependencies (jars) must be downloaded from [MVN Repository](https://mvnrepository.com/) and stored your Cloud Storage bucket (create one to store the dependencies).
 
-- **[Apache HBase Spark Connector](https://mvnrepository.com/artifact/org.apache.hbase.connectors.spark/hbase-spark) dependencies (already mounted in Dataproc Serverless, so you refer to them using file://):**
-   - file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar
-   - file:///usr/lib/spark/external/hbase-spark.jar
-
-- **Bigtable dependency:**
-  - gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar
-    - Download it using ``` wget https://repo1.maven.org/maven2/com/google/cloud/bigtable/bigtable-hbase-2.x-shaded/2.3.0/bigtable-hbase-2.x-shaded-2.3.0.jar```
-
-- **HBase dependencies:**
-  - gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar
-      - Download it using ``` wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar```
-  - gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar
-      - Download it using ``` wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar```
+- **[Spark BigTable Connector](https://cloud.google.com/bigtable/docs/use-bigtable-spark-connector)**
+   - gs://spark-lib/bigtable/spark-bigtable_2.12-0.1.0.jar
 
 It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.html) to be available in the Dataproc cluster if using delta format.
 
@@ -259,7 +227,9 @@ It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.ht
 ## Arguments
 * `gcs.bigquery.input.location`: Cloud Storage location of the input files (format: `gs://<bucket>/...`)
 * `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
-* `gcs.bigtable.hbase.catalog.json`: HBase catalog inline json
+* `spark.bigtable.project.id`: GCP project where BigTable instance is running
+* `spark.bigtable.instance.id`: BigTable instance id
+* `gcs.bigtable.catalog.json`: BigTable catalog json file GCS path
 #### Optional Arguments
 * `gcs.bigtable.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `gcs.bigtable.input.columnnameofcorruptrecord`: Allows renaming the new field having malformed string created by PERMISSIVE mode
@@ -289,6 +259,8 @@ It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.ht
 * `gcs.bigtable.input.timestampformat`: Sets the string that indicates a timestamp with timezone format
 * `gcs.bigtable.input.timestampntzformat`: Sets the string that indicates a timestamp without timezone format
 * `gcs.bigtable.input.unescapedquotehandling`: Defines how the CsvParser will handle values with unescaped quotes.Valid values are: STOP_AT_CLOSING_QUOTE, BACK_TO_DELIMITER, STOP_AT_DELIMITER, SKIP_VALUE, RAISE_ERROR
+* `spark.bigtable.create.new.table`: Set `True` if you want to create a BigTable table from catalog. Default value is `False` means table must be present.
+* `spark.bigtable.batch.mutate.size`: BigTable batch mutation size. Maximum allowed value is `100000`. Default is `100`. Rererence [documentation](https://github.com/GoogleCloudDataproc/spark-bigtable-connector/blob/main/spark-bigtable_2.12/src/main/scala/com/google/cloud/spark/bigtable/datasources/BigtableSparkConf.scala#L86)
 
 ## Usage
 
@@ -326,7 +298,9 @@ usage: main.py [-h]
                [--gcs.bigtable.input.timestampformat GCS.BIGTABLE.INPUT.TIMESTAMPFORMAT]
                [--gcs.bigtable.input.timestampntzformat GCS.BIGTABLE.INPUT.TIMESTAMPNTZFORMAT]
                [--gcs.bigtable.input.unescapedquotehandling GCS.BIGTABLE.INPUT.UNESCAPEDQUOTEHANDLING]
-               --gcs.bigtable.hbase.catalog.json GCS.BIGTABLE.HBASE.CATALOG.JSON
+               --spark.bigtable.project.id SPARK.BIGTABLE.PROJECT.ID
+               --spark.bigtable.instance.id SPARK.BIGTABLE.INSTANCE.ID
+               --gcs.bigtable.catalog.json GCS.BT.CATALOG.JSON
 
 options:
   -h, --help            show this help message and exit
@@ -394,8 +368,12 @@ options:
   --gcs.bigtable.input.unescapedquotehandling GCS.BIGTABLE.INPUT.UNESCAPEDQUOTEHANDLING
                         Defines how the CsvParser will handle values with unescaped quotes.Valid values are: STOP_AT_CLOSING_QUOTE, BACK_TO_DELIMITER, STOP_AT_DELIMITER, SKIP_VALUE,
                         RAISE_ERROR
-  --gcs.bigtable.hbase.catalog.json GCS.BIGTABLE.HBASE.CATALOG.JSON
-                        HBase catalog inline json
+  --spark.bigtable.project.id SPARK.BIGTABLE.PROJECT.ID
+                        GCP project id where BigTable instance is running
+  --spark.bigtable.instance.id SPARK.BIGTABLE.INSTANCE.ID
+                        BigTable instance id
+  --gcs.bigtable.catalog.json GCS.BT.CATALOG.JSON
+                        BigTable catalog json file GCS path
 ```
 
 ## Example submission
@@ -404,27 +382,17 @@ options:
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS="gs://<your_bucket_to_store_dependencies>/bigtable-hbase-2.x-hadoop-2.3.0.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-client-2.4.12.jar, \
-             gs://<your_bucket_to_store_dependencies>/hbase-shaded-mapreduce-2.4.12.jar, \
-             file:///usr/lib/spark/external/hbase-spark-protocol-shaded.jar, \
-             file:///usr/lib/spark/external/hbase-spark.jar"
+export JARS="gs://spark-lib/bigtable/spark-bigtable_2.12-0.1.0.jar"
+export SPARK_PROPERTIES="spark.jars.packages=org.slf4j:slf4j-reload4j:1.7.36"
 
 ./bin/start.sh \
---container-image="gcr.io/<your_project>/<your_custom_image>:<your_version>" \
---properties='spark.dataproc.driverEnv.SPARK_EXTRA_CLASSPATH=/etc/hbase/conf/' \ # image with hbase-site.xml in /etc/hbase/conf/
 -- --template=GCSTOBIGTABLE \
    --gcs.bigtable.input.format="csv" \
    --gcs.bigtable.input.location="<gs://bucket/path>" \
    --gcs.bigtable.input.header="false" \
-   --gcs.bigtable.hbase.catalog.json='''{
-                        "table":{"namespace":"default","name":"my_table"},
-                        "rowkey":"key",
-                        "columns":{
-                        "key":{"cf":"rowkey", "col":"key", "type":"string"},
-                        "name":{"cf":"cf", "col":"name", "type":"string"}
-                        }
-                    }'''
+   --spark.bigtable.project.id="<GCP_PROJECT>" \
+   --spark.bigtable.instance.id="<BIGTABLE_INSTANCE_ID>" \
+   --gcs.bigtable.catalog.json="<gs://bucket/path>"
 ```
 
 
@@ -823,7 +791,7 @@ export JARS=<gcs-bucket-location-containing-jar-file>
 ```
 
 
-# Text To BigQuery
+# Text To BigQuery (Deprecated and will be removed in Q1 2025)
 
 Template for reading TEXT files from Cloud Storage and writing them to a BigQuery table. It supports reading Text files with compression GZIP, BZIP2, LZ4, DEFLATE, NONE.
 
@@ -987,18 +955,12 @@ options:
   --text.bigquery.input.delimiter TEXT.BIGQUERY.INPUT.DELIMITER
                         Input column delimiter (example: ",", ";", "|", "/","" )
 ```
-
-## Required JAR files
-
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
-
 ## Example submission
 
 ```
 export GCP_PROJECT=<project_id>
 export REGION=<region>
 export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder>
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 
 ./bin/start.sh \
 -- --template=TEXTTOBIGQUERY \

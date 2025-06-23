@@ -18,7 +18,7 @@ steps:
       - clone
       - 'https://github.com/GoogleCloudPlatform/${_REPO}.git'
     id: check-out-source-code
-  - name: python
+  - name: python:3.8
     args:
       - python
       - setup.py
@@ -54,12 +54,13 @@ steps:
       - 'gs://${_PUBLIC_BUCKET}/latest/python/'
     dir: '${_REPO}/python'
     id: cp-python-egg-to-gcs-latest-folder
-  - name: 'gcr.io/cloud-builders/mvn:3.5.0-jdk-8'
+  - name: 'docker.io/library/maven:3.8.6-openjdk-11'
     args:
       - package
-      - '-Dmaven.test.skip=true'
+      - '-DskipTests'
     dir: '${_REPO}/java'
     id: build-java-jar
+    entrypoint: mvn
   - name: gcr.io/cloud-builders/gsutil
     entrypoint: 'bash'
     args:

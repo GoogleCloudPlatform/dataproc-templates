@@ -19,6 +19,7 @@ import pyspark
 
 from dataproc_templates.jdbc.jdbc_to_gcs import JDBCToGCSTemplate
 import dataproc_templates.util.template_constants as constants
+import dataproc_templates.util.secret_manager as secret_manager
 
 
 class TestJDBCToGCSTemplate:
@@ -268,3 +269,37 @@ class TestJDBCToGCSTemplate:
         mock_spark_session.dataframe.DataFrame.write.mode().partitionBy.assert_called_once_with("column")
         mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
         mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().options().csv.assert_called_once_with("gs://test")
+
+
+    @mock.patch.object(pyspark.sql, 'SparkSession')
+    def test_run_pass_args8(self, mock_spark_session):
+        """Tests JDBCToGCSTemplate pass args with secret"""
+
+        jdbc_to_gcs_template = JDBCToGCSTemplate()
+
+        mock_parsed_args = jdbc_to_gcs_template.parse_args(
+            ["--jdbctogcs.input.url.secret=jdbctobqconn",
+             "--jdbctogcs.input.driver=driver",
+             "--jdbctogcs.input.table=table1",
+             "--jdbctogcs.output.location=gs://test",
+             "--jdbctogcs.output.format=csv",
+             "--jdbctogcs.output.mode=append",
+             "--jdbctogcs.output.partitioncolumn=column"
+             ])
+        mock_spark_session.read.format().options().load.return_value = mock_spark_session.dataframe.DataFrame
+        jdbc_to_gcs_template.run(mock_spark_session, mock_parsed_args)
+        mock_spark_session.read.format.assert_called_with(
+            constants.FORMAT_JDBC)
+        mock_spark_session.read.format().options.assert_called_with(**{
+            constants.JDBC_URL: secret_manager.access_secret_version("jdbctobqconn"),
+            constants.JDBC_DRIVER: "driver",
+            constants.JDBC_TABLE: "table1",
+            constants.JDBC_NUMPARTITIONS: "10",
+            constants.JDBC_FETCHSIZE: 0
+        })
+        mock_spark_session.read.format().options().load()
+        mock_spark_session.dataframe.DataFrame.write.mode.assert_called_once_with(constants.OUTPUT_MODE_APPEND)
+        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy.assert_called_once_with("column")
+        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().options.assert_called_once_with(**{constants.CSV_HEADER: 'true'})
+        mock_spark_session.dataframe.DataFrame.write.mode().partitionBy().options().csv.assert_called_once_with("gs://test")
+

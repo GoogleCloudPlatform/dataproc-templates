@@ -18,17 +18,9 @@ set -e
 #Initialize functions and Constants
 echo "Script Started Execution"
 
-java --version
-java_status=$?
 
 BIN_DIR="$(dirname "$BASH_SOURCE")"
 source ${BIN_DIR}/dataproc_template_functions.sh
-check_status $java_status "\n Java is installed, thus we are good to go \n" "\n Java is not installed on this machine, thus we need to install that first \n"
-
-mvn --version
-mvn_status=$?
-
-check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
 
 PROJECT_ROOT_DIR=${BIN_DIR}/..
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
@@ -48,6 +40,14 @@ GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION | sed 's/\/*$//'`
 # Do not rebuild when SKIP_BUILD is specified
 # Usage: export SKIP_BUILD=true
 if [ -z "$SKIP_BUILD" ]; then
+  java --version
+  java_status=$?
+  check_status $java_status "\n Java is installed, thus we are good to go \n" "\n Java is not installed on this machine, thus we need to install that first \n"
+
+  mvn --version
+  mvn_status=$?
+
+  check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
 
   #Change PWD to root folder for Maven Build
   cd ${PROJECT_ROOT_DIR}
@@ -64,10 +64,23 @@ if [ -z "$SKIP_BUILD" ]; then
 
 fi
 
-OPT_SPARK_VERSION="--version=1.1"
+OPT_SPARK_VERSION="--version=1.2"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
-OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
+  echo "Dataproc Serverless Runtime 1.1 or CLUSTER Job Type Detected"
+	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+fi
+if [[ $JOB_TYPE == "CLUSTER" ]]; then
+  if [[ -n "${CLUSTER}" ]]; then
+    CLUSTER_IMAGE_VERSION=$(gcloud dataproc clusters describe "${CLUSTER}" --project="${GCP_PROJECT}" --region="${REGION}" --format="value(config.softwareConfig.imageVersion)")
+    if [[ $CLUSTER_IMAGE_VERSION == *"2.0"* || $CLUSTER_IMAGE_VERSION == *"2.1"* ]]; then
+      echo "Dataproc Cluster Image ${CLUSTER_IMAGE_VERSION} Detected"
+      OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+    fi
+  fi
+fi
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
 OPT_CLASS="--class=com.google.cloud.dataproc.templates.main.DataProcTemplate"
@@ -91,6 +104,9 @@ fi
 if [ -n "${SPARK_PROPERTIES}" ]; then
   OPT_PROPERTIES="--properties=${SPARK_PROPERTIES}"
 fi
+if [ -n "${SERVICE_ACCOUNT_NAME}" ]; then
+  OPT_SERVICE_ACCOUNT_NAME="--service-account=${SERVICE_ACCOUNT_NAME}"
+fi
 
 #if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
 if [ -n "${CATALOG}" ]; then
@@ -100,7 +116,7 @@ if [ -n "${CATALOG}" ]; then
   gsutil copy hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
   gsutil copy hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
   echo "Passing downloaded dependency jars"
-  OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar,file:///usr/lib/spark/external/hbase-spark.jar"
+  OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar"
   rm hbase-client-2.4.12.jar
   rm hbase-shaded-mapreduce-2.4.12.jar
 fi
@@ -132,7 +148,7 @@ EOF
 elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
   echo "JOB_TYPE is SERVERLESS, so will submit on serverless spark"
   command=$(cat << EOF
-  gcloud beta dataproc batches submit spark \
+  gcloud dataproc batches submit spark \
       ${OPT_SPARK_VERSION} \
       ${OPT_PROJECT} \
       ${OPT_REGION} \
@@ -143,7 +159,8 @@ elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
       ${OPT_PROPERTIES} \
       ${OPT_SUBNET} \
       ${OPT_HISTORY_SERVER_CLUSTER} \
-      ${OPT_METASTORE_SERVICE}
+      ${OPT_METASTORE_SERVICE} \
+      ${OPT_SERVICE_ACCOUNT_NAME}
 EOF
 )
 else

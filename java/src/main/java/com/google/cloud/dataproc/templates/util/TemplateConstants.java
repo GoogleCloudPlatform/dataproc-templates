@@ -34,6 +34,7 @@ public interface TemplateConstants {
   String SPANNER_GCS_INPUT_SQL_NUM_PARTITIONS = "spanner.gcs.input.sql.numPartitions";
   String SPANNER_GCS_TEMP_TABLE = "spanner.gcs.temp.table";
   String SPANNER_GCS_TEMP_QUERY = "spanner.gcs.temp.query";
+
   /**
    * Column to be used as row key for BigTable. Required for GCSToBigTable template.
    *
@@ -42,6 +43,8 @@ public interface TemplateConstants {
   String BIGTABLE_KEY_COL_PROP = "bigtable.key.col";
 
   String BIGTABLE_COL_FAMILY_NAME_PROP = "bigtable.col.family.name";
+
+  String BQ_GCS_OUTPUT_PARTITION_COLUMN = "bigquery.gcs.output.partition.col";
   String GCS_STAGING_BUCKET_PATH = "gcs.staging.bucket.path";
 
   // HiveToGCS Template configs.
@@ -166,18 +169,21 @@ public interface TemplateConstants {
   // Project that contains the output table
   String PUBSUB_BQ_OUTPUT_PROJECT_ID_PROP = "pubsub.bq.output.project.id";
   // BigQuery output dataset
-  String PUBSUB_BQ_OUTPOUT_DATASET_PROP = "pubsub.bq.output.dataset";
+  String PUBSUB_BQ_OUTPUT_DATASET_PROP = "pubsub.bq.output.dataset";
   // BigQuery output table
-  String PUBSUB_BQ_OUTPOUT_TABLE_PROP = "pubsub.bq.output.table";
+  String PUBSUB_BQ_OUTPUT_TABLE_PROP = "pubsub.bq.output.table";
   // Number of records to be written per message to BigQuery
   String PUBSUB_BQ_BATCH_SIZE_PROP = "pubsub.bq.batch.size";
 
   /** Property values for PubSub To BigTable */
   String PUBSUB_BIGTABLE_OUTPUT_INSTANCE_ID_PROP = "pubsub.bigtable.output.instance.id";
+
   // BigTable Instance Id
   String PUBSUB_BIGTABLE_OUTPUT_PROJECT_ID_PROP = "pubsub.bigtable.output.project.id";
   // Project that contains the output table
   String PUBSUB_BIGTABLE_OUTPUT_TABLE_PROP = "pubsub.bigtable.output.table";
+  String PUBSUB_BIGTABLE_BATCH_SIZE_PROP = "pubsub.bigtable.batch.size";
+  String PUBSUB_BIGTABLE_CATALOG_LOCATION_PROP = "pubsub.bigtable.catalog.location";
   // BigTable table name
   String ROWKEY = "rowkey";
   String COLUMN_FAMILY = "columnfamily";
@@ -188,6 +194,7 @@ public interface TemplateConstants {
   /** Property values for PubSubLite To BigTable */
   // Many constants are reused from Pubsub to Bigtable
   String PUBSUBLITE_INPUT_PROJECT_ID_PROP = "pubsublite.input.project.id";
+
   // PubSub subscription name
   String PUBSUBLITE_INPUT_SUBSCRIPTION_PROP = "pubsublite.input.subscription";
   // Stream timeout
@@ -205,6 +212,7 @@ public interface TemplateConstants {
   String PUBSUBLITE_FORMAT = "pubsublite";
   String PUBSUBLITE_CHECKPOINT = "checkpointLocation";
   String PUBSUBLITE_SUBSCRIPTION = "pubsublite.subscription";
+
   // Constants to be used for parsing the JSON from pubsub
 
   /** GCS to Bigquery properties */
@@ -217,7 +225,7 @@ public interface TemplateConstants {
   String GCS_BQ_AVRO_FORMAT = "avro";
   String GCS_BQ_PRQT_FORMAT = "parquet";
   String GCS_BQ_CSV_HEADER = "header";
-  String GCS_BQ_OUTPUT_FORMAT = "com.google.cloud.spark.bigquery";
+  String GCS_BQ_OUTPUT_FORMAT = "bigquery";
   String GCS_BQ_CSV_INFOR_SCHEMA = "inferSchema";
   String GCS_BQ_CSV_DELIMITER_PROP_NAME = "delimiter";
   String GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket";
@@ -234,8 +242,7 @@ public interface TemplateConstants {
   String GCS_BT_INPUT_FORMAT = "gcs.bigtable.input.format";
   String GCS_BT_OUTPUT_INSTANCE_ID = "gcs.bigtable.output.instance.id";
   String GCS_BT_OUTPUT_PROJECT_ID = "gcs.bigtable.output.project.id";
-  String GCS_BT_OUTPUT_TABLE_NAME = "gcs.bigtable.table.name";
-  String GCS_BT_OUTPUT_TABLE_COLUMN_FAMILY = "gcs.bigtable.column.family";
+  String GCS_BT_CATALOG_LOCATION = "gcs.bigtable.catalog.location";
 
   /** GCS to GCS properties */
   String GCS_GCS_INPUT_LOCATION = "gcs.gcs.input.location";
@@ -289,7 +296,7 @@ public interface TemplateConstants {
   String S3_BQ_OUTPUT_DATASET_NAME = "s3.bq.output.dataset.name";
   String S3_BQ_OUTPUT_TABLE_NAME = "s3.bq.output.table.name";
   String S3_BQ_LD_TEMP_BUCKET_NAME = "s3.bq.ld.temp.bucket.name";
-  String S3_BQ_OUTPUT_FORMAT = "com.google.cloud.spark.bigquery";
+  String S3_BQ_OUTPUT_FORMAT = "bigquery";
   String S3_BQ_HEADER = "header";
   String S3_BQ_OUTPUT = "table";
   String S3_BQ_TEMP_BUCKET = "temporaryGcsBucket";
@@ -340,6 +347,7 @@ public interface TemplateConstants {
   /** PubSubToGCS Template configs. */
   // Project that contains the input PubSub subscription to be read
   String PUBSUB_GCS_INPUT_PROJECT_ID_PROP = "pubsubtogcs.input.project.id";
+
   // PubSub subscription name
   String PUBSUB_GCS_INPUT_SUBSCRIPTION_PROP = "pubsubtogcs.input.subscription";
   // Stream timeout
@@ -372,7 +380,7 @@ public interface TemplateConstants {
   String SPARK_CONF_NAME_VIEWS_ENABLED = "viewsEnabled";
   String SPARK_CONF_NAME_MATERIALIZATION_PROJECT = "materializationProject";
   String SPARK_CONF_NAME_MATERIALIZATION_DATASET = "materializationDataset";
-  String SPARK_READ_FORMAT_BIGQUERY = "com.google.cloud.spark.bigquery";
+  String SPARK_READ_FORMAT_BIGQUERY = "bigquery";
   String INTERMEDIATE_FORMAT_OPTION_NAME = "intermediateFormat";
   String INTERMEDIATE_FORMAT_ORC = "orc";
 
@@ -406,7 +414,7 @@ public interface TemplateConstants {
   String KAFKA_BQ_SPARK_CONF_NAME_SUBSCRIBE = "subscribe";
   String KAFKA_BQ_SPARK_CONF_NAME_STARTING_OFFSETS = "startingOffsets";
   String KAFKA_BQ_SPARK_CONF_NAME_FAIL_ON_DATA_LOSS = "failOnDataLoss";
-  String KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_FORMAT = "com.google.cloud.spark.bigquery";
+  String KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_FORMAT = "bigquery";
   String KAFKA_BQ_SPARK_CONF_NAME_OUTPUT_HEADER = "header";
   String KAFKA_BQ_SPARK_CONF_NAME_CHECKPOINT_LOCATION = "checkpointLocation";
   String KAFKA_BQ_SPARK_CONF_NAME_TABLE = "table";
@@ -509,4 +517,35 @@ public interface TemplateConstants {
 
   String KAFKA_GCS_BATCH_INTERVAL = "kafka.gcs.batch.interval";
   String KAFKA_GCS_WRITE_MODE = "kafka.gcs.write.mode";
+
+  /** Mongo to BQ */
+  String MONGO_BQ_INPUT_URI = "mongo.bq.input.uri";
+
+  String MONGO_BQ_INPUT_DATABASE = "mongo.bq.input.database";
+  String MONGO_BQ_INPUT_COLLECTION = "mongo.bq.input.collection";
+  String MONGO_BQ_OUTPUT_DATASET = "mongo.bq.output.dataset";
+  String MONGO_BQ_OUTPUT_TABLE = "mongo.bq.output.table";
+  String MONGO_BQ_OUTPUT_MODE = "mongo.bq.output.mode";
+  String MONGO_BQ_TEMP_BUCKET_NAME = "mongo.bq.temp.bucket.name";
+  String MONGO_BQ_FORMAT = "bigquery";
+  String MONGO_BQ_TABLE = "table";
+  String MONGO_BQ_TEMP_BUCKET = "temporaryGcsBucket";
+
+  /** Spanner JDBC dialect */
+  String SPANNER_JDBC_DIALECT = "spanner.jdbc.dialect";
+
+  String SPANNER_GOOGLESQL_JDBC_DIALECT = "googlesql";
+  String SPANNER_POSTGRESQL_JDBC_DIALECT = "postgresql";
+
+  /** Spark BigTable Common Properties */
+  String SPARK_BIGTABLE_CREATE_NEW_TABLE = "spark.bigtable.create.new.table";
+
+  String SPARK_BIGTABLE_FORMAT = "bigtable";
+  String SPARK_BIGTABLE_BATCH_MUTATE_SIZE = "spark.bigtable.batch.mutate.size";
+  String SPARK_BIGTABLE_PROJECT_ID = "spark.bigtable.project.id";
+  String SPARK_BIGTABLE_INSTANCE_ID = "spark.bigtable.instance.id";
+  String SPARK_BIGTABLE_CATALOG = "catalog";
+
+  /** Please don't change it. It is a custom PubSub reader DataSource format name. */
+  String PUBSUB_DATASOURCE_SHORT_NAME = "pubsub";
 }

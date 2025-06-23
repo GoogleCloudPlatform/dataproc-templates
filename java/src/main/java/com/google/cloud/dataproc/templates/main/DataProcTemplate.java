@@ -18,8 +18,10 @@ package com.google.cloud.dataproc.templates.main;
 import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.BaseTemplate.TemplateName;
 import com.google.cloud.dataproc.templates.bigquery.BigQueryToGCS;
+import com.google.cloud.dataproc.templates.bigquery.BigQueryToJDBC;
 import com.google.cloud.dataproc.templates.databases.CassandraToBQ;
 import com.google.cloud.dataproc.templates.databases.CassandraToGCS;
+import com.google.cloud.dataproc.templates.databases.MongoToBQ;
 import com.google.cloud.dataproc.templates.databases.MongoToGCS;
 import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
@@ -75,13 +77,13 @@ public class DataProcTemplate {
           .put(TemplateName.WORDCOUNT, (args) -> new WordCount())
           .put(TemplateName.HIVETOGCS, (args) -> new HiveToGCS())
           .put(TemplateName.HIVETOBIGQUERY, (args) -> new HiveToBigQuery())
-          .put(TemplateName.PUBSUBTOBQ, (args) -> new PubSubToBQ())
-          .put(TemplateName.PUBSUBTOBIGTABLE, (args) -> new PubSubToBigTable())
+          .put(TemplateName.PUBSUBTOBQ, PubSubToBQ::of)
+          .put(TemplateName.PUBSUBTOBIGTABLE, PubSubToBigTable::of)
           .put(TemplateName.PUBSUBLITETOBIGTABLE, (args) -> new PubSubLiteToBigTable())
-          .put(TemplateName.PUBSUBTOGCS, (args) -> new PubSubToGCS())
+          .put(TemplateName.PUBSUBTOGCS, (PubSubToGCS::of))
           .put(TemplateName.REDSHIFTTOGCS, RedshiftToGCS::of)
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
-          .put(TemplateName.GCSTOBIGTABLE, (args) -> new GCStoBigTable())
+          .put(TemplateName.GCSTOBIGTABLE, GCStoBigTable::of)
           .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.GCSTOMONGO, (args) -> new GCStoMongo())
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
@@ -97,6 +99,7 @@ public class DataProcTemplate {
           .put(TemplateName.KAFKATOBQ, (args) -> new KafkaToBQ())
           .put(TemplateName.KAFKATOGCS, (args) -> new KafkaToGCS())
           .put(TemplateName.GCSTOJDBC, GCSToJDBC::of)
+          .put(TemplateName.BIGQUERYTOJDBC, BigQueryToJDBC::of)
           .put(TemplateName.GCSTOSPANNER, GCSToSpanner::of)
           .put(TemplateName.GENERAL, GeneralTemplate::of)
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
@@ -105,6 +108,7 @@ public class DataProcTemplate {
           .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
           .put(TemplateName.KAFKATOBQDSTREAM, (args) -> new KafkaToBQDstream())
           .put(TemplateName.KAFKATOGCSDSTREAM, (args) -> new KafkaToGCSDstream())
+          .put(TemplateName.MONGOTOBQ, MongoToBQ::of)
           .build();
   private static final String TEMPLATE_NAME_LONG_OPT = "template";
   private static final String TEMPLATE_PROPERTY_LONG_OPT = "templateProperty";
@@ -211,7 +215,10 @@ public class DataProcTemplate {
    * @param template the template to run.
    */
   static void runSparkJob(BaseTemplate template)
-      throws IllegalArgumentException, StreamingQueryException, TimeoutException, SQLException,
+      throws IllegalArgumentException,
+          StreamingQueryException,
+          TimeoutException,
+          SQLException,
           InterruptedException {
     LOGGER.debug("Validating input parameters");
     template.validateInput();

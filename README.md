@@ -18,15 +18,16 @@ Google provides this collection of pre-implemented Dataproc templates as a refer
 ## Dataproc Templates (Java - Spark)
 Please refer to the [Dataproc Templates (Java - Spark) README](/java) for more information
 
-* [BigQueryToGCS](java/src/main/java/com/google/cloud/dataproc/templates/bigquery#BigQuery-To-GCS)
-* [CassandraToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-bigquery-template)
+* [BigQueryToGCS](java/src/main/java/com/google/cloud/dataproc/templates/bigquery#BigQuery-To-GCS) (blogpost [link](https://medium.com/google-cloud/how-to-migrate-data-from-bigquery-to-cloud-storage-using-dataproc-serverless-java-5ead91ffa47f)) 
+* [BigQueryToJDBC](java/src/main/java/com/google/cloud/dataproc/templates/bigquery#BigQuery-To-JDBC) (blogpost [link](https://medium.com/google-cloud/migrating-data-from-bigquery-to-jdbc-using-dataproc-serverless-java-7aec2827097e))
+* [CassandraToBigQuery](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-bigquery-template) (blogpost [link](https://medium.com/google-cloud/migrate-data-from-cassandra-to-bigquery-using-java-and-dataproc-serverless-926110c44413))
 * [CassandraToGCS](java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-cassandra-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/migrate-data-from-cassandra-to-gcs-using-java-and-dataproc-serverless-5358ef498f6b))
 * [DataplexGCStoBQ](/java/src/main//java/com/google/cloud/dataproc/templates/dataplex#dataplex-gcs-to-bigquery)(blogpost [link](https://medium.com/google-cloud/using-dataproc-serverless-to-migrate-your-dataplex-gcs-data-to-bigquery-1e47bc8de74c))
 * [GCSToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#1-gcs-to-bigquery) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-bigquery-via-spark-bq-connector-using-dataproc-serverless-25e29f84888d))
 * [GCSToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#1-gcs-to-bigquery) (blogpost [link](https://medium.com/google-cloud/load-data-from-gcs-to-bigtable-using-gcp-dataproc-serverless-5c43d773e615)) (Video [link](https://www.youtube.com/watch?v=JwO72i2nVPU))
 * [GCSToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#4-gcs-to-gcs) (blogpost [link](https://medium.com/@ankuljain/migrate-gcs-to-gcs-using-dataproc-serverless-3b7b0f6ad6b9))
 * [GCSToJDBC](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#3-gcs-to-jdbc) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-databases-via-jdbc-using-dataproc-serverless-7ed75eab93ba))
-* [GCSToMongo](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#6-gcs-to-mongo)
+* [GCSToMongo](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#6-gcs-to-mongo) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-mongodb-using-java-dataproc-serverless-6ff5c8d6f6d5))
 * [GCSToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#2-gcs-to-spanner) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
 * [GeneralTemplate](/java/src/main/java/com/google/cloud/dataproc/templates/general)
 * [HBaseToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hbase#1-hbase-to-gcs)(blogpost [link](https://medium.com/google-cloud/using-dataproc-serverless-to-migrate-your-hbase-data-to-gcs-bf1ccf4ab945))
@@ -41,16 +42,17 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java) for more i
 * [KafkaToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md#2-kafka-to-gcs) (blogpost [link](https://medium.com/@pniralakeri/importing-data-from-kafka-to-gcs-using-dataproc-serverless-38e449d559f9))
 * [KafkaToGCSDstream](/java/src/main/java/com/google/cloud/dataproc/templates/kafka#5-kafka-to-gcs-via-spark-direct-stream)
 * [KafkaToPubSub](/java/src/main/java/com/google/cloud/dataproc/templates/kafka/README.md#3-kafka-to-pubsub)
+* [MongoToBQ](java/src/main/java/com/google/cloud/dataproc/templates/databases/MongoToBQ.java)
 * [MongoToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-mongo-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/migrating-data-from-mongo-to-gcs-using-java-and-dataproc-serverless-template-390500481804))
 * [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#1-pubsub-to-bigquery) (blogpost [link](https://medium.com/google-cloud/from-pub-sub-to-bigquery-streaming-data-in-near-real-time-b550aeff595d))
 * [PubSubToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#1-pubsub-to-bigtable) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-bigtable-using-dataproc-serverless-3142c1bcc22a))
-* [PubSubLiteToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/pubsublite#1-pubsublite-to-bigtable) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-lite-to-bigtable-using-dataproc-serverless-2c8816f40581))
+* [PubSubLiteToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/pubsublite#1-pubsublite-to-bigtable) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-lite-to-bigtable-using-dataproc-serverless-2c8816f40581)) **Deprecated and will be removed in Q1 2025** 
 * [PubSubToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#2-pubsub-to-gcs) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-cloud-storage-using-dataproc-serverless-7a1e4823926e))
-* [RedshiftToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-redshift-to-gcs-template) (blogpost [Link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-java-5b82044d78e7))
+* [RedshiftToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-redshift-to-gcs-template) (blogpost [Link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-java-5b82044d78e7)) **Deprecated and will be removed in Q1 2025**
 * [S3ToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/s3#1-s3-to-bigquery) (blogpost [link](https://medium.com/google-cloud/export-data-from-aws-s3-to-bigquery-using-dataproc-serverless-6dc7a9952fc4))
 * [SnowflakeToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/snowflake#1-snowflake-to-gcs) (blogpost [link](https://medium.com/google-cloud/export-snowflake-query-results-to-gcs-using-dataproc-serverless-3d68f5a01ca9))
 * [SpannerToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-spanner-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/cloud-spanner-export-query-results-using-dataproc-serverless-6f2f65b583a4))
-* [TextToBigquery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#7-text-to-bigquery)
+* [TextToBigquery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#7-text-to-bigquery) **Deprecated and will be removed in Q1 2025**
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 
 
@@ -58,10 +60,14 @@ Please refer to the [Dataproc Templates (Java - Spark) README](/java) for more i
 Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for more information
 * [AzureBlobToBigQuery](/python/dataproc_templates/azure#azure-blob-to-bigquery)
 * [BigQueryToGCS](/python/dataproc_templates/bigquery#bigquery-to-gcs) (blogpost [link](https://medium.com/google-cloud/moving-data-from-bigquery-to-gcs-using-gcp-dataproc-serverless-and-pyspark-f6481b86bcd1))
+* [BigQueryToMemorystore](/python/dataproc_templates/bigquery#bigquery-to-memorystore)
 * [CassandraToBigquery](/python/dataproc_templates/cassandra)
 * [CassandraToGCS](/python/dataproc_templates/cassandra) (blogpost [link](https://medium.com/google-cloud/export-data-from-cassandra-to-google-cloud-storage-using-dataproc-serverless-2569a00e17fe))
+* [ElasticsearchToBigQuery](/python/dataproc_templates/elasticsearch#elasticsearch-to-bq)
+* [ElasticsearchToBigtable](/python/dataproc_templates/elasticsearch#elasticsearch-to-bigtable)
+* [ElasticsearchToGCS](/python/dataproc_templates/elasticsearch#elasticsearch-to-gcs)
 * [GCSToBigQuery](/python/dataproc_templates/gcs#gcs-to-bigquery) (blogpost [link](https://medium.com/@ppaglilla/getting-started-with-dataproc-serverless-pyspark-templates-e32278a6a06e))
-* [GCSToBigTable](/python/dataproc_templates/gcs#gcs-to-bigtable)(blogpost [link](https://medium.com/google-cloud/pyspark-load-data-from-gcs-to-bigtable-using-gcp-dataproc-serverless-c373430fe157))
+* [GCSToBigTable](/python/dataproc_templates/gcs#gcs-to-bigtable)(blogpost [link](https://medium.com/google-cloud/load-data-from-gcs-to-bigtable-with-gcp-dataproc-serverless-3862399718d2))
 * [GCSToGCS](/python/dataproc_templates/gcs#gcs-to-gcs---sql-transformation) (blogpost [link](https://medium.com/@ankuljain/migrate-gcs-to-gcs-using-dataproc-serverless-3b7b0f6ad6b9))
 * [GCSToJDBC](/python/dataproc_templates/gcs#gcs-to-jdbc) (blogpost [link](https://medium.com/google-cloud/import-data-from-gcs-to-jdbc-databases-using-dataproc-serverless-c7154b242430))
 * [GCSToMongo](/python/dataproc_templates/gcs#gcs-to-mongodb) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-mongodb-using-dataproc-serverless-fed58904633a))
@@ -73,12 +79,13 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for 
 * [JDBCToJDBC](/python/dataproc_templates/jdbc#1-jdbc-to-jdbc) (blogpost [link](https://medium.com/google-cloud/migrating-data-from-one-databases-into-another-via-jdbc-using-dataproc-serverless-c5336c409b18))
 * [KafkaToGCS](/python/dataproc_templates/kafka/#kafka-to-gcs) (Blogpost [link](https://medium.com/google-cloud/kafka-to-gcs-using-dataproc-serverless-python-template-750ed218a5cc))
 * [KafkaToBigQuery](/python/dataproc_templates/kafka/#kafka-to-bq) (Blogpost [link](https://medium.com/google-cloud/dataproc-serverless-template-to-migrate-your-data-from-kafka-to-bigquery-9b635a66b9dc))
+* [MongoToBigQuery](/python/dataproc_templates/mongo#mongot-to-bq)
 * [MongoToGCS](/python/dataproc_templates/mongo#mongo-to-gcs) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-mongodb-to-gcs-buckets-using-dataproc-serverless-64830fb15b51))
-* [PubSubLiteToBigtable](/python/dataproc_templates/pubsublite#pubsublite-to-bigtable)
-* [RedshiftToGCS](/python/dataproc_templates/redshift#redshift-to-gcs) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405))
+* [PubSubLiteToBigtable](/python/dataproc_templates/pubsublite#pubsublite-to-bigtable) **Deprecated and will be removed in Q1 2025** 
+* [RedshiftToGCS](/python/dataproc_templates/redshift#redshift-to-gcs) (blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405)) **Deprecated and will be removed in Q1 2025** 
 * [S3ToBigQuery](/python/dataproc_templates/s3#amazon-s3-to-bigquery)
 * [SnowflakeToGCS](/python/dataproc_templates/snowflake#1-snowflake-to-gcs) (blogpost [link](https://medium.com/@varunikagupta96/exporting-data-from-snowflake-to-gcs-using-pyspark-on-dataproc-serverless-363d3bed551b))
-* [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery) (blogpost [link](https://medium.com/google-cloud/dataproc-serverless-pyspark-template-for-ingesting-compressed-text-files-to-bigquery-c6eab8fb6bc9))
+* [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery) (blogpost [link](https://medium.com/google-cloud/dataproc-serverless-pyspark-template-for-ingesting-compressed-text-files-to-bigquery-c6eab8fb6bc9)) **Deprecated and will be removed in Q1 2025** 
 
 
 ## Dataproc Templates (Notebooks)

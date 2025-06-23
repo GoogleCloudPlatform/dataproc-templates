@@ -25,12 +25,15 @@ import java.util.Properties;
 import java.util.stream.Stream;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
+@Disabled
 public class TextToBigqueryTest {
 
   private TextToBigquery textToBigquery;

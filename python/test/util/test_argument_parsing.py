@@ -24,10 +24,12 @@ from dataproc_templates.util.template_constants import \
     get_csv_input_spark_options as in_csv_opt
 from dataproc_templates.util.template_constants import \
     get_csv_output_spark_options as out_csv_opt
-
+from dataproc_templates.util.template_constants import \
+get_es_spark_connector_input_options as es_spark_opt
 from dataproc_templates import TemplateName
 from dataproc_templates.util.argument_parsing import (
     add_spark_options,
+    add_es_spark_connector_options,
     get_template_name,
     get_log_level,
 )
@@ -107,3 +109,27 @@ def test_add_spark_options():
                     constants.OPTION_WRITE_HELP
                 )
             ), f"Attribute {spark_option} has no help text in SPARK_OPTIONS"
+
+def test_add_es_spark_connector_options():
+    """Test add_es_spark_connector_options function"""
+    for option_set, option_prefix in [
+        (es_spark_opt("mock.in.prefix."), "mock.in.prefix"),
+    ]:
+        parser: argparse.ArgumentParser = argparse.ArgumentParser()
+        add_es_spark_connector_options(parser, option_set)
+        known_args, _ = parser.parse_known_args()
+        for k in option_set:
+            assert k.startswith(
+                option_prefix
+            ), f"Attribute {k} does not start with {option_prefix}"
+            assert hasattr(
+                known_args, k
+            ), f"Attribute {k} missing from {option_prefix} args"
+            assert (
+                option_set[k] in constants.ES_SPARK_READER_OPTIONS
+            ), f"Attribute {k} maps to invalid Elasticsearch Spark option {option_set[k]}"
+            es_spark_reader_option = option_set[k]
+            assert (
+                constants.ES_SPARK_READER_OPTIONS[es_spark_reader_option].get(
+                    constants.OPTION_HELP)
+            ), f"Attribute {es_spark_reader_option} has no help text in SPARK_OPTIONS"

@@ -36,15 +36,20 @@ if [ -z "$SKIP_BUILD" ]; then
     python3 ${PROJECT_ROOT_DIR}/setup.py bdist_egg --output=$PACKAGE_EGG_FILE
 fi
 
-if [ $4 = "--template=HBASETOGCS" ] || [ $4 = "--template=GCSTOBIGTABLE" ]; then
+if [ $4 = "--template=HBASETOGCS" ]; then
   OPT_SPARK_VERSION="--version=1.0.29"
 else
-  OPT_SPARK_VERSION="--version=1.1"
+  OPT_SPARK_VERSION="--version=1.2"
 fi
 
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
-OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
+#OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
+OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar"
+if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
+  echo "Dataproc Serverless Runtime 1.1 or CLUSTER Job Type Detected"
+	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
+fi
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
 OPT_PY_FILES="--py-files=${PROJECT_ROOT_DIR}/${PACKAGE_EGG_FILE}"
@@ -76,6 +81,9 @@ if [ -n "${SPARK_PROPERTIES}" ]; then
 fi
 if [ -z "${JOB_TYPE}" ]; then
   JOB_TYPE=SERVERLESS
+fi
+if [ -z "${SERVICE_ACCOUNT_NAME}" ]; then
+  OPT_SERVICE_ACCOUNT_NAME="--service-account=${SERVICE_ACCOUNT_NAME}"
 fi
 
 #if Hbase catalog is passed, then required hbase dependency are copied to staging location and added to jars
@@ -127,7 +135,7 @@ EOF
 elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
   echo "JOB_TYPE is SERVERLESS, so will submit on serverless Spark"
   command=$(cat << EOF
-  gcloud beta dataproc batches submit pyspark \
+  gcloud dataproc batches submit pyspark \
       ${PROJECT_ROOT_DIR}/main.py \
       ${OPT_SPARK_VERSION} \
       ${OPT_PROJECT} \
@@ -140,7 +148,8 @@ elif [ "${JOB_TYPE}" == "SERVERLESS" ]; then
       ${OPT_PROPERTIES} \
       ${OPT_SUBNET} \
       ${OPT_HISTORY_SERVER_CLUSTER} \
-      ${OPT_METASTORE_SERVICE}
+      ${OPT_METASTORE_SERVICE} \
+      ${OPT_SERVICE_ACCOUNT_NAME}
 EOF
 )
 else

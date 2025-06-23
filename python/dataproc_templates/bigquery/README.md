@@ -105,16 +105,10 @@ options:
   --bigquery.gcs.output.timestampntzformat BIGQUERY.GCS.OUTPUT.TIMESTAMPNTZFORMAT
                         Sets the string that indicates a timestamp without timezone format
 ```
-
-## Required JAR files
-
-This template requires the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) to be available in the Dataproc cluster.
-
 ## Example submission
 
 ```
 export GCP_PROJECT=my-project
-export JARS="gs://spark-lib/bigquery/spark-bigquery-latest_2.12.jar"
 export GCS_STAGING_LOCATION="gs://my-bucket"
 export REGION=us-central1
 
@@ -127,3 +121,87 @@ export REGION=us-central1
     --bigquery.gcs.output.header=false \
     --bigquery.gcs.output.timestampntzformat="yyyy-MM-dd HH:mm:ss"
 ```
+
+## BigQuery to Memorystore
+
+Template for exporting data from BigQuery to Google Cloud Memorystore (Redis). This template supports writing data using hash and binary persistence model. It also supports specifying ttl for data, key column and automatic schema conversion & creation.
+
+It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for reading from BigQuery and [Spark-Redis](https://github.com/RedisLabs/spark-redis) for writing to Redis.
+
+
+## Arguments
+
+* `bigquery.memorystore.input.table`: BigQuery Input table name (format: `project.dataset.table`)
+* `bigquery.memorystore.output.host`: Redis Memorystore host
+* `bigquery.memorystore.output.table`: Redis Memorystore target table name
+* `bigquery.memorystore.output.key.column`: Redis Memorystore key column for target table
+
+####   Optional Arguments
+
+* `bigquery.memorystore.output.port`: Redis Memorystore port. Defaults to 6379
+* `bigquery.memorystore.output.model`: Memorystore persistence model for Dataframe (one of: hash, binary) (Defaults to hash)
+* `bigquery.memorystore.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+* `bigquery.memorystore.output.ttl`: Data time to live in seconds. Data doesn't expire if ttl is less than 1 (Defaults to 0)
+* `bigquery.memorystore.output.dbnum`: Database / namespace for logical key separation (Defaults to 0)
+
+## Usage
+```
+python main.py --template BIGQUERYTOMEMORYSTORE --help
+
+usage: main.py [-h]
+               --bigquery.memorystore.input.table BIGQUERY.MEMORYSTORE.INPUT.TABLE
+               --bigquery.memorystore.output.host BIGQUERY.MEMORYSTORE.OUTPUT.HOST
+               --bigquery.memorystore.output.table BIGQUERY.MEMORYSTORE.OUTPUT.TABLE
+               --bigquery.memorystore.output.key.column BIGQUERY.MEMORYSTORE.OUTPUT.KEY.COLUMN
+               [--bigquery.memorystore.output.port BIGQUERY.MEMORYSTORE.OUTPUT.PORT]
+               [--bigquery.memorystore.output.model {hash,binary}]
+               [--bigquery.memorystore.output.mode {overwrite,append,ignore,errorifexists}]
+               [--bigquery.memorystore.output.ttl BIGQUERY.MEMORYSTORE.OUTPUT.TTL]
+               [--bigquery.memorystore.output.dbnum BIGQUERY.MEMORYSTORE.OUTPUT.DBNUM]
+
+options:
+-h, --help            show this help message and exit
+--bigquery.memorystore.input.table BIGQUERY.MEMORYSTORE.INPUT.TABLE
+                        BigQuery Input table name
+--bigquery.memorystore.output.host BIGQUERY.MEMORYSTORE.OUTPUT.HOST
+                        Redis Memorystore host
+--bigquery.memorystore.output.table BIGQUERY.MEMORYSTORE.OUTPUT.TABLE
+                        Redis Memorystore target table name
+--bigquery.memorystore.output.key.column BIGQUERY.MEMORYSTORE.OUTPUT.KEY.COLUMN
+                        Redis Memorystore key column for target table
+--bigquery.memorystore.output.port BIGQUERY.MEMORYSTORE.OUTPUT.PORT
+                        Redis Memorystore port. Defaults to 6379
+--bigquery.memorystore.output.model {hash,binary}
+                        Memorystore persistence model for Dataframe (one of: hash, binary) (Defaults to hash)
+--bigquery.memorystore.output.mode {overwrite,append,ignore,errorifexists}
+                        Output write mode (one of: append,overwrite,ignore,errorifexists) (Defaults to append)
+--bigquery.memorystore.output.ttl BIGQUERY.MEMORYSTORE.OUTPUT.TTL
+                        Data time to live in seconds. Data doesn't expire if ttl is less than 1 (Defaults to 0)
+--bigquery.memorystore.output.dbnum BIGQUERY.MEMORYSTORE.OUTPUT.DBNUM
+                        Database / namespace for logical key separation (Defaults to 0)
+```
+
+##   Example submission
+
+```
+export GCP_PROJECT=myprojectid
+export REGION=us-west1
+export SUBNET=projects/myprojectid/regions/us-west1/subnetworks/mysubnetid
+export GCS_STAGING_LOCATION="gs://python-dataproc-templates"
+export JARS="gs://mygcsstagingbkt/jars/spark-redis_2.12-3.0.0-jar-with-dependencies.jar"
+
+./bin/start.sh \
+-- --template=BIGQUERYTOMEMORYSTORE \
+--bigquery.memorystore.input.table=bigquery-public-data.fcc_political_ads.file_history \
+--bigquery.memorystore.output.host=10.0.0.17 \
+--bigquery.memorystore.output.port=6379 \
+--bigquery.memorystore.output.table=file_history \
+--bigquery.memorystore.output.key.column=fileHistoryId \
+--bigquery.memorystore.output.model=hash \
+--bigquery.memorystore.output.mode=overwrite \
+--bigquery.memorystore.output.ttl=360 \
+--bigquery.memorystore.output.dbnum=0
+```
+
+## Known limitations
+With Spark-Redis, the Hash model does not support nested fields in the DataFrame. Alternatively, you can use the Binary persistence model, which supports nested fields.

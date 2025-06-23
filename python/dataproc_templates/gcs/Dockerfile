@@ -28,6 +28,30 @@ ENV SPARK_EXTRA_JARS_DIR=/opt/spark/jars/
 ENV SPARK_EXTRA_CLASSPATH='/opt/spark/jars/*'
 RUN mkdir -p "${SPARK_EXTRA_JARS_DIR}"
 COPY hbase-site.xml /etc/hbase/conf/
+RUN chmod 777 /etc/hbase/conf/hbase-site.xml
+
+# (Optional) Install and configure Miniconda3.
+ENV CONDA_HOME=/opt/miniconda3
+ENV PYSPARK_PYTHON=${CONDA_HOME}/bin/python
+ENV PATH=${CONDA_HOME}/bin:${PATH}
+COPY Miniconda3-latest-Linux-x86_64.sh .
+RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda3 \
+  && ${CONDA_HOME}/bin/conda config --system --set always_yes True \
+  && ${CONDA_HOME}/bin/conda config --system --set auto_update_conda False \
+  && ${CONDA_HOME}/bin/conda config --system --prepend channels conda-forge \
+  && ${CONDA_HOME}/bin/conda config --system --set channel_priority strict
+
+# (Optional) Install Conda packages.
+#
+# The following packages are installed in the default image, it is strongly
+# recommended to include all of them.
+#
+# Use mamba to install packages quickly.
+RUN ${CONDA_HOME}/bin/conda install mamba -n base -c conda-forge \
+    && ${CONDA_HOME}/bin/mamba install \
+      google-cloud-bigquery \
+      google-cloud-bigtable \
+      google-cloud-secret-manager
 
 # (Required) Create the 'spark' group/user.
 # The GID and UID must be 1099. Home directory is required.

@@ -1,0 +1,556 @@
+// Helper function to check for specific file changes
+def shouldRunOnChangeInUi() {
+    // If the current branch is main, always run the stages
+    if (env.GIT_BRANCH_LOCAL == 'main') {
+        echo "[Change Detection - UI] Current branch is 'main'. Stage will run."
+        return true
+    }
+    try {
+        echo "[Change Detection - UI] Checking for changes in relevant files..."
+        // Script to check for changes, handles first commit
+        def checkScript = '''
+            if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+                # Not the first commit, diff against parent
+                git diff --name-only HEAD~1 HEAD
+            else
+                # First commit, list all files in the commit (as all are "new")
+                git diff-tree --no-commit-id --name-only -r HEAD
+            fi | grep -Eq ".java$|java/pom.xml|java/.ci/Jenkinsfile|java/.ci/UiJenkinsfile"
+        '''
+        // sh(...) returns 0 if grep finds a match (success), non-zero otherwise.
+        def exitCode = sh(script: checkScript, returnStatus: true)
+        echo "[Change Detection - UI] Script exit code: ${exitCode} (0 means changes detected and stage should run)"
+        return exitCode == 0
+    } catch (Exception e) {
+        echo "[Change Detection - UI] Error during change detection: ${e.getMessage()}. Defaulting to false (skip stage)."
+        return false // Default to not running the stage if there's an error in the check
+    }
+}
+
+def stageRetryCount = 3
+
+pipeline {
+
+    agent any
+
+    environment {
+        DATAPROC_TELEPORT_WEBHOOK_URL = credentials('dataproc-teleport-webhook-url')
+
+        TEST_JDBC_URL = credentials('env-test-jdbc-url')
+
+        GIT_BRANCH_LOCAL = sh (
+            script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
+            returnStdout: true
+        ).trim()
+
+        MAVEN_HOME = "/var/lib/jenkins/tools/hudson.tasks.Maven_MavenInstallation/maven"
+        PATH = "$PATH:$MAVEN_HOME/bin"
+
+        JAR_FILE="dataproc-templates-1.0-SNAPSHOT.jar"
+        jarPath = sh (script: '''
+            CURRENT_BRANCH=`echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'`
+            if [ $CURRENT_BRANCH != "main" ];then
+            echo "gs://dataproc-templates-binaries-preprod/$(uuidgen)/dataproc-templates-1.0-SNAPSHOT.jar"
+            else
+            echo "gs://dataproc-templates-binaries-preprod/dataproc-templates-1.0-SNAPSHOT.jar"
+            fi
+            '''.stripIndent(),
+            returnStdout: true
+        ).trim()
+    }
+    stages {
+        //Deploy one time so that build is copied to GCS location
+        stage('Reset Resources'){
+                    steps {
+                            catchError {
+                                sh '''
+                                    gcloud pubsub topics publish pubsubtogcsv3 --message='{"Name": "NewMsg", "Age": 10}'
+                                    gcloud pubsub topics publish test-pubsub-bq --message='{"Name": "Another message", "Age": 18}' 2> /dev/null || true
+                                '''
+                            }
+                    }
+            }
+        stage('Build Jar'){
+            steps {
+                sh '''
+                    cd java
+                    java --version
+                    java_status=$?
+                    if [ "$java_status" -eq 0 ];
+                    then
+                        printf "Java is installed, thus we are good to go"
+                    else
+                        printf "Java is not installed on this machine, thus we need to install that first"
+                        exit 1
+                    fi
+
+                    mvn --version
+                    mvn_status=$?
+                    if [ "$java_status" -eq 0 ];
+                    then
+                        printf "Maven is installed, thus we are good to go"
+                    else
+                        printf "Maven is not installed on this machine, thus we need to install that first"
+                        exit 1
+                    fi
+
+                    mvn clean spotless:apply install -DskipTests
+                    build_status=$?
+
+                    LOCAL_JAR_Path=./target/${JAR_FILE}
+
+                    gsutil cp ${LOCAL_JAR_Path} ${jarPath}
+                '''
+
+                }
+        }
+        stage('Parallel Execution 1'){
+            when {
+                expression { return shouldRunOnChangeInUi() }
+            }
+            parallel{
+                stage('SPANNER TO GCS'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath}" \
+                                    -- --template=SPANNERTOGCS \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty spanner.gcs.input.spanner.id="${ENV_TEST_SPANNER_ID}" \
+                                    --templateProperty spanner.gcs.input.database.id="spark-ci-db" \
+                                    --templateProperty spanner.gcs.input.table.id="(select id,name from badges2 where name = 'Teacher' limit 10000)" \
+                                    --templateProperty spanner.gcs.output.gcs.path="dataproc-templates/integration-testing/output/SPANNERTOGCS/parquet" \
+                                    --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
+                                    --templateProperty spanner.gcs.output.gcs.format="parquet"
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO BIGQUERY(avro)') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
+                                    -- --template=GCSTOBIGQUERY \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty gcs.bigquery.input.location="gs://dataproc-templates/integration-testing/gcstobigquery/cities.avro" \
+                                    --templateProperty gcs.bigquery.input.format="avro" \
+                                    --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
+                                    --templateProperty gcs.bigquery.output.table="gcs_to_bq_avro" \
+                                    --templateProperty gcs.bigquery.output.mode="Overwrite" \
+                                    --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates"
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO SPANNER') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
+                                    -- --template GCSTOSPANNER \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty gcs.spanner.input.format="avro" \
+                                    --templateProperty gcs.spanner.input.location="gs://dataproc-templates/data/avro/empavro" \
+                                    --templateProperty gcs.spanner.output.instance="${ENV_TEST_SPANNER_ID}" \
+                                    --templateProperty gcs.spanner.output.database="spark-ci-db" \
+                                    --templateProperty gcs.spanner.output.table="badges" \
+                                    --templateProperty gcs.spanner.output.saveMode="Overwrite" \
+                                    --templateProperty gcs.spanner.output.primaryKey="empno"
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO GCS (avro)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
+                                    -- --template=GCSTOGCS \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty gcs.gcs.input.location="gs://dataproc-templates/data/avro/empavro" \
+                                    --templateProperty gcs.gcs.input.format="avro" \
+                                    --templateProperty gcs.gcs.output.location="gs://dataproc-templates/integration-testing/output/GCSTOGCS/avro" \
+                                    --templateProperty gcs.gcs.output.format="csv" \
+                                    --templateProperty gcs.gcs.write.mode="overwrite" \
+                                    --templateProperty gcs.gcs.temp.table="dataset" \
+                                    --templateProperty gcs.gcs.temp.query="select * from global_temp.dataset where sal>1500"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 2'){
+        when {
+                expression { return shouldRunOnChangeInUi() }
+            }
+            parallel{
+                stage('GCS TO GCS (csv)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
+                                    -- --template=GCSTOGCS \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty gcs.gcs.input.location="gs://dataproc-templates/integration-testing/gcstogcs/csvtoavro/csv/cities.csv" \
+                                    --templateProperty gcs.gcs.input.format="csv" \
+                                    --templateProperty gcs.gcs.output.location="gs://dataproc-templates/integration-testing/output/GCSTOGCS/avro" \
+                                    --templateProperty gcs.gcs.output.format="avro" \
+                                    --templateProperty gcs.gcs.write.mode="overwrite"
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO JDBC') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --version="1.2" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar,gs://dataproc-templates/jars/mysql-connector-java-8.0.29.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template=GCSTOJDBC \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty gcs.jdbc.input.location="gs://dataproc-templates/data/avro/empavro" \
+                                    --templateProperty gcs.jdbc.input.format="avro" \
+                                    --templateProperty gcs.jdbc.output.saveMode="Overwrite" \
+                                    --templateProperty gcs.jdbc.output.url="${TEST_JDBC_URL}" \
+                                    --templateProperty gcs.jdbc.output.table="avrodemo" \
+                                    --templateProperty gcs.jdbc.output.driver="com.mysql.jdbc.Driver"
+                            '''
+                        }
+                    }
+                }
+                stage('HIVE TO BIGQUERY'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                               gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath}" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    --properties="spark.hadoop.hive.metastore.uris=${ENV_TEST_HIVE_METASTORE_URIS}" \
+                                    -- --template HIVETOBIGQUERY \
+                                    --templateProperty hivetobq.bigquery.location="${GCP_PROJECT}.dataproc_templates.test" \
+                                    --templateProperty hivetobq.sql="select * from default.employee" \
+                                    --templateProperty hivetobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/HIVETOBIGQUERY" \
+                                    --templateProperty hivetobq.write.mode="Overwrite"
+                            '''
+                        }
+                    }
+                }
+                stage('Hive TO GCS'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                               gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    --properties="spark.hadoop.hive.metastore.uris=${ENV_TEST_HIVE_METASTORE_URIS}" \
+                                    -- --template=HIVETOGCS \
+                                    --templateProperty hive.input.table="employee" \
+                                    --templateProperty hive.input.db="default" \
+                                    --templateProperty hive.gcs.output.path="gs://dataproc-templates/integration-testing/output/HIVETOGCS" \
+                                    --templateProperty hive.gcs.save.mode="overwrite"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 3'){
+        when {
+                expression { return shouldRunOnChangeInUi() }
+            }
+            parallel{
+                stage('SPANNER TO GCS (csv)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                    gcloud dataproc batches submit spark \
+                                        --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                        --version="1.2" \
+                                        --project="${GCP_PROJECT}" \
+                                        --region="us-west1" \
+                                        --jars="${jarPath}" \
+                                        -- --template=SPANNERTOGCS \
+                                        --templateProperty project.id="${GCP_PROJECT}" \
+                                        --templateProperty spanner.gcs.input.spanner.id="${ENV_TEST_SPANNER_ID}" \
+                                        --templateProperty spanner.gcs.input.database.id="test-db" \
+                                        --templateProperty spanner.gcs.input.table.id="shakespeare" \
+                                        --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/csv" \
+                                        --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
+                                        --templateProperty spanner.gcs.output.gcs.format="csv"
+                            '''
+                        }
+                    }
+                }
+                stage('SPANNER TO GCS (avro)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                    gcloud dataproc batches submit spark \
+                                        --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                        --version="1.2" \
+                                        --project="${GCP_PROJECT}" \
+                                        --region="us-west1" \
+                                        --jars="${jarPath},file:///usr/lib/spark/connector/spark-avro.jar" \
+                                        -- --template=SPANNERTOGCS \
+                                        --templateProperty project.id="${GCP_PROJECT}" \
+                                        --templateProperty spanner.gcs.input.spanner.id="${ENV_TEST_SPANNER_ID}" \
+                                        --templateProperty spanner.gcs.input.database.id="test-db" \
+                                        --templateProperty spanner.gcs.input.table.id="shakespeare" \
+                                        --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/avro" \
+                                        --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
+                                        --templateProperty spanner.gcs.output.gcs.format="avro"
+                            '''
+                        }
+                    }
+                }
+                stage('GCS TO BIGQUERY(csv)') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath}" \
+                                    -- --template=GCSTOBIGQUERY \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty gcs.bigquery.input.location="gs://dataproc-templates/integration-testing/gcstobigquery/cities.csv" \
+                                    --templateProperty gcs.bigquery.input.format="csv" \
+                                    --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
+                                    --templateProperty gcs.bigquery.output.table="gcs_bq_cities" \
+                                    --templateProperty gcs.bigquery.output.mode="Overwrite" \
+                                    --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+        stage('Parallel Execution 4'){
+        when {
+                expression { return shouldRunOnChangeInUi() }
+            }
+            parallel{
+                stage('JDBC To JDBC'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --version="1.2" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template JDBCTOJDBC \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+                                    --templateProperty jdbctojdbc.input.table="employee" \
+                                    --templateProperty jdbctojdbc.output.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+                                    --templateProperty jdbctojdbc.output.table="employee_output" \
+                                    --templateProperty jdbctojdbc.output.mode="Overwrite"
+                            '''
+                        }
+                    }
+                }
+                stage('PUBSUB TO GCS') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath}" \
+                                    -- --template=PUBSUBTOGCS \
+                                    --templateProperty pubsubtogcs.input.project.id="${GCP_PROJECT}" \
+                                    --templateProperty pubsubtogcs.input.subscription="pubsubtogcsv3-sub" \
+                                    --templateProperty pubsubtogcs.gcs.bucket.name="pubsubtogcs_dev" \
+                                    --templateProperty pubsubtogcs.gcs.output.data.format="JSON" \
+                                    --templateProperty pubsubtogcs.batch.size="50"
+                            '''
+                        }
+                    }
+                }
+
+            }
+        }
+        stage('Parallel Execution 5'){
+        when {
+                expression { return shouldRunOnChangeInUi() }
+            }
+            parallel{
+                stage('JDBC TO BQ'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                        sh '''
+                            gcloud dataproc batches submit spark \
+                                --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                --version="1.2" \
+                                --project="${GCP_PROJECT}" \
+                                --region="us-west1" \
+                                --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                -- --template=JDBCTOBIGQUERY \
+                                --templateProperty jdbctobq.bigquery.location="${GCP_PROJECT}.dataproc_templates.jdbctobq" \
+                                --templateProperty jdbctobq.jdbc.url="${TEST_JDBC_URL}" \
+                                --templateProperty jdbctobq.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+                                --templateProperty jdbctobq.write.mode="overwrite" \
+                                --templateProperty jdbctobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/JDBCTOBIGQUERY" \
+                                --templateProperty jdbctobq.sql="select * from test.employee"
+                        '''
+                    }
+                }
+            }
+
+                stage('JDBC TO SPANNER'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --version="1.2" \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template=JDBCTOSPANNER \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty jdbctospanner.jdbc.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctospanner.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+                                    --templateProperty jdbctospanner.sql="select * from test.employee" \
+                                    --templateProperty jdbctospanner.output.instance="${ENV_TEST_SPANNER_ID}" \
+                                    --templateProperty jdbctospanner.output.database="spark-ci-db" \
+                                    --templateProperty jdbctospanner.output.table="employee" \
+                                    --templateProperty jdbctospanner.output.saveMode="Overwrite" \
+                                    --templateProperty jdbctospanner.output.primaryKey="empno"
+                            '''
+                        }
+                    }
+                }
+
+                stage('JDBC TO GCS (csv)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --version="1.2" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template=JDBCTOGCS \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctogcs.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+                                    --templateProperty jdbctogcs.output.format="csv" \
+                                    --templateProperty jdbctogcs.output.location="gs://dataproc-templates/integration-testing/output/JDBCTOGCS/csv" \
+                                    --templateProperty jdbctogcs.sql="select * from test.employee" \
+                                    --templateProperty jdbctogcs.write.mode="overwrite"
+                            '''
+                        }
+                    }
+                }
+                stage('JDBC TO GCS (avro)'){
+                    steps {
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                gcloud dataproc batches submit spark \
+                                    --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+                                    --project="${GCP_PROJECT}" \
+                                    --region="us-west1" \
+                                    --version="1.2" \
+                                    --jars="${jarPath},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/connector/spark-avro.jar" \
+                                    --subnet="projects/yadavaja-sandbox/regions/us-west1/subnetworks/test-subnet1" \
+                                    -- --template=JDBCTOGCS \
+                                    --templateProperty project.id="${GCP_PROJECT}" \
+                                    --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
+                                    --templateProperty jdbctogcs.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+                                    --templateProperty jdbctogcs.output.format="avro" \
+                                    --templateProperty jdbctogcs.output.location="gs://dataproc-templates/integration-testing/output/JDBCTOGCS/avro" \
+                                    --templateProperty jdbctogcs.sql="select * from test.employee" \
+                                    --templateProperty jdbctogcs.write.mode="overwrite"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+    }
+      post {
+        always{
+            script {
+                if( env.GIT_BRANCH_LOCAL == 'main' ){
+                    googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
+    				message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
+    				notifyFailure: 'true',
+    				notifyAborted: 'true',
+    				notifyUnstable: 'true',
+    				notifyNotBuilt: 'true',
+    				notifyBackToNormal: 'true'
+                }
+            }
+            catchError {
+                sh '''
+                if [ $GIT_BRANCH_LOCAL != "main" ];then
+                    gsutil rm -r $jarPath 2> /dev/null || true
+                fi
+                '''
+            }
+        }
+    }
+
+}
