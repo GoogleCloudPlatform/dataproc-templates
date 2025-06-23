@@ -839,7 +839,7 @@ steps:
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: kafka-dstream-to-gcs-parquet
+    id: kafka-dstream-to-gcs
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
@@ -849,6 +849,7 @@ steps:
     script: |
       #!/usr/bin/env bash
       echo "Running Kafka Dstream TO GCS"
+      ## Testing both parquet and json export in same test
       
       cd java
       bin/start.sh \
@@ -865,21 +866,7 @@ steps:
         --templateProperty kafka.message.format=bytes \
         --templateProperty kafka.gcs.output.format=parquet \
         --templateProperty kafka.gcs.await.termination.timeout.ms=60000
-    waitFor: ['build-and-upload']
-
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: kafka-dstream-to-gcs-json
-    env:
-      - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
-      - 'REGION=${_REGION}'
-      - 'SKIP_BUILD=true'
-      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |
-      #!/usr/bin/env bash
-      echo "Running Kafka Dstream TO GCS (JSON)"
       
-      cd java
       bin/start.sh \
         -- \
         --template KafkaToGCSDstream \
