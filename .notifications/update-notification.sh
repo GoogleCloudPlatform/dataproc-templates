@@ -1,0 +1,2 @@
+gcloud storage cp gchat-notification.yaml gs://dataproc-templates_cloudbuild/gchat-notification.yaml
+gcloud run deploy gchat-build-notifier    --image=us-east1-docker.pkg.dev/gcb-release/cloud-build-notifiers/googlechat:latest    --no-allow-unauthenticated    --update-env-vars=CONFIG_PATH=gs://dataproc-templates_cloudbuild/gchat-notification.yaml,PROJECT_ID=852233039732 --project=dataproc-templates --service-account=dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com --region=us-central1
