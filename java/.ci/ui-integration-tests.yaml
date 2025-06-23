@@ -1,76 +1,31 @@
-  # Copyright (C) 2024 Google LLC
-  #
-  # Licensed under the Apache License, Version 2.0 (the "License"); you may not
-  # use this file except in compliance with the License. You may obtain a copy of
-  # the License at
-  #
-  #   http://www.apache.org/licenses/LICENSE-2.0
-  #
-  # Unless required by applicable law or agreed to in writing, software
-  # distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-  # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-  # License for the specific language governing permissions and limitations under
-  # the License.
-
-  substitutions:
-    _GCP_PROJECT: 'dataproc-templates'
-    _REGION: 'us-central1'
-#    _JAR_FILE: 'dataproc-templates-1.0-SNAPSHOT.jar'
-#    _JAR_GCS_BUCKET: 'gs://dataproc-templates-binaries-preprod'
-    _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
-    _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
-    _SUBNET: 'projects/$_GCP_PROJECT/regions/$_REGION/subnetworks/default'
-    _JAR_PATH: 'gs://dataproc-templates-binaries/latest/java/dataproc-templates.jar'
-
-  availableSecrets:
-    secretManager:
-      - versionName: projects/$PROJECT_ID/secrets/TEST_JDBC_URL/versions/latest
-        env: 'TEST_JDBC_URL'
-
-  steps:
-#    # 1. Reset resources before tests
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      id: reset-resources
-#      entrypoint: 'bash'
-#      args:
-#        - -c
-#        - |
-#          gcloud pubsub topics publish pubsubtogcsv3 --message='{"Name": "NewMsg", "Age": 10}' --project=${_GCP_PROJECT}
-#          gcloud pubsub topics publish test-pubsub-bq --message='{"Name": "Another message", "Age": 18}' --project=${_GCP_PROJECT} || true
+# Copyright (C) 2024 Google LLC
 #
-#    # 2. Build the JAR file and upload it to a unique GCS path
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      id: build-jar
-#      entrypoint: 'bash'
-#      args:
-#        - -c
-#        - |
-#          set -e
-#          echo "Installing dependencies..."
-#          apt-get update > /dev/null && apt-get install -y maven > /dev/null
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
 #
-#          echo "Building project..."
-#          cd java
-#          mvn clean spotless:apply install -DskipTests
+#   http://www.apache.org/licenses/LICENSE-2.0
 #
-#          if [ "${BRANCH_NAME}" = "main" ]; then
-#            JAR_GCS_PATH="${_JAR_GCS_BUCKET}/${_JAR_FILE}"
-#          else
-#            # Use COMMIT_SHA for a unique path on feature branches
-#            JAR_GCS_PATH="${_JAR_GCS_BUCKET}/${BRANCH_NAME}/${COMMIT_SHA}/${_JAR_FILE}"
-#          fi
-#
-#          echo "Uploading JAR to ${JAR_GCS_PATH}"
-#          gsutil cp ./target/${_JAR_FILE} ${JAR_GCS_PATH}
-#
-#          # Save the GCS path for subsequent test steps
-#          echo -n "${JAR_GCS_PATH}" > /workspace/jar_path.txt
-#      waitFor: [ 'reset-resources' ]
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
 
-    # 3. Run all integration tests in parallel
-    # Each test reads the JAR path from /workspace/jar_path.txt
-    # and submits a Dataproc Serverless batch job.
+substitutions:
+  _GCP_PROJECT: 'dataproc-templates'
+  _REGION: 'us-central1'
+  _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
+  _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
+  _SUBNET: 'projects/$_GCP_PROJECT/regions/$_REGION/subnetworks/default'
+  _JAR_PATH: 'gs://dataproc-templates-binaries/latest/java/dataproc-templates.jar'
 
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/TEST_JDBC_URL/versions/latest
+      env: 'TEST_JDBC_URL'
+
+steps:
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: spanner-to-gcs
       entrypoint: bash
@@ -89,7 +44,6 @@
               --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates_cloudbuild/ui-testing/SPANNERTOGCS/parquet" \
               --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
               --templateProperty spanner.gcs.output.gcs.format="parquet"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: gcs-to-bigquery-avro
@@ -97,11 +51,10 @@
       args:
         - -c
         - |
-          JAR_PATH="$_JAR_PATH"
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               -- --template=GCSTOBIGQUERY \
               --templateProperty project.id="${_GCP_PROJECT}" \
               --templateProperty gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstobigquery/cities.avro" \
@@ -110,7 +63,7 @@
               --templateProperty gcs.bigquery.output.table="ui_gcstobq_avro" \
               --templateProperty gcs.bigquery.output.mode="Overwrite" \
               --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates"
-      waitFor: [ 'build-jar' ]
+
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: gcs-to-spanner
@@ -122,7 +75,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               -- --template GCSTOSPANNER \
               --templateProperty project.id="${_GCP_PROJECT}" \
               --templateProperty gcs.spanner.input.format="avro" \
@@ -132,7 +85,6 @@
               --templateProperty gcs.spanner.output.table="employee_ui_tests" \
               --templateProperty gcs.spanner.output.saveMode="Overwrite" \
               --templateProperty gcs.spanner.output.primaryKey="empno"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: gcs-to-gcs-avro-to-csv
@@ -144,7 +96,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               -- --template=GCSTOGCS \
               --templateProperty project.id="${_GCP_PROJECT}" \
               --templateProperty gcs.gcs.input.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstogcs/emp.avro" \
@@ -154,7 +106,6 @@
               --templateProperty gcs.gcs.write.mode="overwrite" \
               --templateProperty gcs.gcs.temp.table="dataset" \
               --templateProperty "gcs.gcs.temp.query=select * from global_temp.dataset where sal>1500"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: gcs-to-gcs-csv-to-avro
@@ -166,7 +117,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               -- --template=GCSTOGCS \
               --templateProperty project.id="${_GCP_PROJECT}" \
               --templateProperty gcs.gcs.input.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstogcs/input/cities.csv" \
@@ -174,12 +125,11 @@
               --templateProperty gcs.gcs.output.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstogcs/output/avro" \
               --templateProperty gcs.gcs.output.format="avro" \
               --templateProperty gcs.gcs.write.mode="overwrite"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: gcs-to-jdbc
       entrypoint: bash
-      secretEnv: [ 'TEST_JDBC_URL' ]
+      secretEnv: ['TEST_JDBC_URL']
       args:
         - -c
         - |
@@ -187,7 +137,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" \
-              --jars="${JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar" \
               --subnet="${_SUBNET}" \
               -- --template=GCSTOJDBC \
               --templateProperty project.id="${_GCP_PROJECT}" \
@@ -197,7 +147,6 @@
               --templateProperty gcs.jdbc.output.url="${TEST_JDBC_URL}" \
               --templateProperty gcs.jdbc.output.table="avrodemo" \
               --templateProperty gcs.jdbc.output.driver="com.mysql.jdbc.Driver"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: hive-to-bigquery
@@ -209,7 +158,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH}" \
+              --jars="${_JAR_PATH}" \
               --subnet="${_SUBNET}" \
               --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
               -- --template HIVETOBIGQUERY \
@@ -217,7 +166,6 @@
               --templateProperty hivetobq.sql="select * from default.employee" \
               --templateProperty hivetobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/HIVETOBIGQUERY" \
               --templateProperty hivetobq.write.mode="Overwrite"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: hive-to-gcs
@@ -229,7 +177,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               --subnet="${_SUBNET}" \
               --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
               -- --template=HIVETOGCS \
@@ -237,7 +185,6 @@
               --templateProperty hive.input.db="default" \
               --templateProperty hive.gcs.output.path="gs://dataproc-templates/integration-testing/output/HIVETOGCS" \
               --templateProperty hive.gcs.save.mode="overwrite"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: spanner-to-gcs-csv
@@ -249,7 +196,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH}" \
+              --jars="${_JAR_PATH}" \
               -- --template=SPANNERTOGCS \
               --templateProperty project.id="${_GCP_PROJECT}" \
               --templateProperty spanner.gcs.input.spanner.id="${_ENV_TEST_SPANNER_ID}" \
@@ -258,7 +205,6 @@
               --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/csv" \
               --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
               --templateProperty spanner.gcs.output.gcs.format="csv"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: spanner-to-gcs-avro
@@ -270,7 +216,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               -- --template=SPANNERTOGCS \
               --templateProperty project.id="${_GCP_PROJECT}" \
               --templateProperty spanner.gcs.input.spanner.id="${_ENV_TEST_SPANNER_ID}" \
@@ -279,7 +225,6 @@
               --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/avro" \
               --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
               --templateProperty spanner.gcs.output.gcs.format="avro"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: gcs-to-bigquery-csv
@@ -291,7 +236,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH}" \
+              --jars="${_JAR_PATH}" \
               -- --template=GCSTOBIGQUERY \
               --templateProperty project.id="${_GCP_PROJECT}" \
               --templateProperty gcs.bigquery.input.location="gs://dataproc-templates/integration-testing/gcstobigquery/cities.csv" \
@@ -300,20 +245,18 @@
               --templateProperty gcs.bigquery.output.table="gcs_bq_cities" \
               --templateProperty gcs.bigquery.output.mode="Overwrite" \
               --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: jdbc-to-jdbc
       entrypoint: bash
       secretEnv: [ 'TEST_JDBC_URL' ]
-      args:
-        - -c
-        - |
+      script: |
+          #!/usr/bin/env bash
           JAR_PATH=$(cat /workspace/jar_path.txt)
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" \
-              --jars="${JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
               --subnet="${_SUBNET}" \
               -- --template JDBCTOJDBC \
               --templateProperty project.id="${_GCP_PROJECT}" \
@@ -324,7 +267,6 @@
               --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
               --templateProperty jdbctojdbc.output.table="employee_output" \
               --templateProperty jdbctojdbc.output.mode="Overwrite"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: pubsub-to-gcs
@@ -336,14 +278,13 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH}" \
+              --jars="${_JAR_PATH}" \
               -- --template=PUBSUBTOGCS \
               --templateProperty pubsubtogcs.input.project.id="${_GCP_PROJECT}" \
               --templateProperty pubsubtogcs.input.subscription="pubsubtogcsv3-sub" \
               --templateProperty pubsubtogcs.gcs.bucket.name="pubsubtogcs_dev" \
               --templateProperty pubsubtogcs.gcs.output.data.format="JSON" \
               --templateProperty pubsubtogcs.batch.size="50"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: jdbc-to-bq
@@ -356,7 +297,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
               --subnet="${_SUBNET}" \
               -- --template=JDBCTOBIGQUERY \
               --templateProperty jdbctobq.bigquery.location="${_GCP_PROJECT}.dataproc_templates.jdbctobq" \
@@ -365,7 +306,6 @@
               --templateProperty jdbctobq.write.mode="overwrite" \
               --templateProperty jdbctobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/JDBCTOBIGQUERY" \
               --templateProperty "jdbctobq.sql=select * from test.employee"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: jdbc-to-spanner
@@ -378,7 +318,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-              --jars="${JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
               --subnet="${_SUBNET}" \
               -- --template=JDBCTOSPANNER \
               --templateProperty project.id="${_GCP_PROJECT}" \
@@ -390,7 +330,6 @@
               --templateProperty jdbctospanner.output.table="employee" \
               --templateProperty jdbctospanner.output.saveMode="Overwrite" \
               --templateProperty jdbctospanner.output.primaryKey="empno"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: jdbc-to-gcs-csv
@@ -403,7 +342,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" \
-              --jars="${JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
+              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
               --subnet="${_SUBNET}" \
               -- --template=JDBCTOGCS \
               --templateProperty project.id="${_GCP_PROJECT}" \
@@ -413,7 +352,6 @@
               --templateProperty jdbctogcs.output.location="gs://dataproc-templates/integration-testing/output/JDBCTOGCS/csv" \
               --templateProperty "jdbctogcs.sql=select * from test.employee" \
               --templateProperty jdbctogcs.write.mode="overwrite"
-      waitFor: [ 'build-jar' ]
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       id: jdbc-to-gcs-avro
@@ -426,7 +364,7 @@
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" \
-              --jars="${JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/connector/spark-avro.jar" \
+              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/connector/spark-avro.jar" \
               --subnet="${_SUBNET}" \
               -- --template=JDBCTOGCS \
               --templateProperty project.id="${_GCP_PROJECT}" \
@@ -436,47 +374,11 @@
               --templateProperty jdbctogcs.output.location="gs://dataproc-templates/integration-testing/output/JDBCTOGCS/avro" \
               --templateProperty "jdbctogcs.sql=select * from test.employee" \
               --templateProperty jdbctogcs.write.mode="overwrite"
-      waitFor: [ 'build-jar' ]
 
-    # 4. Clean up temporary JAR file for non-main branches
-    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-      id: cleanup-jar
-      entrypoint: 'bash'
-      args:
-        - -c
-        - |
-          if [ "${BRANCH_NAME}" != "main" ]; then
-            JAR_GCS_PATH=$(cat /workspace/jar_path.txt)
-            # Path is gs://bucket/branch/commit/file.jar, so we remove the parent folder
-            JAR_GCS_FOLDER=$(dirname "${JAR_GCS_PATH}")
-            echo "Cleaning up temporary JAR folder: ${JAR_GCS_FOLDER}"
-            gsutil -m rm -r "${JAR_GCS_FOLDER}" || true
-          else
-            echo "On main branch, skipping cleanup of ${JAR_GCS_BUCKET}/${_JAR_FILE}"
-          fi
-      waitFor:
-        - spanner-to-gcs
-        - gcs-to-bigquery-avro
-        - gcs-to-spanner
-        - gcs-to-gcs-avro-to-csv
-        - gcs-to-gcs-csv-to-avro
-        - gcs-to-jdbc
-        - hive-to-bigquery
-        - hive-to-gcs
-        - spanner-to-gcs-csv
-        - spanner-to-gcs-avro
-        - gcs-to-bigquery-csv
-        - jdbc-to-jdbc
-        - pubsub-to-gcs
-        - jdbc-to-bq
-        - jdbc-to-spanner
-        - jdbc-to-gcs-csv
-        - jdbc-to-gcs-avro
 
-  options:
+options:
     logging: CLOUD_LOGGING_ONLY
-    machineType: 'E2_HIGHCPU_8'
     automapSubstitutions: true
-  timeout: 3600s
+timeout: 3600s
 
 
