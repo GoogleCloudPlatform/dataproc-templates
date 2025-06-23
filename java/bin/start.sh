@@ -18,17 +18,9 @@ set -e
 #Initialize functions and Constants
 echo "Script Started Execution"
 
-java --version
-java_status=$?
 
 BIN_DIR="$(dirname "$BASH_SOURCE")"
 source ${BIN_DIR}/dataproc_template_functions.sh
-check_status $java_status "\n Java is installed, thus we are good to go \n" "\n Java is not installed on this machine, thus we need to install that first \n"
-
-mvn --version
-mvn_status=$?
-
-check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
 
 PROJECT_ROOT_DIR=${BIN_DIR}/..
 JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar
@@ -48,6 +40,14 @@ GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION | sed 's/\/*$//'`
 # Do not rebuild when SKIP_BUILD is specified
 # Usage: export SKIP_BUILD=true
 if [ -z "$SKIP_BUILD" ]; then
+  java --version
+  java_status=$?
+  check_status $java_status "\n Java is installed, thus we are good to go \n" "\n Java is not installed on this machine, thus we need to install that first \n"
+
+  mvn --version
+  mvn_status=$?
+
+  check_status $mvn_status "\n Maven is installed, thus we are good to go \n" "\n Maven is not installed on this machine, thus we need to install that first \n"
 
   #Change PWD to root folder for Maven Build
   cd ${PROJECT_ROOT_DIR}
@@ -68,9 +68,18 @@ OPT_SPARK_VERSION="--version=1.2"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
 OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
-if [[ $OPT_SPARK_VERSION == *"=1.1"* || $JOB_TYPE == "CLUSTER" ]]; then
+if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
   echo "Dataproc Serverless Runtime 1.1 or CLUSTER Job Type Detected"
 	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+fi
+if [[ $JOB_TYPE == "CLUSTER" ]]; then
+  if [[ -n "${CLUSTER}" ]]; then
+    CLUSTER_IMAGE_VERSION=$(gcloud dataproc clusters describe "${CLUSTER}" --project="${GCP_PROJECT}" --region="${REGION}" --format="value(config.softwareConfig.imageVersion)")
+    if [[ $CLUSTER_IMAGE_VERSION == *"2.0"* || $CLUSTER_IMAGE_VERSION == *"2.1"* ]]; then
+      echo "Dataproc Cluster Image ${CLUSTER_IMAGE_VERSION} Detected"
+      OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+    fi
+  fi
 fi
 OPT_LABELS="--labels=job_type=dataproc_template"
 OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
