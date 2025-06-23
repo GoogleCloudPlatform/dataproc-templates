@@ -2,7 +2,7 @@
 
 General Execution:
 
-```
+```shell
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region> \
 SUBNET=<subnet> \
@@ -15,12 +15,13 @@ bin/start.sh \
 -- --template PUBSUBTOBQ \
 --templateProperty pubsub.input.project.id=<pubsub project id> \
 --templateProperty pubsub.input.subscription=<pubsub subscription> \
+--templateProperty pubsub.bq.output.project.id=<bq output project id> \
 --templateProperty pubsub.bq.output.dataset=<bq output dataset> \
 --templateProperty pubsub.bq.output.table=<bq output table>
 ```
 
 ### Configurable Parameters
-Following properties are available in commandline or [template.properties](../../../../../../../resources/template.properties) file:
+The following properties are available in commandline or [template.properties](../../../../../../../resources/template.properties) file:
 
 ```
 ## Project that contains the input Pub/Sub subscription to be read
@@ -46,7 +47,7 @@ pubsub.bq.batch.size=1000
 
 General Execution:
 
-```
+```shell
 export PROJECT=<gcp-project-id>
 export GCP_PROJECT=<gcp-project-id>
 export REGION=<gcp-project-region>
@@ -63,11 +64,11 @@ bin/start.sh \
 --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
 --templateProperty pubsubtogcs.input.subscription=<pubsub-topic-subscription-name> \
 --templateProperty pubsubtogcs.gcs.bucket.name=<gcs-bucket-name> \
---templateProperty pubsubtogcs.gcs.output.data.format=AVRO or JSON (based on pubsub topic configuration) \
+--templateProperty pubsubtogcs.gcs.output.data.format=avro or json \
 ```
 
 ### Configurable Parameters
-Following properties are available in commandline or [template.properties](../../../../../../../resources/template.properties) file:
+The following properties are available in commandline or [template.properties](../../../../../../../resources/template.properties) file:
 
 ```
 # PubSub to Cloud Storage
@@ -81,18 +82,18 @@ pubsubtogcs.timeout.ms=60000
 pubsubtogcs.streaming.duration.seconds=15
 ## Number of streams that will read from Pub/Sub subscription in parallel
 pubsubtogcs.total.receivers=5
-## Cloud Storage bucket URL
+## Cloud Storage bucket URL : gs://BUCKET_NAME/path/
 pubsubtogcs.gcs.bucket.name=
 ## Number of records to be written per message to Cloud Storage
 pubsubtogcs.batch.size=1000
-## PubSub to Cloud Storage supported formats are: AVRO, JSON
+## PubSub to Cloud Storage supported formats are: avro, json
 pubsubtogcs.gcs.output.data.format=
 ```
 ## 3. Pub/Sub To BigTable
 
 General Execution:
 
-```
+```shell
 GCP_PROJECT=<gcp-project-id> \
 REGION=<region> \
 SUBNET=<subnet> \
@@ -107,11 +108,12 @@ bin/start.sh \
 --templateProperty pubsub.input.subscription=<pubsub subscription> \
 --templateProperty pubsub.bigtable.output.instance.id=<bigtable instance id> \
 --templateProperty pubsub.bigtable.output.project.id=<bigtable output project id> \
---templateProperty pubsub.bigtable.output.table=<bigtable output table>
+--templateProperty pubsub.bigtable.output.table=<bigtable output table> \
+--templateProperty pubsub.bigtable.catalog.location=<bigtable catalog location>
 ```
 
 ### Configurable Parameters
-Following properties are available in commandline or [template.properties](../../../../../../../resources/template.properties) file:
+The following properties are available in commandline or [template.properties](../../../../../../../resources/template.properties) file:
 
 ```
 ## Project that contains the input Pub/Sub subscription to be read
@@ -130,29 +132,36 @@ pubsub.bigtable.output.project.id=<bigtable output project id>
 pubsub.bigtable.output.instance.id=<bigtable instance id>
 ## BigTable output table
 pubsub.bigtable.output.table=<bigtable output table>
+## BigTable table catalog
+pubsub.bigtable.catalog.location=<bigtable catalog location>
+```
+Please refer our public [documentation](https://cloud.google.com/bigtable/docs/use-bigtable-spark-connector) for more details around spark bigtable connector.
 
 The input message has to be in the following format for one rowkey.
+
+```json
 {
-  "rowkey": "rk1",
-  "columns": [
-    {
-      "columnfamily": "cf",
-      "columnname": "field1",
-      "columnvalue": "value1"
-    },
-    {
-      "columnfamily": "cf",
-      "columnname": "field2",
-      "columnvalue": "value2"
-    }
-  ]
+  "table": {"name": "employee"},
+  "rowkey": "id_rowkey",
+  "columns": {
+    "key": {"cf": "rowkey", "col": "id_rowkey", "type": "string"},
+    "name": {"cf": "personal", "col": "name", "type": "string"},
+    "address": {"cf": "personal", "col": "address", "type": "string"},
+    "empno": {"cf": "professional", "col": "empno", "type": "string"}
+  }
 }
-
-The below command can be used as an example to populate the message in topic T1:
-gcloud pubsub topics publish T1 --message='{"rowkey":"rk1","columns":[{"columnfamily":"cf","columnname":"field1","columnvalue":"value1"},{"columnfamily":"cf","columnname":"field2","columnvalue":"value2"}]}'
-
-Instead if messages are published in other modes, here is the example string to use:
-"{ \"rowkey\":\"rk1\",\"columns\": [{\"columnfamily\":\"cf\",\"columnname\":\"field1\",\"columnvalue\":\"value1\"},{\"columnfamily\":\"cf\",\"columnname\":\"field2\",\"columnvalue\":\"value2\"}] }"
-
+```
+```
 (Pleaes note that the table in Bigtable should exist with required column family, before executing the template)
+```
+We have provided robust logging messages. Spark Streaming application will run on various dataproc workers nodes. Usually Spark application prints messages on a driver as well as executors.
+It is tough to check logs directly on the driver side for troubleshooting. Please use below sample Cloud Logging query which will print all messages from the driver and executors.
+```
+resource.type="cloud_dataproc_batch"
+resource.labels.project_id="YOUR_PROJECT_ID"
+resource.labels.location="DATAPROC_SERVERLESS_JOB_REGION"
+resource.labels.batch_id="JOB_BATCH_ID"
+timestamp>="START_TIMESTAMP"
+timestamp<="END_TIMESTAMP"
+severity>=DEFAULT
 ```

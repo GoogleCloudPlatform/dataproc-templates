@@ -290,11 +290,7 @@
       <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
       <version>${spark.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.apache.bahir</groupId>
-      <artifactId>spark-streaming-pubsub_${scala.binary.version}</artifactId>
-      <version>${spark.streaming.pubsub.version}</version>
-    </dependency>
+
 
     <!-- Required by spark streaming kafka -->
     <dependency>
@@ -482,11 +478,11 @@
       <artifactId>commons-cli</artifactId>
       <version>${commons.cli.version}</version>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>org.json</groupId>-->
-    <!--      <artifactId>json</artifactId>-->
-    <!--      <version>${json.version}</version>-->
-    <!--    </dependency>-->
+    <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+      <version>${json.version}</version>
+    </dependency>
     <!--    <dependency>-->
     <!--      <groupId>com.github.ben-manes.caffeine</groupId>-->
     <!--      <artifactId>caffeine</artifactId>-->
