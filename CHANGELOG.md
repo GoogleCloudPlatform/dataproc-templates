@@ -1,5 +1,38 @@
 # Changelog
 
+## [2.0.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.2-beta...v2.0.0-beta) (2025-06-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* java 17 and spark 3.5.1 upgrade ([#1047](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1047))
+* GCS to BigTable catalog from GCS bucket ([#1026](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1026))
+* Add Spark BigQuery connector options ([#1027](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1027))
+* Allow the Elasticsearch Authorization using API Key ([#1019](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1019))
+
+### Features
+
+* Add Spark BigQuery connector options ([#1027](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1027)) ([6af6cc4](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/6af6cc487f08bc611e974b46a25f9c9f3e963762))
+* added BigQuery to Memorystore python template ([#1033](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1033)) ([4388e0c](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/4388e0cdabcd2c5c0d63181bf4f592e49e97b297))
+* Allow the Elasticsearch Authorization using API Key ([#1019](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1019)) ([4ecbfa6](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/4ecbfa64370c2cc2cb126846e8fe1ac2f6d9d996))
+* BigQuery_To_JDBC ([#1000](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1000)) ([f602c05](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/f602c051a640351fe1168a41325884b59331a652))
+* GCS to BigTable catalog from GCS bucket ([#1026](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1026)) ([f106b7c](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/f106b7c5db619deaf306a54ba3a677ade6f2e9ce))
+* java 17 and spark 3.5.1 upgrade ([#1047](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1047)) ([ffd2e3d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/ffd2e3db4e9759498167a4ceca446bc059b43498))
+* python upgrade to 3.12 ([#1038](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1038)) ([d0d9871](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/d0d98710bb23b3586bbc19dec1a1e17475de1e9a))
+
+
+### Bug Fixes
+
+* adding blogpost link for BigQuery to JDBC ([#1021](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1021)) ([3c5dc82](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3c5dc82849b0fbfa6eda9fdda2ccca1b1cb1f3a0))
+* adding csv support for gcs to spanner template ([#1014](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1014)) ([3775cf3](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/3775cf3300a8b618d025408028418611e34c45ea))
+* change cluster image to the latest 2.2 ([#1050](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1050)) ([e9d0b28](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/e9d0b28ee45d0bcf8eb1dfc5fd6ac52741a064e8))
+* integration tests ([#1041](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1041)) ([defab3e](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/defab3e170fb32fdff96c29e2fc9c8ba611a3ddf))
+* jenkins integration tests optimisation ([#1016](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1016)) ([6c6e005](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/6c6e005b075d1511301b6ff9b57e5f19ff53ce25))
+* Jenkins optimisation update ([#1024](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1024)) ([7bea95b](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7bea95bea6a8db985361be6297cd20e406056f93))
+* Provide required protobuf-java dependency for spanner ([#1023](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1023)) ([8839d15](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/8839d15e0dd8f407e1c7693068c30bec5fa7c5d8))
+* Update slf4j ([#1044](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1044)) ([23d7a25](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/23d7a25b42016d6a8b1aac7991cfbb8be583d376))
+* Upgrade pubsub libraries to client library ([#1055](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1055)) ([16b94d8](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/16b94d8f21b04dbbb3a88352bec2896dd310b4bf))
+
 ## [1.0.2-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.1-beta...v1.0.2-beta) (2024-10-24)
 
 
