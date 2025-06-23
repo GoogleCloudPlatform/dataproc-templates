@@ -1,0 +1,891 @@
+# Copyright (C) 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+substitutions:
+  _GCP_PROJECT: 'dataproc-templates' # Default to project running the build
+  _REGION: 'us-central1' # Specify your Dataproc region
+  _CLUSTER: 'your-dataproc-cluster-name' # Specify your Dataproc cluster
+  _JOB_TYPE: 'DEFAULT' # Set to 'CLUSTER' to enable cluster creation logic
+  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
+  _GCS_STAGING_LOCATION: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
+  _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
+  _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
+
+  # Other environment variables
+  _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
+  _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
+  _ENV_DATAPROC_METASTORE_SERVICE: 'projects/dataproc-templates/locations/us-central1/services/metastore-thrift-integration-test'
+  _ENV_TEST_KAFKA_BOOTSTRAP_SERVERS: '10.128.0.58:9093'
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/TEST_JDBC_URL/versions/latest
+      env: 'TEST_JDBC_URL'
+    - versionName: projects/$PROJECT_ID/secrets/S3_ACCESS_KEY_ID/versions/latest
+      env: 'S3_ACCESS_KEY_ID'
+    - versionName: projects/$PROJECT_ID/secrets/S3_SECRET_ACCESS_KEY/versions/latest
+      env: 'S3_SECRET_ACCESS_KEY'
+
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: build-and-upload
+    env:
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar'
+    script: |
+      #!/usr/bin/env bash
+      apt install maven -y
+      cd java
+      mvn install spotless:check
+      echo "copying the build into staging location:" ${GCS_STAGING_LOCATION}   
+      gsutil cp target/$JAR_FILE ${GCS_STAGING_LOCATION}/$JAR_FILE
+      
+      cat > /tmp/employeecatalog.json << EOF
+        {
+          "table": {"name": "employee"},
+          "rowkey": "id_rowkey",
+          "columns": {
+            "key": {"cf": "rowkey", "col": "id_rowkey", "type": "string"},
+            "name": {"cf": "personal", "col": "name", "type": "string"},
+            "address": {"cf": "personal", "col": "address", "type": "string"},
+            "empno": {"cf": "professional", "col": "empno", "type": "string"}
+          }
+        }
+      EOF
+      cat /tmp/employeecatalog.json
+      gsutil cp /tmp/employeecatalog.json gs://dataproc-templates_cloudbuild/integration-testing/bigtable/employeecatalog.json
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-bigquery-avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO BIGQUERY(avro) job"
+      cd java
+      bin/start.sh \
+      -- --template GCSTOBIGQUERY \
+      --templateProperty project.id=${_GCP_PROJECT} \
+      --templateProperty gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/integration-testing/gcstobigquery/cities.avro" \
+      --templateProperty gcs.bigquery.input.format=avro \
+      --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
+      --templateProperty gcs.bigquery.output.table="gcs_to_bq_avro" \
+      --templateProperty gcs.bigquery.output.mode="Overwrite" \
+      --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates_cloudbuild
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-bigtable
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO BigTable"
+      
+      cd java
+      bin/start.sh \
+        -- --template GCSTOBIGTABLE \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty gcs.bigtable.input.location=gs://dataproc-templates_cloudbuild/integration-testing/GCSTOBIGTABLE/input/parquet/ \
+        --templateProperty gcs.bigtable.input.format=parquet \
+        --templateProperty gcs.bigtable.output.instance.id=bt-int-test \
+        --templateProperty gcs.bigtable.output.project.id=$GCP_PROJECT \
+        --templateProperty gcs.bigtable.catalog.location="gs://dataproc-templates_cloudbuild/integration-testing/bigtable/employeecatalog.json"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs_avro-to-gcs_csv
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS (avro) TO GCS(csv) job"
+      cd java
+      bin/start.sh \
+        -- --template GCSTOGCS \
+        --templateProperty project.id=${_GCP_PROJECT} \
+        --templateProperty gcs.gcs.input.location=gs://dataproc-templates_cloudbuild/integration-testing/GCSTOGCS/input/emp.avro \
+        --templateProperty gcs.gcs.input.format=avro \
+        --templateProperty gcs.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/GCSTOGCS/output/csv \
+        --templateProperty gcs.gcs.output.format=csv \
+        --templateProperty gcs.gcs.write.mode=overwrite \
+        --templateProperty gcs.gcs.temp.table=dataset \
+        --templateProperty gcs.gcs.temp.query='select * from global_temp.dataset where sal>1500'
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs_csv-to-gcs_avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS (csv) TO GCS(avro) job"
+      cd java
+      bin/start.sh \
+        -- --template GCSTOGCS \
+        --templateProperty project.id=${_GCP_PROJECT} \
+        --templateProperty gcs.gcs.input.location=gs://dataproc-templates_cloudbuild/integration-testing/GCSTOGCS/input/cities.csv \
+        --templateProperty gcs.gcs.input.format=csv \
+        --templateProperty gcs.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/GCSTOGCS/output/avro \
+        --templateProperty gcs.gcs.output.format=avro \
+        --templateProperty gcs.gcs.write.mode=overwrite
+    waitFor: ['build-and-upload']
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+
+    id: gcs-to-bigquery-csv
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO BIGQUERY(csv) job"
+      cd java
+      bin/start.sh \
+      -- --template GCSTOBIGQUERY \
+      --templateProperty project.id=${_GCP_PROJECT} \
+      --templateProperty gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/integration-testing/gcstobigquery/cities.csv" \
+      --templateProperty gcs.bigquery.input.format=csv \
+      --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
+      --templateProperty gcs.bigquery.output.table="gcs_bq_cities" \
+      --templateProperty gcs.bigquery.output.mode="Overwrite" \
+      --templateProperty gcs.bigquery.temp.bucket.name=dataproc-templates_cloudbuild
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-spanner-googlesql
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO SPANNER GOOGLESQL DIALECT job"
+      cd java
+      bin/start.sh \
+          -- --template GCSTOSPANNER \
+          --templateProperty project.id=${_GCP_PROJECT} \
+          --templateProperty gcs.spanner.input.format=avro \
+          --templateProperty gcs.spanner.input.location=gs://dataproc-templates_cloudbuild/integration-testing/gcstospanner/emp.avro \
+          --templateProperty gcs.spanner.output.instance=$_ENV_TEST_SPANNER_ID \
+          --templateProperty gcs.spanner.output.database=spark-ci-db   \
+          --templateProperty gcs.spanner.output.table=badges \
+          --templateProperty gcs.spanner.output.saveMode=Overwrite \
+          --templateProperty gcs.spanner.output.primaryKey=empno
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-spanner-postgres
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO SPANNER Postgres DIALECT job"
+      
+      gcloud spanner databases execute-sql pgsqltest --instance=$_ENV_TEST_SPANNER_ID --sql='DELETE FROM badges;'
+      
+      cd java
+      bin/start.sh \
+        -- --template GCSTOSPANNER \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty gcs.spanner.input.format=avro \
+        --templateProperty gcs.spanner.input.location=gs://dataproc-templates_cloudbuild/integration-testing/gcstospanner/emp.avro \
+        --templateProperty gcs.spanner.output.instance=$_ENV_TEST_SPANNER_ID \
+        --templateProperty gcs.spanner.output.database=pgsqltest   \
+        --templateProperty gcs.spanner.output.table=badges \
+        --templateProperty gcs.spanner.output.saveMode=Append \
+        --templateProperty gcs.spanner.output.primaryKey=empno \
+        --templateProperty spanner.jdbc.dialect=postgresql
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-jdbc
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+      # TEST_JDBC_URL will be injected by secretEnv
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO JDBC"
+      cd java
+      
+      bin/start.sh \
+        -- --template GCSTOJDBC \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty gcs.jdbc.input.location=gs://dataproc-templates_cloudbuild/integration-testing/gcstojdbc/emp.avro \
+        --templateProperty gcs.jdbc.input.format=avro \
+        --templateProperty gcs.jdbc.output.table=avrodemo \
+        --templateProperty gcs.jdbc.output.saveMode=Overwrite   \
+        --templateProperty gcs.jdbc.output.url="${TEST_JDBC_URL}" \
+        --templateProperty gcs.jdbc.output.driver='com.mysql.jdbc.Driver'
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-mongo
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running GCS TO Mongo"
+      cd java
+      bin/start.sh \
+        -- --template GCSTOMONGO \
+        --templateProperty gcs.mongodb.input.format=avro \
+        --templateProperty gcs.mongodb.input.location=gs://dataproc-templates_cloudbuild/integration-testing/gcstomongo/emp.avro \
+        --templateProperty gcs.mongodb.output.uri="mongodb://10.128.0.8:27017" \
+        --templateProperty gcs.mongodb.output.database=demo \
+        --templateProperty gcs.mongodb.output.collection=test \
+        --templateProperty gcs.mongo.output.mode=overwrite
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: mongo-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Mongo TO Bigquery"
+      cd java
+      bin/start.sh \
+        -- \
+        --template MongoToBQ \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty mongo.bq.input.uri="mongodb://10.128.0.8:27017" \
+        --templateProperty mongo.bq.input.database=demo \
+        --templateProperty mongo.bq.input.collection=dummyusers \
+        --templateProperty mongo.bq.output.dataset=dataproc_templates \
+        --templateProperty mongo.bq.output.table=mongotobq \
+        --templateProperty mongo.bq.output.mode=Overwrite \
+        --templateProperty mongo.bq.temp.bucket.name=dataproc-templates_cloudbuild/integration-testing/mongotobq
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: cassandra-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Cassandra TO GCS"
+      cd java
+      bin/start.sh \
+        -- --template CASSANDRATOGCS \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty cassandratogcs.input.keyspace=testkeyspace \
+        --templateProperty cassandratogcs.input.table=emp \
+        --templateProperty cassandratogcs.input.host=10.128.0.19 \
+        --templateProperty cassandratogcs.output.format=csv \
+        --templateProperty cassandratogcs.output.savemode=Overwrite \
+        --templateProperty cassandratogcs.output.path=gs://dataproc-templates_cloudbuild/integration-testing/CASSANDRATOGCS/output/csv
+    waitFor: ['build-and-upload']
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: cassandra-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Cassandra TO BigQuery"
+      cd java
+      bin/start.sh \
+        -- --template CASSANDRATOBQ \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty cassandratobq.input.keyspace=testkeyspace \
+        --templateProperty cassandratobq.input.table=emp \
+        --templateProperty cassandratobq.input.host=10.128.0.19 \
+        --templateProperty cassandratobq.bigquery.location=dataproc_templates.cassandra_bq_emp_table \
+        --templateProperty cassandratobq.output.mode=Overwrite \
+        --templateProperty cassandratobq.temp.gcs.location=dataproc-templates_cloudbuild
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: spanner-to-gcs-csv
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running SPANNER TO GCS export in CSV"
+      cd java
+      
+      bin/start.sh \
+          -- --template SPANNERTOGCS \
+          --templateProperty project.id=${_GCP_PROJECT} \
+          --templateProperty spanner.gcs.input.spanner.id=${_ENV_TEST_SPANNER_ID} \
+          --templateProperty spanner.gcs.input.database.id=spark-ci-db \
+          --templateProperty spanner.gcs.input.table.id=movies \
+          --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates_cloudbuild/integration-testing/output/SPANNERTOGCS/csv \
+          --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+          --templateProperty spanner.gcs.output.gcs.format=csv
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: spanner-to-gcs-parquet
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running SPANNER TO GCS export in parquet"
+      cd java
+      bin/start.sh \
+          -- --template SPANNERTOGCS \
+          --templateProperty project.id=${_GCP_PROJECT} \
+          --templateProperty spanner.gcs.input.spanner.id=${_ENV_TEST_SPANNER_ID} \
+          --templateProperty spanner.gcs.input.database.id=spark-ci-db \
+          --templateProperty "spanner.gcs.input.table.id=(select id,name,year,rank from movies where rank < 5)" \
+          --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates_cloudbuild/integration-testing/output/SPANNERTOGCS/parquet \
+          --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+          --templateProperty spanner.gcs.output.gcs.format=parquet
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: spangress-to-gcs-parquet
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running SPANNER Postgresql Interface TO GCS export in parquet"
+      cd java
+      
+      bin/start.sh \
+          -- --template SPANNERTOGCS \
+          --templateProperty project.id=${_GCP_PROJECT} \
+          --templateProperty spanner.gcs.input.spanner.id=${_ENV_TEST_SPANNER_ID} \
+          --templateProperty spanner.gcs.input.database.id=pgsqltest \
+          --templateProperty "spanner.gcs.input.table.id=(SELECT * FROM sparktest LIMIT 1000)" \
+          --templateProperty spanner.gcs.output.gcs.path=gs://dataproc-templates_cloudbuild/integration-testing/output/SPANNERTOGCS/pgsql/parquet \
+          --templateProperty spanner.gcs.output.gcs.saveMode=Overwrite \
+          --templateProperty spanner.gcs.output.gcs.format=parquet \
+          --templateProperty spanner.jdbc.dialect=postgresql
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: bigquery-to-gcs-avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running BigQuery TO GCS avro"
+      cd java
+      bin/start.sh \
+        -- --template=BIGQUERYTOGCS \
+        --templateProperty project.id=${_GCP_PROJECT} \
+        --templateProperty bigquery.gcs.input.table=${_GCP_PROJECT}:dataproc_templates.emp_table \
+        --templateProperty bigquery.gcs.output.format=avro \
+        --templateProperty bigquery.gcs.output.partition.col=emp_city \
+        --templateProperty bigquery.gcs.output.mode=Overwrite \
+        --templateProperty bigquery.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/output/BIGQUERYTOGCS/avro
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: bq-to-jdbc
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO BQ job"
+      cd java
+      bin/start.sh \
+        -- --template BIGQUERYTOJDBC \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty bigquery.jdbc.input.table="$GCP_PROJECT.dataproc_templates.emp_table" \
+        --templateProperty bigquery.jdbc.dataset.name='dataproc_templates' \
+        --templateProperty bigquery.jdbc.url="$TEST_JDBC_URL" \
+        --templateProperty bigquery.jdbc.output.table='bq_emp_table' \
+        --templateProperty bigquery.jdbc.batch.size=10 \
+        --templateProperty bigquery.jdbc.output.driver='com.mysql.cj.jdbc.Driver' \
+        --templateProperty bigquery.jdbc.output.mode='Overwrite'
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-jdbc
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO JDBC job"
+      cd java      
+      bin/start.sh \
+        -- --template JDBCTOJDBC \
+        --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
+        --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+        --templateProperty jdbctojdbc.input.table="employee" \
+        --templateProperty jdbctojdbc.output.url="$TEST_JDBC_URL" \
+        --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+        --templateProperty jdbctojdbc.output.table="employee_output" \
+        --templateProperty jdbctojdbc.output.mode="Overwrite"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-bq
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO BQ job"
+      cd java
+      bin/start.sh \
+      -- --template JDBCTOBIGQUERY \
+      --templateProperty jdbctobq.bigquery.location=${_GCP_PROJECT}.dataproc_templates.jdbctobq \
+      --templateProperty jdbctobq.jdbc.url="${TEST_JDBC_URL}" \
+      --templateProperty jdbctobq.jdbc.driver.class.name=com.mysql.cj.jdbc.Driver \
+      --templateProperty jdbctobq.sql="select * from test.employee" \
+      --templateProperty jdbctobq.write.mode=overwrite \
+      --templateProperty jdbctobq.temp.gcs.bucket=dataproc-templates_cloudbuild/integration-testing/output/JDBCTOBIGQUERY
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-spanner
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO Spanner job"
+      cd java
+      bin/start.sh \
+        -- --template JDBCTOSPANNER \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty jdbctospanner.jdbc.url="${TEST_JDBC_URL}" \
+        --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.cj.jdbc.Driver \
+        --templateProperty jdbctospanner.sql="select * from test.employee" \
+        --templateProperty jdbctospanner.output.instance=${_ENV_TEST_SPANNER_ID} \
+        --templateProperty jdbctospanner.output.database=spark-ci-db \
+        --templateProperty jdbctospanner.output.table=employee \
+        --templateProperty jdbctospanner.output.saveMode=Overwrite \
+        --templateProperty jdbctospanner.output.primaryKey='empno'
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-spangress
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO Spanner Postgresql job"
+      cd java
+      gcloud spanner databases execute-sql pgsqltest --instance=${_ENV_TEST_SPANNER_ID} --sql='DELETE FROM pgdialect;'
+      
+      bin/start.sh \
+        -- --template JDBCTOSPANNER \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty jdbctospanner.jdbc.url="$TEST_JDBC_URL" \
+        --templateProperty jdbctospanner.jdbc.driver.class.name=com.mysql.cj.jdbc.Driver \
+        --templateProperty jdbctospanner.sql="select * from test.pgdialect" \
+        --templateProperty jdbctospanner.output.instance=${_ENV_TEST_SPANNER_ID} \
+        --templateProperty jdbctospanner.output.database=pgsqltest \
+        --templateProperty jdbctospanner.output.table=pgdialect \
+        --templateProperty jdbctospanner.output.saveMode=Append \
+        --templateProperty jdbctospanner.output.primaryKey='empno' \
+        --templateProperty spanner.jdbc.dialect=postgresql
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-gcs-avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO GCS Avro job"
+      cd java
+      bin/start.sh \
+        -- --template JDBCTOGCS \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
+        --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+        --templateProperty jdbctogcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/JDBCTOGCS/avro \
+        --templateProperty jdbctogcs.output.format=avro \
+        --templateProperty jdbctogcs.write.mode=overwrite \
+        --templateProperty jdbctogcs.sql="select * from test.employee"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-gcs-csv
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}' 
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running JDBC TO GCS Avro job"
+      cd java
+      bin/start.sh \
+        -- --template JDBCTOGCS \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
+        --templateProperty jdbctogcs.jdbc.driver.class.name=com.mysql.jdbc.Driver \
+        --templateProperty jdbctogcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/JDBCTOGCS/csv \
+        --templateProperty jdbctogcs.output.format=csv \
+        --templateProperty jdbctogcs.write.mode=overwrite \
+        --templateProperty jdbctogcs.sql="select * from test.employee"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: hive-to-bq
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}' 
+      - 'SKIP_BUILD=true' 
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+      - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Hive TO BQ job"
+      cd java
+      bin/start.sh \
+        --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
+        -- --template HIVETOBIGQUERY \
+        --templateProperty hivetobq.bigquery.location=$GCP_PROJECT.dataproc_templates.hivetobq_test \
+        --templateProperty hivetobq.sql="select * from test_db.employees" \
+        --templateProperty hivetobq.write.mode=Overwrite \
+        --templateProperty hivetobq.temp.gcs.bucket=dataproc-templates_cloudbuild/integration-testing/HIVETOBIGQUERY/output
+
+    waitFor: ['build-and-upload']
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: hive-to-gcs-avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+      - 'DATAPROC_METASTORE_SERVICE=${_ENV_DATAPROC_METASTORE_SERVICE}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Hive TO GCS job"
+      cd java
+      bin/start.sh \
+        --metastore-service=$DATAPROC_METASTORE_SERVICE \
+        -- --template HIVETOGCS \
+        --templateProperty hive.input.table=employees \
+        --templateProperty hive.input.db=test_db \
+        --templateProperty hive.gcs.output.path=gs://dataproc-templates_cloudbuild/integration-testing/HIVETOGCS/output \
+        --templateProperty hive.gcs.output.format=avro
+    waitFor: ['build-and-upload']
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: s3-to-bigquery-avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running S3 TO BIGQUERY (avro) job"
+      cd java
+
+      bin/start.sh \
+      -- --template S3TOBIGQUERY \
+      --templateProperty project.id=${_GCP_PROJECT} \
+      --templateProperty s3.bq.access.key=${S3_ACCESS_KEY_ID} \
+      --templateProperty s3.bq.secret.key=${S3_SECRET_ACCESS_KEY} \
+      --templateProperty s3.bq.input.format=avro \
+      --templateProperty s3.bq.input.location="s3a://dataproc-templates-integration-tests/cities.avro" \
+      --templateProperty s3.bq.output.dataset.name="dataproc_templates" \
+      --templateProperty s3.bq.output.table.name="s3_to_bq_avro" \
+      --templateProperty s3.bq.output.mode="Overwrite" \
+      --templateProperty s3.bq.ld.temp.bucket.name="dataproc-templates_cloudbuild"
+    secretEnv:
+      - 'S3_ACCESS_KEY_ID'
+      - 'S3_SECRET_ACCESS_KEY'
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: pubsub-to-gcs-json
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running PubSub TO GCS avro"
+      gcloud pubsub topics publish pubsub-to-gcs --message='{"Template": "PUBSUBTOGCS", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT
+      
+      cd java
+      bin/start.sh \
+        -- --template PUBSUBTOGCS \
+        --templateProperty pubsubtogcs.input.project.id=$GCP_PROJECT \
+        --templateProperty pubsubtogcs.input.subscription=subs-pubsub-to-gcs \
+        --templateProperty pubsubtogcs.gcs.bucket.name=dataproc-templates_cloudbuild \
+        --templateProperty pubsubtogcs.gcs.output.data.format=JSON \
+        --templateProperty pubsubtogcs.batch.size=50
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: pubsub-to-bq
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      
+      echo "Running PubSub TO GCS avro"
+      gcloud pubsub topics publish pubsub-to-bq --message='{"Template": "PUBSUBTOBQ", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT      
+      cd java
+      bin/start.sh \
+        -- --template PUBSUBTOBQ \
+        --templateProperty pubsub.input.subscription=subs-pubsub-to-gcs  \
+        --templateProperty pubsub.input.project.id=$GCP_PROJECT \
+        --templateProperty pubsub.bq.output.project.id=$GCP_PROJECT \
+        --templateProperty pubsub.bq.output.dataset=dataproc_templates \
+        --templateProperty pubsub.bq.output.table=pubsubtobq
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: kafka-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Kafka TO BigQuery"
+      
+      cd java
+      bin/start.sh \
+        -- \
+        --template KAFKATOBQ \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.bq.checkpoint.location=gs://dataproc-templates_cloudbuild/integration-testing/KAFKATOBQ/checkpoint \
+        --templateProperty kafka.bq.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.bq.topic=integration-test-kafka-bq \
+        --templateProperty kafka.bq.dataset=dataproc_templates \
+        --templateProperty kafka.bq.table=kafkatobq-integration-test \
+        --templateProperty kafka.bq.temp.gcs.bucket=dataproc-templates_cloudbuild \
+        --templateProperty kafka.bq.await.termination.timeout=60000
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: kafka-dstream-to-bq
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Kafka Dstream TO BigQuery"
+      
+      cd java
+      bin/start.sh \
+        -- \
+        --template KafkaToBQDstream \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.topic=integration-test-kafka-bq-dstream \
+        --templateProperty kafka.bq.dataset=dataproc_templates \
+        --templateProperty kafka.starting.offset=latest \
+        --templateProperty kafka.bq.batch.interval=60000 \
+        --templateProperty kafka.bq.consumer.group.id=testgroup \
+        --templateProperty kafka.bq.stream.output.mode=append \
+        --templateProperty kafka.bq.table=kafka-dstream-int-test \
+        --templateProperty kafka.bq.temp.gcs.bucket=dataproc-templates_cloudbuild \
+        --templateProperty kafka.bq.await.termination.timeout=60000
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: kafka-to-gcs-avro
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Kafka TO GCS"
+      
+      cd java
+      bin/start.sh \
+        -- --template KAFKATOGCS \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/KAFKATOGCS/avro/ \
+        --templateProperty kafka.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.topic=integration-test-kafka-gcs \
+        --templateProperty kafka.starting.offset=earliest \
+        --templateProperty kafka.gcs.output.format=avro \
+        --templateProperty kafka.message.format=bytes \
+        --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: kafka-dstream-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      echo "Running Kafka Dstream TO GCS"
+      ## Testing both parquet and json export in same test
+      
+      cd java
+      bin/start.sh \
+        -- \
+        --template KafkaToGCSDstream \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.topic=integration-test-kafka-gcs-dstream \
+        --templateProperty kafka.starting.offset=latest \
+        --templateProperty kafka.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/KAFKATOGCS_DStream/output/parquet/ \
+        --templateProperty kafka.gcs.batch.interval=60000 \
+        --templateProperty kafka.gcs.consumer.group.id=testgroupgcs \
+        --templateProperty kafka.gcs.write.mode=append \
+        --templateProperty kafka.message.format=bytes \
+        --templateProperty kafka.gcs.output.format=parquet \
+        --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+      
+      bin/start.sh \
+        -- \
+        --template KafkaToGCSDstream \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty kafka.bootstrap.servers=$_ENV_TEST_KAFKA_BOOTSTRAP_SERVERS \
+        --templateProperty kafka.topic=integration-test-kafka-gcs-dstream \
+        --templateProperty kafka.starting.offset=latest \
+        --templateProperty kafka.gcs.output.location=gs://dataproc-templates_cloudbuild/integration-testing/KAFKATOGCS_DStream/output/json/ \
+        --templateProperty kafka.gcs.batch.interval=60000 \
+        --templateProperty kafka.gcs.consumer.group.id=testgroupgcs \
+        --templateProperty kafka.gcs.write.mode=append \
+        --templateProperty kafka.message.format=bytes \
+        --templateProperty kafka.gcs.output.format=json \
+        --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+    waitFor: ['build-and-upload']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  pubsubTopic: projects/dataproc-templates/topics/dpt-build
+  machineType: 'E2_HIGHCPU_8'
+  automapSubstitutions: true
+timeout: 1800s
