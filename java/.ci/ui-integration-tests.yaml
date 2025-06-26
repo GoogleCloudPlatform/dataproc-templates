@@ -135,6 +135,7 @@ steps:
       secretEnv: ['TEST_JDBC_URL']
       script: |
         #!/usr/bin/env bash
+          echo "${_SUBNET}"
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" \
@@ -149,25 +150,24 @@ steps:
               --templateProperty gcs.jdbc.output.table="ui_test_avro" \
               --templateProperty gcs.jdbc.output.driver="com.mysql.jdbc.Driver"
 
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      waitFor: ['-']
-#      id: hive-to-bigquery
-#      entrypoint: bash
-#      args:
-#        - -c
-#        - |
-#          gcloud dataproc batches submit spark \
-#              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
-#              --jars="${_JAR_PATH}" \
-#              --subnet="${_SUBNET}" \
-#              --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
-#              -- --template HIVETOBIGQUERY \
-#              --templateProperty hivetobq.bigquery.location="${_GCP_PROJECT}.dataproc_templates.test" \
-#              --templateProperty hivetobq.sql="select * from default.employee" \
-#              --templateProperty hivetobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/HIVETOBIGQUERY" \
-#              --templateProperty hivetobq.write.mode="Overwrite"
-#
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: hive-to-bigquery
+      entrypoint: bash
+      args:
+        - -c
+        - |
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --version="1.2" --project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --jars="${_JAR_PATH}" \
+              --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
+              -- --template HIVETOBIGQUERY \
+              --templateProperty hivetobq.bigquery.location="${_GCP_PROJECT}.dataproc_templates.ui_test_hivetobq" \
+              --templateProperty hivetobq.sql="select * from default.employee" \
+              --templateProperty hivetobq.temp.gcs.bucket="gs://dataproc-templates/integration-templates_cloudbuild/output/HIVETOBIGQUERY" \
+              --templateProperty hivetobq.write.mode="Overwrite"
+
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
 #      id: hive-to-gcs
