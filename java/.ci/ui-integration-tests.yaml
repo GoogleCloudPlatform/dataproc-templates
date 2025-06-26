@@ -17,7 +17,7 @@ substitutions:
   _REGION: 'us-central1'
   _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
   _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
-  _SUBNET: 'projects/$_GCP_PROJECT/regions/$_REGION/subnetworks/default'
+  _SUBNET: 'projects/${_GCP_PROJECT}/regions/${_REGION}/subnetworks/default'
   _JAR_PATH: 'gs://dataproc-templates-binaries/latest/java/dataproc-templates.jar'
 
 availableSecrets:
@@ -135,7 +135,6 @@ steps:
       secretEnv: ['TEST_JDBC_URL']
       script: |
         #!/usr/bin/env bash
-          echo "${_SUBNET}"
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" \
