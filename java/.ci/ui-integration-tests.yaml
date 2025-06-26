@@ -165,7 +165,7 @@ steps:
               -- --template HIVETOBIGQUERY \
               --templateProperty hivetobq.bigquery.location="${_GCP_PROJECT}.dataproc_templates.ui_test_hivetobq" \
               --templateProperty hivetobq.sql="select * from test_db.employee" \
-              --templateProperty hivetobq.temp.gcs.bucket="gs://dataproc-templates/integration-templates_cloudbuild/output/HIVETOBIGQUERY" \
+              --templateProperty hivetobq.temp.gcs.bucket="gs://dataproc-templates_cloudbuild/integration-templates_cloudbuild/ui-testing/hivetobigquery/" \
               --templateProperty hivetobq.write.mode="Overwrite"
 
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
