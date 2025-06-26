@@ -42,7 +42,7 @@ steps:
               --templateProperty project.id="$_GCP_PROJECT" \
               --templateProperty spanner.gcs.input.spanner.id="$_ENV_TEST_SPANNER_ID" \
               --templateProperty spanner.gcs.input.database.id="spark-ci-db" \
-              --templateProperty "spanner.gcs.input.table.id=(select id,name from badges_ui_tests where name = 'Teacher' limit 10000)" \
+              --templateProperty "spanner.gcs.input.table.id=(select empno,ename from badges_ui_tests where job='SALESMAN')" \
               --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates_cloudbuild/ui-testing/SPANNERTOGCS/parquet" \
               --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
               --templateProperty spanner.gcs.output.gcs.format="parquet"
@@ -65,7 +65,7 @@ steps:
               --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
               --templateProperty gcs.bigquery.output.table="ui_gcstobq_avro" \
               --templateProperty gcs.bigquery.output.mode="Overwrite" \
-              --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates"
+              --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates_cloudbuild"
 
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -164,7 +164,7 @@ steps:
               --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
               -- --template HIVETOBIGQUERY \
               --templateProperty hivetobq.bigquery.location="${_GCP_PROJECT}.dataproc_templates.ui_test_hivetobq" \
-              --templateProperty hivetobq.sql="select * from test_db.employee" \
+              --templateProperty hivetobq.sql="select * from test_db.employees" \
               --templateProperty hivetobq.temp.gcs.bucket="gs://dataproc-templates_cloudbuild/integration-templates_cloudbuild/ui-testing/hivetobigquery/" \
               --templateProperty hivetobq.write.mode="Overwrite"
 
