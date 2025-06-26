@@ -138,7 +138,7 @@ steps:
         #!/usr/bin/env bash
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT}\
+              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
               --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar" \
               --subnet="${_SUBNET}" \
               -- --template=GCSTOJDBC \
@@ -261,7 +261,7 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT}\
+#              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
 #              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
 #              --subnet="${_SUBNET}" \
 #              -- --template JDBCTOJDBC \
@@ -351,7 +351,7 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT}\
+#              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
 #              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
 #              --subnet="${_SUBNET}" \
 #              -- --template=JDBCTOGCS \
@@ -374,7 +374,7 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT}\
+#              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
 #              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/connector/spark-avro.jar" \
 #              --subnet="${_SUBNET}" \
 #              -- --template=JDBCTOGCS \
