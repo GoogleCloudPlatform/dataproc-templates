@@ -163,7 +163,7 @@ steps:
               --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
               -- --template HIVETOBIGQUERY \
               --templateProperty hivetobq.bigquery.location="${_GCP_PROJECT}.dataproc_templates.ui_test_hivetobq" \
-              --templateProperty hivetobq.sql="select * from default.employee" \
+              --templateProperty hivetobq.sql="select * from test_db.employee" \
               --templateProperty hivetobq.temp.gcs.bucket="gs://dataproc-templates/integration-templates_cloudbuild/output/HIVETOBIGQUERY" \
               --templateProperty hivetobq.write.mode="Overwrite"
 
