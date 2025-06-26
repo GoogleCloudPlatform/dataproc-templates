@@ -36,7 +36,7 @@ steps:
         - |
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="$_GCP_PROJECT" --region="$_REGION" \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="$_GCP_PROJECT" --region="$_REGION" \
               --jars="$_JAR_PATH" \
               -- --template=SPANNERTOGCS \
               --templateProperty project.id="$_GCP_PROJECT" \
@@ -56,7 +56,7 @@ steps:
         - |
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
               --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               -- --template=GCSTOBIGQUERY \
               --templateProperty project.id="${_GCP_PROJECT}" \
@@ -78,7 +78,7 @@ steps:
           JAR_PATH="$_JAR_PATH"
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
               --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               -- --template GCSTOSPANNER \
               --templateProperty project.id="${_GCP_PROJECT}" \
@@ -99,7 +99,7 @@ steps:
         - |
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
               --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               -- --template=GCSTOGCS \
               --templateProperty project.id="${_GCP_PROJECT}" \
@@ -120,7 +120,7 @@ steps:
         - |
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
               --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
               -- --template=GCSTOGCS \
               --templateProperty project.id="${_GCP_PROJECT}" \
@@ -159,7 +159,7 @@ steps:
         - |
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
               --jars="${_JAR_PATH}" \
               --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
               -- --template HIVETOBIGQUERY \
@@ -178,13 +178,13 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
 #              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
 #              --subnet="${_SUBNET}" \
 #              --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
 #              -- --template=HIVETOGCS \
 #              --templateProperty hive.input.table="employee" \
-#              --templateProperty hive.input.db="default" \
+#              --templateProperty hive.input.db="test_db" \
 #              --templateProperty hive.gcs.output.path="gs://dataproc-templates/integration-testing/output/HIVETOGCS" \
 #              --templateProperty hive.gcs.save.mode="overwrite"
 #
@@ -198,7 +198,7 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
 #              --jars="${_JAR_PATH}" \
 #              -- --template=SPANNERTOGCS \
 #              --templateProperty project.id="${_GCP_PROJECT}" \
@@ -219,7 +219,7 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
 #              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
 #              -- --template=SPANNERTOGCS \
 #              --templateProperty project.id="${_GCP_PROJECT}" \
@@ -240,7 +240,7 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
 #              --jars="${_JAR_PATH}" \
 #              -- --template=GCSTOBIGQUERY \
 #              --templateProperty project.id="${_GCP_PROJECT}" \
@@ -284,7 +284,7 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
 #              --jars="${_JAR_PATH}" \
 #              -- --template=PUBSUBTOGCS \
 #              --templateProperty pubsubtogcs.input.project.id="${_GCP_PROJECT}" \
@@ -304,7 +304,7 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
 #              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
 #              --subnet="${_SUBNET}" \
 #              -- --template=JDBCTOBIGQUERY \
@@ -326,7 +326,7 @@ steps:
 #          JAR_PATH=$(cat /workspace/jar_path.txt)
 #          gcloud dataproc batches submit spark \
 #              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT}--project="${_GCP_PROJECT}" --region="${_REGION}" \
+#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
 #              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
 #              --subnet="${_SUBNET}" \
 #              -- --template=JDBCTOSPANNER \
