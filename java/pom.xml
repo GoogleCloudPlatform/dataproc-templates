@@ -44,6 +44,7 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
     <!-- Spark Version Aligned with Dataproc Serverless Spark Runtime 1.2 -->
+    <spark.major.version>3.5</spark.major.version>
     <spark.version>3.5.1</spark.version>
 
     <!-- GCP Dependencies. Only change when it is aligned with Spark -->
@@ -98,6 +99,12 @@
     <!-- HBase Dependencies -->
     <hbase.spark.connector.version>1.0.1</hbase.spark.connector.version>
     <hbase.client.version>2.6.0-hadoop3</hbase.client.version>
+
+    <!-- Iceberg Dependencies. Compatible with dataproc and spark major version. -->
+    <iceberg.version>1.6.1</iceberg.version>
+
+    <!-- Deltalake Dependencies. Compatible with spark major version. -->
+    <deltalake.version>3.2.0</deltalake.version>
 
     <!-- jakarta.validation -->
     <hibernate.validator.version>7.0.1.Final</hibernate.validator.version>
@@ -402,6 +409,22 @@
       <groupId>org.apache.hbase</groupId>
       <artifactId>hbase-client</artifactId>
       <version>${hbase.client.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Iceberg Dependencies -->
+    <dependency>
+      <groupId>org.apache.iceberg</groupId>
+      <artifactId>iceberg-spark-runtime-${spark.major.version}_${scala.binary.version}</artifactId>
+      <version>${iceberg.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Deltalake Dependencies -->
+    <dependency>
+      <groupId>io.delta</groupId>
+      <artifactId>delta-spark_${scala.binary.version}</artifactId>
+      <version>${deltalake.version}</version>
       <scope>provided</scope>
     </dependency>
 

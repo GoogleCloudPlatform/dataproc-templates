@@ -546,6 +546,15 @@ public interface TemplateConstants {
   String SPARK_BIGTABLE_INSTANCE_ID = "spark.bigtable.instance.id";
   String SPARK_BIGTABLE_CATALOG = "catalog";
 
+  /** Spark GCS Deltalake to Iceberg Properties */
+  String DELTALAKE_INPUT_LOCATION = "deltalake.input.location";
+
+  String DELTALAKE_VERSION_AS_OF = "deltalake.version.as_of";
+  String DELTALAKE_TIMESTAMP_AS_OF = "deltalake.timestamp.as_of";
+  String ICEBERG_TABLE_NAME = "iceberg.table.name";
+  String ICEBERG_TABLE_PARTITION_COLUMNS = "iceberg.table.partition.columns";
+  String ICEBERG_GCS_OUTPUT_MODE = "iceberg.gcs.output.mode";
+
   /** Please don't change it. It is a custom PubSub reader DataSource format name. */
   String PUBSUB_DATASOURCE_SHORT_NAME = "pubsub";
 }

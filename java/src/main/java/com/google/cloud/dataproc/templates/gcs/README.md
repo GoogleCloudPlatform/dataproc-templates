@@ -268,3 +268,55 @@ There are two optional properties as well with "Text to BigQuery" Template. Plea
 These properties are responsible for applying some spark sql transformations while loading data into BigQuery.
 The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
 
+## 8. Deltalake To Iceberg
+
+General Execution For Version Based Time Travel of Deltalake Table:
+
+```shell
+export REGION=<REGION>
+export GCP_PROJECT=<GCP_PROJECT>
+export SUBNET=<SUBNET>
+export METASTORE_SERVICE=<DATAPROC_METASTORE_SERVICE>
+
+bin/start.sh -- --template GCSDELTALAKETOICEBERG \
+ --templateProperty project.id=$GCP_PROJECT \
+ --templateProperty deltalake.input.location="gs://dp-template-deltalake-iceberg/hive_warehouse/delta-table-sample" \
+ --templateProperty deltalake.version.as_of=0 \
+ --templateProperty iceberg.table.name="spark_catalog.default.dp_iceberg_tbl" \
+ --templateProperty iceberg.gcs.output.mode="<Append|Overwrite>"
+```
+
+General Execution For Timestamp Based Time Travel of Deltalake Table:
+
+```shell
+export REGION=<REGION>
+export GCP_PROJECT=<GCP_PROJECT>
+export SUBNET=<SUBNET>
+export METASTORE_SERVICE=<DATAPROC_METASTORE_SERVICE>
+
+bin/start.sh -- --template GCSDELTALAKETOICEBERG \
+ --templateProperty project.id=$GCP_PROJECT \
+ --templateProperty deltalake.input.location="gs://dp-template-deltalake-iceberg/hive_warehouse/delta-table-sample" \
+ --templateProperty deltalake.timestamp.as_of="2025-07-01" \
+ --templateProperty iceberg.table.name="spark_catalog.default.dp_iceberg_tbl" \
+ --templateProperty iceberg.gcs.output.mode="<Append|Overwrite>"
+```
+
+General Execution For Version Based Time Travel of Deltalake Table With Partition Columns:
+
+```shell
+export REGION=<REGION>
+export GCP_PROJECT=<GCP_PROJECT>
+export SUBNET=<SUBNET>
+export METASTORE_SERVICE=<DATAPROC_METASTORE_SERVICE>
+
+bin/start.sh -- --template GCSDELTALAKETOICEBERG \
+ --templateProperty project.id=$GCP_PROJECT \
+ --templateProperty deltalake.input.location="gs://dp-template-deltalake-iceberg/hive_warehouse/delta-table-sample" \
+ --templateProperty deltalake.version.as_of=0 \
+ --templateProperty iceberg.table.name="spark_catalog.default.dp_iceberg_tbl" \
+ --templateProperty iceberg.table.partition.columns="col1,col2,col3" \
+ --templateProperty iceberg.gcs.output.mode="<Append|Overwrite>"
+```
+
+Currently, our template is supporting moving data from deltalake to iceberg in append/overwrite mode. We are not supporting any UPDATE operation for now.
