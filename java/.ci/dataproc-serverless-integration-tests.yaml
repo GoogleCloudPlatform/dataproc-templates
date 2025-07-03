@@ -27,6 +27,7 @@ substitutions:
   _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
   _ENV_DATAPROC_METASTORE_SERVICE: 'projects/dataproc-templates/locations/us-central1/services/metastore-thrift-integration-test'
   _ENV_TEST_KAFKA_BOOTSTRAP_SERVERS: '10.128.0.58:9093'
+  _ENV_DATAPROC_ICEBERG_METASTORE_SERVICE: 'projects/dataproc-templates/locations/us-central1/services/dp-test'
 
 availableSecrets:
   secretManager:
@@ -746,7 +747,7 @@ steps:
     script: |
       #!/usr/bin/env bash
       
-      echo "Running PubSub TO GCS avro"
+      echo "Running PubSub TO BigQuery avro"
       gcloud pubsub topics publish pubsub-to-bq --message='{"Template": "PUBSUBTOBQ", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT      
       cd java
       bin/start.sh \
@@ -756,6 +757,30 @@ steps:
         --templateProperty pubsub.bq.output.project.id=$GCP_PROJECT \
         --templateProperty pubsub.bq.output.dataset=dataproc_templates \
         --templateProperty pubsub.bq.output.table=pubsubtobq
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: pubsub-to-bigtable
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+    script: |
+      #!/usr/bin/env bash
+      
+      echo "Running PubSub TO BigTable"
+      gcloud pubsub topics publish pubsub-to-bt --message='{"key": "1000", "name": "dataproc_pubsub_bt_test", "address": "GCP Cloud", "emp_no": "10"}' --project=$GCP_PROJECT      
+      cd java
+      bin/start.sh \
+        -- --template PUBSUBTOBIGTABLE \
+        --templateProperty pubsub.input.subscription=subs-pubsub-to-bt  \
+        --templateProperty pubsub.input.project.id=$GCP_PROJECT \
+        --templateProperty pubsub.bigtable.output.project.id=$GCP_PROJECT \
+        --templateProperty pubsub.bigtable.output.instance.id=bt-int-test \
+        --templateProperty pubsub.bigtable.output.table=employee
+        --templateProperty pubsub.bigtable.catalog.location="gs://dataproc-templates_cloudbuild/integration-testing/bigtable/employeecatalog.json"
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -881,6 +906,31 @@ steps:
         --templateProperty kafka.message.format=bytes \
         --templateProperty kafka.gcs.output.format=json \
         --templateProperty kafka.gcs.await.termination.timeout.ms=60000
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-deltalake-to-iceberg
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
+      - 'DATAPROC_METASTORE_SERVICE=${_ENV_DATAPROC_ICEBERG_METASTORE_SERVICE}'
+    script: |
+      #!/usr/bin/env bash
+      
+      echo "Running GCS Deltalake To Iceberg"      
+      cd java
+      bin/start.sh \
+        --metastore-service=$DATAPROC_METASTORE_SERVICE \
+        -- --template GCSDELTALAKETOICEBERG \
+        --templateProperty project.id=$GCP_PROJECT \
+        --templateProperty deltalake.input.location="gs://dp-template-deltalake-iceberg/hive_warehouse/delta-table-trn-data" \
+        --templateProperty deltalake.version.as_of=0 \
+        --templateProperty iceberg.table.name="spark_catalog.default.iceberg_tbl_trn_data" \
+        --templateProperty iceberg.table.partition.columns="dt" \
+        --templateProperty iceberg.gcs.output.mode="overwrite"
     waitFor: ['build-and-upload']
 
 options:
