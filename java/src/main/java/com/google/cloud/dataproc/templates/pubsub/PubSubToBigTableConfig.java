@@ -159,7 +159,7 @@ public class PubSubToBigTableConfig {
 
   @AssertTrue(
       message =
-          "Required parameters for PubSubToBQ not passed. Refer to pubsub/README.md for more instructions.")
+          "Required parameters for PubSubToBigTable not passed. Refer to pubsub/README.md for more instructions.")
   private boolean isInputValid() {
     return StringUtils.isNotBlank(inputProjectID)
         && StringUtils.isNotBlank(pubsubInputSubscription)

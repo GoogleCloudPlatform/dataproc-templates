@@ -216,12 +216,14 @@ public class PubSubToBigTable implements BaseTemplate {
   }
 
   /**
-   * Please check out <a
-   * href="https://github.com/GoogleCloudDataproc/spark-bigtable-connector?tab=readme-ov-file#simple-data-type-serialization">Spark_BigTable_DataType_Mapping</a>
-   * for BigTable and Spark Data Type matching
+   * Maps a BigTable data type string to its corresponding Spark {@link DataType}.
    *
-   * @param bigTableDataType BigTable Data Type
-   * @return Corresponding Spark Data Type
+   * <p>For more details, check <a
+   * href="https://github.com/GoogleCloudDataproc/spark-bigtable-connector?tab=readme-ov-file#simple-data-type-serialization">
+   * Spark-BigTable Connector doc</a>.
+   *
+   * @param bigTableDataType The source BigTable data type string (e.g., "long", "boolean").
+   * @return The corresponding {@link DataType} for Spark.
    */
   private DataType getSparkDataType(String bigTableDataType) {
 
@@ -250,7 +252,7 @@ public class PubSubToBigTable implements BaseTemplate {
       case "binary":
         return DataTypes.BinaryType;
 
-        // Treat rest all others as a string type
+        // Default to StringType for any unmatched types.
       default:
         return DataTypes.StringType;
     }
