@@ -100,9 +100,7 @@ public class GCSDeltalakeToIceberg implements BaseTemplate {
     }
 
     LOGGER.info("Write Iceberg Table To {}", gcsdLtoIBConfig.getIcebergTableName());
-    SaveMode saveMode = SaveMode.valueOf(gcsdLtoIBConfig.getIcebergTableWriteMode().toLowerCase());
-
-    LOGGER.info("Write Iceberg Table To {}", gcsdLtoIBConfig.getIcebergTableName());
+    SaveMode saveMode = SaveMode.valueOf(gcsdLtoIBConfig.getIcebergTableWriteMode());
     if (!gcsdLtoIBConfig.getIcebergTablePartitionColumns().isEmpty()) {
       LOGGER.info(
           "Partition Columns Detected: {}", gcsdLtoIBConfig.getIcebergTablePartitionColumns());
