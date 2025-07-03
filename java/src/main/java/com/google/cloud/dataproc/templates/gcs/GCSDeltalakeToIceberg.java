@@ -19,9 +19,6 @@ import com.google.cloud.dataproc.templates.BaseTemplate;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
 import com.google.cloud.dataproc.templates.util.ValidationUtil;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeoutException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -36,22 +33,21 @@ public class GCSDeltalakeToIceberg implements BaseTemplate {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(GCSDeltalakeToIceberg.class);
 
-  private final GCSDeltalakeToIcebergConfig gcsDeltalakeToIcebergConfig;
+  private final GCSDLtoIBConfig gcsdLtoIBConfig;
 
   public static GCSDeltalakeToIceberg of(String... args) {
-    GCSDeltalakeToIcebergConfig config =
-        GCSDeltalakeToIcebergConfig.fromProperties(PropertyUtil.getProperties());
+    GCSDLtoIBConfig config = GCSDLtoIBConfig.fromProperties(PropertyUtil.getProperties());
     LOGGER.info("Config loaded\n{}", config);
     return new GCSDeltalakeToIceberg(config);
   }
 
-  public GCSDeltalakeToIceberg(GCSDeltalakeToIcebergConfig config) {
-    this.gcsDeltalakeToIcebergConfig = config;
+  public GCSDeltalakeToIceberg(GCSDLtoIBConfig config) {
+    this.gcsdLtoIBConfig = config;
   }
 
   @Override
   public void validateInput() throws IllegalArgumentException {
-    ValidationUtil.validateOrThrow(gcsDeltalakeToIcebergConfig);
+    ValidationUtil.validateOrThrow(gcsdLtoIBConfig);
   }
 
   @Override
@@ -70,16 +66,14 @@ public class GCSDeltalakeToIceberg implements BaseTemplate {
             .config("spark.sql.catalog.spark_catalog.type", "hive")
             .getOrCreate();
 
-    LOGGER.info("Set Log Level {}", gcsDeltalakeToIcebergConfig.getSparkLogLevel());
-    sparkSession.sparkContext().setLogLevel(gcsDeltalakeToIcebergConfig.getSparkLogLevel());
+    LOGGER.info("Set Log Level {}", gcsdLtoIBConfig.getSparkLogLevel());
+    sparkSession.sparkContext().setLogLevel(gcsdLtoIBConfig.getSparkLogLevel());
 
-    LOGGER.info("Read Deltalake Table From {}", gcsDeltalakeToIcebergConfig.getInputFileLocation());
-    int versionAsOf = Math.max(gcsDeltalakeToIcebergConfig.getVersionAsOf(), 0);
+    LOGGER.info("Read Deltalake Table From {}", gcsdLtoIBConfig.getInputFileLocation());
     String timestampAsOf =
-        gcsDeltalakeToIcebergConfig.getTimestampAsOf() == null
-                || gcsDeltalakeToIcebergConfig.getTimestampAsOf().isEmpty()
+        gcsdLtoIBConfig.getTimestampAsOf() == null || gcsdLtoIBConfig.getTimestampAsOf().isEmpty()
             ? null
-            : gcsDeltalakeToIcebergConfig.getTimestampAsOf();
+            : gcsdLtoIBConfig.getTimestampAsOf();
 
     Dataset<Row> dataset;
     if (timestampAsOf != null) {
@@ -91,54 +85,42 @@ public class GCSDeltalakeToIceberg implements BaseTemplate {
               .read()
               .format("delta")
               .option("timestampAsOf", timestampAsOf)
-              .load(gcsDeltalakeToIcebergConfig.getInputFileLocation());
+              .load(gcsdLtoIBConfig.getInputFileLocation());
     } else {
 
-      LOGGER.info("Time Travel By Version Settings Detected With VersionAsOf: {}", versionAsOf);
+      LOGGER.info(
+          "Time Travel By Version Settings Detected With VersionAsOf: {}",
+          gcsdLtoIBConfig.getVersionAsOf());
       dataset =
           sparkSession
               .read()
               .format("delta")
-              .option("versionAsOf", versionAsOf)
-              .load(gcsDeltalakeToIcebergConfig.getInputFileLocation());
+              .option("versionAsOf", gcsdLtoIBConfig.getVersionAsOf())
+              .load(gcsdLtoIBConfig.getInputFileLocation());
     }
 
-    LOGGER.info("Write Iceberg Table To {}", gcsDeltalakeToIcebergConfig.getIcebergTableName());
-    SaveMode saveMode =
-        gcsDeltalakeToIcebergConfig.getIcebergTableWriteMode() != null
-                && gcsDeltalakeToIcebergConfig
-                    .getIcebergTableWriteMode()
-                    .equalsIgnoreCase("overwrite")
-            ? SaveMode.Overwrite
-            : SaveMode.Append;
+    LOGGER.info("Write Iceberg Table To {}", gcsdLtoIBConfig.getIcebergTableName());
+    SaveMode saveMode = SaveMode.valueOf(gcsdLtoIBConfig.getIcebergTableWriteMode().toLowerCase());
 
-    LOGGER.info("Check If Partition Columns Are Exist Or Not");
-    List<String> partitionColumns = new ArrayList<>();
-    if (gcsDeltalakeToIcebergConfig.getIcebergTablePartitionColumns() != null
-        && !gcsDeltalakeToIcebergConfig.getIcebergTablePartitionColumns().isEmpty()) {
-
-      partitionColumns =
-          new ArrayList<>(
-              Arrays.asList(
-                  gcsDeltalakeToIcebergConfig.getIcebergTablePartitionColumns().split(",")));
-    }
-
-    LOGGER.info("Write Iceberg Table To {}", gcsDeltalakeToIcebergConfig.getIcebergTableName());
-    if (!partitionColumns.isEmpty()) {
-      LOGGER.info("Partition Columns Detected: {}", partitionColumns);
+    LOGGER.info("Write Iceberg Table To {}", gcsdLtoIBConfig.getIcebergTableName());
+    if (!gcsdLtoIBConfig.getIcebergTablePartitionColumns().isEmpty()) {
+      LOGGER.info(
+          "Partition Columns Detected: {}", gcsdLtoIBConfig.getIcebergTablePartitionColumns());
 
       dataset
           .write()
           .mode(saveMode)
           .format("iceberg")
-          .partitionBy(JavaConverters.asScalaBuffer(partitionColumns).toSeq())
-          .saveAsTable(gcsDeltalakeToIcebergConfig.getIcebergTableName());
+          .partitionBy(
+              JavaConverters.asScalaBuffer(gcsdLtoIBConfig.getIcebergTablePartitionColumns())
+                  .toSeq())
+          .saveAsTable(gcsdLtoIBConfig.getIcebergTableName());
     } else {
       dataset
           .write()
           .mode(saveMode)
           .format("iceberg")
-          .saveAsTable(gcsDeltalakeToIcebergConfig.getIcebergTableName());
+          .saveAsTable(gcsdLtoIBConfig.getIcebergTableName());
     }
 
     LOGGER.info("Spark Session Stop");

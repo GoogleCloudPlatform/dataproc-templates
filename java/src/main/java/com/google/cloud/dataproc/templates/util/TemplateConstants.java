@@ -547,7 +547,7 @@ public interface TemplateConstants {
   String SPARK_BIGTABLE_CATALOG = "catalog";
 
   /** Spark GCS Deltalake to Iceberg Properties */
-  String DELTALAKE_INPUT_LOCATION = "deltalake.input.location";
+  String DELTALAKE_INPUT_LOCATION = "gcsdeltalaketoiceberg.input.path";
 
   String DELTALAKE_VERSION_AS_OF = "deltalake.version.as_of";
   String DELTALAKE_TIMESTAMP_AS_OF = "deltalake.timestamp.as_of";

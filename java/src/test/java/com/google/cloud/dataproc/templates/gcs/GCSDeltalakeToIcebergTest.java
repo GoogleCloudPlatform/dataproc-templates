@@ -49,8 +49,7 @@ public class GCSDeltalakeToIcebergTest {
   @MethodSource("propertyKeys")
   void runTemplateWithValidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithValidParameters");
-    GCSDeltalakeToIcebergConfig config =
-        GCSDeltalakeToIcebergConfig.fromProperties(PropertyUtil.getProperties());
+    GCSDLtoIBConfig config = GCSDLtoIBConfig.fromProperties(PropertyUtil.getProperties());
     GCSDeltalakeToIceberg template = new GCSDeltalakeToIceberg(config);
     assertDoesNotThrow(template::validateInput);
   }
@@ -60,8 +59,7 @@ public class GCSDeltalakeToIcebergTest {
   void runTemplateWithInvalidParameters(String propKey) {
     LOGGER.info("Running test: runTemplateWithInvalidParameters");
     properties.setProperty(propKey, "");
-    GCSDeltalakeToIcebergConfig config =
-        GCSDeltalakeToIcebergConfig.fromProperties(PropertyUtil.getProperties());
+    GCSDLtoIBConfig config = GCSDLtoIBConfig.fromProperties(PropertyUtil.getProperties());
     GCSDeltalakeToIceberg template = new GCSDeltalakeToIceberg(config);
     ValidationUtil.ValidationException exception =
         assertThrows(ValidationUtil.ValidationException.class, template::validateInput);

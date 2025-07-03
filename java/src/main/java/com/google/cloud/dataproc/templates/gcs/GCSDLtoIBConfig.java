@@ -24,10 +24,13 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import org.apache.commons.lang3.StringUtils;
 
-public class GCSDeltalakeToIcebergConfig {
+public class GCSDLtoIBConfig {
 
   static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -82,8 +85,12 @@ public class GCSDeltalakeToIcebergConfig {
     return icebergTableName;
   }
 
-  public String getIcebergTablePartitionColumns() {
-    return icebergTablePartitionColumns;
+  public List<String> getIcebergTablePartitionColumns() {
+
+    if (icebergTablePartitionColumns != null && !icebergTablePartitionColumns.isEmpty()) {
+      return new ArrayList<>(Arrays.asList(icebergTablePartitionColumns.split(",")));
+    }
+    return new ArrayList<>();
   }
 
   public String getIcebergTableWriteMode() {
@@ -123,8 +130,8 @@ public class GCSDeltalakeToIcebergConfig {
         + '}';
   }
 
-  public static GCSDeltalakeToIcebergConfig fromProperties(Properties properties) {
-    return mapper.convertValue(properties, GCSDeltalakeToIcebergConfig.class);
+  public static GCSDLtoIBConfig fromProperties(Properties properties) {
+    return mapper.convertValue(properties, GCSDLtoIBConfig.class);
   }
 
   @AssertTrue(

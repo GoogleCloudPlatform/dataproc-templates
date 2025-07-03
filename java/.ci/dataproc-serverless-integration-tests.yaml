@@ -926,7 +926,7 @@ steps:
         --metastore-service=$DATAPROC_METASTORE_SERVICE \
         -- --template GCSDELTALAKETOICEBERG \
         --templateProperty project.id=$GCP_PROJECT \
-        --templateProperty deltalake.input.location="gs://dataproc-templates_cloudbuild/integration-testing/GCSDELTALAKETOICEBERG/hive_warehouse/delta-table-trn-data" \
+        --templateProperty gcsdeltalaketoiceberg.input.path="gs://dataproc-templates_cloudbuild/integration-testing/GCSDELTALAKETOICEBERG/hive_warehouse/delta-table-trn-data" \
         --templateProperty deltalake.version.as_of=0 \
         --templateProperty iceberg.table.name="spark_catalog.default.iceberg_tbl_trn_data" \
         --templateProperty iceberg.table.partition.columns="dt" \

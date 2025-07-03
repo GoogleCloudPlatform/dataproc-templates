@@ -270,6 +270,10 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 
 ## 8. Deltalake To Iceberg
 
+`deltalake.version.as_of` is an optional parameter which is default set to 0 means we will pick up the latest change only. We are providing below example to show how you can pass the value if you require time travel based on version number.
+
+Hive Metastore is required for Iceberg tables. Please refer to our public [documentation](https://cloud.google.com/dataproc-metastore/docs/overview) to learn more about Dataproc Metastore.
+
 General Execution For Version Based Time Travel of Deltalake Table:
 
 ```shell
@@ -296,7 +300,7 @@ export METASTORE_SERVICE=<DATAPROC_METASTORE_SERVICE>
 
 bin/start.sh -- --template GCSDELTALAKETOICEBERG \
  --templateProperty project.id=$GCP_PROJECT \
- --templateProperty deltalake.input.location="gs://dp-template-deltalake-iceberg/hive_warehouse/delta-table-sample" \
+ --templateProperty gcsdeltalaketoiceberg.input.path="gs://dp-template-deltalake-iceberg/hive_warehouse/delta-table-sample" \
  --templateProperty deltalake.timestamp.as_of="2025-07-01" \
  --templateProperty iceberg.table.name="spark_catalog.default.dp_iceberg_tbl" \
  --templateProperty iceberg.gcs.output.mode="<Append|Overwrite>"
@@ -312,7 +316,7 @@ export METASTORE_SERVICE=<DATAPROC_METASTORE_SERVICE>
 
 bin/start.sh -- --template GCSDELTALAKETOICEBERG \
  --templateProperty project.id=$GCP_PROJECT \
- --templateProperty deltalake.input.location="gs://dp-template-deltalake-iceberg/hive_warehouse/delta-table-sample" \
+ --templateProperty gcsdeltalaketoiceberg.input.path="gs://dp-template-deltalake-iceberg/hive_warehouse/delta-table-sample" \
  --templateProperty deltalake.version.as_of=0 \
  --templateProperty iceberg.table.name="spark_catalog.default.dp_iceberg_tbl" \
  --templateProperty iceberg.table.partition.columns="col1,col2,col3" \
