@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeoutException;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.slf4j.Logger;
@@ -100,7 +99,7 @@ public class GCSDeltalakeToIceberg implements BaseTemplate {
     }
 
     LOGGER.info("Write Iceberg Table To {}", gcsdLtoIBConfig.getIcebergTableName());
-    SaveMode saveMode = SaveMode.valueOf(gcsdLtoIBConfig.getIcebergTableWriteMode());
+    String saveMode = gcsdLtoIBConfig.getIcebergTableWriteMode().toLowerCase();
     if (!gcsdLtoIBConfig.getIcebergTablePartitionColumns().isEmpty()) {
       LOGGER.info(
           "Partition Columns Detected: {}", gcsdLtoIBConfig.getIcebergTablePartitionColumns());
