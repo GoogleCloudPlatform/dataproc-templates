@@ -779,7 +779,7 @@ steps:
         --templateProperty pubsub.input.project.id=$GCP_PROJECT \
         --templateProperty pubsub.bigtable.output.project.id=$GCP_PROJECT \
         --templateProperty pubsub.bigtable.output.instance.id=bt-int-test \
-        --templateProperty pubsub.bigtable.output.table=employee
+        --templateProperty pubsub.bigtable.output.table=employee \
         --templateProperty pubsub.bigtable.catalog.location="gs://dataproc-templates_cloudbuild/integration-testing/bigtable/employeecatalog.json"
     waitFor: ['build-and-upload']
 
