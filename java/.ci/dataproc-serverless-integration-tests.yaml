@@ -27,7 +27,6 @@ substitutions:
   _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
   _ENV_DATAPROC_METASTORE_SERVICE: 'projects/dataproc-templates/locations/us-central1/services/metastore-thrift-integration-test'
   _ENV_TEST_KAFKA_BOOTSTRAP_SERVERS: '10.128.0.58:9093'
-  _ENV_DATAPROC_ICEBERG_METASTORE_SERVICE: 'projects/dataproc-templates/locations/us-central1/services/dp-test'
 
 availableSecrets:
   secretManager:
@@ -916,7 +915,7 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-      - 'DATAPROC_METASTORE_SERVICE=${_ENV_DATAPROC_ICEBERG_METASTORE_SERVICE}'
+      - 'DATAPROC_METASTORE_SERVICE=${_ENV_DATAPROC_METASTORE_SERVICE}'
     script: |
       #!/usr/bin/env bash
       
