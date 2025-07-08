@@ -108,6 +108,7 @@ public class GCSDeltalakeToIceberg implements BaseTemplate {
           .write()
           .mode(saveMode)
           .format("iceberg")
+          .option("mergeSchema", gcsdLtoIBConfig.getIcebergTableMergeSchema())
           .partitionBy(
               JavaConverters.asScalaBuffer(gcsdLtoIBConfig.getIcebergTablePartitionColumns())
                   .toSeq())
@@ -117,6 +118,7 @@ public class GCSDeltalakeToIceberg implements BaseTemplate {
           .write()
           .mode(saveMode)
           .format("iceberg")
+          .option("mergeSchema", gcsdLtoIBConfig.getIcebergTableMergeSchema())
           .saveAsTable(gcsdLtoIBConfig.getIcebergTableName());
     }
 

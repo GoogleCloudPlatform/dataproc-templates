@@ -61,6 +61,9 @@ public class GCSDLtoIBConfig {
   @Pattern(regexp = "(?i)(Append|Overwrite)")
   private String icebergTableWriteMode;
 
+  @JsonProperty(value = ICEBERG_TABLE_MERGE_SCHEMA)
+  private String icebergTableMergeSchema;
+
   @JsonProperty(value = SPARK_LOG_LEVEL)
   @Pattern(regexp = "ALL|DEBUG|ERROR|FATAL|INFO|OFF|TRACE|WARN")
   private String sparkLogLevel;
@@ -97,13 +100,17 @@ public class GCSDLtoIBConfig {
     return icebergTableWriteMode;
   }
 
+  public String getIcebergTableMergeSchema() {
+    return icebergTableMergeSchema;
+  }
+
   public @NotEmpty String getSparkLogLevel() {
     return sparkLogLevel;
   }
 
   @Override
   public String toString() {
-    return "GCSDeltalakeToIcebergConfig{"
+    return "GCSDLtoIBConfig{"
         + "projectId='"
         + projectId
         + '\''
@@ -123,6 +130,9 @@ public class GCSDLtoIBConfig {
         + '\''
         + ", icebergTableWriteMode='"
         + icebergTableWriteMode
+        + '\''
+        + ", icebergTableMergeSchema='"
+        + icebergTableMergeSchema
         + '\''
         + ", sparkLogLevel='"
         + sparkLogLevel

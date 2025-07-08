@@ -554,6 +554,7 @@ public interface TemplateConstants {
   String ICEBERG_TABLE_NAME = "iceberg.table.name";
   String ICEBERG_TABLE_PARTITION_COLUMNS = "iceberg.table.partition.columns";
   String ICEBERG_GCS_OUTPUT_MODE = "iceberg.gcs.output.mode";
+  String ICEBERG_TABLE_MERGE_SCHEMA = "iceberg.table.merge.schema";
 
   /** Please don't change it. It is a custom PubSub reader DataSource format name. */
   String PUBSUB_DATASOURCE_SHORT_NAME = "pubsub";

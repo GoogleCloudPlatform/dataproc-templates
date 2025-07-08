@@ -270,7 +270,9 @@ The only thing needs to keep in mind is that, the name of the Spark temporary vi
 
 ## 8. Deltalake To Iceberg
 
-`deltalake.version.as_of` is an optional parameter which is default set to 0 means we will pick up the latest change only. We are providing below example to show how you can pass the value if you require time travel based on version number.
+`deltalake.version.as_of` is an optional parameter which is default set to `0` means we will pick up the latest change only. We are providing below example to show how you can pass the value if you require time travel based on version number.
+
+`iceberg.table.merge.schema` is an optional parameter which is default set to `false` means we will not merge schema while writing Iceberg table. Please set it `true` if you would like to merge the schema.
 
 Hive Metastore is required for Iceberg tables. Please refer to our public [documentation](https://cloud.google.com/dataproc-metastore/docs/overview) to learn more about Dataproc Metastore.
 
