@@ -68,9 +68,18 @@ OPT_SPARK_VERSION="--version=1.2"
 OPT_PROJECT="--project=${GCP_PROJECT}"
 OPT_REGION="--region=${REGION}"
 OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
-if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
-  echo "Dataproc Serverless Runtime 1.1 or CLUSTER Job Type Detected"
-	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+if [[ $JOB_TYPE == "SERVERLESS" ]]; then
+  if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
+    echo "Dataproc Serverless Runtime 1.1 Job Type Detected"
+  	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+  else
+    # We added Deltalake and Iceberg jars to align with serverless dataproc version compatibility
+    # Please check below internal document to make sure you aligned with what dataproc team provides i.e. jar version, path etc.
+    # https://docs.google.com/document/d/1VCv9sewWdFVu_2gzmZHFmikKBGxX7_zefhk0yJ-i0OA/edit?tab=t.0#heading=h.6ogrcxwzv7et
+    # Our java templates have scope provided for these dependencies to avoid version conflicting with dataproc
+    # We are doing this only for serverless dataproc because cluster dataproc is providing optional components which make sures dependencies available within cluster
+    OPT_JARS="--jars=file:///usr/lib/spark/connector/spark-avro.jar,gs://spark-lib/delta/delta-spark_2.12-3.2.0.jar,gs://spark-lib/delta/delta-storage-3.2.0.jar,gs://spark-lib/iceberg/iceberg-spark-runtime-3.5_2.12-1.6.1.jar,${GCS_STAGING_LOCATION}/${JAR_FILE}"
+  fi
 fi
 if [[ $JOB_TYPE == "CLUSTER" ]]; then
   if [[ -n "${CLUSTER}" ]]; then
