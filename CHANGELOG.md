@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v2.0.0-beta...v2.1.0-beta) (2025-07-09)
+
+
+### Features
+
+* Deltalake to iceberg transfer ([#1058](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1058)) ([887b07d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/887b07d0307adec58b8759b9de94d3fcc579febd))
+
 ## [2.0.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.2-beta...v2.0.0-beta) (2025-06-23)
 
 
