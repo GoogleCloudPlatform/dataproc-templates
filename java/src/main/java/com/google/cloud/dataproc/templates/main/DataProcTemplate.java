@@ -86,6 +86,7 @@ public class DataProcTemplate {
           .put(TemplateName.GCSTOBIGTABLE, GCStoBigTable::of)
           .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
           .put(TemplateName.GCSTOMONGO, (args) -> new GCStoMongo())
+          .put(TemplateName.GCSDELTALAKETOICEBERG, GCSDeltalakeToIceberg::of)
           .put(TemplateName.BIGQUERYTOGCS, (args) -> new BigQueryToGCS())
           .put(TemplateName.S3TOBIGQUERY, (args) -> new S3ToBigQuery())
           .put(TemplateName.SPANNERTOGCS, SpannerToGCS::of)
