@@ -168,25 +168,25 @@ steps:
               --templateProperty hivetobq.temp.gcs.bucket="gs://dataproc-templates_cloudbuild/integration-templates_cloudbuild/ui-testing/hivetobigquery/" \
               --templateProperty hivetobq.write.mode="Overwrite"
 
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      waitFor: ['-']
-#      id: hive-to-gcs
-#      entrypoint: bash
-#      args:
-#        - -c
-#        - |
-#          JAR_PATH=$(cat /workspace/jar_path.txt)
-#          gcloud dataproc batches submit spark \
-#              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
-#              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
-#              --subnet="${_SUBNET}" \
-#              --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
-#              -- --template=HIVETOGCS \
-#              --templateProperty hive.input.table="employee" \
-#              --templateProperty hive.input.db="test_db" \
-#              --templateProperty hive.gcs.output.path="gs://dataproc-templates/integration-testing/output/HIVETOGCS" \
-#              --templateProperty hive.gcs.save.mode="overwrite"
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: hive-to-gcs
+      entrypoint: bash
+      args:
+        - -c
+        - |
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              --subnet="${_SUBNET}" \
+              --properties="spark.hadoop.hive.metastore.uris=${_ENV_TEST_HIVE_METASTORE_URIS}" \
+              -- --template=HIVETOGCS \
+              --templateProperty hive.input.table="employees" \
+              --templateProperty hive.input.db="test_db" \
+              --templateProperty hive.gcs.output.path="gs://dataproc-templates_cloudbuild/ui-testing/HIVETOGCS/output/" \
+              --templateProperty hive.gcs.save.mode="overwrite"
 #
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
@@ -205,7 +205,7 @@ steps:
 #              --templateProperty spanner.gcs.input.spanner.id="${_ENV_TEST_SPANNER_ID}" \
 #              --templateProperty spanner.gcs.input.database.id="test-db" \
 #              --templateProperty spanner.gcs.input.table.id="shakespeare" \
-#              --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates/integration-testing/output/SPANNERTOGCS/csv" \
+#              --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates_cloudbuild/ui-testing/SPANNERTOGCS/csv" \
 #              --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
 #              --templateProperty spanner.gcs.output.gcs.format="csv"
 #

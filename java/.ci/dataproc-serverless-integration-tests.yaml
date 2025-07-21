@@ -13,8 +13,8 @@
 # the License.
 
 substitutions:
-  _GCP_PROJECT: 'dataproc-templates' # Default to project running the build
-  _REGION: 'us-central1' # Specify your Dataproc region
+  _GCP_PROJECT: 'dataproc-templates'
+  _REGION: 'us-central1'
   _CLUSTER: 'your-dataproc-cluster-name' # Specify your Dataproc cluster
   _JOB_TYPE: 'DEFAULT' # Set to 'CLUSTER' to enable cluster creation logic
   _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
@@ -243,7 +243,6 @@ steps:
       - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-      # TEST_JDBC_URL will be injected by secretEnv
     script: |
       #!/usr/bin/env bash
       echo "Running GCS TO JDBC"
