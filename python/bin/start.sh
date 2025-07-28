@@ -82,7 +82,7 @@ fi
 if [ -z "${JOB_TYPE}" ]; then
   JOB_TYPE=SERVERLESS
 fi
-if [ -z "${SERVICE_ACCOUNT_NAME}" ]; then
+if [ -n "${SERVICE_ACCOUNT_NAME}" ]; then
   OPT_SERVICE_ACCOUNT_NAME="--service-account=${SERVICE_ACCOUNT_NAME}"
 fi
 

@@ -225,8 +225,8 @@ It also requires [DeltaIO dependencies](https://docs.delta.io/latest/releases.ht
 
 
 ## Arguments
-* `gcs.bigquery.input.location`: Cloud Storage location of the input files (format: `gs://<bucket>/...`)
-* `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
+* `gcs.bigtable.input.location`: Cloud Storage location of the input files (format: `gs://<bucket>/...`)
+* `gcs.bigtable.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
 * `spark.bigtable.project.id`: GCP project where BigTable instance is running
 * `spark.bigtable.instance.id`: BigTable instance id
 * `gcs.bigtable.catalog.json`: BigTable catalog json file GCS path
