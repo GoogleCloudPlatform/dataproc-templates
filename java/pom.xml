@@ -77,12 +77,10 @@
     <shade.skip>false</shade.skip>
     <spanner.jdbc.version>2.14.0</spanner.jdbc.version>
     <google.cloud.pubsub.version>1.132.0</google.cloud.pubsub.version>
-    <google.cloud.pubsublite.version>1.14.0</google.cloud.pubsublite.version>
     <google.cloud.bigtable.version>2.54.0</google.cloud.bigtable.version>
     <google.oauth.client.version>1.36.0</google.oauth.client.version>
     <google.api.client.version>2.7.0</google.api.client.version>
     <spark.bigquery.connector.version>0.36.4</spark.bigquery.connector.version>
-    <pubsublite.spark.sql.streaming.version>1.0.0</pubsublite.spark.sql.streaming.version>
     <spark.bigtable.connector.version>0.6.0</spark.bigtable.connector.version>
     <spark.streaming.pubsub.version>2.4.0</spark.streaming.pubsub.version>
 
@@ -335,11 +333,6 @@
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
-      <artifactId>google-cloud-pubsublite</artifactId>
-      <version>${google.cloud.pubsublite.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.cloud</groupId>
       <artifactId>google-cloud-storage</artifactId>
     </dependency>
     <dependency>
@@ -357,11 +350,6 @@
       <artifactId>spark-bigquery_${scala.binary.version}</artifactId>
       <version>${spark.bigquery.connector.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.cloud</groupId>
-      <artifactId>pubsublite-spark-sql-streaming</artifactId>
-      <version>${pubsublite.spark.sql.streaming.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.cloud</groupId>
