@@ -173,41 +173,6 @@ You can replace the ```casscon``` with your catalog name if it is passed. This i
 
 Make sure that either ```cassandratobq.input.query``` or both ```cassandratobq.input.keyspace``` and ```cassandratobq.input.table``` is provided. Setting or not setting all three properties at the same time will throw an error.
 
-
-## Executing Redshift to Cloud Storage template
-
-General Execution:
-
-```
-export GCP_PROJECT=<gcp-project-id> 
-export REGION=<region>  
-export SUBNET=<subnet>   
-export GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> 
-export JARS=gs://<cloud-storage-bucket-name>/spark-redshift_<version>.jar,gs://<cloud-storage-bucket-name>/redshift_jdbc_<version>.jar,gs://<cloud-storage-bucket-name>/minimal_json<version>.jar
-
-bin/start.sh \
--- --template REDSHIFTTOGCS \
---templateProperty project.id=<gcp-project-id> \
---templateProperty redshift.aws.input.url=<jdbc:redshift://host-name:port-number/> \
---templateProperty redshift.aws.input.table=<Redshift-table-name> \
---templateProperty redshift.aws.input.temp.dir=<AWS-temp-directory> \
---templateProperty redshift.aws.input.iam.role=<Redshift-S3-IAM-role> \
---templateProperty redshift.aws.input.access.key=<Access-key> \
---templateProperty redshift.aws.input.secret.key=<Secret-key> \
---templateProperty redshift.gcs.output.file.format=<Output-File-Format> \
---templateProperty redshift.gcs.output.file.location=<Output-GCS-location> \
---templateProperty redshift.gcs.output.mode=<Output-GCS-Save-mode>
-```
-
-There are two optional properties as well with "Redshift to Cloud Storage" Template. Please find below the details :-
-
-```
---templateProperty redshift.gcs.temp.table='temporary_view_name' 
---templateProperty redshift.gcs.temp.query='select * from global_temp.temporary_view_name'
-```
-These properties are responsible for applying some spark sql transformations while loading data into Cloud Storage.
-The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
-
 ## Executing Mongo to Cloud Storage template
 
 Template for exporting a MongoDB Collection to files in Google Cloud Storage. It supports writing JSON, CSV, Parquet and Avro formats.
