@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v2.0.0-beta...v2.1.0-beta) (2025-08-01)
+
+
+### Features
+
+* Deltalake to iceberg transfer ([#1058](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1058)) ([887b07d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/887b07d0307adec58b8759b9de94d3fcc579febd))
+
+
+### Bug Fixes
+
+* python start.sh and typo ([#1064](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1064)) ([541c270](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/541c2709867608ec7b7df0d496805f8501265274))
+* remove deprecated templates ([#1066](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1066)) ([c49046a](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c49046ad069bbf1e634f2026d1161358aff11a97))
+
 ## [2.0.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.2-beta...v2.0.0-beta) (2025-06-23)
 
 
