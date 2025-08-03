@@ -80,12 +80,27 @@ class GCSToJDBCTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument(
+            f'--{constants.GCS_JDBC_OUTPUT_URL}',
+            dest=constants.GCS_JDBC_OUTPUT_URL,
+            required=False,
+            default="",
+            help='JDBC input URL'
+        )
+        group.add_argument(
+            f'--{constants.GCS_JDBC_OUTPUT_URL_SECRET}',
+            dest=constants.GCS_JDBC_OUTPUT_URL_SECRET,
+            required=False,
+            default="",
+            help='JDBC output URL secret name'
+        )'''
         parser.add_argument(
             f'--{constants.GCS_JDBC_OUTPUT_URL}',
             dest=constants.GCS_JDBC_OUTPUT_URL,
             required=True,
             help='JDBC output URL'
-        )
+        )'''
         parser.add_argument(
             f'--{constants.GCS_JDBC_OUTPUT_DRIVER}',
             dest=constants.GCS_JDBC_OUTPUT_DRIVER,
@@ -115,9 +130,16 @@ class GCSToJDBCTemplate(BaseTemplate):
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
+
+        #check if secret is passed or the connection string in URL
+        #check if secret is passed or the connection string in the agruments
+        if str(args[constants.GCS_JDBC_OUTPUT_URL])=="":
+            output_jdbc_url: str = secret_manager.access_secret_version(args[constants.GCS_JDBC_OUTPUT_URL_SECRET])
+        else:
+            output_jdbc_url: str = args[constants.GCS_JDBC_OUTPUT_URL]
+
         input_location: str = args[constants.GCS_JDBC_INPUT_LOCATION]
         input_format: str = args[constants.GCS_JDBC_INPUT_FORMAT]
-        jdbc_url: str = args[constants.GCS_JDBC_OUTPUT_URL]
         jdbc_table: str = args[constants.GCS_JDBC_OUTPUT_TABLE]
         output_mode: str = args[constants.GCS_JDBC_OUTPUT_MODE]
         output_driver: str = args[constants.GCS_JDBC_OUTPUT_DRIVER]
@@ -141,7 +163,7 @@ class GCSToJDBCTemplate(BaseTemplate):
         # TODO Convert this call to a function in dataproc_templates.util.dataframe_writer_wrappers
         input_data.write \
             .format(constants.FORMAT_JDBC) \
-            .option(constants.JDBC_URL, jdbc_url) \
+            .option(constants.JDBC_URL, output_jdbc_url) \
             .option(constants.JDBC_TABLE, jdbc_table) \
             .option(constants.JDBC_DRIVER, output_driver) \
             .option(constants.JDBC_BATCH_SIZE, batch_size) \
