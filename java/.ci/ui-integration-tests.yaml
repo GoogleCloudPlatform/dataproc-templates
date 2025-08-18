@@ -322,7 +322,7 @@ steps:
               --templateProperty "jdbctospanner.sql=select * from test.employee" \
               --templateProperty jdbctospanner.output.instance="${_ENV_TEST_SPANNER_ID}" \
               --templateProperty jdbctospanner.output.database="spark-ci-db" \
-              --templateProperty jdbctospanner.output.table="employee-ui-spanner" \
+              --templateProperty jdbctospanner.output.table="ui_employee_output" \
               --templateProperty jdbctospanner.output.saveMode="Overwrite" \
               --templateProperty jdbctospanner.output.primaryKey="empno"
 
