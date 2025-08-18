@@ -13,4 +13,3 @@
 # limitations under the License.
 
 from .gcs_to_bigquery import GCSToBigQueryTemplate
-from .text_to_bigquery import TextToBigQueryTemplate

@@ -23,7 +23,6 @@ import com.google.cloud.dataproc.templates.databases.CassandraToBQ;
 import com.google.cloud.dataproc.templates.databases.CassandraToGCS;
 import com.google.cloud.dataproc.templates.databases.MongoToBQ;
 import com.google.cloud.dataproc.templates.databases.MongoToGCS;
-import com.google.cloud.dataproc.templates.databases.RedshiftToGCS;
 import com.google.cloud.dataproc.templates.databases.SpannerToGCS;
 import com.google.cloud.dataproc.templates.dataplex.DataplexGCStoBQ;
 import com.google.cloud.dataproc.templates.gcs.*;
@@ -43,7 +42,6 @@ import com.google.cloud.dataproc.templates.kafka.KafkaToPubSub;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBQ;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToBigTable;
 import com.google.cloud.dataproc.templates.pubsub.PubSubToGCS;
-import com.google.cloud.dataproc.templates.pubsublite.PubSubLiteToBigTable;
 import com.google.cloud.dataproc.templates.s3.S3ToBigQuery;
 import com.google.cloud.dataproc.templates.snowflake.SnowflakeToGCS;
 import com.google.cloud.dataproc.templates.util.PropertyUtil;
@@ -79,9 +77,7 @@ public class DataProcTemplate {
           .put(TemplateName.HIVETOBIGQUERY, (args) -> new HiveToBigQuery())
           .put(TemplateName.PUBSUBTOBQ, PubSubToBQ::of)
           .put(TemplateName.PUBSUBTOBIGTABLE, PubSubToBigTable::of)
-          .put(TemplateName.PUBSUBLITETOBIGTABLE, (args) -> new PubSubLiteToBigTable())
           .put(TemplateName.PUBSUBTOGCS, (PubSubToGCS::of))
-          .put(TemplateName.REDSHIFTTOGCS, RedshiftToGCS::of)
           .put(TemplateName.GCSTOBIGQUERY, (args) -> new GCStoBigquery())
           .put(TemplateName.GCSTOBIGTABLE, GCStoBigTable::of)
           .put(TemplateName.GCSTOGCS, (args) -> new GCStoGCS())
@@ -106,7 +102,6 @@ public class DataProcTemplate {
           .put(TemplateName.DATAPLEXGCSTOBQ, DataplexGCStoBQ::of)
           .put(TemplateName.SNOWFLAKETOGCS, SnowflakeToGCS::of)
           .put(TemplateName.JDBCTOJDBC, JDBCToJDBC::of)
-          .put(TemplateName.TEXTTOBIGQUERY, (args) -> new TextToBigquery())
           .put(TemplateName.KAFKATOBQDSTREAM, (args) -> new KafkaToBQDstream())
           .put(TemplateName.KAFKATOGCSDSTREAM, (args) -> new KafkaToGCSDstream())
           .put(TemplateName.MONGOTOBQ, MongoToBQ::of)
