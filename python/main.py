@@ -32,22 +32,18 @@ from dataproc_templates.bigquery.bigquery_to_gcs import BigQueryToGCSTemplate
 from dataproc_templates.bigquery.bigquery_to_memorystore import BigQueryToMemorystoreTemplate
 from dataproc_templates.hive.hive_to_bigquery import HiveToBigQueryTemplate
 from dataproc_templates.hive.hive_to_gcs import HiveToGCSTemplate
-from dataproc_templates.gcs.text_to_bigquery import TextToBigQueryTemplate
 from dataproc_templates.hbase.hbase_to_gcs import HbaseToGCSTemplate
 from dataproc_templates.jdbc.jdbc_to_jdbc import JDBCToJDBCTemplate
 from dataproc_templates.jdbc.jdbc_to_gcs import JDBCToGCSTemplate
 from dataproc_templates.jdbc.jdbc_to_bigquery import JDBCToBigQueryTemplate
 from dataproc_templates.snowflake.snowflake_to_gcs import SnowflakeToGCSTemplate
-from dataproc_templates.redshift.redshift_to_gcs import RedshiftToGCSTemplate
 from dataproc_templates.cassandra.cassandra_to_bigquery import CassandraToBQTemplate
 from dataproc_templates.hive.util.hive_ddl_extractor import HiveDDLExtractorTemplate
 from dataproc_templates.kafka.kafka_to_gcs import KafkaToGCSTemplate
 from dataproc_templates.kafka.kafka_to_bq import KafkaToBigQueryTemplate
 from dataproc_templates.s3.s3_to_bigquery import S3ToBigQueryTemplate
 from dataproc_templates.cassandra.cassandra_to_gcs import CassandraToGCSTemplate
-from dataproc_templates.pubsublite.pubsublite_to_gcs import PubSubLiteToGCSTemplate
 from dataproc_templates.azure.azure_blob_storage_to_bigquery import AzureBlobStorageToBigQueryTemplate
-from dataproc_templates.pubsublite.pubsublite_to_bigtable import PubSubLiteToBigtableTemplate
 from dataproc_templates.elasticsearch.elasticsearch_to_gcs import ElasticsearchToGCSTemplate
 from dataproc_templates.elasticsearch.elasticsearch_to_bq import ElasticsearchToBQTemplate
 from dataproc_templates.elasticsearch.elasticsearch_to_bigtable import ElasticsearchToBigTableTemplate
@@ -64,7 +60,6 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.BIGQUERYTOMEMORYSTORE: BigQueryToMemorystoreTemplate,
     TemplateName.HIVETOBIGQUERY: HiveToBigQueryTemplate,
     TemplateName.HIVETOGCS: HiveToGCSTemplate,
-    TemplateName.TEXTTOBIGQUERY: TextToBigQueryTemplate,
     TemplateName.GCSTOJDBC: GCSToJDBCTemplate,
     TemplateName.GCSTOMONGO: GCSToMONGOTemplate,
     TemplateName.HBASETOGCS: HbaseToGCSTemplate,
@@ -74,7 +69,6 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.MONGOTOGCS: MongoToGCSTemplate,
     TemplateName.MONGOTOBIGQUERY: MongoToBigQueryTemplate,
     TemplateName.SNOWFLAKETOGCS: SnowflakeToGCSTemplate,
-    TemplateName.REDSHIFTTOGCS: RedshiftToGCSTemplate,
     TemplateName.CASSANDRATOBQ: CassandraToBQTemplate,
     TemplateName.AZUREBLOBSTORAGETOBQ: AzureBlobStorageToBigQueryTemplate,
     TemplateName.CASSANDRATOGCS: CassandraToGCSTemplate,
@@ -82,8 +76,6 @@ TEMPLATE_IMPLS: Dict[TemplateName, Type[BaseTemplate]] = {
     TemplateName.KAFKATOGCS: KafkaToGCSTemplate,
     TemplateName.KAFKATOBQ: KafkaToBigQueryTemplate,
     TemplateName.S3TOBIGQUERY: S3ToBigQueryTemplate,
-    TemplateName.PUBSUBLITETOGCS: PubSubLiteToGCSTemplate,
-    TemplateName.PUBSUBLITETOBIGTABLE: PubSubLiteToBigtableTemplate,
     TemplateName.ELASTICSEARCHTOGCS: ElasticsearchToGCSTemplate,
     TemplateName.ELASTICSEARCHTOBQ: ElasticsearchToBQTemplate,
     TemplateName.ELASTICSEARCHTOBIGTABLE: ElasticsearchToBigTableTemplate

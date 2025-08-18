@@ -15,7 +15,7 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md) f
 * [GCSToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#5-gcs-to-gcs) (blogpost [link](https://medium.com/@ankuljain/migrate-gcs-to-gcs-using-dataproc-serverless-3b7b0f6ad6b9))
 * [GCSToJDBC](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#4-gcs-to-jdbc) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-databases-via-jdbc-using-dataproc-serverless-7ed75eab93ba))
 * [GCSToSpanner](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#3-gcs-to-spanner) (blogpost [link](https://medium.com/google-cloud/fast-export-large-database-tables-using-gcp-serverless-dataproc-spark-bb32b1260268))
-* [GCSToMongo](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#6-gcs-to-mongo) (blogpost [link] (https://medium.com/google-cloud/importing-data-from-gcs-to-mongodb-using-java-dataproc-serverless-6ff5c8d6f6d5))
+* [GCSToMongo](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#6-gcs-to-mongo) (blogpost [link](https://medium.com/google-cloud/importing-data-from-gcs-to-mongodb-using-java-dataproc-serverless-6ff5c8d6f6d5))
 * [GeneralTemplate](/java/src/main/java/com/google/cloud/dataproc/templates/general)
 * [HBaseToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/hbase#1-hbase-to-gcs) (blogpost [link](https://medium.com/google-cloud/using-dataproc-serverless-to-migrate-your-hbase-data-to-gcs-bf1ccf4ab945))
 * [HiveToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/hive#1-hive-to-bigquery) (blogpost [link](https://medium.com/google-cloud/using-dataproc-serverless-to-migrate-your-hive-data-to-bigquery-8e2d4fcd1c24))
@@ -33,20 +33,17 @@ Please refer to the [Dataproc Templates (Java - Spark) README](java/README.md) f
 * [MongoToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-mongo-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/migrating-data-from-mongo-to-gcs-using-java-and-dataproc-serverless-template-390500481804))
 * [PubSubToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#1-pubsub-to-bigquery) (blogpost [link](https://medium.com/google-cloud/from-pub-sub-to-bigquery-streaming-data-in-near-real-time-b550aeff595d))
 * [PubSubToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub#1-pubsub-to-bigtable) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-bigtable-using-dataproc-serverless-3142c1bcc22a))
-* [PubSubLiteToBigTable](/java/src/main/java/com/google/cloud/dataproc/templates/pubsublite#1-pubsublite-to-bigtable) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-lite-to-bigtable-using-dataproc-serverless-2c8816f40581)) **Deprecated and will be removed in Q1 2025**
 * [PubSubToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/pubsub/README.md#2-pubsub-to-gcs) (blogpost [link](https://medium.com/google-cloud/stream-data-from-pub-sub-to-cloud-storage-using-dataproc-serverless-7a1e4823926e))
-* [RedshiftToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-redshift-to-gcs-template) **Deprecated and will be removed in Q1 2025**
 * [S3ToBigQuery](/java/src/main/java/com/google/cloud/dataproc/templates/s3#1-s3-to-bigquery) (blogpost [link](https://medium.com/google-cloud/export-data-from-aws-s3-to-bigquery-using-dataproc-serverless-6dc7a9952fc4))
 * [SnowflakeToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/snowflake#1-snowflake-to-gcs) (blogpost [link](https://medium.com/google-cloud/export-snowflake-query-results-to-gcs-using-dataproc-serverless-3d68f5a01ca9))
 * [SpannerToGCS](/java/src/main/java/com/google/cloud/dataproc/templates/databases#executing-spanner-to-gcs-template) (blogpost [link](https://medium.com/google-cloud/cloud-spanner-export-query-results-using-dataproc-serverless-6f2f65b583a4))
-* [TextToBigquery](/java/src/main/java/com/google/cloud/dataproc/templates/gcs#7-text-to-bigquery) **Deprecated and will be removed in Q1 2025**
 * [WordCount](/java/src/main/java/com/google/cloud/dataproc/templates/word/WordCount.java)
 
 ...
 
 ## Requirements
 
-* Java 8
+* Java 11
 * Maven 3
 
 ## Running Templates
