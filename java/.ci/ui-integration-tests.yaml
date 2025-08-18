@@ -326,51 +326,45 @@ steps:
               --templateProperty jdbctospanner.output.saveMode="Overwrite" \
               --templateProperty jdbctospanner.output.primaryKey="empno"
 
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      waitFor: ['-']
-#      id: ui-jdbc-to-gcs-csv
-#      entrypoint: bash
-#      secretEnv: [ 'TEST_JDBC_URL' ]
-#      args:
-#        - -c
-#        - |
-#          JAR_PATH=$(cat /workspace/jar_path.txt)
-#          gcloud dataproc batches submit spark \
-#              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
-#              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
-#              --subnet="${_SUBNET}" \
-#              -- --template=JDBCTOGCS \
-#              --templateProperty project.id="${_GCP_PROJECT}" \
-#              --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
-#              --templateProperty jdbctogcs.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
-#              --templateProperty jdbctogcs.output.format="csv" \
-#              --templateProperty jdbctogcs.output.location="gs://dataproc-templates/integration-testing/output/JDBCTOGCS/csv" \
-#              --templateProperty "jdbctogcs.sql=select * from test.employee" \
-#              --templateProperty jdbctogcs.write.mode="overwrite"
-#
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      waitFor: ['-']
-#      id: ui-jdbc-to-gcs-avro
-#      entrypoint: bash
-#      secretEnv: [ 'TEST_JDBC_URL' ]
-#      args:
-#        - -c
-#        - |
-#          JAR_PATH=$(cat /workspace/jar_path.txt)
-#          gcloud dataproc batches submit spark \
-#              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
-#              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/connector/spark-avro.jar" \
-#              --subnet="${_SUBNET}" \
-#              -- --template=JDBCTOGCS \
-#              --templateProperty project.id="${_GCP_PROJECT}" \
-#              --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
-#              --templateProperty jdbctogcs.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
-#              --templateProperty jdbctogcs.output.format="avro" \
-#              --templateProperty jdbctogcs.output.location="gs://dataproc-templates/integration-testing/output/JDBCTOGCS/avro" \
-#              --templateProperty "jdbctogcs.sql=select * from test.employee" \
-#              --templateProperty jdbctogcs.write.mode="overwrite"
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-jdbc-to-gcs-csv
+      entrypoint: bash
+      secretEnv: [ 'TEST_JDBC_URL' ]
+      script: |
+        gcloud dataproc batches submit spark \
+            --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+            --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
+            --jars="${_JAR_PATH},gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar" \
+            --subnet="${_SUBNET}" \
+            -- --template=JDBCTOGCS \
+            --templateProperty project.id="${_GCP_PROJECT}" \
+            --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
+            --templateProperty jdbctogcs.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+            --templateProperty jdbctogcs.output.format="csv" \
+            --templateProperty jdbctogcs.output.location="gs://dataproc-templates_cloudbuild/ui-testing/JDBCTOGCS/output/csv/" \
+            --templateProperty "jdbctogcs.sql=select * from test.employee" \
+            --templateProperty jdbctogcs.write.mode="overwrite"
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-jdbc-to-gcs-avro
+      entrypoint: bash
+      secretEnv: [ 'TEST_JDBC_URL' ]
+      script: |
+        gcloud dataproc batches submit spark \
+            --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+            --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
+            --jars="${_JAR_PATH},gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar,gs://dataproc-templates/jars/mysql-connector-java.jar,file:///usr/lib/spark/connector/spark-avro.jar" \
+            --subnet="${_SUBNET}" \
+            -- --template=JDBCTOGCS \
+            --templateProperty project.id="${_GCP_PROJECT}" \
+            --templateProperty jdbctogcs.jdbc.url="${TEST_JDBC_URL}" \
+            --templateProperty jdbctogcs.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+            --templateProperty jdbctogcs.output.format="avro" \
+            --templateProperty jdbctogcs.output.location="gs://dataproc-templates_cloudbuild/ui-testing/JDBCTOGCS/output/avro/" \
+            --templateProperty "jdbctogcs.sql=select * from test.employee" \
+            --templateProperty jdbctogcs.write.mode="overwrite"
 
 
 options:
