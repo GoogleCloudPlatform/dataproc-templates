@@ -29,7 +29,7 @@ availableSecrets:
 steps:
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: spanner-to-gcs
+      id: ui-spanner-to-gcs
       entrypoint: bash
       args:
         - -c
@@ -49,7 +49,7 @@ steps:
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: gcs-to-bigquery-avro
+      id: ui-gcs-to-bigquery-avro
       entrypoint: bash
       args:
         - -c
@@ -70,7 +70,7 @@ steps:
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: gcs-to-spanner
+      id: ui-gcs-to-spanner
       entrypoint: bash
       args:
         - -c
@@ -92,7 +92,7 @@ steps:
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: gcs-to-gcs-avro-to-csv
+      id: ui-gcs-to-gcs-avro-to-csv
       entrypoint: bash
       args:
         - -c
@@ -113,7 +113,7 @@ steps:
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: gcs-to-gcs-csv-to-avro
+      id: ui-gcs-to-gcs-csv-to-avro
       entrypoint: bash
       args:
         - -c
@@ -132,7 +132,7 @@ steps:
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: gcs-to-jdbc
+      id: ui-gcs-to-jdbc
       secretEnv: ['TEST_JDBC_URL']
       script: |
         #!/usr/bin/env bash
@@ -152,7 +152,7 @@ steps:
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: hive-to-bigquery
+      id: ui-hive-to-bigquery
       entrypoint: bash
       args:
         - -c
@@ -171,7 +171,7 @@ steps:
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: hive-to-gcs
+      id: ui-hive-to-gcs
       entrypoint: bash
       args:
         - -c
@@ -190,7 +190,7 @@ steps:
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: spanner-to-gcs-csv
+      id: ui-spanner-to-gcs-csv
       entrypoint: bash
       args:
         - -c
@@ -210,7 +210,7 @@ steps:
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: spanner-to-gcs-avro
+      id: ui-spanner-to-gcs-avro
       entrypoint: bash
       args:
         - -c
@@ -231,12 +231,11 @@ steps:
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
-      id: gcs-to-bigquery-csv
+      id: ui-gcs-to-bigquery-csv
       entrypoint: bash
       args:
         - -c
         - |
-          JAR_PATH=$(cat /workspace/jar_path.txt)
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
               --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
@@ -249,33 +248,31 @@ steps:
               --templateProperty gcs.bigquery.output.table="ui_gcs_bq_cities" \
               --templateProperty gcs.bigquery.output.mode="Overwrite" \
               --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates_cloudbuild"
-#
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-jdbc-to-jdbc
+      entrypoint: bash
+      secretEnv: [ 'TEST_JDBC_URL' ]
+      script: |
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
+              --jars="${_JAR_PATH},gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar" \
+              --subnet="${_SUBNET}" \
+              -- --template JDBCTOJDBC \
+              --templateProperty project.id="${_GCP_PROJECT}" \
+              --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
+              --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+              --templateProperty jdbctojdbc.input.table="employee" \
+              --templateProperty jdbctojdbc.output.url="${TEST_JDBC_URL}" \
+              --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+              --templateProperty jdbctojdbc.output.table="employee_ui_output" \
+              --templateProperty jdbctojdbc.output.mode="Overwrite"
+
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
-#      id: jdbc-to-jdbc
-#      entrypoint: bash
-#      secretEnv: [ 'TEST_JDBC_URL' ]
-#      script: |
-#          #!/usr/bin/env bash
-#          JAR_PATH=$(cat /workspace/jar_path.txt)
-#          gcloud dataproc batches submit spark \
-#              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
-#              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
-#              --subnet="${_SUBNET}" \
-#              -- --template JDBCTOJDBC \
-#              --templateProperty project.id="${_GCP_PROJECT}" \
-#              --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
-#              --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
-#              --templateProperty jdbctojdbc.input.table="employee" \
-#              --templateProperty jdbctojdbc.output.url="${TEST_JDBC_URL}" \
-#              --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
-#              --templateProperty jdbctojdbc.output.table="employee_output" \
-#              --templateProperty jdbctojdbc.output.mode="Overwrite"
-#
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      waitFor: ['-']
-#      id: pubsub-to-gcs
+#      id: ui-pubsub-to-gcs
 #      entrypoint: bash
 #      args:
 #        - -c
@@ -294,7 +291,7 @@ steps:
 #
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
-#      id: jdbc-to-bq
+#      id: ui-jdbc-to-bq
 #      entrypoint: bash
 #      secretEnv: [ 'TEST_JDBC_URL' ]
 #      args:
@@ -316,7 +313,7 @@ steps:
 #
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
-#      id: jdbc-to-spanner
+#      id: ui-jdbc-to-spanner
 #      entrypoint: bash
 #      secretEnv: [ 'TEST_JDBC_URL' ]
 #      args:
@@ -341,7 +338,7 @@ steps:
 #
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
-#      id: jdbc-to-gcs-csv
+#      id: ui-jdbc-to-gcs-csv
 #      entrypoint: bash
 #      secretEnv: [ 'TEST_JDBC_URL' ]
 #      args:
@@ -364,7 +361,7 @@ steps:
 #
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
-#      id: jdbc-to-gcs-avro
+#      id: ui-jdbc-to-gcs-avro
 #      entrypoint: bash
 #      secretEnv: [ 'TEST_JDBC_URL' ]
 #      args:
