@@ -276,7 +276,7 @@ steps:
       args:
         - -c
         - |
-          gcloud pubsub topics publish pubsub-to-gcs --message='{"Template": "PUBSUBTOGCS", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT
+          gcloud pubsub topics publish pubsub-to-gcs --message='{"Template": "PUBSUBTOGCS", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$_GCP_PROJECT
 
           gcloud dataproc batches submit spark \
               --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
