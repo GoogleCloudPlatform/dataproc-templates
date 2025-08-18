@@ -254,21 +254,23 @@ steps:
       id: ui-jdbc-to-jdbc
       entrypoint: bash
       secretEnv: [ 'TEST_JDBC_URL' ]
-      script: |
-          gcloud dataproc batches submit spark \
-              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-              --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
-              --jars="${_JAR_PATH},gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar" \
-              --subnet="${_SUBNET}" \
-              -- --template JDBCTOJDBC \
-              --templateProperty project.id="${_GCP_PROJECT}" \
-              --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
-              --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
-              --templateProperty jdbctojdbc.input.table="employee" \
-              --templateProperty jdbctojdbc.output.url="${TEST_JDBC_URL}" \
-              --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
-              --templateProperty jdbctojdbc.output.table="employee_ui_output" \
-              --templateProperty jdbctojdbc.output.mode="Overwrite"
+      args: |
+        - -c
+        - |
+        gcloud dataproc batches submit spark \
+            --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+            --project="${_GCP_PROJECT}" --region="${_REGION}" --version="1.2" --service-account=${_SERVICE_ACCOUNT} \
+            --jars="${_JAR_PATH},gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar" \
+            --subnet="${_SUBNET}" \
+            -- --template JDBCTOJDBC \
+            --templateProperty project.id="${_GCP_PROJECT}" \
+            --templateProperty jdbctojdbc.input.url="${TEST_JDBC_URL}" \
+            --templateProperty jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+            --templateProperty jdbctojdbc.input.table="employee" \
+            --templateProperty jdbctojdbc.output.url="${TEST_JDBC_URL}" \
+            --templateProperty jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+            --templateProperty jdbctojdbc.output.table="employee_ui_output" \
+            --templateProperty jdbctojdbc.output.mode="Overwrite"
 
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
