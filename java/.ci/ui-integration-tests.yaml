@@ -329,7 +329,6 @@ steps:
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
       id: ui-jdbc-to-gcs-csv
-      entrypoint: bash
       secretEnv: [ 'TEST_JDBC_URL' ]
       script: |
         gcloud dataproc batches submit spark \
@@ -349,7 +348,6 @@ steps:
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
       id: ui-jdbc-to-gcs-avro
-      entrypoint: bash
       secretEnv: [ 'TEST_JDBC_URL' ]
       script: |
         gcloud dataproc batches submit spark \
