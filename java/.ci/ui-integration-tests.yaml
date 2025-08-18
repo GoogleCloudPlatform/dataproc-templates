@@ -272,10 +272,7 @@ steps:
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
       id: ui-pubsub-to-gcs
-      entrypoint: bash
-      args:
-        - -c
-        - |
+      script: |
           gcloud pubsub topics publish pubsub-to-gcs --message='{"Template": "PUBSUBTOGCS", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$_GCP_PROJECT
 
           gcloud dataproc batches submit spark \
@@ -307,31 +304,27 @@ steps:
               --templateProperty jdbctobq.temp.gcs.bucket="dataproc-templates_cloudbuild/ui-testing/JDBCTOBIGQUERY/tmp/" \
               --templateProperty "jdbctobq.sql=select * from test.employee"
 
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      waitFor: ['-']
-#      id: ui-jdbc-to-spanner
-#      entrypoint: bash
-#      secretEnv: [ 'TEST_JDBC_URL' ]
-#      args:
-#        - -c
-#        - |
-#          JAR_PATH=$(cat /workspace/jar_path.txt)
-#          gcloud dataproc batches submit spark \
-#              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
-#              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
-#              --subnet="${_SUBNET}" \
-#              -- --template=JDBCTOSPANNER \
-#              --templateProperty project.id="${_GCP_PROJECT}" \
-#              --templateProperty jdbctospanner.jdbc.url="${TEST_JDBC_URL}" \
-#              --templateProperty jdbctospanner.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
-#              --templateProperty "jdbctospanner.sql=select * from test.employee" \
-#              --templateProperty jdbctospanner.output.instance="${_ENV_TEST_SPANNER_ID}" \
-#              --templateProperty jdbctospanner.output.database="spark-ci-db" \
-#              --templateProperty jdbctospanner.output.table="employee" \
-#              --templateProperty jdbctospanner.output.saveMode="Overwrite" \
-#              --templateProperty jdbctospanner.output.primaryKey="empno"
-#
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-jdbc-to-spanner
+      secretEnv: [ 'TEST_JDBC_URL' ]
+      script: |
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --jars="${_JAR_PATH},gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar" \
+              --subnet="${_SUBNET}" \
+              -- --template=JDBCTOSPANNER \
+              --templateProperty project.id="${_GCP_PROJECT}" \
+              --templateProperty jdbctospanner.jdbc.url="${TEST_JDBC_URL}" \
+              --templateProperty jdbctospanner.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+              --templateProperty "jdbctospanner.sql=select * from test.employee" \
+              --templateProperty jdbctospanner.output.instance="${_ENV_TEST_SPANNER_ID}" \
+              --templateProperty jdbctospanner.output.database="spark-ci-db" \
+              --templateProperty jdbctospanner.output.table="employee-ui-spanner" \
+              --templateProperty jdbctospanner.output.saveMode="Overwrite" \
+              --templateProperty jdbctospanner.output.primaryKey="empno"
+
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
 #      id: ui-jdbc-to-gcs-csv
