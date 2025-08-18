@@ -932,7 +932,9 @@ steps:
         --templateProperty iceberg.gcs.output.mode="overwrite"
     waitFor: ['build-and-upload']
 
-
+##############################################
+############ UI Integration Tests ############
+##############################################
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     waitFor: ['build-and-upload']
@@ -982,7 +984,6 @@ steps:
     args:
       - -c
       - |
-        JAR_PATH="$_JAR_PATH"
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
