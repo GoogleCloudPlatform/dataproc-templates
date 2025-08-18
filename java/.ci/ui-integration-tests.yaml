@@ -282,7 +282,7 @@ steps:
             --jars="${_JAR_PATH}" \
             -- --template=PUBSUBTOGCS \
             --templateProperty pubsubtogcs.input.project.id="${_GCP_PROJECT}" \
-            --templateProperty pubsubtogcs.input.subscription=ui-subs-pubsub-to-gcs" \
+            --templateProperty pubsubtogcs.input.subscription="ui-subs-pubsub-to-gcs" \
             --templateProperty pubsubtogcs.gcs.bucket.name="gs://dataproc-templates_cloudbuild/ui-testing/pubsubtogcs/output/" \
             --templateProperty pubsubtogcs.gcs.output.data.format="JSON" \
             --templateProperty pubsubtogcs.batch.size="50"
