@@ -269,47 +269,44 @@ steps:
             --templateProperty jdbctojdbc.output.table="employee_ui_output" \
             --templateProperty jdbctojdbc.output.mode="Overwrite"
 
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      waitFor: ['-']
-#      id: ui-pubsub-to-gcs
-#      entrypoint: bash
-#      args:
-#        - -c
-#        - |
-#          JAR_PATH=$(cat /workspace/jar_path.txt)
-#          gcloud dataproc batches submit spark \
-#              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
-#              --jars="${_JAR_PATH}" \
-#              -- --template=PUBSUBTOGCS \
-#              --templateProperty pubsubtogcs.input.project.id="${_GCP_PROJECT}" \
-#              --templateProperty pubsubtogcs.input.subscription="pubsubtogcsv3-sub" \
-#              --templateProperty pubsubtogcs.gcs.bucket.name="pubsubtogcs_dev" \
-#              --templateProperty pubsubtogcs.gcs.output.data.format="JSON" \
-#              --templateProperty pubsubtogcs.batch.size="50"
-#
-#    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-#      waitFor: ['-']
-#      id: ui-jdbc-to-bq
-#      entrypoint: bash
-#      secretEnv: [ 'TEST_JDBC_URL' ]
-#      args:
-#        - -c
-#        - |
-#          JAR_PATH=$(cat /workspace/jar_path.txt)
-#          gcloud dataproc batches submit spark \
-#              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
-#              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
-#              --jars="${_JAR_PATH},gs://dataproc-templates/jars/mysql-connector-java.jar" \
-#              --subnet="${_SUBNET}" \
-#              -- --template=JDBCTOBIGQUERY \
-#              --templateProperty jdbctobq.bigquery.location="${_GCP_PROJECT}.dataproc_templates.jdbctobq" \
-#              --templateProperty jdbctobq.jdbc.url="${TEST_JDBC_URL}" \
-#              --templateProperty jdbctobq.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
-#              --templateProperty jdbctobq.write.mode="overwrite" \
-#              --templateProperty jdbctobq.temp.gcs.bucket="dataproc-templates/integration-testing/output/JDBCTOBIGQUERY" \
-#              --templateProperty "jdbctobq.sql=select * from test.employee"
-#
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-pubsub-to-gcs
+      entrypoint: bash
+      args:
+        - -c
+        - |
+          gcloud pubsub topics publish pubsub-to-gcs --message='{"Template": "PUBSUBTOGCS", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT
+
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --jars="${_JAR_PATH}" \
+              -- --template=PUBSUBTOGCS \
+              --templateProperty pubsubtogcs.input.project.id="${_GCP_PROJECT}" \
+              --templateProperty pubsubtogcs.input.subscription=ui-subs-pubsub-to-gcs" \
+              --templateProperty pubsubtogcs.gcs.bucket.name="gs://dataproc-templates_cloudbuild/ui-testing/pubsubtogcs/output/" \
+              --templateProperty pubsubtogcs.gcs.output.data.format="JSON" \
+              --templateProperty pubsubtogcs.batch.size="50"
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-jdbc-to-bq
+      secretEnv: [ 'TEST_JDBC_URL' ]
+      script: |
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --jars="${_JAR_PATH},gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar" \
+              --subnet="${_SUBNET}" \
+              -- --template=JDBCTOBIGQUERY \
+              --templateProperty jdbctobq.bigquery.location="${_GCP_PROJECT}.dataproc_templates.jdbctobq" \
+              --templateProperty jdbctobq.jdbc.url="${TEST_JDBC_URL}" \
+              --templateProperty jdbctobq.jdbc.driver.class.name="com.mysql.jdbc.Driver" \
+              --templateProperty jdbctobq.write.mode="overwrite" \
+              --templateProperty jdbctobq.temp.gcs.bucket="dataproc-templates_cloudbuild/ui-testing/JDBCTOBIGQUERY/tmp/" \
+              --templateProperty "jdbctobq.sql=select * from test.employee"
+
 #    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
 #      waitFor: ['-']
 #      id: ui-jdbc-to-spanner
