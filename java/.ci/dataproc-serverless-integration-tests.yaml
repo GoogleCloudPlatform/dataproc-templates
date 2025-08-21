@@ -22,6 +22,7 @@ substitutions:
   _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
   _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
   _JAR_FILE : 'dataproc-templates-1.0-SNAPSHOT.jar'
+  _JAR_PATH : 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}/dataproc-templates-1.0-SNAPSHOT.jar' # For UI Tests
 
   # Other environment variables
   _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
@@ -941,11 +942,11 @@ steps:
     args:
       - -c
       - |
-        echo "JAR PATH:" "${_GCS_STAGING_LOCATION}/$_JAR_FILE"
+        echo "JAR PATH:" "$_JAR_PATH"
         echo gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="$_GCP_PROJECT" --region="$_REGION" \
-            --jars="${_GCS_STAGING_LOCATION}/$_JAR_FILE" \
+            --jars="$_JAR_PATH" \
             -- --template=SPANNERTOGCS \
             --templateProperty project.id="$_GCP_PROJECT" \
             --templateProperty spanner.gcs.input.spanner.id="$_ENV_TEST_SPANNER_ID" \
@@ -958,7 +959,7 @@ steps:
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="$_GCP_PROJECT" --region="$_REGION" \
-            --jars="${_GCS_STAGING_LOCATION}/$_JAR_FILE" \
+            --jars="$_JAR_PATH" \
             -- --template=SPANNERTOGCS \
             --templateProperty project.id="$_GCP_PROJECT" \
             --templateProperty spanner.gcs.input.spanner.id="$_ENV_TEST_SPANNER_ID" \
@@ -968,6 +969,25 @@ steps:
             --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
             --templateProperty spanner.gcs.output.gcs.format="parquet"
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    waitFor: ['build-and-upload']
+    id: ui-spanner-to-gcs
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud dataproc batches submit spark \
+            --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+            --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="$_GCP_PROJECT" --region="$_REGION" \
+            --jars="$_JAR_PATH" \
+            -- --template=SPANNERTOGCS \
+            --templateProperty project.id="$_GCP_PROJECT" \
+            --templateProperty spanner.gcs.input.spanner.id="$_ENV_TEST_SPANNER_ID" \
+            --templateProperty spanner.gcs.input.database.id="spark-ci-db" \
+            --templateProperty "spanner.gcs.input.table.id=(select empno,ename from badges_ui_tests where job='SALESMAN')" \
+            --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates_cloudbuild/ui-testing/SPANNERTOGCS/parquet" \
+            --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
+            --templateProperty spanner.gcs.output.gcs.format="parquet"
 
 options:
   logging: CLOUD_LOGGING_ONLY
