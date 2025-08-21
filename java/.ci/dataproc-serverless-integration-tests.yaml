@@ -943,6 +943,7 @@ steps:
     args:
       - -c
       - |
+        echo "JAR PATH:" "$_JAR_PATH"
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="$_GCP_PROJECT" --region="$_REGION" \
@@ -963,6 +964,7 @@ steps:
     args:
       - -c
       - |
+        echo "JAR PATH:" "$_JAR_PATH"
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
@@ -984,6 +986,7 @@ steps:
     args:
       - -c
       - |
+        echo "JAR PATH:" "$_JAR_PATH"
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
@@ -1005,6 +1008,7 @@ steps:
     args:
       - -c
       - |
+        echo "JAR PATH:" "$_JAR_PATH"
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
