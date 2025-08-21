@@ -21,6 +21,7 @@ substitutions:
   _GCS_STAGING_LOCATION: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}' # Base GCS path for staging
   _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
   _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
+  _JAR_FILE : 'dataproc-templates-1.0-SNAPSHOT.jar'
   _JAR_PATH: '${GCS_STAGING_LOCATION}/$JAR_FILE'
 
   # Other environment variables
@@ -42,15 +43,13 @@ steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: build-and-upload
     env:
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
-      - 'JAR_FILE=dataproc-templates-1.0-SNAPSHOT.jar'
     script: |
       #!/usr/bin/env bash
       apt install maven -y
       cd java
       mvn install spotless:check
-      echo "copying the build into staging location:" ${GCS_STAGING_LOCATION}   
-      gsutil cp target/$JAR_FILE ${GCS_STAGING_LOCATION}/$JAR_FILE
+      echo "copying the build into staging location:" ${_GCS_STAGING_LOCATION}   
+      gsutil cp target/$_JAR_FILE ${_GCS_STAGING_LOCATION}/$_JAR_FILE
       
       cat > /tmp/employeecatalog.json << EOF
         {
