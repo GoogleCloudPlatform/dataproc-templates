@@ -43,12 +43,13 @@ steps:
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: build-and-upload
     env:
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       apt install maven -y
       cd java
-      # mvn install spotless:check
-      # echo "copying the build into staging location:" ${_GCS_STAGING_LOCATION}   
-      # gsutil cp target/$_JAR_FILE ${_GCS_STAGING_LOCATION}/$_JAR_FILE
+      mvn install spotless:check
+      echo "copying the build into staging location:" ${_GCS_STAGING_LOCATION}   
+      gsutil cp target/$_JAR_FILE ${_GCS_STAGING_LOCATION}/$_JAR_FILE
       
       cat > /tmp/employeecatalog.json << EOF
         {
@@ -74,7 +75,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running GCS TO BIGQUERY(avro) job"
       cd java
       bin/start.sh \
@@ -96,7 +98,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running GCS TO BigTable"
       
       cd java
@@ -118,7 +121,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running GCS (avro) TO GCS(csv) job"
       cd java
       bin/start.sh \
@@ -141,7 +145,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running GCS (csv) TO GCS(avro) job"
       cd java
       bin/start.sh \
@@ -162,7 +167,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running GCS TO BIGQUERY(csv) job"
       cd java
       bin/start.sh \
@@ -184,7 +190,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running GCS TO SPANNER GOOGLESQL DIALECT job"
       cd java
       bin/start.sh \
@@ -207,7 +214,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running GCS TO SPANNER Postgres DIALECT job"
       
       gcloud spanner databases execute-sql pgsqltest --instance=$_ENV_TEST_SPANNER_ID --sql='DELETE FROM badges;'
@@ -235,7 +243,8 @@ steps:
       - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running GCS TO JDBC"
       cd java
       
@@ -260,7 +269,8 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running GCS TO Mongo"
       cd java
       bin/start.sh \
@@ -282,7 +292,8 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running Mongo TO Bigquery"
       cd java
       bin/start.sh \
@@ -306,7 +317,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running Cassandra TO GCS"
       cd java
       bin/start.sh \
@@ -329,7 +341,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running Cassandra TO BigQuery"
       cd java
       bin/start.sh \
@@ -351,7 +364,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running SPANNER TO GCS export in CSV"
       cd java
       
@@ -374,7 +388,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running SPANNER TO GCS export in parquet"
       cd java
       bin/start.sh \
@@ -396,7 +411,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running SPANNER Postgresql Interface TO GCS export in parquet"
       cd java
       
@@ -420,7 +436,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running BigQuery TO GCS avro"
       cd java
       bin/start.sh \
@@ -442,7 +459,8 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running JDBC TO BQ job"
       cd java
       bin/start.sh \
@@ -467,7 +485,8 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running JDBC TO JDBC job"
       cd java      
       bin/start.sh \
@@ -492,7 +511,8 @@ steps:
       - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running JDBC TO BQ job"
       cd java
       bin/start.sh \
@@ -515,7 +535,8 @@ steps:
       - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running JDBC TO Spanner job"
       cd java
       bin/start.sh \
@@ -541,7 +562,8 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running JDBC TO Spanner Postgresql job"
       cd java
       gcloud spanner databases execute-sql pgsqltest --instance=${_ENV_TEST_SPANNER_ID} --sql='DELETE FROM pgdialect;'
@@ -570,7 +592,8 @@ steps:
       - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running JDBC TO GCS Avro job"
       cd java
       bin/start.sh \
@@ -594,7 +617,8 @@ steps:
       - 'SKIP_BUILD=true' 
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running JDBC TO GCS Avro job"
       cd java
       bin/start.sh \
@@ -619,7 +643,8 @@ steps:
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
       - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running Hive TO BQ job"
       cd java
       bin/start.sh \
@@ -643,7 +668,8 @@ steps:
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
       - 'DATAPROC_METASTORE_SERVICE=${_ENV_DATAPROC_METASTORE_SERVICE}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running Hive TO GCS job"
       cd java
       bin/start.sh \
@@ -664,7 +690,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running S3 TO BIGQUERY (avro) job"
       cd java
 
@@ -692,7 +719,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running PubSub TO GCS avro"
       gcloud pubsub topics publish pubsub-to-gcs --message='{"Template": "PUBSUBTOGCS", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT
       
@@ -714,7 +742,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       
       echo "Running PubSub TO BigQuery avro"
       gcloud pubsub topics publish pubsub-to-bq --message='{"Template": "PUBSUBTOBQ", "Branch": "$BRANCH_NAME", "Commit": "$SHORT_SHA"}' --project=$GCP_PROJECT      
@@ -736,7 +765,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       
       echo "Running PubSub TO BigTable"
       gcloud pubsub topics publish pubsub-to-bt --message='{"key": "1000", "name": "dataproc_pubsub_bt_test", "address": "GCP Cloud", "emp_no": "10"}' --project=$GCP_PROJECT      
@@ -759,7 +789,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running Kafka TO BigQuery"
       
       cd java
@@ -784,7 +815,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running Kafka Dstream TO BigQuery"
       
       cd java
@@ -812,7 +844,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running Kafka TO GCS"
       
       cd java
@@ -836,7 +869,8 @@ steps:
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       echo "Running Kafka Dstream TO GCS"
       ## Testing both parquet and json export in same test
       
@@ -881,7 +915,8 @@ steps:
       - 'SKIP_BUILD=true'
       - 'SERVICE_ACCOUNT_NAME=${_SERVICE_ACCOUNT}'
       - 'DATAPROC_METASTORE_SERVICE=${_ENV_DATAPROC_METASTORE_SERVICE}'
-    script: |      #!/usr/bin/env bash
+    script: |      
+      #!/usr/bin/env bash
       
       echo "Running GCS Deltalake To Iceberg"      
       cd java
