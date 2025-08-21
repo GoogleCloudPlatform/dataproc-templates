@@ -27,6 +27,89 @@ availableSecrets:
       env: 'TEST_JDBC_URL'
 
 steps:
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-spanner-to-gcs
+      entrypoint: bash
+      args:
+        - -c
+        - |
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="$_GCP_PROJECT" --region="$_REGION" \
+              --jars="$_JAR_PATH" \
+              -- --template=SPANNERTOGCS \
+              --templateProperty project.id="$_GCP_PROJECT" \
+              --templateProperty spanner.gcs.input.spanner.id="$_ENV_TEST_SPANNER_ID" \
+              --templateProperty spanner.gcs.input.database.id="spark-ci-db" \
+              --templateProperty "spanner.gcs.input.table.id=(select empno,ename from badges_ui_tests where job='SALESMAN')" \
+              --templateProperty spanner.gcs.output.gcs.path="gs://dataproc-templates_cloudbuild/ui-testing/SPANNERTOGCS/parquet" \
+              --templateProperty spanner.gcs.output.gcs.saveMode="Overwrite" \
+              --templateProperty spanner.gcs.output.gcs.format="parquet"
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-gcs-to-bigquery-avro
+      entrypoint: bash
+      args:
+        - -c
+        - |
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              -- --template=GCSTOBIGQUERY \
+              --templateProperty project.id="${_GCP_PROJECT}" \
+              --templateProperty gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstobigquery/cities.avro" \
+              --templateProperty gcs.bigquery.input.format="avro" \
+              --templateProperty gcs.bigquery.output.dataset="dataproc_templates" \
+              --templateProperty gcs.bigquery.output.table="ui_gcstobq_avro" \
+              --templateProperty gcs.bigquery.output.mode="Overwrite" \
+              --templateProperty gcs.bigquery.temp.bucket.name="dataproc-templates_cloudbuild"
+
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-gcs-to-spanner
+      entrypoint: bash
+      args:
+        - -c
+        - |
+          JAR_PATH="$_JAR_PATH"
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              -- --template GCSTOSPANNER \
+              --templateProperty project.id="${_GCP_PROJECT}" \
+              --templateProperty gcs.spanner.input.format="avro" \
+              --templateProperty gcs.spanner.input.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstospanner/emp.avro" \
+              --templateProperty gcs.spanner.output.instance="${_ENV_TEST_SPANNER_ID}" \
+              --templateProperty gcs.spanner.output.database="spark-ci-db" \
+              --templateProperty gcs.spanner.output.table="employee_ui_tests" \
+              --templateProperty gcs.spanner.output.saveMode="Overwrite" \
+              --templateProperty gcs.spanner.output.primaryKey="empno"
+
+    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+      waitFor: ['-']
+      id: ui-gcs-to-gcs-avro-to-csv
+      entrypoint: bash
+      args:
+        - -c
+        - |
+          gcloud dataproc batches submit spark \
+              --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
+              --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
+              --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+              -- --template=GCSTOGCS \
+              --templateProperty project.id="${_GCP_PROJECT}" \
+              --templateProperty gcs.gcs.input.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstogcs/emp.avro" \
+              --templateProperty gcs.gcs.input.format="avro" \
+              --templateProperty gcs.gcs.output.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstogcs/output/" \
+              --templateProperty gcs.gcs.output.format="csv" \
+              --templateProperty gcs.gcs.write.mode="overwrite" \
+              --templateProperty gcs.gcs.temp.table="dataset" \
+              --templateProperty "gcs.gcs.temp.query=select * from global_temp.dataset where sal>1500"
 
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
       waitFor: ['-']
