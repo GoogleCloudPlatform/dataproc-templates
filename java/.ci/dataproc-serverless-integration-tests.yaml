@@ -22,7 +22,6 @@ substitutions:
   _BRANCH_NAME_SUB: ${BRANCH_NAME} # Captures branch name from trigger, default is empty if not a branch trigger
   _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
   _JAR_FILE : 'dataproc-templates-1.0-SNAPSHOT.jar'
-  _JAR_PATH: '${GCS_STAGING_LOCATION}/$JAR_FILE'
 
   # Other environment variables
   _ENV_TEST_SPANNER_ID: 'spanner-integration-test'
@@ -942,11 +941,11 @@ steps:
     args:
       - -c
       - |
-        echo "JAR PATH:" "$_JAR_PATH"
+        echo "JAR PATH:" "${_GCS_STAGING_LOCATION}/$_JAR_FILE"
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="$_GCP_PROJECT" --region="$_REGION" \
-            --jars="$_JAR_PATH" \
+            --jars="${_GCS_STAGING_LOCATION}/$_JAR_FILE" \
             -- --template=SPANNERTOGCS \
             --templateProperty project.id="$_GCP_PROJECT" \
             --templateProperty spanner.gcs.input.spanner.id="$_ENV_TEST_SPANNER_ID" \
@@ -963,11 +962,11 @@ steps:
     args:
       - -c
       - |
-        echo "JAR PATH:" "$_JAR_PATH"
+        echo "JAR PATH:" "${_GCS_STAGING_LOCATION}/$_JAR_FILE"
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
-            --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+            --jars="${${_GCS_STAGING_LOCATION}/$_JAR_FILE},file:///usr/lib/spark/connector/spark-avro.jar" \
             -- --template=GCSTOBIGQUERY \
             --templateProperty project.id="${_GCP_PROJECT}" \
             --templateProperty gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstobigquery/cities.avro" \
@@ -985,11 +984,11 @@ steps:
     args:
       - -c
       - |
-        echo "JAR PATH:" "$_JAR_PATH"
+        echo "JAR PATH:" "${_GCS_STAGING_LOCATION}/$_JAR_FILE"
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
-            --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+            --jars="${_GCS_STAGING_LOCATION}/$_JAR_FILE,file:///usr/lib/spark/connector/spark-avro.jar" \
             -- --template GCSTOSPANNER \
             --templateProperty project.id="${_GCP_PROJECT}" \
             --templateProperty gcs.spanner.input.format="avro" \
@@ -1007,11 +1006,11 @@ steps:
     args:
       - -c
       - |
-        echo "JAR PATH:" "$_JAR_PATH"
+        echo "JAR PATH:" "${_GCS_STAGING_LOCATION}/$_JAR_FILE"
         gcloud dataproc batches submit spark \
             --class=com.google.cloud.dataproc.templates.main.DataProcTemplate \
             --version="1.2" --service-account=${_SERVICE_ACCOUNT} --project="${_GCP_PROJECT}" --region="${_REGION}" \
-            --jars="${_JAR_PATH},file:///usr/lib/spark/connector/spark-avro.jar" \
+            --jars="${_GCS_STAGING_LOCATION}/$_JAR_FILE,file:///usr/lib/spark/connector/spark-avro.jar" \
             -- --template=GCSTOGCS \
             --templateProperty project.id="${_GCP_PROJECT}" \
             --templateProperty gcs.gcs.input.location="gs://dataproc-templates_cloudbuild/ui-testing/gcstogcs/emp.avro" \
