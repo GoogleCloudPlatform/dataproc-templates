@@ -46,9 +46,9 @@ steps:
       #!/usr/bin/env bash
       apt install maven -y
       cd java
-      mvn install spotless:check
-      echo "copying the build into staging location:" ${_GCS_STAGING_LOCATION}   
-      gsutil cp target/$_JAR_FILE ${_GCS_STAGING_LOCATION}/$_JAR_FILE
+      # mvn install spotless:check
+      # echo "copying the build into staging location:" ${_GCS_STAGING_LOCATION}   
+      # gsutil cp target/$_JAR_FILE ${_GCS_STAGING_LOCATION}/$_JAR_FILE
       
       cat > /tmp/employeecatalog.json << EOF
         {
