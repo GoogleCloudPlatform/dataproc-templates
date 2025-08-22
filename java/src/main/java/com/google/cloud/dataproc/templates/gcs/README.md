@@ -237,38 +237,7 @@ bin/start.sh \
 --templateProperty gcs.mongo.output.mode="overwrite"
 ```
 
-## 7. Text To BigQuery
-
-General Execution:
-
-```
-GCP_PROJECT=<gcp-project-id> \
-REGION=<region>  \
-SUBNET=<subnet>   \
-GCS_STAGING_LOCATION=<gcs-staging-bucket-folder> \
-HISTORY_SERVER_CLUSTER=<history-server> \
-bin/start.sh \
--- --template TEXTTOBIGQUERY \
---templateProperty project.id=<gcp-project-id> \
---templateProperty text.bigquery.input.location=<gcs path for input file> \
---templateProperty text.bigquery.input.compression=<compression file format like gzip or deflate> \
---templateProperty text.bigquery.input.delimiter=<, for csv> \
---templateProperty text.bigquery.output.dataset=<Big query dataset name> \
---templateProperty text.bigquery.output.table=<Big query table name> \
---templateProperty text.bigquery.output.mode=<Append|Overwrite|ErrorIfExists|Ignore> \
---templateProperty text.bigquery.temp.bucket=<bigquery temp bucket name>
-```
-
-There are two optional properties as well with "Text to BigQuery" Template. Please find below the details :-
-
-```
---templateProperty text.bigquery.temp.table='temporary_view_name'
---templateProperty text.bigquery.temp.query='select * from global_temp.temporary_view_name'
-```
-These properties are responsible for applying some spark sql transformations while loading data into BigQuery.
-The only thing needs to keep in mind is that, the name of the Spark temporary view and the name of table in the query should match exactly. Otherwise, there would be an error as:- "Table or view not found:"
-
-## 8. Deltalake To Iceberg
+## 7. Deltalake To Iceberg
 
 `deltalake.version.as_of` is an optional parameter which is default set to `0` means we will pick up the latest change only. We are providing below example to show how you can pass the value if you require time travel based on version number.
 

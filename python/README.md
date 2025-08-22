@@ -27,11 +27,8 @@
 - [KafkaToBigQuery](/python/dataproc_templates/kafka/#kafka-to-bigquery)
 - [MongoToGCS](/python/dataproc_templates/mongo#mongo-to-gcs)(blogpost [link](https://medium.com/google-cloud/exporting-data-from-mongodb-to-gcs-buckets-using-dataproc-serverless-64830fb15b51))
 - [MongoToBigQuery](/python/dataproc_templates/mongo#mongot-to-bq)
-- [PubSubLiteToBigtable](/python/dataproc_templates/pubsublite#pubsublite-to-bigtable) **Deprecated and will be removed in Q1 2025** 
-- [RedshiftToGCS](/python/dataproc_templates/redshift#redshift-to-gcs)(blogpost [link](https://medium.com/google-cloud/exporting-data-from-redshift-to-gcs-using-gcp-dataproc-serverless-and-pyspark-9ab78de11405)) **Deprecated and will be removed in Q1 2025** 
 - [S3ToBigQuery](/python/dataproc_templates/s3#amazon-s3-to-bigquery)
 - [SnowflakeToGCS](/python/dataproc_templates/snowflake#1-snowflake-to-gcs)(blogpost [link](https://medium.com/@varunikagupta96/exporting-data-from-snowflake-to-gcs-using-pyspark-on-dataproc-serverless-363d3bed551b))
-- [TextToBigQuery](/python/dataproc_templates/gcs#text-to-bigquery) **Deprecated and will be removed in Q1 2025** 
 
 Dataproc Templates (Python - PySpark) supports submitting jobs to both Dataproc Serverless using [batches submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/batches/submit/pyspark) and Dataproc Cluster using [jobs submit pyspark](https://cloud.google.com/sdk/gcloud/reference/dataproc/jobs/submit/pyspark)
 
