@@ -94,7 +94,7 @@ pipeline {
                         exit 1
                     fi
 
-                    #mvn clean spotless:apply install -DskipTests
+                    mvn clean spotless:apply install -DskipTests
                     build_status=$?
 
                     LOCAL_JAR_Path=./target/${JAR_FILE}
