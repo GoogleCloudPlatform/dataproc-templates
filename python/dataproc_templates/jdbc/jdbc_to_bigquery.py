@@ -180,35 +180,50 @@ class JDBCToBigQueryTemplate(BaseTemplate):
         )
 
         # Read
-        input_data: DataFrame
+        input_data: DataFrame = None  # Initialize input_data
 
         partition_parameters = str(input_jdbc_partitioncolumn) + str(input_jdbc_lowerbound) + str(input_jdbc_upperbound)
         if ((partition_parameters != "") & ((input_jdbc_partitioncolumn == "") | (input_jdbc_lowerbound == "") | (input_jdbc_upperbound == ""))):
             logger.error("Set all the sql partitioning parameters together-jdbctogcs.input.partitioncolumn,jdbctogcs.input.lowerbound,jdbctogcs.input.upperbound. Refer to README.md for more instructions.")
             exit (1)
 
-        properties = {constants.JDBC_URL: input_jdbc_url,
-                      constants.JDBC_DRIVER: input_jdbc_driver,
-                      constants.JDBC_TABLE: input_jdbc_table,
-                      constants.JDBC_NUMPARTITIONS: jdbc_numpartitions,
-                      constants.JDBC_FETCHSIZE: input_jdbc_fetchsize}
-        if input_jdbc_sessioninitstatement:
-            properties[constants.JDBC_SESSIONINITSTATEMENT] = input_jdbc_sessioninitstatement
-        if partition_parameters:
-            properties.update({constants.JDBC_PARTITIONCOLUMN: input_jdbc_partitioncolumn,
-                               constants.JDBC_LOWERBOUND: input_jdbc_lowerbound,
-                               constants.JDBC_UPPERBOUND: input_jdbc_upperbound})
+        source_tables_list = input_jdbc_table.split(";")
+        target_tables_list = big_query_table.split(";")
+        partitioncolumn_list = input_jdbc_partitioncolumn.split(";")
+        lowerbound_list = input_jdbc_lowerbound.split(";")
+        upperbound_list = input_jdbc_upperbound.split(";")
+        counter = len(source_tables_list)
 
-        input_data = spark.read \
-            .format(constants.FORMAT_JDBC) \
-            .options(**properties) \
-            .load()
+        if len(target_tables_list)==counter and (len(partitioncolumn_list)==counter or partitioncolumn_list==['']) and (len(lowerbound_list)==counter or lowerbound_list==['']) and (len(upperbound_list)==counter or upperbound_list==['']):
+            i = 0
+            while i < counter:
+                properties = {constants.JDBC_URL: input_jdbc_url,
+                              constants.JDBC_DRIVER: input_jdbc_driver,
+                              constants.JDBC_TABLE: source_tables_list[i],
+                              constants.JDBC_NUMPARTITIONS: jdbc_numpartitions,
+                              constants.JDBC_FETCHSIZE: input_jdbc_fetchsize}
 
-        # Write
-        input_data.write \
-                .format(constants.FORMAT_BIGQUERY) \
-                .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
-                .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
-                .mode(output_mode) \
-                .save()
+                if input_jdbc_sessioninitstatement:
+                    properties[constants.JDBC_SESSIONINITSTATEMENT] = input_jdbc_sessioninitstatement
+                if partition_parameters:
+                    properties.update({constants.JDBC_PARTITIONCOLUMN: partitioncolumn_list[i],
+                                       constants.JDBC_LOWERBOUND: lowerbound_list[i],
+                                       constants.JDBC_UPPERBOUND: upperbound_list[i]})
+
+                input_data = spark.read \
+                    .format(constants.FORMAT_JDBC) \
+                    .options(**properties) \
+                    .load()
+
+                input_data.write \
+                    .format(constants.FORMAT_BIGQUERY) \
+                    .option(constants.TABLE, big_query_dataset + "." + target_tables_list[i]) \
+                    .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
+                    .mode(output_mode) \
+                    .save()
+
+                i += 1
+        else:
+            logger.info("There is some issue either with the list of source or target tables or with respect to the parameters provided")
+            exit(1)
 
