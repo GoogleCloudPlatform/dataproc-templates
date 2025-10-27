@@ -119,63 +119,66 @@ class GCSToBigQueryTemplate(BaseTemplate):
             spark, args, input_location, input_format, "gcs.bigquery.input."
         )
 
-        # Handling for delta format 
-        if input_format == "delta":
 
-            # input_data.printSchema()
-            # input_data.show(3, False)
 
-            def datatype_mapping(source_schema_map):
-                """
-                Generates a SQL SELECT clause with column and datatype transformations
-                based on the source schema map. This is used to build a SQL query.
-                """  
-                # This list will hold the SQL expressions for each column (e.g., "CAST(col AS NUMERIC)")
-                transformed_columns = []
-                # Loop through each (column_name, datatype) pair from the source DataFrame
-                for column_name, source_type in source_schema_map.items():
-                    source_type = source_type.lower() # e.g., 'array<string>'
-                    
-                    # --- Apply Datatype Mappings based on user logic ---
-                    # Handle all numeric types that need casting
-                    if (source_type == "long" or "double" in source_type or "decimal" in source_type or source_type == "float"):
-                        transformed_column_expression = f"CAST({column_name} AS NUMERIC(38,9)) AS {column_name}"
-                    # Handle MAP: Convert to a JSON string
-                    elif "map" in source_type:
-                        transformed_column_expression = f"to_json({column_name}) AS {column_name}"
-                    # Handle ARRAY: Convert to a JSON string
-                    elif "array" in source_type:
-                        transformed_column_expression = f"to_json({column_name}) AS {column_name}"
-                    else:
-                        # Default case: Keep the column as is (e.g., string, int, boolean)
-                        transformed_column_expression = column_name
-    
-                    transformed_columns.append(transformed_column_expression)
+        def datatype_mapping(source_schema_map):
+            """
+            Generates a SQL SELECT clause with column and datatype transformations
+            based on the source schema map. This is used to build a SQL query.
+            """  
+            # This list will hold the SQL expressions for each column (e.g., "CAST(col AS NUMERIC)")
+            transformed_columns = []
+            # Loop through each (column_name, datatype) pair from the source DataFrame
+            for column_name, source_type in source_schema_map.items():
+                source_type = source_type.lower() # e.g., 'array<string>'
                 
-                # Build the final SQL query: "SELECT col1, CAST(col2...), to_json(col3...)"
-                query = "SELECT " + ",\n       ".join(transformed_columns) + "\n  FROM TEMP_DF"
-                print("------- 2. GENERATED SQL QUERY -------")
-                print(query)
-                
-                # Register the original DataFrame as a temporary table to query it
-                input_data.createOrReplaceTempView("TEMP_DF")
-                # Run the SQL query to get the new, transformed DataFrame
-                override_df = spark.sql(query)
-                return override_df
+                # --- Apply Datatype Mappings based on user logic ---
+                # Handle all numeric types that need casting
+                if (source_type == "long" or "double" in source_type or "decimal" in source_type or source_type == "float"):
+                    transformed_column_expression = f"CAST({column_name} AS NUMERIC(38,9)) AS {column_name}"
+                # Handle MAP: Convert to a JSON string
+                elif "map" in source_type:
+                    transformed_column_expression = f"to_json({column_name}) AS {column_name}"
+                # Handle ARRAY: Convert to a JSON string
+                elif "array" in source_type:
+                    transformed_column_expression = f"to_json({column_name}) AS {column_name}"
+                else:
+                    # Default case: Keep the column as is (e.g., string, int, boolean)
+                    transformed_column_expression = column_name
+
+                transformed_columns.append(transformed_column_expression)
+            
+            # Build the final SQL query: "SELECT col1, CAST(col2...), to_json(col3...)"
+            query = "SELECT " + ",\n       ".join(transformed_columns) + "\n  FROM TEMP_DF"
+            print("------- 2. GENERATED SQL QUERY -------")
+            print(query)
+            
+            # Register the original DataFrame as a temporary table to query it
+            input_data.createOrReplaceTempView("TEMP_DF")
+            # Run the SQL query to get the new, transformed DataFrame
+            override_df = spark.sql(query)
+            return override_df
+        
 
             # --- Call the function ---
             # Get the schema from the source DataFrame as a dictionary
-            source_schema_map = dict(input_data.dtypes)
+        source_schema_map = dict(input_data.dtypes)
 
             # Run the mapping function to get the transformed DataFrame
+        if input_data == "delta":
             override_df = datatype_mapping(source_schema_map)
+        
+        else:
+            override_df = input_data
 
             # override_df.printSchema()
             # override_df.show(3, False)
-                        
+        
+        #ToDo: overrride query
+        output_data = override_df
 
         # Write
-        override_df.write \
+        output_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
             .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
