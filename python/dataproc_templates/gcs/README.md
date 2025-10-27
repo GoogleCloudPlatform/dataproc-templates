@@ -11,7 +11,10 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `gcs.bigquery.input.format`: Input file format (one of: avro,parquet,csv,json,delta)
 * `gcs.bigquery.temp.bucket.name`: Temporary bucket for the Spark BigQuery connector
 * `gcs.bigquery.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
+
 #### Optional Arguments
+* `gcs.to.bigquery.temp.view.name`: Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQLquery
+* `gcs.to.bigquery.sql.query`: SQL query for data transformation. This must use the temp view name as the table to query from.
 * `gcs.bigquery.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
 * `gcs.bigquery.input.columnnameofcorruptrecord`: Allows renaming the new field having malformed string created by PERMISSIVE mode
 * `gcs.bigquery.input.comment`: Sets a single character used for skipping lines beginning with this character. By default it is disabled
@@ -51,6 +54,8 @@ usage: main.py [-h]
                --gcs.bigquery.output.dataset GCS.BIGQUERY.OUTPUT.DATASET
                --gcs.bigquery.output.table GCS.BIGQUERY.OUTPUT.TABLE
                --gcs.bigquery.input.format {avro,parquet,csv,json,delta}
+               [--gcs.to.bigquery.temp.view.name GCS.TO.BIGQUERY.TEMP.VIEW.NAME]
+               [--gcs.to.bigquery.sql.query GCS.TO.BIGQUERY.SQL.QUERY]
                [--gcs.bigquery.input.chartoescapequoteescaping GCS.BIGQUERY.INPUT.CHARTOESCAPEQUOTEESCAPING]
                [--gcs.bigquery.input.columnnameofcorruptrecord GCS.BIGQUERY.INPUT.COLUMNNAMEOFCORRUPTRECORD]
                [--gcs.bigquery.input.comment GCS.BIGQUERY.INPUT.COMMENT]
@@ -92,6 +97,10 @@ options:
                         BigQuery output table name
   --gcs.bigquery.input.format {avro,parquet,csv,json,delta}
                         Input file format (one of: avro,parquet,csv,json,delta)
+  --gcs.to.bigquery.temp.view.name GCS.TO.BIGQUERY.TEMP.VIEW.NAME
+                        Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query
+  --gcs.to.bigquery.sql.query GCS.TO.BIGQUERY.SQL.QUERY
+                        SQL query for data transformation. This must use the temp view name as the table to query from.
   --gcs.bigquery.input.chartoescapequoteescaping GCS.BIGQUERY.INPUT.CHARTOESCAPEQUOTEESCAPING
                         Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are
                         different, \0 otherwise
