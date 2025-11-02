@@ -653,6 +653,9 @@ GCS_BQ_OUTPUT_TABLE = "gcs.bigquery.output.table"
 GCS_BQ_OUTPUT_MODE = "gcs.bigquery.output.mode"
 GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name"
+GCS_TO_BQ_TEMP_VIEW_NAME = "gcs.bigquery.temp.view.name"
+GCS_TO_BQ_SQL_QUERY = "gcs.bigquery.sql.query"
+
 
 # GCS to JDBC
 GCS_JDBC_INPUT_LOCATION = "gcs.jdbc.input.location"

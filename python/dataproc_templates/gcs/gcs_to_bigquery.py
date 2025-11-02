@@ -140,7 +140,8 @@ class GCSToBigQueryTemplate(BaseTemplate):
         )
 
         if sql_query:
-            # Create temp view on source data
+            print("------- RUNNING OVERRIDE SQL QUERY -------")
+            print("sql_query : ", sql_query)
             input_data.createOrReplaceTempView(bq_temp_view)
             # Execute SQL
             transformed_data = spark.sql(sql_query)
@@ -160,9 +161,14 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 source_type = source_type.lower() # e.g., 'array<string>'
                 
                 # --- Apply Datatype Mappings based on user logic ---
-                # Handle all numeric types that need casting
-                if (source_type == "long" or "double" in source_type or "decimal" in source_type or source_type == "float"):
-                    transformed_column_expression = f"CAST({column_name} AS NUMERIC(38,9)) AS {column_name}"
+                if ( "double" in source_type or "float" in source_type):
+                    # CORRECT: Cast approximate types to an exact DECIMAL
+                    # Spark can handle max - Decimal(38, 38), Spark cannot handle full BIGNUMERIC(76, 76) for now.
+                    # Keep target column datatype BIGNUMERIC(38, 18) to assign Precision - 18 and Scale -18
+                    transformed_column_expression = f"CAST({column_name} AS DECIMAL(38, 18)) AS {column_name}"
+                elif ( "decimal" in source_type):
+                    # CORRECT: Do nothing. Let the connector handle the mapping.
+                    transformed_column_expression = f"{column_name}"
                 # Handle MAP: Convert to a JSON string
                 elif "map" in source_type:
                     transformed_column_expression = f"to_json({column_name}) AS {column_name}"
@@ -177,7 +183,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
             
             # Build the final SQL query: "SELECT col1, CAST(col2...), to_json(col3...)"
             query = "SELECT " + ",\n       ".join(transformed_columns) + "\n  FROM TEMP_DF"
-            print("------- 2. GENERATED SQL QUERY -------")
+            print("------- GENERATED SQL QUERY -------")
             print(query)
             
             # Register the original DataFrame as a temporary table to query it
@@ -189,20 +195,16 @@ class GCSToBigQueryTemplate(BaseTemplate):
 
         # --- Call the function ---
         # Get the schema from the source DataFrame as a dictionary
-        source_schema_map = dict(input_data.dtypes)
+        source_schema_map = dict(transformed_data.dtypes)
 
         # Run the mapping function to get the transformed DataFrame
-        if input_data == "delta":
+        if input_format == "delta":
             output_data = datatype_mapping(source_schema_map, transformed_data)
-        
         else:
-            override_df = input_data
+            output_data = transformed_data
 
-            # override_df.printSchema()
-            # override_df.show(3, False)
-        
-        #ToDo: overrride query
-        output_data = transformed_data
+        # output_data.printSchema()
+        # output_data.show(3, False)
 
         # Write
         output_data.write \
