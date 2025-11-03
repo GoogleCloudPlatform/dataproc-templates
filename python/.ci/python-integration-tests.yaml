@@ -111,6 +111,26 @@ steps:
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: hive-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS -- \
+      --template=HIVETOGCS \
+      --hive.gcs.input.database="test_db" \
+      --hive.gcs.input.table="employee" \
+      --hive.gcs.output.location="gs://moff-python-dataproc-templates/hive-gcs-output" \
+      --hive.gcs.output.format="csv" \
+      --hive.gcs.output.mode="overwrite"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-jdbc
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
@@ -133,8 +153,31 @@ steps:
     secretEnv: ['TEST_JDBC_URL']
     waitFor: ['build-and-upload']
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-jdbc
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh -- \
+      --template=JDBCTOJDBC \
+      --jdbctojdbc.input.url="$TEST_JDBC_URL" \
+      --jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctojdbc.input.table="demo" \
+      --jdbctojdbc.output.url="$TEST_JDBC_URL" \
+      --jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctojdbc.output.table="demo_out" \
+      --jdbctojdbc.output.mode="overwrite" \
+      --jdbctojdbc.output.batch.size="1000"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
 options:
-  logging: CLOUD_LOGGING_ONLY
+#  logging: CLOUD_LOGGING_ONLY
   machineType: 'E2_HIGHCPU_8'
   automapSubstitutions: true
 timeout: 3600s
