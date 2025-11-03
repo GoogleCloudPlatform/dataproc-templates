@@ -19,9 +19,9 @@ substitutions:
   _REGION: 'us-central1'
   _GCS_STAGING_LOCATION_BASE: 'gs://moff-dataproc-templates-python-temp'
   _PYTHON_EGG_FILE: 'dataproc_templates_distribution.egg'
+  _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
 
 # Following not used at the present
-#  _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
 #  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}'
 #  _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
 #  _ENV_TEST_CASSANDRA_HOST: '10.128.0.19'
@@ -117,6 +117,7 @@ steps:
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
+      - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
     script: |
       #!/usr/bin/env bash
       cd python
