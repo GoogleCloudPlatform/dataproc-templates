@@ -114,7 +114,7 @@ steps:
     id: gcs-to-gcs
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_STAGING_LOCATION=gs://dataproc-templates-mudupalli'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
     script: |
@@ -129,27 +129,6 @@ steps:
       --gcs.to.gcs.output.mode="overwrite" \
       --gcs.to.gcs.temp.view.name="dataset" \
       --gcs.to.gcs.sql.query="select * from dataset where sal>1500"
-    waitFor: ['build-and-upload']
-
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    id: hive-to-gcs
-    env:
-      - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
-      - 'REGION=${_REGION}'
-      - 'SKIP_BUILD=true'
-      - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
-    script: |
-      #!/usr/bin/env bash
-      cd python
-      ./bin/start.sh \
-      --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS -- \
-      --template=HIVETOGCS \
-      --hive.gcs.input.database="test_db" \
-      --hive.gcs.input.table="employee" \
-      --hive.gcs.output.location="gs://moff-python-dataproc-templates/hive-gcs-output" \
-      --hive.gcs.output.format="csv" \
-      --hive.gcs.output.mode="overwrite"
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -173,6 +152,27 @@ steps:
       --gcs.jdbc.batch.size=1000 \
       --gcs.jdbc.output.url="$TEST_JDBC_URL"
     secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: hive-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=gs://dataproc-templates-mudupalli'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS -- \
+      --template=HIVETOGCS \
+      --hive.gcs.input.database="test_db" \
+      --hive.gcs.input.table="employee" \
+      --hive.gcs.output.location="gs://moff-python-dataproc-templates/hive-gcs-output" \
+      --hive.gcs.output.format="csv" \
+      --hive.gcs.output.mode="overwrite"
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
