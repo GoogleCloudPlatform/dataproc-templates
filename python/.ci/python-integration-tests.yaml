@@ -17,7 +17,7 @@
 substitutions:
   _GCP_PROJECT: 'dataproc-templates'
   _REGION: 'us-central1'
-  _GCS_STAGING_LOCATION_BASE: 'gs://moff-dataproc-templates-python-temp'
+  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates-python/'
   _PYTHON_EGG_FILE: 'dataproc_templates_distribution.egg'
   _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
 
@@ -108,6 +108,27 @@ steps:
       --gcs.bigquery.output.table="python_gcs_bq_table" \
       --gcs.bigquery.output.mode="overwrite" \
       --gcs.bigquery.temp.bucket.name="moff-dataproc-templates-python-temp"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=GCSTOGCS \
+      --gcs.to.gcs.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOGCS/input/emp.avro" \
+      --gcs.to.gcs.input.format="avro" \
+      --gcs.to.gcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOGCS/output/" \
+      --gcs.to.gcs.output.format="csv" \
+      --gcs.to.gcs.output.mode="overwrite" \
+      --gcs.to.gcs.temp.view.name="dataset" \
+      --gcs.to.gcs.sql.query="select * from dataset where sal>1500"
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
