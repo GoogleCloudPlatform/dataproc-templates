@@ -106,8 +106,8 @@ steps:
       --template=GCSTOBIGQUERY \
       --gcs.bigquery.input.format="parquet" \
       --gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGQUERY/input/" \
-      --gcs.bigquery.output.dataset="dataproc_templates" \
-      --gcs.bigquery.output.table="python_gcs_bq_table" \
+      --gcs.bigquery.output.dataset="dataproc_templates_python" \
+      --gcs.bigquery.output.table="gcs_bq_table" \
       --gcs.bigquery.output.mode="overwrite" \
       --gcs.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
     waitFor: ['build-and-upload']
@@ -150,12 +150,35 @@ steps:
       --template=GCSTOJDBC \
       --gcs.jdbc.input.format="csv" \
       --gcs.jdbc.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOJDBC/input/sample.csv" \
-      --gcs.jdbc.output.table="demo" \
+      --gcs.jdbc.output.table="test.demo" \
       --gcs.jdbc.output.mode="overwrite" \
       --gcs.jdbc.output.driver="com.mysql.cj.jdbc.Driver" \
       --gcs.jdbc.batch.size=1000 \
       --gcs.jdbc.output.url="$TEST_JDBC_URL"
     secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: hive-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
+      -- --template=HIVETOBIGQUERY \
+      --hive.bigquery.input.database="test_db" \
+      --hive.bigquery.input.table="employee" \
+      --hive.bigquery.output.dataset="dataproc_templates_python" \
+      --hive.bigquery.output.table="hive_to_bigquery" \
+      --hive.bigquery.output.mode="overwrite" \
+      --hive.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -181,6 +204,53 @@ steps:
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOBIGQUERY \
+      --jdbc.bigquery.input.url="$TEST_JDBC_URL" \
+      --jdbc.bigquery.input.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbc.bigquery.input.table="test.demo" \
+      --jdbc.bigquery.output.mode="overwrite" \
+      --jdbc.bigquery.output.dataset="dataproc_templates_python" \
+      --jdbc.bigquery.output.table="jdbc_to_bigquery" \
+      --jdbc.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOGCS \
+      --jdbctogcs.input.url="$TEST_JDBC_URL" \
+      --jdbctogcs.input.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctogcs.input.table="test.demo" \
+      --jdbctogcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/JDBCTOGCS/output" \
+      --jdbctogcs.output.mode="overwrite" \
+      --jdbctogcs.output.format="csv"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: jdbc-to-jdbc
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
@@ -196,7 +266,7 @@ steps:
       --template=JDBCTOJDBC \
       --jdbctojdbc.input.url="$TEST_JDBC_URL" \
       --jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
-      --jdbctojdbc.input.table="demo" \
+      --jdbctojdbc.input.table="test.demo" \
       --jdbctojdbc.output.url="$TEST_JDBC_URL" \
       --jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
       --jdbctojdbc.output.table="demo_out" \
