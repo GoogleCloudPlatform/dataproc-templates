@@ -154,27 +154,17 @@ class GCSToBigQueryTemplate(BaseTemplate):
             Generates a SQL SELECT clause with column and datatype transformations
             based on the source schema map. This is used to build a SQL query.
             """  
-            # This list will hold the SQL expressions for each column (e.g., "CAST(col AS NUMERIC)")
             transformed_columns = []
             # Loop through each (column_name, datatype) pair from the source DataFrame
             for column_name, source_type in source_schema_map.items():
-                source_type = source_type.lower() # e.g., 'array<string>'
-                
+                source_type = source_type.lower() # 
                 # --- Apply Datatype Mappings based on user logic ---
-                if ( "double" in source_type or "float" in source_type):
-                    # CORRECT: Cast approximate types to an exact DECIMAL
-                    # Spark can handle max - Decimal(38, 38), Spark cannot handle full BIGNUMERIC(76, 76) for now.
-                    # Keep target column datatype BIGNUMERIC(38, 18) to assign Precision - 18 and Scale -18
-                    transformed_column_expression = f"CAST({column_name} AS DECIMAL(38, 18)) AS {column_name}"
-                elif ( "decimal" in source_type):
-                    # CORRECT: Do nothing. Let the connector handle the mapping.
-                    transformed_column_expression = f"{column_name}"
-                # Handle MAP: Convert to a JSON string
-                elif "map" in source_type:
+                if "map" in source_type:
                     transformed_column_expression = f"to_json({column_name}) AS {column_name}"
                 # Handle ARRAY: Convert to a JSON string
                 elif "array" in source_type:
-                    transformed_column_expression = f"to_json({column_name}) AS {column_name}"
+                    # transformed_column_expression = f"to_json({column_name}) AS {column_name}"
+                    transformed_column_expression = f"COALESCE({column_name}, ARRAY()) AS {column_name}"
                 else:
                     # Default case: Keep the column as is (e.g., string, int, boolean)
                     transformed_column_expression = column_name
@@ -206,11 +196,19 @@ class GCSToBigQueryTemplate(BaseTemplate):
         # output_data.printSchema()
         # output_data.show(3, False)
 
-        # Write
+        # Write Indirect method
+        # output_data.write \
+        #     .format(constants.FORMAT_BIGQUERY) \
+        #     .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
+        #     .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
+        #     .mode(output_mode) \
+        #     .save()
+        
+        # Write direct method
         output_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
-            .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
+            .option("writeMethod", "direct") \
             .mode(output_mode) \
             .save()
 
