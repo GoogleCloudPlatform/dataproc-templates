@@ -26,6 +26,7 @@ PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
 check_required_envvar GCP_PROJECT
 check_required_envvar REGION
 check_required_envvar GCS_STAGING_LOCATION
+check_required_envvar GCS_DEPS_BUCKET
 
 # Remove trailing forward slash
 GCS_STAGING_LOCATION=`echo $GCS_STAGING_LOCATION | sed 's/\/*$//'`
@@ -51,7 +52,7 @@ if [[ $OPT_SPARK_VERSION == *"=1.1"* ]]; then
 	OPT_JARS="--jars=file:///usr/lib/spark/external/spark-avro.jar"
 fi
 OPT_LABELS="--labels=job_type=dataproc_template"
-OPT_DEPS_BUCKET="--deps-bucket=${GCS_STAGING_LOCATION}"
+OPT_DEPS_BUCKET="--deps-bucket=${GCS_DEPS_BUCKET}"
 OPT_PY_FILES="--py-files=${PROJECT_ROOT_DIR}/${PACKAGE_EGG_FILE}"
 
 # Optional arguments

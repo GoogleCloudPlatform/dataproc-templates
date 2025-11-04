@@ -17,7 +17,8 @@
 substitutions:
   _GCP_PROJECT: 'dataproc-templates'
   _REGION: 'us-central1'
-  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates-python/'
+  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates-python'
+  _GCS_DEPS_BUCKET: 'gs://dataproc-templates-python-deps'
   _PYTHON_EGG_FILE: 'dataproc_templates_distribution.egg'
   _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
 
@@ -97,6 +98,7 @@ steps:
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
     script: |
       #!/usr/bin/env bash
       cd python
@@ -107,14 +109,15 @@ steps:
       --gcs.bigquery.output.dataset="dataproc_templates" \
       --gcs.bigquery.output.table="python_gcs_bq_table" \
       --gcs.bigquery.output.mode="overwrite" \
-      --gcs.bigquery.temp.bucket.name="moff-dataproc-templates-python-temp"
+      --gcs.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-gcs
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=gs://dataproc-templates-mudupalli'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
     script: |
@@ -136,6 +139,7 @@ steps:
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
@@ -158,7 +162,8 @@ steps:
     id: hive-to-gcs
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
-      - 'GCS_STAGING_LOCATION=gs://dataproc-templates-mudupalli'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
@@ -180,6 +185,7 @@ steps:
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
       - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
       - 'REGION=${_REGION}'
       - 'SKIP_BUILD=true'
       - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
