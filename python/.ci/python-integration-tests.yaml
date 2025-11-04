@@ -105,7 +105,7 @@ steps:
       ./bin/start.sh  -- \
       --template=GCSTOBIGQUERY \
       --gcs.bigquery.input.format="parquet" \
-      --gcs.bigquery.input.location="gs://moff-python-dataproc-templates/gcs-bq-input/" \
+      --gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGQUERY/input/" \
       --gcs.bigquery.output.dataset="dataproc_templates" \
       --gcs.bigquery.output.table="python_gcs_bq_table" \
       --gcs.bigquery.output.mode="overwrite" \
@@ -149,7 +149,7 @@ steps:
       ./bin/start.sh  -- \
       --template=GCSTOJDBC \
       --gcs.jdbc.input.format="csv" \
-      --gcs.jdbc.input.location="gs://moff-dataproc-templates-python-temp/input/csv/sample.csv" \
+      --gcs.jdbc.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOJDBC/input/sample.csv" \
       --gcs.jdbc.output.table="demo" \
       --gcs.jdbc.output.mode="overwrite" \
       --gcs.jdbc.output.driver="com.mysql.cj.jdbc.Driver" \
@@ -175,7 +175,7 @@ steps:
       --template=HIVETOGCS \
       --hive.gcs.input.database="test_db" \
       --hive.gcs.input.table="employee" \
-      --hive.gcs.output.location="gs://moff-python-dataproc-templates/hive-gcs-output" \
+      --hive.gcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/HIVETOGCS/output" \
       --hive.gcs.output.format="csv" \
       --hive.gcs.output.mode="overwrite"
     waitFor: ['build-and-upload']
