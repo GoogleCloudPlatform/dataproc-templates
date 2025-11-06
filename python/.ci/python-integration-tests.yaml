@@ -21,13 +21,13 @@ substitutions:
   _GCS_DEPS_BUCKET: 'gs://dataproc-templates-python-deps'
   _PYTHON_EGG_FILE: 'dataproc_templates_distribution.egg'
   _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
+  _ENV_TEST_CASSANDRA_HOST: '10.128.0.19'
 #  _ELASTIC_INPUT_NODE: '10.128.0.11'
 #  _ELASTIC_USER: 'elastic'
 
 # Following not used at the present
 #  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}'
 #  _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
-#  _ENV_TEST_CASSANDRA_HOST: '10.128.0.19'
 #  _ENV_TEST_MONGO_DB_URI: "mongodb://10.128.0.8:27017"
 #  _ENV_TEST_BIGTABLE_INSTANCE: 'bt-int-test'
 
@@ -324,6 +324,29 @@ steps:
       --bigquery.gcs.output.format=csv \
       --bigquery.gcs.output.mode=overwrite \
       --bigquery.gcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/BIGQUERYTOGCS/output"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: cassandra-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_TEST_CASSANDRA_HOST=${_ENV_TEST_CASSANDRA_HOST}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/jars/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://dataproc-templates_cloudbuild/jars/jnr-posix-3.1.8.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=CASSANDRATOBQ \
+      --cassandratobq.input.keyspace=testkeyspace \
+      --cassandratobq.input.table=emp \
+      --cassandratobq.input.host=$ENV_TEST_CASSANDRA_HOST \
+      --cassandratobq.bigquery.location=dataproc_templates_python.cassandra_to_bq \
+      --cassandratobq.temp.gcs.location=${GCS_DEPS_BUCKET} \
+      --cassandratobq.output.mode=overwrite
     waitFor: ['build-and-upload']
 
 options:
