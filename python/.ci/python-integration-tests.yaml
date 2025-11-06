@@ -110,7 +110,7 @@ steps:
       --gcs.bigquery.input.format="parquet" \
       --gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGQUERY/input/" \
       --gcs.bigquery.output.dataset="dataproc_templates_python" \
-      --gcs.bigquery.output.table="gcs_bq_table" \
+      --gcs.bigquery.output.table="gcs_to_bq" \
       --gcs.bigquery.output.mode="overwrite" \
       --gcs.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
     waitFor: ['build-and-upload']
@@ -393,6 +393,53 @@ steps:
       --spark.bigtable.project.id=$GCP_PROJECT \
       --spark.bigtable.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
       --gcs.bigtable.catalog.json="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGTABLE/input/cityschema.json"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-mongo
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_TEST_MONGO_DB_URI=${_ENV_TEST_MONGO_DB_URI}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/jars/mongo-spark-connector_2.12-2.4.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=GCSTOMONGO \
+      --gcs.mongo.input.format="avro" \
+      --gcs.mongo.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOMONGO/input/emp.avro" \
+      --gcs.mongo.output.uri="$ENV_TEST_MONGO_DB_URI" \
+      --gcs.mongo.output.database="demo" \
+      --gcs.mongo.output.collection="analysis" \
+      --gcs.mongo.output.mode="overwrite"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: mongo-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_TEST_MONGO_DB_URI=${_ENV_TEST_MONGO_DB_URI}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/jars/mongo-spark-connector_2.12-2.4.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=MONGOTOBIGQUERY \
+      --mongo.bq.input.uri="$ENV_TEST_MONGO_DB_URI" \
+      --mongo.bq.input.database="demo" \
+      --mongo.bq.input.collection="dummyusers" \
+      --mongo.bq.output.dataset="dataproc_templates_python" \
+      --mongo.bq.output.table="mongo_to_bq" \
+      --mongo.bq.output.mode="overwrite" \
+      --mongo.bq.temp.bucket.name=${GCS_DEPS_BUCKET}
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
