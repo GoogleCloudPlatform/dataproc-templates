@@ -317,7 +317,7 @@ steps:
       cd python
       ./bin/start.sh \
       -- --template=BIGQUERYTOGCS \
-      --bigquery.gcs.input.table=dataproc_templates_python.gcs_bq_table \
+      --bigquery.gcs.input.table=dataproc_templates_python.bq_to_gcs \
       --bigquery.gcs.output.format=csv \
       --bigquery.gcs.output.mode=overwrite \
       --bigquery.gcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/BIGQUERYTOGCS/output"
