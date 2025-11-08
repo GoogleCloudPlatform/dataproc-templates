@@ -194,6 +194,31 @@ steps:
     secretEnv: ['TEST_JDBC_URL']
     waitFor: ['build-and-upload']
 
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-bigquery-with-secret
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOBIGQUERY \
+      --jdbc.bigquery.input.url.secret="jdbctobqconn" \
+      --jdbc.bigquery.input.driver="com.mysql.jdbc.Driver" \
+      --jdbc.bigquery.input.table="test.demo" \
+      --jdbc.bigquery.output.mode="overwrite" \
+      --jdbc.bigquery.output.dataset="dataproc_templates_python" \
+      --jdbc.bigquery.output.table="jdbc_to_bigquery_with_secret" \
+      --jdbc.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: jdbc-to-gcs
     env:
@@ -212,6 +237,29 @@ steps:
       --jdbctogcs.input.driver="com.mysql.cj.jdbc.Driver" \
       --jdbctogcs.input.table="test.demo" \
       --jdbctogcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/JDBCTOGCS/output" \
+      --jdbctogcs.output.mode="overwrite" \
+      --jdbctogcs.output.format="csv"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-gcs-with-secret
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOGCS \
+      --jdbctogcs.input.url.secret="jdbctobqconn" \
+      --jdbctogcs.input.driver="com.mysql.jdbc.Driver" \
+      --jdbctogcs.input.table="test.demo" \
+      --jdbctogcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/JDBCTOGCS_SECRET/output" \
       --jdbctogcs.output.mode="overwrite" \
       --jdbctogcs.output.format="csv"
     secretEnv: ['TEST_JDBC_URL']
@@ -240,6 +288,30 @@ steps:
       --jdbctojdbc.output.mode="overwrite" \
       --jdbctojdbc.output.batch.size="1000"
     secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-jdbc-with-secret
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOJDBC \
+      --jdbctojdbc.input.url.secret="jdbctobqconn" \
+      --jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctojdbc.input.table="demo" \
+      --jdbctojdbc.output.url.secret="jdbctobqconn" \
+      --jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctojdbc.output.table="demo_out" \
+      --jdbctojdbc.output.mode="overwrite" \
+      --jdbctojdbc.output.batch.size="1000"
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
