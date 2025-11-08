@@ -1,0 +1,561 @@
+# Copyright (C) 2025 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not
+# use this file except in compliance with the License. You may obtain a copy of
+# the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
+# Marking these as subsitutions during development. During deployment these should go into
+# the build trigger
+substitutions:
+  _GCP_PROJECT: 'dataproc-templates'
+  _REGION: 'us-central1'
+  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates-python'
+  _GCS_DEPS_BUCKET: 'gs://dataproc-templates-python-deps'
+  _PYTHON_EGG_FILE: 'dataproc_templates_distribution.egg'
+  _ENV_TEST_HIVE_METASTORE_URIS: 'thrift://10.115.64.27:9083'
+  _ENV_TEST_CASSANDRA_HOST: '10.128.0.19'
+  _ENV_TEST_MEMORYSTORE: '10.128.0.9'
+  _ENV_TEST_BIGTABLE_INSTANCE: 'bt-int-test'
+  _ENV_TEST_MONGO_DB_URI: 'mongodb://10.128.0.8:27017'
+  _ENV_ELASTIC_INPUT_NODE: '10.128.0.11'
+  _ENV_ELASTIC_USER: 'elastic'
+
+# Following not used at the present
+#  _GCS_STAGING_LOCATION_BASE: 'gs://dataproc-templates_cloudbuild/staging/dataproc-templates/${BRANCH_NAME}'
+#  _SERVICE_ACCOUNT: 'dataproc-templates-cicd@dataproc-templates.iam.gserviceaccount.com'
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/TEST_JDBC_URL/versions/latest
+      env: 'TEST_JDBC_URL'
+    - versionName: projects/$PROJECT_ID/secrets/S3_ACCESS_KEY_ID/versions/latest
+      env: 'S3_ACCESS_KEY_ID'
+    - versionName: projects/$PROJECT_ID/secrets/S3_SECRET_ACCESS_KEY/versions/latest
+      env: 'S3_SECRET_ACCESS_KEY'
+    - versionName: projects/${_GCP_PROJECT}/secrets/ELASTIC_PASSWORD/versions/latest
+      env: 'ELASTIC_PASSWORD'
+#   - versionName: projects/$PROJECT_ID/secrets/jdbctobqconn/versions/latest
+#     env: 'JDBCTOBQCONN'
+
+steps:
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: build-and-upload
+    script: |
+      #!/usr/bin/env bash
+      apt-get update && apt-get install -y python3-pip python3-venv
+      cd python
+      python3 -m venv env
+      source env/bin/activate
+      pip install -r requirements.txt
+      python3 setup.py bdist_egg --output=dist/${_PYTHON_EGG_FILE}
+      gsutil cp dist/${_PYTHON_EGG_FILE} ${_GCS_STAGING_LOCATION_BASE}/${_PYTHON_EGG_FILE}
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh  -- \
+      --template=GCSTOBIGQUERY \
+      --gcs.bigquery.input.format="parquet" \
+      --gcs.bigquery.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGQUERY/input/" \
+      --gcs.bigquery.output.dataset="dataproc_templates_python" \
+      --gcs.bigquery.output.table="gcs_to_bq" \
+      --gcs.bigquery.output.mode="overwrite" \
+      --gcs.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=GCSTOGCS \
+      --gcs.to.gcs.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOGCS/input/emp.avro" \
+      --gcs.to.gcs.input.format="avro" \
+      --gcs.to.gcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOGCS/output/" \
+      --gcs.to.gcs.output.format="csv" \
+      --gcs.to.gcs.output.mode="overwrite" \
+      --gcs.to.gcs.temp.view.name="dataset" \
+      --gcs.to.gcs.sql.query="select * from dataset where sal>1500"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-jdbc
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh  -- \
+      --template=GCSTOJDBC \
+      --gcs.jdbc.input.format="csv" \
+      --gcs.jdbc.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOJDBC/input/sample.csv" \
+      --gcs.jdbc.output.table="test.demo" \
+      --gcs.jdbc.output.mode="overwrite" \
+      --gcs.jdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+      --gcs.jdbc.batch.size=1000 \
+      --gcs.jdbc.output.url="$TEST_JDBC_URL"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: hive-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS \
+      -- --template=HIVETOBIGQUERY \
+      --hive.bigquery.input.database="test_db" \
+      --hive.bigquery.input.table="employee" \
+      --hive.bigquery.output.dataset="dataproc_templates_python" \
+      --hive.bigquery.output.table="hive_to_bigquery" \
+      --hive.bigquery.output.mode="overwrite" \
+      --hive.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: hive-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'ENV_TEST_HIVE_METASTORE_URIS=${_ENV_TEST_HIVE_METASTORE_URIS}'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      --properties=spark.hadoop.hive.metastore.uris=$ENV_TEST_HIVE_METASTORE_URIS -- \
+      --template=HIVETOGCS \
+      --hive.gcs.input.database="test_db" \
+      --hive.gcs.input.table="employee" \
+      --hive.gcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/HIVETOGCS/output" \
+      --hive.gcs.output.format="csv" \
+      --hive.gcs.output.mode="overwrite"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOBIGQUERY \
+      --jdbc.bigquery.input.url="$TEST_JDBC_URL" \
+      --jdbc.bigquery.input.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbc.bigquery.input.table="test.demo" \
+      --jdbc.bigquery.output.mode="overwrite" \
+      --jdbc.bigquery.output.dataset="dataproc_templates_python" \
+      --jdbc.bigquery.output.table="jdbc_to_bigquery" \
+      --jdbc.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-bigquery-with-secret
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOBIGQUERY \
+      --jdbc.bigquery.input.url.secret="jdbctobqconn" \
+      --jdbc.bigquery.input.driver="com.mysql.jdbc.Driver" \
+      --jdbc.bigquery.input.table="test.demo" \
+      --jdbc.bigquery.output.mode="overwrite" \
+      --jdbc.bigquery.output.dataset="dataproc_templates_python" \
+      --jdbc.bigquery.output.table="jdbc_to_bigquery_with_secret" \
+      --jdbc.bigquery.temp.bucket.name=${GCS_DEPS_BUCKET}
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOGCS \
+      --jdbctogcs.input.url="$TEST_JDBC_URL" \
+      --jdbctogcs.input.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctogcs.input.table="test.demo" \
+      --jdbctogcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/JDBCTOGCS/output" \
+      --jdbctogcs.output.mode="overwrite" \
+      --jdbctogcs.output.format="csv"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-gcs-with-secret
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOGCS \
+      --jdbctogcs.input.url.secret="jdbctobqconn" \
+      --jdbctogcs.input.driver="com.mysql.jdbc.Driver" \
+      --jdbctogcs.input.table="test.demo" \
+      --jdbctogcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/JDBCTOGCS_SECRET/output" \
+      --jdbctogcs.output.mode="overwrite" \
+      --jdbctogcs.output.format="csv"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-jdbc
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh -- \
+      --template=JDBCTOJDBC \
+      --jdbctojdbc.input.url="$TEST_JDBC_URL" \
+      --jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctojdbc.input.table="test.demo" \
+      --jdbctojdbc.output.url="$TEST_JDBC_URL" \
+      --jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctojdbc.output.table="demo_out" \
+      --jdbctojdbc.output.mode="overwrite" \
+      --jdbctojdbc.output.batch.size="1000"
+    secretEnv: ['TEST_JDBC_URL']
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: jdbc-to-jdbc-with-secret
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mysql-connector-java.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=JDBCTOJDBC \
+      --jdbctojdbc.input.url.secret="jdbctobqconn" \
+      --jdbctojdbc.input.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctojdbc.input.table="demo" \
+      --jdbctojdbc.output.url.secret="jdbctobqconn" \
+      --jdbctojdbc.output.driver="com.mysql.cj.jdbc.Driver" \
+      --jdbctojdbc.output.table="demo_out" \
+      --jdbctojdbc.output.mode="overwrite" \
+      --jdbctojdbc.output.batch.size="1000"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: awss3-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=S3TOBIGQUERY \
+      --s3.bq.input.location="s3a://dataproc-templates-integration-tests/cities.avro" \
+      --s3.bq.access.key="${S3_ACCESS_KEY_ID}" \
+      --s3.bq.secret.key="${S3_SECRET_ACCESS_KEY}" \
+      --s3.bq.input.format="avro" \
+      --s3.bq.output.dataset.name="dataproc_templates_python" \
+      --s3.bq.output.table.name="s3_to_bq_avro" \
+      --s3.bq.output.mode="overwrite" \
+      --s3.bq.temp.bucket.name=${GCS_DEPS_BUCKET}
+    secretEnv:
+      - 'S3_ACCESS_KEY_ID'
+      - 'S3_SECRET_ACCESS_KEY'
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: bigquery-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'SKIP_BUILD=true'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=BIGQUERYTOGCS \
+      --bigquery.gcs.input.table=dataproc_templates_python.bq_to_gcs \
+      --bigquery.gcs.output.format=csv \
+      --bigquery.gcs.output.mode=overwrite \
+      --bigquery.gcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/BIGQUERYTOGCS/output"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: bigquery-to-memorystore
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_TEST_MEMORYSTORE=${_ENV_TEST_MEMORYSTORE}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/spark-redis_2.12-3.0.0-jar-with-dependencies.jar'
+      - 'SKIP_BUILD=true'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      bin/start.sh \
+      -- --template=BIGQUERYTOMEMORYSTORE \
+      --bigquery.memorystore.input.table=bigquery-public-data.fcc_political_ads.file_history \
+      --bigquery.memorystore.output.host=${ENV_TEST_MEMORYSTORE} \
+      --bigquery.memorystore.output.port=6379 \
+      --bigquery.memorystore.output.table=file_history \
+      --bigquery.memorystore.output.key.column=fileHistoryId \
+      --bigquery.memorystore.output.model=hash \
+      --bigquery.memorystore.output.mode=overwrite \
+      --bigquery.memorystore.output.ttl=3600 \
+      --bigquery.memorystore.output.dbnum=0
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: cassandra-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_TEST_CASSANDRA_HOST=${_ENV_TEST_CASSANDRA_HOST}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/spark-cassandra-connector-assembly_2.12-3.2.0.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/jnr-posix-3.1.8.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=CASSANDRATOBQ \
+      --cassandratobq.input.keyspace=testkeyspace \
+      --cassandratobq.input.table=emp \
+      --cassandratobq.input.host=$ENV_TEST_CASSANDRA_HOST \
+      --cassandratobq.bigquery.location=dataproc_templates_python.cassandra_to_bq \
+      --cassandratobq.temp.gcs.location=${GCS_DEPS_BUCKET} \
+      --cassandratobq.output.mode=overwrite
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-bigtable
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_TEST_BIGTABLE_INSTANCE=${_ENV_TEST_BIGTABLE_INSTANCE}'
+      - 'SKIP_BUILD=true'
+      - 'SPARK_PROPERTIES=spark.jars.packages=org.slf4j:slf4j-reload4j:1.7.36'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/spark-bigtable_2.12-0.1.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      # Create cities.json for GCS to Bigtable test
+      cat > /tmp/cities.json << EOF
+      {
+          "table": { "name": "cities" },
+          "rowkey": "key",
+          "columns": {
+              "key": {"cf": "rowkey", "col": "key", "type": "string"},
+              "LatD": {"cf": "lat", "col": "LatD", "type": "string"},
+              "LatM": {"cf": "lat", "col": "LatM", "type": "string"},
+              "LatS": {"cf": "lat", "col": "LatS", "type": "string"},
+              "NS": {"cf": "lat", "col": "NS", "type": "string"},
+              "LonD": {"cf": "lon", "col": "LonD", "type": "string"},
+              "LonM": {"cf": "lon", "col": "LonM", "type": "string"},
+              "LonS": {"cf": "lon", "col": "LonS", "type": "string"},
+              "EW": {"cf": "lon", "col": "EW", "type": "string"},
+              "City": {"cf": "place", "col": "City", "type": "string"},
+              "State": {"cf": "place", "col": "State", "type": "string"}
+          }
+      }
+      EOF
+      gsutil cp /tmp/cities.json gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGTABLE/input/cityschema.json
+      cd python
+      ./bin/start.sh \
+      -- --template=GCSTOBIGTABLE \
+      --gcs.bigtable.input.format="csv" \
+      --gcs.bigtable.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGTABLE/input/cities.csv" \
+      --spark.bigtable.project.id=$GCP_PROJECT \
+      --spark.bigtable.instance.id=$ENV_TEST_BIGTABLE_INSTANCE \
+      --gcs.bigtable.catalog.json="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGTABLE/input/cityschema.json"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: gcs-to-mongo
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_TEST_MONGO_DB_URI=${_ENV_TEST_MONGO_DB_URI}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=GCSTOMONGO \
+      --gcs.mongo.input.format="avro" \
+      --gcs.mongo.input.location="gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOMONGO/input/emp.avro" \
+      --gcs.mongo.output.uri="$ENV_TEST_MONGO_DB_URI" \
+      --gcs.mongo.output.database="demo" \
+      --gcs.mongo.output.collection="analysis" \
+      --gcs.mongo.output.mode="overwrite"
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: elastic-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_ELASTIC_INPUT_NODE=${_ENV_ELASTIC_INPUT_NODE}'
+      - 'ENV_ELASTIC_USER=${_ENV_ELASTIC_USER}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/elasticsearch-spark-20_2.12-8.15.3.jar'
+      - 'FILES=/tmp/elastic.jks'
+    script: |
+      #!/usr/bin/env bash
+      gsutil cp gs://dataproc-templates_cloudbuild/integration-testing/conf/elastic.jks /tmp/elastic.jks
+      cd python
+      ./bin/start.sh \
+      --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit' \
+      -- --template=ELASTICSEARCHTOGCS \
+      --es.gcs.input.node=${ENV_ELASTIC_INPUT_NODE} \
+      --es.gcs.input.index="dataproc-templates-test" \
+      --es.gcs.input.user=${ENV_ELASTIC_USER} \
+      --es.gcs.input.password=${ELASTIC_PASSWORD} \
+      --es.gcs.output.format="parquet" \
+      --es.gcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/ELASTICSEARCHTOGCS/output" \
+      --es.gcs.output.mode="overwrite" \
+      --es.gcs.input.es.net.ssl="true" \
+      --es.gcs.input.es.net.ssl.cert.allow.self.signed="true"
+    secretEnv:
+      - 'ELASTIC_PASSWORD'
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: mongo-to-bigquery
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_TEST_MONGO_DB_URI=${_ENV_TEST_MONGO_DB_URI}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=MONGOTOBIGQUERY \
+      --mongo.bq.input.uri="$ENV_TEST_MONGO_DB_URI" \
+      --mongo.bq.input.database="demo" \
+      --mongo.bq.input.collection="dummyusers" \
+      --mongo.bq.output.dataset="dataproc_templates_python" \
+      --mongo.bq.output.table="mongo_to_bq" \
+      --mongo.bq.output.mode="overwrite" \
+      --mongo.bq.temp.bucket.name=${GCS_DEPS_BUCKET}
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: mongo-to-gcs
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_TEST_MONGO_DB_URI=${_ENV_TEST_MONGO_DB_URI}'
+      - 'SKIP_BUILD=true'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-java-driver-3.9.1.jar,gs://dataproc-templates_cloudbuild/integration-testing/jars/mongo-spark-connector_2.12-2.4.0.jar'
+    script: |
+      #!/usr/bin/env bash
+      cd python
+      ./bin/start.sh \
+      -- --template=MONGOTOGCS \
+      --mongo.gcs.output.format="avro" \
+      --mongo.gcs.output.location="gs://dataproc-templates_cloudbuild/integration-testing-python/MONGOTOGCS/output/" \
+      --mongo.gcs.output.mode="overwrite" \
+      --mongo.gcs.input.uri="$ENV_TEST_MONGO_DB_URI" \
+      --mongo.gcs.input.database="demo" \
+      --mongo.gcs.input.collection="analysis"
+    waitFor: ['build-and-upload']
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+  automapSubstitutions: true
+timeout: 3600s
