@@ -7,7 +7,7 @@ The text between the line above and line below was written by a human. The rest 
 ```
     Create a PySpark script to tranform data in GCS from parquet to avro and use the add_insertion_time_column function in @data_tranformer.py to add an additional column
 ```
-Gemini generated the Pyspark script, specifically the file `transform_parquet_to_avro.py` and the README file. Minor changes were required to run the script. The working script is
+Gemini generated the Pyspark script, specifically the file `transform_parquet_to_avro.py` and the README file. Minor changes were required to run the script. The working gcloud command is:
 ```
     gcloud dataproc batches submit pyspark transform_parquet_to_avro.py \ 
     --batch="parquet-to-avro-$(date +%s)" \
