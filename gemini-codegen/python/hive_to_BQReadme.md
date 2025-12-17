@@ -2,6 +2,20 @@
 
 This directory contains a PySpark script for transforming data from Hive and loading it into BigQuery.
 
+---
+The text between the line above and line below was written by a human. The rest of the document was created by Gemini. The initial prompt to Gemini was:
+```
+    Create a PySpark script to extract and transform a hive table, adding an insertion_time column using the add_insertion_time_column function in @data_tranformer.py. Save this table to BigQuery, providing detailed instructions to run this script against a dataproc cluster. Save a summary of this session to hive_to_BQReadme.md
+```
+Gemini generated the Pyspark script, specifically the file `transform_hive_to_bigquery.py` and the README file. Minor changes were required to run the script because a) the preinstalled Spark BigQuery connector in cluster versions 2.1 and higher was used and b) the Dataproc Hive Metastore service with the thrift protocol was used. The working script is
+```
+gcloud dataproc jobs submit pyspark gs://path_to_src/transform_hive_to_bigquery.py \
+    --cluster=<cluster-name> --py-files=gs://path_to_src/data_transformer.py \
+    --properties=spark.hadoop.hive.metastore.uris=<URI> \
+    -- --hive_database=<database> --hive_table=<table> --bq_table=<dataset>.<table> \
+    --bq_temp_gcs_bucket=<temp-bucket-name>
+```
+---
 ## Scripts
 
 *   `data_transformer.py`: A module that contains functions for data transformation.

@@ -2,6 +2,22 @@
 
 This directory contains a PySpark script for transforming data on Google Cloud Dataproc.
 
+---
+The text between the line above and line below was written by a human. The rest of the document was created by Gemini. The initial prompt to Gemini was:
+```
+    Create a PySpark script to tranform data in GCS from parquet to avro and use the add_insertion_time_column function in @data_tranformer.py to add an additional column
+```
+Gemini generated the Pyspark script, specifically the file `transform_parquet_to_avro.py` and the README file. Minor changes were required to run the script. The working script is
+```
+    gcloud dataproc batches submit pyspark transform_parquet_to_avro.py \ 
+    --batch="parquet-to-avro-$(date +%s)" \
+    --jars=file:///usr/lib/spark/connector/spark-avro.jar \
+    --py-files=./data_transformer.py \
+    --deps-bucket=gs://temporary_bucket_name \
+    -- --input=gs://path_to_input_table/parquet-table  \
+    --output=gs://path_to_output_table/avro_table
+```
+---
 ## Scripts
 
 *   `data_transformer.py`: A module that contains functions for data transformation.
