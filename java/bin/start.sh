@@ -58,7 +58,7 @@ if [ -z "$SKIP_BUILD" ]; then
  
   #Copy jar file to GCS bucket Staging folder
   echo_formatted "Copying ${PROJECT_ROOT_DIR}/target/${JAR_FILE} to  staging bucket: ${GCS_STAGING_LOCATION}/${JAR_FILE}"
-  gsutil cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_LOCATION}/${JAR_FILE}
+  gcloud storage cp ${PROJECT_ROOT_DIR}/target/${JAR_FILE} ${GCS_STAGING_LOCATION}/${JAR_FILE}
   check_status $? "\n Commands to copy the project jar file to GCS Staging location went fine, thus we are good to go \n" "\n It seems like there is some issue in copying the project jar file to GCS Staging location \n"
 
 
@@ -122,8 +122,8 @@ if [ -n "${CATALOG}" ]; then
   echo "Downloading Hbase jar dependency"
   wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar
   wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar
-  gsutil copy hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
-  gsutil copy hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
+  gcloud storage cp hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
+  gcloud storage cp hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
   echo "Passing downloaded dependency jars"
   OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar"
   rm hbase-client-2.4.12.jar
@@ -186,4 +186,3 @@ check_status $spark_status "\n Spark Command ran successful \n" "\n It seems lik
 
 echo "We will love to hear your feedback at: https://forms.gle/XXCJeWeCJJ9fNLQS6"
 echo "Email us at: dataproc-templates-support-external@googlegroups.com"
-

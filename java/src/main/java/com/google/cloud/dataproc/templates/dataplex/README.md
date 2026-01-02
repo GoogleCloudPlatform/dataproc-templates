@@ -11,8 +11,8 @@ from Cloud Storage and the target BQ table will be overwritten.
 Download jar and properties file
 ```
 export GCS_STAGING_LOCATION=gs://bucket/path/to/staging/folder/
-gsutil -u <billing-project-id> cp gs://dataplex-dataproc-templates-artifacts/dataproc-templates-1.0-SNAPSHOT.jar ${GCS_STAGING_LOCATION}
-gsutil -u <billing-project-id> cp gs://dataplex-dataproc-templates-artifacts/log4j-spark-driver-template.properties ${GCS_STAGING_LOCATION}
+gcloud storage cp gs://dataplex-dataproc-templates-artifacts/dataproc-templates-1.0-SNAPSHOT.jar ${GCS_STAGING_LOCATION}
+gcloud storage cp gs://dataplex-dataproc-templates-artifacts/log4j-spark-driver-template.properties ${GCS_STAGING_LOCATION}
 ```
 
 Create Dataplex Task
