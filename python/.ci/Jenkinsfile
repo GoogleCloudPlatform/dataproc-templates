@@ -704,7 +704,7 @@ pipeline {
 
                 //                 source env/bin/activate
 
-                //                 gsutil cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
+                //                 gcloud storage cp gs://python-dataproc-templates/surjitsh/hbase-site.xml .
                                 
                 //                 export GCS_STAGING_LOCATION=gs://python-dataproc-templates-temp
                 //                 export CATALOG='{"table":{"namespace":"default","name":"my_table"},"rowkey":"key","columns":{"key":{"cf":"rowkey","col":"key","type":"string"},"name":{"cf":"cf","col":"name","type":"string"}}}'
@@ -800,7 +800,7 @@ EOF
 
 
                                 cat /tmp/cities.json
-                                gsutil cp /tmp/cities.json gs://dataproc-templates/conf/
+                                gcloud storage cp /tmp/cities.json gs://dataproc-templates/conf/
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
                                 export SKIP_BUILD=true
                                 export JARS="gs://spark-lib/bigtable/spark-bigtable_2.12-0.1.0.jar"
@@ -834,7 +834,7 @@ EOF
 
                                 source env/bin/activate
 
-                                gsutil cp gs://dataproc-templates/conf/elastic.jks /tmp/
+                                gcloud storage cp gs://dataproc-templates/conf/elastic.jks /tmp/
                                 
                                 export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
                                 export SKIP_BUILD=true
