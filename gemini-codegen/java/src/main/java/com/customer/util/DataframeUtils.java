@@ -1,4 +1,4 @@
-package com.google.cloud.dataproc.templates.util;
+package com.customer.util;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

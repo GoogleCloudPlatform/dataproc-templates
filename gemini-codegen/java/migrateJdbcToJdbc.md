@@ -31,21 +31,21 @@ Store your JDBC connection details in Google Secret Manager. You will need to cr
 Submit the Spark job to Dataproc Serverless using the `gcloud` command-line tool:
 
 ```bash
-gcloud dataproc jobs submit spark \
+gcloud dataproc batches submit spark \
     --project=<your-gcp-project-id> \
     --region=<your-gcp-region> \
     --class=com.google.cloud.dataproc.templates.jdbc.JdbcToJdbc \
     --jars=gs://<your-bucket-name>/gemini-java-templates-1.0-SNAPSHOT.jar \
     -- \
-    --jdbc.input.url.secret.id=<postgres-url-secret-id> \
-    --jdbc.input.table=<postgres-table-name> \
-    --jdbc.input.partition.column=<partition-column-name> \
-    --jdbc.input.lower.bound=<lower-bound> \
-    --jdbc.input.upper.bound=<upper-bound> \
-    --jdbc.input.num.partitions=<num-partitions> \
-    --jdbc.output.url.secret.id=<mysql-url-secret-id> \
-    --jdbc.output.table=<mysql-table-name> \
-    --jdbc.batch.size=1000
+    jdbc.input.url.secret.id=<postgres-url-secret-id> \
+    jdbc.input.table=<postgres-table-name> \
+    jdbc.input.partition.column=<partition-column-name> \
+    jdbc.input.lower.bound=<lower-bound> \
+    jdbc.input.upper.bound=<upper-bound> \
+    jdbc.input.num.partitions=<num-partitions> \
+    jdbc.output.url.secret.id=<mysql-url-secret-id> \
+    jdbc.output.table=<mysql-table-name> \
+    jdbc.batch.size=1000
 ```
 
 Replace the placeholders `<...>` with your actual values.

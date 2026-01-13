@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package com.google.cloud.dataproc.templates.jdbc;
+package com.customer.util;
 
 import com.google.cloud.secretmanager.v1.AccessSecretVersionResponse;
 import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
@@ -30,13 +30,13 @@ import java.util.Properties;
 
 public class JdbcToJdbc {
 
-    private static final String PROJECT_ID = "your-gcp-project-id"; // TODO: Make this a parameter
+    private static final String PROJECT_ID = "dataproc-templates";
     private static final String JDBC_INPUT_URL_SECRET_ID = "jdbc.input.url.secret.id";
     private static final String JDBC_INPUT_TABLE = "jdbc.input.table";
     private static final String JDBC_PARTITION_COLUMN = "jdbc.input.partition.column";
     private static final String JDBC_LOWER_BOUND = "jdbc.input.lower.bound";
-    private static final String JDBC_UPPER_BOUND = "jdbc.upper.bound";
-    private static final String JDBC_NUM_PARTITIONS = "jdbc.num.partitions";
+    private static final String JDBC_UPPER_BOUND = "jdbc.input.upper.bound";
+    private static final String JDBC_NUM_PARTITIONS = "jdbc.input.num.partitions";
     private static final String JDBC_OUTPUT_URL_SECRET_ID = "jdbc.output.url.secret.id";
     private static final String JDBC_OUTPUT_TABLE = "jdbc.output.table";
     private static final String JDBC_BATCH_SIZE = "jdbc.batch.size";
@@ -58,6 +58,7 @@ public class JdbcToJdbc {
                 .option("lowerBound", properties.getProperty(JDBC_LOWER_BOUND))
                 .option("upperBound", properties.getProperty(JDBC_UPPER_BOUND))
                 .option("numPartitions", properties.getProperty(JDBC_NUM_PARTITIONS))
+                .option("driver", "org.postgresql.Driver")
                 .load();
 
         // Add insertion time
@@ -69,7 +70,8 @@ public class JdbcToJdbc {
                 .option("url", getSecret(properties.getProperty(JDBC_OUTPUT_URL_SECRET_ID)))
                 .option("dbtable", properties.getProperty(JDBC_OUTPUT_TABLE))
                 .option("batchsize", properties.getProperty(JDBC_BATCH_SIZE))
-                .mode(SaveMode.Append)
+                .option("driver", "com.mysql.cj.jdbc.Driver")
+                .mode(SaveMode.Overwrite)
                 .save();
     }
 
