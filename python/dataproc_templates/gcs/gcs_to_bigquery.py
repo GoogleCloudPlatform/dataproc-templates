@@ -107,6 +107,14 @@ class GCSToBigQueryTemplate(BaseTemplate):
             help='SQL query for data transformation. This must use the temp view name as the table to query from.'
         )
 
+        parser.add_argument(
+            f'--{constants.GCS_TO_BQ_DIRECT_WRITE_METHOD}',
+            dest=constants.GCS_TO_BQ_DIRECT_WRITE_METHOD,
+            required=False,
+            default="",
+            help='Pass Direct write method to use Storage Write API'
+        )
+
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
@@ -128,6 +136,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
         output_mode: str = args[constants.GCS_BQ_OUTPUT_MODE]
         bq_temp_view: str = args[constants.GCS_TO_BQ_TEMP_VIEW_NAME]
         sql_query: str = args[constants.GCS_TO_BQ_SQL_QUERY]
+        write_method: str = args[constants.GCS_TO_BQ_DIRECT_WRITE_METHOD]
 
         logger.info(
             "Starting Cloud Storage to BigQuery Spark job with parameters:\n"
@@ -196,19 +205,19 @@ class GCSToBigQueryTemplate(BaseTemplate):
         # output_data.printSchema()
         # output_data.show(3, False)
 
-        # Write Indirect method
-        # output_data.write \
-        #     .format(constants.FORMAT_BIGQUERY) \
-        #     .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
-        #     .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
-        #     .mode(output_mode) \
-        #     .save()
-        
-        # Write direct method
-        output_data.write \
+        if write_method == 'direct':
+            # Write direct method
+            output_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
-            .option("writeMethod", "direct") \
+            .option(constants.BQ_WRITE_METHOD, constants.BQ_DIRECT_WRITE_METHOD) \
             .mode(output_mode) \
             .save()
-
+        else:
+            # Write Indirect method
+            output_data.write \
+                .format(constants.FORMAT_BIGQUERY) \
+                .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
+                .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
+                .mode(output_mode) \
+                .save()

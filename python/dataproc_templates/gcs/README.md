@@ -13,6 +13,7 @@ It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverl
 * `gcs.bigquery.output.mode`: Output write mode (one of: append,overwrite,ignore,errorifexists)(Defaults to append)
 
 #### Optional Arguments
+* `gcs.bigquery.direct.write.method`: pass method as 'direct' to use [BigQuery Storage Write API](https://docs.cloud.google.com/bigquery/docs/write-api)
 * `gcs.to.bigquery.temp.view.name`: Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQLquery
 * `gcs.to.bigquery.sql.query`: SQL query for data transformation. This must use the temp view name as the table to query from.
 * `gcs.bigquery.input.chartoescapequoteescaping`: Sets a single character used for escaping the escape for the quote character. The default value is escape character when escape and quote characters are different, \0 otherwise
@@ -54,6 +55,7 @@ usage: main.py [-h]
                --gcs.bigquery.output.dataset GCS.BIGQUERY.OUTPUT.DATASET
                --gcs.bigquery.output.table GCS.BIGQUERY.OUTPUT.TABLE
                --gcs.bigquery.input.format {avro,parquet,csv,json,delta}
+               [--gcs.bigquery.direct.write.method GCS.BIGQUERY.DIRECT.WRITE.METHOD]
                [--gcs.to.bigquery.temp.view.name GCS.TO.BIGQUERY.TEMP.VIEW.NAME]
                [--gcs.to.bigquery.sql.query GCS.TO.BIGQUERY.SQL.QUERY]
                [--gcs.bigquery.input.chartoescapequoteescaping GCS.BIGQUERY.INPUT.CHARTOESCAPEQUOTEESCAPING]

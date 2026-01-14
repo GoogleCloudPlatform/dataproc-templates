@@ -174,6 +174,8 @@ BQ_ALLOW_FIELD_ADDITION="allowFieldAddition"
 BQ_ALLOW_FIELD_RELAXATION="allowFieldRelaxation"
 BQ_BIGNUMERIC_DEFAULT_PRECISION="bigNumericDefaultPrecision"
 BQ_BIGNUMERIC_DEFAULT_SCALE="bigNumericDefaultScale"
+BQ_WRITE_METHOD="writeMethod"
+BQ_DIRECT_WRITE_METHOD="direct"
 
 OPTION_DEFAULT = "default"
 OPTION_HELP = "help"
@@ -655,6 +657,7 @@ GCS_BQ_TEMP_BUCKET = "temporaryGcsBucket"
 GCS_BQ_LD_TEMP_BUCKET_NAME = "gcs.bigquery.temp.bucket.name"
 GCS_TO_BQ_TEMP_VIEW_NAME = "gcs.bigquery.temp.view.name"
 GCS_TO_BQ_SQL_QUERY = "gcs.bigquery.sql.query"
+GCS_TO_BQ_DIRECT_WRITE_METHOD = "gcs.bigquery.direct.write.method"
 
 
 # GCS to JDBC
