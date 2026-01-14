@@ -32,6 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
 import static org.apache.spark.sql.functions.lit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ClassPathLister {
     private static final String PROJECT_ID = "dataproc-templates";
@@ -51,7 +53,7 @@ public class ClassPathLister {
         for (Map.Entry<String, String> sparkProp : sparkProps.entrySet()) {
             System.out.println(sparkProp.getKey() + "=" + sparkProp.getValue());
         }  */
-
+        
         StructType schema = new StructType()
             .add("fileName", DataTypes.StringType, true)
             .add("implementationTitle", DataTypes.StringType, true)
@@ -78,6 +80,15 @@ public class ClassPathLister {
         Set<String> valuableKeys = new HashSet<>();
         Collections.addAll(valuableKeys, "DATAPROC_WORKLOAD_TYPE", "DATAPROC_IMAGE_VERSION", "DATAPROC_IMAGE_TYPE", "SPARK_SCALA_VERSION");
         handyVars.keySet().retainAll(valuableKeys);
+        Pattern p = Pattern.compile("^\\D+(\\d+\\.\\d+\\.\\d+)$");
+        String scalaVersionString = scala.util.Properties.versionString();
+        Matcher m = p.matcher(scalaVersionString);
+        if (m.find()) {
+            handyVars.put("SCALA_VERSION", m.group(1));
+        }
+        handyVars.put("SPARK_VERSION", spark.version());
+        handyVars.put("JAVA_VERSION", System.getProperty("java.version"));
+
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String jsonString = objectMapper.writeValueAsString(handyVars);
