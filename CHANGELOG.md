@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.1.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v2.0.0-beta...v2.1.0-beta) (2026-01-16)
+
+
+### Features
+
+* Deltalake to iceberg transfer ([#1058](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1058)) ([887b07d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/887b07d0307adec58b8759b9de94d3fcc579febd))
+
+
+### Bug Fixes
+
+* Adding Cloud Build Python Integration Tests  ([#1082](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1082)) ([2d12000](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/2d12000ebf9e971db88476eb9d8a5fa792a37aee))
+* Migrate UI tests ([#1076](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1076)) ([be4a25e](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/be4a25e3340ab6508b1d85b278a4ed77104985c1))
+* python readme fix ([#1075](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1075)) ([ad592e1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/ad592e1000499ea9a286e28566b479d46504efba))
+* python start.sh and typo ([#1064](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1064)) ([541c270](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/541c2709867608ec7b7df0d496805f8501265274))
+* remove deprecated templates ([#1066](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1066)) ([c49046a](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c49046ad069bbf1e634f2026d1161358aff11a97))
+* remove deprecated templates ([#1074](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1074)) ([62410a1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/62410a1e4953071ffc60fec5d315212863d36f89))
+
 ## [2.0.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.2-beta...v2.0.0-beta) (2025-06-23)
 
 
