@@ -105,24 +105,60 @@ class GCSToJDBCTemplate(BaseTemplate):
             required=False,
             help='The maximum number of partitions to be used for parallelism in table writing'
         )
+        parser.add_argument(
+            '--gcs.to.jdbc.password.secret.id',
+            dest='gcs.to.jdbc.password.secret.id',
+            required=False,
+            help='Secret Manager secret ID for the JDBC password. Must be in the format projects/PROJECT_ID/secrets/SECRET_ID.'
+        )
+        parser.add_argument(
+            '--gcs.to.jdbc.password.secret.version',
+            dest='gcs.to.jdbc.password.secret.version',
+            required=False,
+            default='latest',
+            help='Secret Manager secret version for the JDBC password. Defaults to "latest".'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
 
         return vars(known_args)
 
+    def get_secret(project_id, secret_id, version_id):
+        """Retrieves a secret from Secret Manager."""
+        client = secretmanager.SecretManagerServiceClient()
+        name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
+        response = client.access_secret_version(name=name)
+        return response.payload.data.decode('UTF-8')
+
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
-        logger: Logger = self.get_logger(spark=spark)
+        logger: Logger = self.get_logger(spark=spark)      
 
         # Arguments
         input_location: str = args[constants.GCS_JDBC_INPUT_LOCATION]
         input_format: str = args[constants.GCS_JDBC_INPUT_FORMAT]
-        jdbc_url: str = args[constants.GCS_JDBC_OUTPUT_URL]
+        #jdbc_url: str = args[constants.GCS_JDBC_OUTPUT_URL]
         jdbc_table: str = args[constants.GCS_JDBC_OUTPUT_TABLE]
         output_mode: str = args[constants.GCS_JDBC_OUTPUT_MODE]
         output_driver: str = args[constants.GCS_JDBC_OUTPUT_DRIVER]
         batch_size: int = args[constants.GCS_JDBC_BATCH_SIZE]
         jdbc_numpartitions: int = args[constants.GCS_JDBC_NUMPARTITIONS]
+
+        if hasattr(properties, 'gcs.to.jdbc.password.secret.id') and properties['gcs.to.jdbc.password.secret.id']:
+            password = get_secret(
+                properties['gcp.project.id'],
+                properties['gcs.to.jdbc.password.secret.id'],
+                properties['gcs.to.jdbc.password.secret.version']
+            )
+
+        jdbc_url: str = args[constants.GCS_JDBC_OUTPUT_URL]
+        if 'password' not in jdbc_url:
+            # This assumes the password is provided via a property in the URL like ';password=...'
+            # A more robust solution is needed depending on the database driver
+            if '?' in jdbc_url:
+                jdbc_url += f"&password={password}"
+            else:
+                jdbc_url += f"?password={password}"
 
         ignore_keys = {constants.GCS_JDBC_OUTPUT_URL}
         filtered_args = {key:val for key,val in args.items() if key not in ignore_keys}
