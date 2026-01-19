@@ -71,7 +71,6 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             required=True,
             help="MySQL database name",
         )
-
         parser.add_argument(
             f"--{constants.MYSQL_TABLE_LIST_ARG}",
             dest=constants.MYSQL_TABLE_LIST,
@@ -89,6 +88,14 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             help="Spanner output write mode (Default: overwrite). "
             "Use append when schema already exists in Spanner",
             choices=[constants.OUTPUT_MODE_OVERWRITE, constants.OUTPUT_MODE_APPEND],
+        )
+
+        parser.add_argument(
+            f"--{constants.USE_CLOUD_SQL_PROXY_ARG}",
+            dest=constants.USE_CLOUD_SQL_PROXY,
+            default="false",
+            required=False,
+            help="Flag to reach mysql instance using cloud sql proxy"
         )
 
         parser.add_argument(
@@ -110,6 +117,13 @@ class MySqlToSpannerScript(BaseParameterizeScript):
             dest=constants.SPANNER_TABLE_PRIMARY_KEYS,
             required=True,
             help='Provide table & PK column which do not have PK in MySQL table {"table_name":"primary_key"}',
+        )
+
+        parser.add_argument(
+            f"--{constants.MYSQL_READ_PARTITION_COLUMNS_ARG}",
+            dest=constants.MYSQL_READ_PARTITION_COLUMNS,
+            required=True,
+            help='Dictionary of custom read partition columns, e.g.: {"table2": "secondary_id"}',
         )
 
         parser.add_argument(
@@ -140,6 +154,9 @@ class MySqlToSpannerScript(BaseParameterizeScript):
         # Convert JSON string to object
         args[constants.SPANNER_TABLE_PRIMARY_KEYS] = json.loads(
             args[constants.SPANNER_TABLE_PRIMARY_KEYS]
+        )
+        args[constants.MYSQL_READ_PARTITION_COLUMNS] = json.loads(
+            args[constants.MYSQL_READ_PARTITION_COLUMNS]
         )
 
         # Exclude arguments that are not needed to be passed to the notebook
