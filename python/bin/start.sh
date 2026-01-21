@@ -93,9 +93,9 @@ if [ -n "${CATALOG}" ]; then
   wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-client/2.4.12/hbase-client-2.4.12.jar
   wget https://repo1.maven.org/maven2/org/apache/hbase/hbase-shaded-mapreduce/2.4.12/hbase-shaded-mapreduce-2.4.12.jar
   wget https://repo1.maven.org/maven2/org/apache/htrace/htrace-core4/4.2.0-incubating/htrace-core4-4.2.0-incubating.jar
-  gsutil copy hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
-  gsutil copy hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
-  gsutil copy htrace-core4-4.2.0-incubating.jar ${GCS_STAGING_LOCATION}/htrace-core4-4.2.0-incubating.jar
+  gcloud storage cp hbase-client-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar
+  gcloud storage cp hbase-shaded-mapreduce-2.4.12.jar ${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar
+  gcloud storage cp htrace-core4-4.2.0-incubating.jar ${GCS_STAGING_LOCATION}/htrace-core4-4.2.0-incubating.jar
   echo "Passing downloaded dependency jars"
   OPT_JARS="${OPT_JARS},${GCS_STAGING_LOCATION}/hbase-client-2.4.12.jar,${GCS_STAGING_LOCATION}/hbase-shaded-mapreduce-2.4.12.jar,${GCS_STAGING_LOCATION}/htrace-core4-4.2.0-incubating.jar,file:///usr/lib/spark/external/hbase-spark.jar"
   rm hbase-client-2.4.12.jar

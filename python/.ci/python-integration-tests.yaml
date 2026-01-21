@@ -56,7 +56,7 @@ steps:
       source env/bin/activate
       pip install -r requirements.txt
       python3 setup.py bdist_egg --output=dist/${_PYTHON_EGG_FILE}
-      gsutil cp dist/${_PYTHON_EGG_FILE} ${_GCS_STAGING_LOCATION_BASE}/${_PYTHON_EGG_FILE}
+      gcloud storage cp dist/${_PYTHON_EGG_FILE} ${_GCS_STAGING_LOCATION_BASE}/${_PYTHON_EGG_FILE}
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: gcs-to-bigquery
@@ -441,7 +441,7 @@ steps:
           }
       }
       EOF
-      gsutil cp /tmp/cities.json gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGTABLE/input/cityschema.json
+      gcloud storage cp /tmp/cities.json gs://dataproc-templates_cloudbuild/integration-testing-python/GCSTOBIGTABLE/input/cityschema.json
       cd python
       ./bin/start.sh \
       -- --template=GCSTOBIGTABLE \
@@ -489,7 +489,7 @@ steps:
       - 'FILES=/tmp/elastic.jks'
     script: |
       #!/usr/bin/env bash
-      gsutil cp gs://dataproc-templates_cloudbuild/integration-testing/conf/elastic.jks /tmp/elastic.jks
+      gcloud storage cp gs://dataproc-templates_cloudbuild/integration-testing/conf/elastic.jks /tmp/elastic.jks
       cd python
       ./bin/start.sh \
       --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit' \

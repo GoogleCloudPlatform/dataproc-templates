@@ -26,29 +26,33 @@ steps:
       - '--output=${_BINARY_PREFIX}.egg'
     dir: '${_REPO}/python'
     id: build-python-egg
-  - name: gcr.io/cloud-builders/gsutil
+  - name: gcr.io/cloud-builders/gcloud
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gsutil cp ${_REPO}/python/main.py gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/  
+        gcloud storage cp ${_REPO}/python/main.py gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/  
     id: cp-python-main-to-gcs-tag-folder
-  - name: gcr.io/cloud-builders/gsutil
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: gcloud
     args:
+      - storage
       - cp
       - main.py
       - 'gs://${_PUBLIC_BUCKET}/latest/python/'
     dir: '${_REPO}/python'
     id: cp-python-main-to-gcs-latest-folder
-  - name: gcr.io/cloud-builders/gsutil
+  - name: gcr.io/cloud-builders/gcloud
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gsutil cp ${_REPO}/python/${_BINARY_PREFIX}.egg gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/
+        gcloud storage cp ${_REPO}/python/${_BINARY_PREFIX}.egg gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/python/
     id: cp-python-egg-to-gcs-tag-folder
-  - name: gcr.io/cloud-builders/gsutil
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: gcloud
     args:
+      - storage
       - cp
       - '${_BINARY_PREFIX}.egg'
       - 'gs://${_PUBLIC_BUCKET}/latest/python/'
@@ -61,15 +65,17 @@ steps:
     dir: '${_REPO}/java'
     id: build-java-jar
     entrypoint: mvn
-  - name: gcr.io/cloud-builders/gsutil
+  - name: gcr.io/cloud-builders/gcloud
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        gsutil cp ${_REPO}/java/target/dataproc-templates-1.0-SNAPSHOT.jar gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/java/
+        gcloud storage cp ${_REPO}/java/target/dataproc-templates-1.0-SNAPSHOT.jar gs://${_PUBLIC_BUCKET}/$(date -u +%Y-%m-%d)_$TAG_NAME/java/
     id: cp-java-egg-to-gcs-tag-folder
-  - name: gcr.io/cloud-builders/gsutil
+  - name: gcr.io/cloud-builders/gcloud
+    entrypoint: gcloud
     args:
+      - storage
       - cp
       - dataproc-templates-1.0-SNAPSHOT.jar
       - 'gs://${_PUBLIC_BUCKET}/latest/java/${_BINARY_PREFIX}.jar'
