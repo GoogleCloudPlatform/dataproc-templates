@@ -81,3 +81,41 @@ def persist_streaming_dataframe_to_cloud_storage(
             .option(constants.STREAM_PATH, output_location)
 
     return datastream_writer
+
+def persist_dataframe_to_elasticsearch(
+    input_dataframe: DataFrame,
+    args: dict,
+    es_node: str,
+    es_index: str,
+    es_user: str,
+    es_password: str,
+    es_api_key: str,
+    prefix: str,
+) -> DataFrame:
+    """Persist input_dataframe object with methods and options applied for writing to Elasticsearch."""
+
+    get_es_spark_connector_writer_options: dict = constants.get_es_spark_connector_writer_options(prefix)
+    es_spark_connector_options = {get_es_spark_connector_writer_options[k]: v
+                     for k, v in args.items()
+                     if k in get_es_spark_connector_writer_options and v}
+
+    if es_api_key:
+        es_conf = {
+            "es.nodes": es_node,
+            "es.resource": es_index,
+            "es.net.http.header.Authorization": es_api_key
+        }
+    else:
+        es_conf = {
+            "es.nodes": es_node,
+            "es.resource": es_index,
+            "es.net.http.auth.user": es_user,
+            "es.net.http.auth.pass": es_password
+        }
+
+    # Merging the Required and Optional attributes
+    es_conf.update(es_spark_connector_options)
+
+    input_dataframe.options(**es_conf).save(es_index)
+
+    return input_dataframe

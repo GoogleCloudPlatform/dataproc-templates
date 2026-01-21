@@ -35,6 +35,7 @@ FORMAT_JDBC = "jdbc"
 FORMAT_PUBSUBLITE = "pubsublite"
 FORMAT_REDSHIFT = "io.github.spark_redshift_community.spark.redshift"
 FORMAT_MEMORYSTORE = "org.apache.spark.sql.redis"
+FORMAT_ELASTICSEARCH_WRITER = "org.elasticsearch.spark.sql"
 JDBC_URL = "url"
 JDBC_TABLE = "dbtable"
 JDBC_QUERY = "query"
@@ -157,6 +158,10 @@ ES_NET_PROXY_SOCKS_PORT="es.net.proxy.socks.port"
 ES_NET_PROXY_SOCKS_USER="es.net.proxy.socks.user"
 ES_NET_PROXY_SOCKS_PASS="es.net.proxy.socks.pass"
 ES_NET_PROXY_SOCKS_USE_SYSTEM_PROPS="es.net.proxy.socks.use.system.props"
+ES_BATCH_SIZE_BYTES="es.batch.size.bytes"
+ES_BATCH_SIZE_ENTRIES="es.batch.size.entries"
+ES_BATCH_WRITE_RETRY_COUNT="es.batch.write.retry.count"
+ES_BATCH_WRITE_RETRY_WAIT="es.batch.write.retry.wait"
 BQ_TABLE_LABEL="bigQueryTableLabel"
 BQ_CREATE_DISPOSITION="createDisposition"
 BQ_TEMPORARY_GCS_BUCKET="temporaryGcsBucket"
@@ -417,8 +422,8 @@ def get_bq_output_spark_options(prefix):
     return spark_options
 
 
-# A map of Elasticsearch Spark Connector related options.
-ES_SPARK_READER_OPTIONS = {
+# A map of Elasticsearch Spark Connector options.
+ES_SPARK_OPTIONS = {
     ES_NODES_PATH_PREFIX:
         {OPTION_HELP: "Prefix to add to all requests made to Elasticsearch"},
     ES_QUERY:
@@ -544,7 +549,19 @@ ES_SPARK_READER_OPTIONS = {
     ES_NET_PROXY_SOCKS_USE_SYSTEM_PROPS:
         {OPTION_DEFAULT: "yes",
          OPTION_HELP: "Whether use the system Socks proxy properties "
-                      "(namely socksProxyHost and socksProxyHost) or not"}
+                      "(namely socksProxyHost and socksProxyHost) or not"},
+    ES_BATCH_SIZE_BYTES:
+        {OPTION_DEFAULT: "1mb",
+         OPTION_HELP: "Size (in bytes) for batch writes using Elasticsearch bulk API"},
+    ES_BATCH_SIZE_ENTRIES:
+        {OPTION_DEFAULT: "1000",
+         OPTION_HELP: "Size (in entries) for batch writes using Elasticsearch bulk API - (0 disables it)"},
+    ES_BATCH_WRITE_RETRY_COUNT:
+        {OPTION_DEFAULT: "3",
+         OPTION_HELP: "Number of times a bulk write operation should be retried in case of a failure"},
+    ES_BATCH_WRITE_RETRY_WAIT:
+        {OPTION_DEFAULT: "10s",
+         OPTION_HELP: "Time to wait between batch write retries that are caused by bulk rejections"}
 }
 
 def get_es_spark_connector_input_options(prefix):
@@ -596,6 +613,26 @@ def get_es_spark_connector_input_options(prefix):
     ]
     es_spark_connector_options = {(prefix + _).lower(): _ for _ in input_options}
     return es_spark_connector_options
+
+def get_es_spark_connector_writer_options(prefix):
+    writer_options = [
+        ES_NODES_DISCOVERY,
+        ES_NODES_CLIENT_ONLY,
+        ES_NODES_DATA_ONLY,
+        ES_NODES_WAN_ONLY,
+        ES_HTTP_TIMEOUT,
+        ES_HTTP_RETRIES,
+        ES_ACTION_HEART_BEAT_LEAD,
+        ES_NET_SSL,
+        ES_NET_SSL_CERT_ALLOW_SELF_SIGNED,
+        ES_NET_SSL_PROTOCOL,
+        ES_BATCH_SIZE_BYTES,
+        ES_BATCH_SIZE_ENTRIES,
+        ES_BATCH_WRITE_RETRY_COUNT,
+        ES_BATCH_WRITE_RETRY_WAIT,
+    ]
+    es_spark_connector_writer_options = {(prefix + _).lower(): _ for _ in writer_options}
+    return es_spark_connector_writer_options
 
 # Output mode
 OUTPUT_MODE_OVERWRITE = "overwrite"
@@ -944,3 +981,14 @@ BQ_MEMORYSTORE_OUTPUT_DBNUM = "bigquery.memorystore.output.dbnum"
 
 BQ_MEMORYSTORE_OUTPUT_MODEL_HASH = "hash"
 BQ_MEMORYSTORE_OUTPUT_MODEL_BINARY = "binary"
+
+# BigQuery to Elasticsearch
+BQ_ES_INPUT_TABLE = "bigquery.elasticsearch.input.table"
+BQ_ES_INPUT_TABLE_COLUMNS = "bigquery.elasticsearch.input.table.columns"
+BQ_ES_INPUT_TABLE_FILTERS = "bigquery.elasticsearch.input.table.filters"
+BQ_ES_OUTPUT_NODE = "bigquery.elasticsearch.output.node"
+BQ_ES_OUTPUT_INDEX = "bigquery.elasticsearch.output.index"
+BQ_ES_OUTPUT_NODE_USER = "bigquery.elasticsearch.output.user"
+BQ_ES_OUTPUT_NODE_PASSWORD = "bigquery.elasticsearch.output.password"
+BQ_ES_OUTPUT_NODE_API_KEY = "bigquery.elasticsearch.output.api.key"
+BQ_ES_OUTPUT_MODE = "bigquery.elasticsearch.output.mode"
