@@ -163,3 +163,4 @@ class BigQueryToElasticsearchTemplate(BaseTemplate):
         # Write
         writer: DataFrameWriter = input_data.write.format(constants.FORMAT_ELASTICSEARCH_WRITER).mode(output_mode)
         persist_dataframe_to_elasticsearch(writer, args, es_node, es_index, es_user, es_password, es_api_key, "bigquery.elasticsearch.output.")
+

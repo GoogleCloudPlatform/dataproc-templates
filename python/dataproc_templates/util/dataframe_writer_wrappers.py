@@ -119,3 +119,4 @@ def persist_dataframe_to_elasticsearch(
     input_dataframe.options(**es_conf).save(es_index)
 
     return input_dataframe
+
