@@ -205,3 +205,140 @@ export JARS="gs://mygcsstagingbkt/jars/spark-redis_2.12-3.0.0-jar-with-dependenc
 
 ## Known limitations
 With Spark-Redis, the Hash model does not support nested fields in the DataFrame. Alternatively, you can use the Binary persistence model, which supports nested fields.
+
+## BigQuery to Elasticsearch
+
+Template for exporting a BigQuery table to an Elasticsearch Index.
+
+It uses the [Spark BigQuery connector](https://cloud.google.com/dataproc-serverless/docs/guides/bigquery-connector-spark-example) for reading from BigQuery and uses the [Elasticsearch Spark Connector](https://www.elastic.co/guide/en/elasticsearch/hadoop/current/index.html) for writing to Elasticsearch.
+
+The template can support the Elasticsearch versions >= 7.12.0, using the appropriate Elasticsearch Spark Connector
+
+## Arguments
+* `bigquery.elasticsearch.input.table`: BigQuery Input table name (format: `project:dataset.table`)
+* `bigquery.elasticsearch.input.table.columns`: Comma Seperated list of columns to read from the input table (format: col1,col2)
+* `bigquery.elasticsearch.input.table.filters`: Row level filters to apply when reading from the input table (format: col1='val1' AND col2='val2')
+* `bigquery.elasticsearch.output.node`: Elasticsearch Node Uri (format: mynode:9600)
+* `bigquery.elasticsearch.output.index`: Elasticsearch Input Index Name (format: <index>/<type>)
+* `bigquery.elasticsearch.output.user`: Elasticsearch Username
+* `bigquery.elasticsearch.output.password`: Elasticsearch Password
+* `bigquery.elasticsearch.output.api.key`: API Key for Elasticsearch Authorization
+* `bigquery.elasticsearch.output.mode`: Output write mode (one of: append,overwrite) (Defaults to append)
+* `bigquery.elasticsearch.output.es.nodes.discovery`: Whether to discover the nodes within the Elasticsearch cluster or only to use the ones given in es.nodes for metadata queries (default true)
+* `bigquery.elasticsearch.output.es.nodes.client.only`: Whether to use Elasticsearch client nodes (or load-balancers) (default false)
+* `bigquery.elasticsearch.output.es.nodes.data.only`: Whether to use Elasticsearch data nodes only (default true)
+* `bigquery.elasticsearch.output.es.nodes.wan.only`: Whether the connector is used against an Elasticsearch instance in a cloud/restricted environment over the WAN, such as Amazon Web Services, in order to use this option set bigquery.elasticsearch.output.es.nodes.discovery and bigquery.elasticsearch.output.es.nodes.data.only to false (default false)
+* `bigquery.elasticsearch.output.es.http.timeout`: Timeout for HTTP/REST connections to Elasticsearch (default 1m)
+* `bigquery.elasticsearch.output.es.http.retries`: Number of retries for establishing a (broken) http connection (default 3)
+* `bigquery.elasticsearch.output.es.action.heart.beat.lead`: The lead to task timeout before elasticsearch-hadoop informs Hadoop the task is still running to prevent task restart (default 15s)
+* `bigquery.elasticsearch.output.es.net.ssl`: Enable SSL (default false)
+* `bigquery.elasticsearch.output.es.net.ssl.cert.allow.self.signed`: Whether or not to allow self signed certificates (default false)
+* `bigquery.elasticsearch.output.es.net.ssl.protocol`: SSL protocol to be used (default TLS)
+* `bigquery.elasticsearch.output.es.batch.size.bytes`: Size (in bytes) for batch writes using Elasticsearch bulk API (default 1mb)
+* `bigquery.elasticsearch.output.es.batch.size.entries`: Size (in entries) for batch writes using Elasticsearch bulk API - (0 disables it) (default 1000)
+* `bigquery.elasticsearch.output.es.batch.write.retry.count`: Number of times a bulk write operation should be retried in case of a failure (default 3)
+* `bigquery.elasticsearch.output.es.batch.write.retry.wait`: Time to wait between batch write retries that are caused by bulk rejections (default 10s)
+
+## Usage
+
+```
+$ python main.py --template BIGQUERYTOELASTICSEARCH --help
+
+usage: main.py [-h]
+               --bigquery.elasticsearch.input.table BIGQUERY.ELASTICSEARCH.INPUT.TABLE
+               --bigquery.elasticsearch.output.node BIGQUERY.ELASTICSEARCH.OUTPUT.NODE
+               --bigquery.elasticsearch.output.index BIGQUERY.ELASTICSEARCH.OUTPUT.INDEX
+               --bigquery.elasticsearch.output.user BIGQUERY.ELASTICSEARCH.OUTPUT.USER
+               --bigquery.elasticsearch.output.password BIGQUERY.ELASTICSEARCH.OUTPUT.PASSWORD
+               --bigquery.elasticsearch.output.api.key BIGQUERY.ELASTICSEARCH.OUTPUT.API.KEY
+               [--bigquery.elasticsearch.input.table.columns BIGQUERY.ELASTICSEARCH.INPUT.TABLE.COLUMNS]
+               [--bigquery.elasticsearch.input.table.filters BIGQUERY.ELASTICSEARCH.INPUT.TABLE.FILTERS]
+               [--bigquery.elasticsearch.output.mode {overwrite,append}]
+               [--bigquery.elasticsearch.output.es.nodes.discovery BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NODES.DISCOVERY]
+               [--bigquery.elasticsearch.output.es.nodes.client.only BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NODES.CLIENT.ONLY]
+               [--bigquery.elasticsearch.output.es.nodes.data.only BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NODES.DATA.ONLY]
+               [--bigquery.elasticsearch.output.es.nodes.wan.only BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NODES.WAN.ONLY]
+               [--bigquery.elasticsearch.output.es.http.timeout BIGQUERY.ELASTICSEARCH.OUTPUT.ES.HTTP.TIMEOUT]
+               [--bigquery.elasticsearch.output.es.http.retries BIGQUERY.ELASTICSEARCH.OUTPUT.ES.HTTP.RETRIES]
+               [--bigquery.elasticsearch.output.es.action.heart.beat.lead BIGQUERY.ELASTICSEARCH.OUTPUT.ES.ACTION.HEART.BEAT.LEAD]
+               [--bigquery.elasticsearch.output.es.net.ssl BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NET.SSL]
+               [--bigquery.elasticsearch.output.es.net.ssl.cert.allow.self.signed BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NET.SSL.CERT.ALLOW.SELF.SIGNED]
+               [--bigquery.elasticsearch.output.es.net.ssl.protocol BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NET.SSL.PROTOCOL]
+               [--bigquery.elasticsearch.output.es.batch.size.bytes BIGQUERY.ELASTICSEARCH.OUTPUT.ES.BATCH.SIZE.BYTES]
+               [--bigquery.elasticsearch.output.es.batch.size.entries BIGQUERY.ELASTICSEARCH.OUTPUT.ES.BATCH.SIZE.ENTRIES]
+               [--bigquery.elasticsearch.output.es.batch.write.retry.count BIGQUERY.ELASTICSEARCH.OUTPUT.ES.BATCH.WRITE.RETRY.COUNT]
+               [--bigquery.elasticsearch.output.es.batch.write.retry.wait BIGQUERY.ELASTICSEARCH.OUTPUT.ES.BATCH.WRITE.RETRY.WAIT]
+options:
+  -h, --help            show this help message and exit
+  --bigquery.elasticsearch.input.table BIGQUERY.ELASTICSEARCH.INPUT.TABLE
+                        BigQuery Input table name
+  --bigquery.elasticsearch.input.table.columns BIGQUERY.ELASTICSEARCH.INPUT.TABLE.COLUMNS
+                        Comma Seperated list of columns to read from the input table
+  --bigquery.elasticsearch.input.table.filters BIGQUERY.ELASTICSEARCH.INPUT.TABLE.FILTERS
+                        Row level filters to apply when reading from the input table
+  --bigquery.elasticsearch.output.node BIGQUERY.ELASTICSEARCH.OUTPUT.NODE
+                        Elasticsearch Node Uri
+  --bigquery.elasticsearch.output.index BIGQUERY.ELASTICSEARCH.OUTPUT.INDEX
+                        Elasticsearch Input Index Name
+  --bigquery.elasticsearch.output.user BIGQUERY.ELASTICSEARCH.OUTPUT.USER
+                        Elasticsearch Username
+  --bigquery.elasticsearch.output.password BIGQUERY.ELASTICSEARCH.OUTPUT.PASSWORD
+                        Elasticsearch Password   
+  --bigquery.elasticsearch.output.api.key BIGQUERY.ELASTICSEARCH.OUTPUT.API.KEY
+                        API Key for Elasticsearch Authorization
+  --bigquery.elasticsearch.output.es.nodes.discovery BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NODES.DISCOVERY
+                        Whether to discover the nodes within the Elasticsearch cluster or only to use the ones given in es.nodes for metadata queries
+  --bigquery.elasticsearch.output.es.nodes.client.only BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NODES.CLIENT.ONLY
+                        Whether to use Elasticsearch client nodes (or load-balancers)
+  --bigquery.elasticsearch.output.es.nodes.data.only BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NODES.DATA.ONLY
+                        Whether to use Elasticsearch data nodes only
+  --bigquery.elasticsearch.output.es.nodes.wan.only BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NODES.WAN.ONLY
+                        Whether the connector is used against an Elasticsearch instance in a cloud/restricted environment over the WAN, such as Amazon Web Services, in order to use this option set bigquery.elasticsearch.output.es.nodes.discovery and bigquery.elasticsearch.output.es.nodes.data.only to false
+  --bigquery.elasticsearch.output.es.http.timeout BIGQUERY.ELASTICSEARCH.OUTPUT.ES.HTTP.TIMEOUT
+                        Timeout for HTTP/REST connections to Elasticsearch
+  --bigquery.elasticsearch.output.es.http.retries BIGQUERY.ELASTICSEARCH.OUTPUT.ES.HTTP.RETRIES
+                        Number of retries for establishing a (broken) http connection
+  --bigquery.elasticsearch.output.es.action.heart.beat.lead BIGQUERY.ELASTICSEARCH.OUTPUT.ES.ACTION.HEART.BEAT.LEAD
+                        The lead to task timeout before elasticsearch-hadoop informs Hadoop the task is still running to prevent task restart
+  --bigquery.elasticsearch.output.es.net.ssl BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NET.SSL
+                        Enable SSL
+  --bigquery.elasticsearch.output.es.net.ssl.cert.allow.self.signed BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NET.SSL.CERT.ALLOW.SELF.SIGNED
+                        Whether or not to allow self signed certificates
+  --bigquery.elasticsearch.output.es.net.ssl.protocol BIGQUERY.ELASTICSEARCH.OUTPUT.ES.NET.SSL.PROTOCOL
+                        SSL protocol to be used
+  --bigquery.elasticsearch.output.es.batch.size.bytes BIGQUERY.ELASTICSEARCH.OUTPUT.ES.BATCH.SIZE.BYTES
+                        Size (in bytes) for batch writes using Elasticsearch bulk API
+  --bigquery.elasticsearch.output.es.batch.size.entries BIGQUERY.ELASTICSEARCH.OUTPUT.ES.BATCH.SIZE.ENTRIES
+                        Size (in entries) for batch writes using Elasticsearch bulk API - (0 disables it)
+  --bigquery.elasticsearch.output.es.batch.write.retry.count BIGQUERY.ELASTICSEARCH.OUTPUT.ES.BATCH.WRITE.RETRY.COUNT
+                        Number of times a bulk write operation should be retried in case of a failure
+  --bigquery.elasticsearch.output.es.batch.write.retry.wait BIGQUERY.ELASTICSEARCH.OUTPUT.ES.BATCH.WRITE.RETRY.WAIT
+                        Time to wait between batch write retries that are caused by bulk rejections
+```
+
+## Required JAR files
+
+This template requires the [Elasticsearch Spark Connector](https://www.elastic.co/guide/en/elasticsearch/hadoop/current/index.html) to be available in the Dataproc cluster. 
+
+Depending upon the versions of Elasticsearch, PySpark and Scala in the environment the Elasticsearch Spark JAR can be downloaded from this [link](https://mvnrepository.com/artifact/org.elasticsearch/elasticsearch-spark-30). 
+
+
+## Example submission
+
+```
+export GCP_PROJECT=my-project
+export GCS_STAGING_LOCATION="gs://my-bucket"
+export GCS_DEPS_BUCKET="gs://my-bucket"
+export JARS="gs://<your_bucket_to_store_dependencies>/elasticsearch-spark-30_2.12-8.11.4.jar"
+export REGION=us-central1
+export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
+
+./bin/start.sh \
+-- --template=BIGQUERYTOELASTICSEARCH \
+    --bigquery.elasticsearch.input.table=my-project:python_templates_dataset.gcs_bq_table \
+    --bigquery.elasticsearch.output.node="xxxxxxxxxxxx.us-central1.gcp.cloud.es.io:9243" \
+    --bigquery.elasticsearch.output.index="demo" \
+    --bigquery.elasticsearch.output.user="demo" \
+    --bigquery.elasticsearch.output.password="demo"
+```
+
