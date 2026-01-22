@@ -329,7 +329,7 @@ Depending upon the versions of Elasticsearch, PySpark and Scala in the environme
 export GCP_PROJECT=my-project
 export GCS_STAGING_LOCATION="gs://my-bucket"
 export GCS_DEPS_BUCKET="gs://my-bucket"
-export JARS="gs://<your_bucket_to_store_dependencies>/elasticsearch-spark-30_2.12-8.11.4.jar,gs://<your_bucket_to_store_dependencies>/spark-3.3-bigquery-0.39.0.jar"
+export JARS="gs://<your_bucket_to_store_dependencies>/elasticsearch-spark-30_2.12-8.11.4.jar"
 export REGION=us-central1
 export SUBNET=projects/my-project/regions/us-central1/subnetworks/test-subnet
 
