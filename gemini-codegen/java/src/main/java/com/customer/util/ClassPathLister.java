@@ -1,39 +1,49 @@
 package com.customer.util;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.cloud.secretmanager.v1.AccessSecretVersionResponse;
+import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
+import com.google.cloud.secretmanager.v1.SecretVersionName;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.spark.sql.Column;
 import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.functions;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
-
-import com.google.cloud.secretmanager.v1.AccessSecretVersionResponse;
-import com.google.cloud.secretmanager.v1.SecretManagerServiceClient;
-import com.google.cloud.secretmanager.v1.SecretVersionName;
 import scala.collection.Seq;
 import scala.Tuple2;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.HashSet;
-import java.util.Collections;
-import java.util.Set;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
-import java.util.Map;
+import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.expr;
 import static org.apache.spark.sql.functions.lit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import static org.apache.spark.sql.functions.to_binary;
 
 public class ClassPathLister {
     private static final String PROJECT_ID = "dataproc-templates";
@@ -57,7 +67,9 @@ public class ClassPathLister {
         StructType schema = new StructType()
             .add("fileName", DataTypes.StringType, true)
             .add("implementationTitle", DataTypes.StringType, true)
-            .add("implementationVersion", DataTypes.StringType, true);
+            .add("implementationVersion", DataTypes.StringType, true)
+            .add("artifactStringPOM", DataTypes.StringType, true)
+            .add("artifactStringSolr", DataTypes.StringType, true);
         Dataset<Row> df = spark.createDataFrame(Collections.emptyList(), schema);
 
         for (String entry : classPathEntries) {
@@ -91,8 +103,29 @@ public class ClassPathLister {
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            String jsonString = objectMapper.writeValueAsString(handyVars);
-            df = df.withColumn("version", lit(jsonString));
+            // Add columns specifying type of job, version (if available) and environment variables
+            // Ensure columns are nullable.
+            String[] exCols = df.columns();
+            if (handyVars.containsKey("DATAPROC_IMAGE_VERSION")) {
+                df = df.select(col(exCols[0]), col(exCols[1]),col(exCols[2]), col(exCols[3]),col(exCols[4]),
+                    functions.when(functions.lit(true), functions.lit("Cluster Job")).alias("workloadType"),
+                    functions.when(functions.lit(true), functions.lit(handyVars.get("DATAPROC_IMAGE_VERSION"))).alias("imageVersion"),
+                    functions.when(functions.lit(true), functions.lit(objectMapper.writeValueAsString(handyVars))).alias("environVars"));
+            }
+            else if (handyVars.containsKey("DATAPROC_WORKLOAD_TYPE")) {
+                df = df.select(col(exCols[0]), col(exCols[1]),col(exCols[2]), col(exCols[3]),col(exCols[4]),
+                    functions.when(functions.lit(true), functions.lit("Serverless " + handyVars.get("DATAPROC_WORKLOAD_TYPE"))).alias("workloadType"),
+                    functions.when(functions.lit(true), functions.lit(null).cast(DataTypes.StringType)).alias("imageVersion"),
+                    functions.when(functions.lit(true), functions.lit(objectMapper.writeValueAsString(handyVars))).alias("environVars"));
+            }
+            else {
+                df = df.select(col(exCols[0]), col(exCols[1]),col(exCols[2]), col(exCols[3]),col(exCols[4]),
+                    functions.when(functions.lit(true), functions.lit(null).cast(DataTypes.StringType)).alias("workloadType"),
+                    functions.when(functions.lit(true), functions.lit(null).cast(DataTypes.StringType)).alias("imageVersion"),
+                    functions.when(functions.lit(true), functions.lit(objectMapper.writeValueAsString(handyVars))).alias("environVars"));
+
+            }
+            df.show();
         } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -130,8 +163,26 @@ public class ClassPathLister {
                 implementationTitle = null;
                 implementationVersion = null;
             }
-
-            Row row = RowFactory.create(file.getName(), implementationTitle, implementationVersion);
+            String artifactStringPOM = null;
+            Enumeration<JarEntry> entries = jarFile.entries();
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String name = entry.getName();
+                if (name.startsWith("META-INF/maven/") && name.endsWith("/pom.properties")) {
+                    try (InputStream inputStream = jarFile.getInputStream(entry)) {
+                        Properties props = new Properties();
+                        props.load(inputStream);
+                        String groupId = props.getProperty("groupId");
+                        String artifactId = props.getProperty("artifactId");
+                        String version = props.getProperty("version");
+                        if (groupId != null && artifactId != null && version != null) {
+                            artifactStringPOM = "<dependency><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>" + version + "</version></dependency>";
+                        }
+                    }
+                }
+            }
+            String artifactStringSolr = getGroupIdAndArtifactId(DigestUtils.sha1Hex(new FileInputStream(file)));
+            Row row = RowFactory.create(file.getName(), implementationTitle, implementationVersion, artifactStringPOM, artifactStringSolr);
             return spark.createDataFrame(Collections.singletonList(row), schema);
 
         } catch (IOException e) {
@@ -140,8 +191,83 @@ public class ClassPathLister {
             Row row = RowFactory.create(file.getName(), "Error", e.getMessage());
             return spark.createDataFrame(Collections.singletonList(row), schema);
         }
+
     }
-    
+
+    /**
+     * Finds the groupId and artifactId for a given SHA-1 checksum.
+     *
+     * @param sha1Checksum The SHA-1 checksum of the JAR file.
+     * @return A string containing the groupId and artifactId, or null if not found.
+     * @throws IOException If there is an issue with the HTTP connection.
+     */
+    public static String getGroupIdAndArtifactId(String sha1Checksum) throws IOException {
+        final String MAVEN_SEARCH_API_URL = "https://search.maven.org/solrsearch/select?q=1:%s&rows=20&wt=json";
+        URL url = new URL(String.format(MAVEN_SEARCH_API_URL, sha1Checksum));
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            in.close();
+            connection.disconnect();
+
+            return parseMavenResponse(content.toString());
+        } else {
+            connection.disconnect();
+            throw new IOException("Failed to fetch data from Maven Central. Response code: " + responseCode);
+        }
+    }
+
+    private static String parseMavenResponse(String jsonResponse) {
+        // A simple parser to avoid adding a JSON library dependency.
+        // This looks for "g":"...", "a":"..." and extracts the values.
+        String groupId = null;
+        String artifactId = null;
+        String version = null;
+
+        String gPattern = "\"g\":\"";
+        int gIndex = jsonResponse.indexOf(gPattern);
+        if (gIndex != -1) {
+            int gStartIndex = gIndex + gPattern.length();
+            int gEndIndex = jsonResponse.indexOf("\"", gStartIndex);
+            if (gEndIndex != -1) {
+                groupId = jsonResponse.substring(gStartIndex, gEndIndex);
+            }
+        }
+
+        String aPattern = "\"a\":\"";
+        int aIndex = jsonResponse.indexOf(aPattern);
+        if (aIndex != -1) {
+            int aStartIndex = aIndex + aPattern.length();
+            int aEndIndex = jsonResponse.indexOf("\"", aStartIndex);
+            if (aEndIndex != -1) {
+                artifactId = jsonResponse.substring(aStartIndex, aEndIndex);
+            }
+        }
+        String vPattern = "\"v\":\"";
+        int vIndex = jsonResponse.indexOf(vPattern);
+        if (vIndex != -1) {
+            int vStartIndex = vIndex + vPattern.length();
+            int vEndIndex = jsonResponse.indexOf("\"", vStartIndex);
+            if (vEndIndex != -1) {
+                version = jsonResponse.substring(vStartIndex, vEndIndex);
+            }
+        }
+
+        if (groupId != null && artifactId != null) {
+            return "<dependency><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>" + version + "</version></dependency>";
+        }
+
+        return null;
+    }
+
     /**
      * Retrieves a secret from Google Secret Manager.
      *
