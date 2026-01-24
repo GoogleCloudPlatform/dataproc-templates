@@ -1,16 +1,22 @@
-# Session Summary: JDBC to JDBC Data Migration
+# Postgres to MySQL Migration Spark Job
 
-This session focused on creating a Spark job in Java to migrate data from a Postgresql database to a MySQL database.
+This project contains a Spark job written in Java to migrate data from a table in a Postgres database to a table in a MySQL database.
 
-The key accomplishments are:
+## Features
 
-*   **Created a Spark job in Java:** A new Spark job was created in `src/main/java/com/google/cloud/dataproc/templates/jdbc/JdbcToJdbc.java`.
-*   **Handles JDBC connections:** The job reads data from a Postgresql table and writes to a MySQL table using JDBC.
-*   **Secure credential management:** JDBC connection details are securely retrieved from Google Secret Manager.
-*   **Parallel processing:** The job is designed to read data in parallel using partitioning information.
-*   **Batch writing:** Data is written to the destination table in batches for improved efficiency.
-*   **Data transformation:** An `insertion_time` column is added to the DataFrame before writing it to the destination.
-*   **Documentation:** Instructions on how to run the job on Dataproc Serverless are provided in `@migrateJdbcToJdbc.md`.
-*   **Maven Project:** A `pom.xml` file has been created to manage the project dependencies.
+*   **Data Migration:** Migrates data from a specified Postgres table to a specified MySQL table.
+*   **Credential Management:** Securely retrieves JDBC connection strings (including username and password) from Google Secret Manager.
+*   **Parallel Processing:** Reads data from Postgres in parallel based on a specified partition column to improve performance.
+*   **Batch Writing:** Writes data to MySQL in batches for improved efficiency and to avoid overwhelming the database.
+*   **Data Transformation:** Adds an `insertion_time` column to the data with the current timestamp before writing it to the destination table.
 
-This setup allows for a scalable and secure data migration process between two JDBC-compliant databases using Dataproc Serverless.
+## Project Structure
+
+*   `src/main/java/com/customer/app/PostgresToMySql.java`: The main application file containing the Spark job logic.
+*   `src/main/java/com/customer/util/DataframeUtils.java`: A utility class that provides helper functions for data transformation.
+*   `pom.xml`: The Maven project file that defines dependencies and build settings.
+*   `migrateJdbcToJdbc.md`: A documentation file with instructions on how to run the Spark job on a serverless Spark environment.
+
+## How to Run
+
+Please refer to the detailed instructions in the [migrateJdbcToJdbc.md](migrateJdbcToJdbc.md) file.
