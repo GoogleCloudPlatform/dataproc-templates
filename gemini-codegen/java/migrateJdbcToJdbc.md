@@ -1,7 +1,18 @@
 # Migrating Data from Postgres to MySQL using a Serverless Spark Job
 
 This document provides instructions on how to run a Spark job to migrate data from a Postgres database to a MySQL database using a serverless Spark environment like Google Cloud Dataproc Serverless.
-
+---
+The text between the line above and line below was written by a human. The rest of the document was created by Gemini. The initial prompt to Gemini was:
+```
+Create a Spark job in Java to to migrate data from a table in a Postgres database to a table in MySQL, both accessible via JDBC; The JDBC URL strings are stored in Google secret manager. The URL string includes the username and password. Read and write data in parallel based on partitioning information that is provided; While writing, write data in batches for efficiency. Use the addInsertionTimeColumn to add a column to the data before writing it to MySQL destination table. Provide instructions to run this job on serverless spark in migrateJdbcToJdbc.md Provide a summary of the session in migrationREADME.md
+```
+Gemini generated the Java app, specifically the file `PostgresToMySql.java` and the README file. Changes were required to the generated code, including a)specifying drivers for Postgres and MySQL, b)adjusting partition bounds and number of partitions, converting a string argument to integer. At the time of this writing the generated `pom.xml` needed to be updated manually. Serverless for Apache Spark does not require a VPC subnet and the jdbc drivers are in the shaded Jar. The working gcloud command is:
+```
+gcloud dataproc batches submit spark --class=com.customer.app.PostgresToMySql \
+    --jars=<bucket-location>/postgres-to-mysql-migration-1.0-SNAPSHOT.jar -- <postgres-table> <mysql-table> \
+    <postgres-secret> <mysql-secret> <column> <batchsize>
+```
+---
 ## Prerequisites
 
 1.  **Google Cloud SDK:** Make sure you have the Google Cloud SDK installed and configured on your local machine.

@@ -9,41 +9,52 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <spark.version>3.2.0</spark.version>
+        <maven.compiler.release>11</maven.compiler.release>
+        <spark.version>3.5.7</spark.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>libraries-bom</artifactId>
+            <version>26.73.0</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Spark -->
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.12</artifactId>
+            <artifactId>spark-core_2.13</artifactId>
             <version>${spark.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_2.12</artifactId>
+            <artifactId>spark-sql_2.13</artifactId>
             <version>${spark.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- JDBC Drivers -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.3.3</version>
+            <version>42.7.8</version>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.28</version>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>9.5.0</version>
         </dependency>
 
         <!-- Google Cloud Secret Manager -->
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-secretmanager</artifactId>
-            <version>2.0.0</version>
         </dependency>
     </dependencies>
 
@@ -52,7 +63,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -63,6 +74,16 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                                                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/DEPENDENCIES</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                                    <addHeader>false</addHeader>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"/>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.customer.app.PostgresToMySql</mainClass>
+                                </transformer>
                             </transformers>
                             <filters>
                                 <filter>
@@ -71,9 +92,37 @@
                                         <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.DSA</exclude>
                                         <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/versions/*/module-info.class</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
+                            <relocations>
+                                <!-- Don't relocate android -->
+                                <!-- Required - Throws NoClassDefFoundError: com/google/protobuf/MessageOrBuilder if removed -->
+                                <relocation>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>com.customer.shaded.com.google</shadedPattern>
+                                </relocation>
+                                <!-- Don't relocate org since org.apache.spark is provided -->
+                                <!-- Take special care of grpc-netty-shaded, it uses the package
+                                     io.grpc.netty.shaded.io.grpc.netty, which will cause the
+                                     ServicesResourceTransformer to replace both occurrences of io.grpc -->
+                                <relocation>
+                                  <pattern>io.grpc.netty.shaded</pattern>
+                                  <shadedPattern>com.customer.shaded.io.grpc.netty.shaded</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                  <pattern>io</pattern>
+                                  <shadedPattern>com.customer.shaded.io</shadedPattern>
+                                  <includes>
+                                    <include>io.grpc.**</include>
+                                    <include>io.opencensus.**</include>
+                                    <include>io.perfmark.**</include>
+                                  </includes>
+                                </relocation>
+                                <!-- No reason to relocate META-INF for grpc_netty -->
+                              </relocations>
                         </configuration>
                     </execution>
                 </executions>
