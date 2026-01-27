@@ -14,15 +14,17 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.HashSet;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +38,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.ArrayType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructType;
 import scala.collection.Seq;
@@ -68,8 +71,8 @@ public class ClassPathLister {
             .add("fileName", DataTypes.StringType, true)
             .add("implementationTitle", DataTypes.StringType, true)
             .add("implementationVersion", DataTypes.StringType, true)
-            .add("artifactStringPOM", DataTypes.StringType, true)
-            .add("artifactStringSolr", DataTypes.StringType, true);
+            .add("GAV", DataTypes.StringType, true)
+            .add("classes", new ArrayType(DataTypes.StringType, true), true);
         Dataset<Row> df = spark.createDataFrame(Collections.emptyList(), schema);
 
         for (String entry : classPathEntries) {
@@ -88,7 +91,7 @@ public class ClassPathLister {
         }
 
         Map<String, String> envVars = System.getenv();
-        HashMap<String, String> handyVars = new HashMap<String, String>(envVars);
+        Map<String, String> handyVars = new HashMap<>(envVars);
         Set<String> valuableKeys = new HashSet<>();
         Collections.addAll(valuableKeys, "DATAPROC_WORKLOAD_TYPE", "DATAPROC_IMAGE_VERSION", "DATAPROC_IMAGE_TYPE", "SPARK_SCALA_VERSION");
         handyVars.keySet().retainAll(valuableKeys);
@@ -163,8 +166,9 @@ public class ClassPathLister {
                 implementationTitle = null;
                 implementationVersion = null;
             }
-            String artifactStringPOM = null;
+            List<String> defClasses = new ArrayList<>();
             Enumeration<JarEntry> entries = jarFile.entries();
+            Map<String, String> POMmap = new HashMap<> ();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
                 String name = entry.getName();
@@ -172,23 +176,35 @@ public class ClassPathLister {
                     try (InputStream inputStream = jarFile.getInputStream(entry)) {
                         Properties props = new Properties();
                         props.load(inputStream);
-                        String groupId = props.getProperty("groupId");
-                        String artifactId = props.getProperty("artifactId");
-                        String version = props.getProperty("version");
-                        if (groupId != null && artifactId != null && version != null) {
-                            artifactStringPOM = "<dependency><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>" + version + "</version></dependency>";
+                        if (props.getProperty("groupId")!= null) {
+                            POMmap.put("groupId", props.getProperty("groupId"));
+                            POMmap.put("artifactId", props.getProperty("artifactId"));
+                            POMmap.put("version", props.getProperty("version"));
                         }
                     }
                 }
+                else if (name.endsWith(".class")) {
+                    defClasses.add(entry.getName()
+                                    .replace("/", ".")
+                                    .replace(".class", ""));
+                }
             }
-            String artifactStringSolr = getGroupIdAndArtifactId(DigestUtils.sha1Hex(new FileInputStream(file)));
-            Row row = RowFactory.create(file.getName(), implementationTitle, implementationVersion, artifactStringPOM, artifactStringSolr);
-            return spark.createDataFrame(Collections.singletonList(row), schema);
-
+            ObjectMapper objectMapper = new ObjectMapper();
+            if (POMmap.isEmpty()) {
+                Row row = RowFactory.create(file.getName(), implementationTitle, implementationVersion,
+                        objectMapper.writeValueAsString(getGroupIdAndArtifactId(DigestUtils.sha1Hex(new FileInputStream(file)))),
+                        defClasses);
+                return spark.createDataFrame(Collections.singletonList(row), schema);
+            }
+            else {
+                Row row = RowFactory.create(file.getName(), implementationTitle, implementationVersion,
+                                objectMapper.writeValueAsString(POMmap),defClasses);
+                return spark.createDataFrame(Collections.singletonList(row), schema);
+            }
         } catch (IOException e) {
             System.err.println("Error reading JAR file: " + file.getName());
             e.printStackTrace();
-            Row row = RowFactory.create(file.getName(), "Error", e.getMessage());
+            Row row = RowFactory.create(file.getName(), "Error", e.getMessage(), null, null);
             return spark.createDataFrame(Collections.singletonList(row), schema);
         }
 
@@ -201,7 +217,7 @@ public class ClassPathLister {
      * @return A string containing the groupId and artifactId, or null if not found.
      * @throws IOException If there is an issue with the HTTP connection.
      */
-    public static String getGroupIdAndArtifactId(String sha1Checksum) throws IOException {
+    public static Map<String, String> getGroupIdAndArtifactId(String sha1Checksum) throws IOException {
         final String MAVEN_SEARCH_API_URL = "https://search.maven.org/solrsearch/select?q=1:%s&rows=20&wt=json";
         URL url = new URL(String.format(MAVEN_SEARCH_API_URL, sha1Checksum));
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -225,12 +241,12 @@ public class ClassPathLister {
         }
     }
 
-    private static String parseMavenResponse(String jsonResponse) {
+    private static Map<String, String> parseMavenResponse(String jsonResponse) {
         // A simple parser to avoid adding a JSON library dependency.
         // This looks for "g":"...", "a":"..." and extracts the values.
-        String groupId = null;
-        String artifactId = null;
-        String version = null;
+        String groupId = "";
+        String artifactId = "";
+        String version = "";
 
         String gPattern = "\"g\":\"";
         int gIndex = jsonResponse.indexOf(gPattern);
@@ -260,12 +276,11 @@ public class ClassPathLister {
                 version = jsonResponse.substring(vStartIndex, vEndIndex);
             }
         }
-
-        if (groupId != null && artifactId != null) {
-            return "<dependency><groupId>" + groupId + "</groupId><artifactId>" + artifactId + "</artifactId><version>" + version + "</version></dependency>";
-        }
-
-        return null;
+        return Map.of(
+                "groupId", groupId,
+                "artifactId", artifactId,
+                "version", version
+                );
     }
 
     /**
