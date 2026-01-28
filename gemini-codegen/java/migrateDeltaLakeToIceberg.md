@@ -1,7 +1,19 @@
 # Migrating Data from Delta Lake to Iceberg
 
 This document provides instructions on how to run a Spark job to migrate data from a Delta Lake table in Google Cloud Storage (GCS) to an Iceberg table.
-
+---
+The text between the line above and line below was written by a human. The rest of the document was created by Gemini. The initial prompt to Gemini was:
+```
+Create a Spark job in Java to migrate data from deltalake table in GCS to an Iceberg table. Use Timestamp based time travel of deltalake table. Provide instructions to run this job on Serverless Spark in migrateDeltaLakeToIceberg.md and provide a summary of the session in migrateDeltaLakeToIcebergREADME.md
+```
+Gemini generated the Java app, specifically the file `DeltaLakeToIceberg.java` and the README file. Changes were required to the generated code, including a)specifying spark.sql.extensions and b) using `saveAsTable` instead of `save`. Gemini updated the existing `pom.xml`. A hive metastore URI is specified for the Serverless Spark job. The working gcloud command is:
+```
+gcloud dataproc batches submit spark --version=2.2 --class=com.customer.app.DeltaLakeToIceberg \
+  --jars=<GCS-JAR-LOCATION> \
+  --properties=spark.hadoop.hive.metastore.uris=<metastore_URI> \
+  -- <GCS-DELTALAKE-TABLE> <catalog>.<warehouse>.<tablename> <date>
+```
+---
 ## Prerequisites
 
 *   A Dataproc Serverless cluster.

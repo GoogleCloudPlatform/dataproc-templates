@@ -18,7 +18,7 @@ public class DeltaLakeToIceberg {
 
         SparkSession spark = SparkSession.builder()
                 .appName("Delta Lake to Iceberg Migration")
-                .config("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
+                .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension,org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
                 .config("spark.sql.catalog.spark_catalog", "org.apache.iceberg.spark.SparkSessionCatalog")
                 .config("spark.sql.catalog.spark_catalog.type", "hive")
                 .getOrCreate();
@@ -33,7 +33,7 @@ public class DeltaLakeToIceberg {
         df.write()
                 .format("iceberg")
                 .mode("overwrite")
-                .save(icebergTableName);
+                .saveAsTable(icebergTableName);
 
         spark.stop();
     }
