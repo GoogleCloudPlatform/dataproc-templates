@@ -29,3 +29,6 @@ python/elastic.jks
 python/tls.cert
 
 python/venv**
+
+# Gemini Codegen
+gemini-codegen/python/env/
