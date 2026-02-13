@@ -103,7 +103,7 @@ def persist_dataframe_to_elasticsearch(
         es_conf = {
             "es.nodes": es_node,
             "es.resource": es_index,
-            "es.net.http.header.Authorization": es_api_key
+            "es.net.http.header.Authorization": f"ApiKey {es_api_key}"
         }
     else:
         es_conf = {
