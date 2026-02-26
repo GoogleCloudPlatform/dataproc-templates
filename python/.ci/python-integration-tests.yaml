@@ -386,6 +386,37 @@ steps:
     waitFor: ['build-and-upload']
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: bigquery-to-elasticsearch
+    env:
+      - 'GCP_PROJECT=${_GCP_PROJECT}'
+      - 'GCS_STAGING_LOCATION=${_GCS_STAGING_LOCATION_BASE}'
+      - 'GCS_DEPS_BUCKET=${_GCS_DEPS_BUCKET}'
+      - 'REGION=${_REGION}'
+      - 'ENV_ELASTIC_NODE=${_ENV_ELASTIC_INPUT_NODE}'
+      - 'ENV_ELASTIC_USER=${_ENV_ELASTIC_USER}'
+      - 'JARS=gs://dataproc-templates_cloudbuild/integration-testing/jars/elasticsearch-spark-20_2.12-8.15.3.jar'
+      - 'SKIP_BUILD=true'
+      - 'FILES=/tmp/elastic.jks'
+    script: |
+      #!/usr/bin/env bash
+      gcloud storage cp gs://dataproc-templates_cloudbuild/integration-testing/conf/elastic.jks /tmp/elastic.jks
+      cd python
+      bin/start.sh \
+      --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit' \
+      -- --template=BIGQUERYTOELASTICSEARCH \
+      --bigquery.elasticsearch.input.table="bigquery-public-data:github_repos.files" \
+      --bigquery.elasticsearch.output.node=${ENV_ELASTIC_NODE} \
+      --bigquery.elasticsearch.output.index="bigquery-to-elasticsearch-template-index" \
+      --bigquery.elasticsearch.output.user=${ENV_ELASTIC_USER} \
+      --bigquery.elasticsearch.output.password=${ELASTIC_PASSWORD} \
+      --bigquery.elasticsearch.output.mode="overwrite" \
+      --bigquery.elasticsearch.output.es.net.ssl="true" \
+      --bigquery.elasticsearch.output.es.net.ssl.cert.allow.self.signed="true"
+    secretEnv:
+      - 'ELASTIC_PASSWORD'
+    waitFor: ['build-and-upload']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     id: cassandra-to-bigquery
     env:
       - 'GCP_PROJECT=${_GCP_PROJECT}'
