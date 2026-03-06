@@ -2,6 +2,29 @@
 
 This guide explains how to run the `transform_bigquery_to_elasticsearch.py` script on Google Cloud Dataproc Serverless.
 
+---
+The text between the line above and line below was written by a human. The rest of the document was created by Gemini. The initial prompt to Gemini was:
+```
+    Create a pySpark script to migrate data from BigQuery to Elastisearch authenticating with an API key. Modify the data in flight with a SparkSQL statement provided. Provide instructions to run this job on serverless spark in migrateBigQueryToElasticsearch.md and provide a summary of the session in migrateBigQueryToElasticsearchREADME.md
+```
+Gemini generated the Pyspark script, specifically the file `transform_bigquery_to_elasticsearch.py` and the README file. Changes were required to run the script. The working gcloud command is:
+```
+    gcloud dataproc batches submit pyspark transform_bigquery_to_elasticsearch.py --version=<version> \
+    --files=<trusted-ca>.jks --project=<PROJECT_ID> --region=<REGION> --deps-bucket=<dependency-bucket> \
+    --jars=<elasticsearch-spark-version-scala-version-elastic-version.jar in GCS> \
+    --properties="spark.driver.extraJavaOptions=-Djavax.net.ssl.trustStore=<trusted-ca>.jks -Djavax.net.ssl.trustStorePassword=changeit,spark.executor.extraJavaOptions=-Djavax.net.ssl.trustStore=<trusted-ca>.jks -Djavax.net.ssl.trustStorePassword=changeit" \
+    -- \
+    --bq_table=dataproc-templates:gemini_codegen.bq_to_es --sql_statement="<SQL_QUERY>" \
+    --es_nodes=<node-ips> --es_port=<usually 9200> --es_index=<index-name> \
+    --es_api_key=<ES_API_KEY> --es_ssl=true --es_wan_only=true \
+    --bq_temp_gcs_bucket=<temporary-bucket>
+```
+The `batches` command required updates, such as replacing `--packages` with `--jars`. To facilitate a secure SSL handshake between Spark containers and Elasticsearch, the truststore must include the Elasticsearch self-signed certificate. Additionally, it must incorporate the Spark container's default truststore to maintain SSL compatibility with BigQuery and the spark environment.
+
+A recommended approach is to use a PySpark script to export the default container truststore to Google Cloud Storage (GCS). The Elasticsearch certificate can then be added as a trusted CA using the Java `keytool` utility. Finally, the unified truststore is passed to the Spark runtime via the `-Djavax.net.ssl.trustStore` argument.
+
+---
+
 ## Prerequisites
 
 1.  **GCP Project**: Ensure you have a GCP project with Dataproc and BigQuery APIs enabled.
