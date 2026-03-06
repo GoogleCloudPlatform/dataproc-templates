@@ -59,6 +59,7 @@ Please refer to the [Dataproc Templates (Python - PySpark) README](/python) for 
 * [AzureBlobToBigQuery](/python/dataproc_templates/azure#azure-blob-to-bigquery)
 * [BigQueryToGCS](/python/dataproc_templates/bigquery#bigquery-to-gcs) (blogpost [link](https://medium.com/google-cloud/moving-data-from-bigquery-to-gcs-using-gcp-dataproc-serverless-and-pyspark-f6481b86bcd1))
 * [BigQueryToMemorystore](/python/dataproc_templates/bigquery#bigquery-to-memorystore)
+* [BigQueryToElasticsearch](/python/dataproc_templates/bigquery#bigquery-to-elasticsearch)
 * [CassandraToBigquery](/python/dataproc_templates/cassandra)
 * [CassandraToGCS](/python/dataproc_templates/cassandra) (blogpost [link](https://medium.com/google-cloud/export-data-from-cassandra-to-google-cloud-storage-using-dataproc-serverless-2569a00e17fe))
 * [ElasticsearchToBigQuery](/python/dataproc_templates/elasticsearch#elasticsearch-to-bq)
