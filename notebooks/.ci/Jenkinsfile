@@ -1,0 +1,117 @@
+def stageRetryCount = 3
+
+pipeline {
+    
+    agent any
+    
+    environment {
+        DATAPROC_TELEPORT_WEBHOOK_URL = credentials('dataproc-teleport-webhook-url')
+
+        TEST_JDBC_URL = credentials('env-test-jdbc-url')
+
+        GIT_BRANCH_LOCAL = sh (
+            script: "echo $branchName | sed -e 's|origin/||g' | sed -e 's|^null\$|main|'",  // Remove "origin/" and set the default branch to main
+            returnStdout: true
+        ).trim()
+    }
+
+    stages {
+        stage('Checkout') {
+            steps{
+                git branch: "${GIT_BRANCH_LOCAL}", changelog: false, poll: false, url: 'https://github.com/GoogleCloudPlatform/dataproc-templates/'
+            }
+        }
+        stage('Build'){
+            steps {
+                    catchError {
+                        sh '''
+                            python3.8 -m pip install --user virtualenv
+                            python3.8 -m venv env
+                            source env/bin/activate
+
+                            export PACKAGE_EGG_FILE=dist/dataproc_templates_distribution.egg
+
+                            cd python
+                            python setup.py bdist_egg --output=$PACKAGE_EGG_FILE
+
+                            cd ../notebooks
+                            pip install --upgrade pip ipython ipykernel
+                            ipython kernel install --name "python3" --user
+                            pip install -r requirements.txt
+
+                        '''
+                    }
+            }
+        }
+        stage('Extract JDBC URL Parameters') {
+            steps {
+                script {
+                    def host = TEST_JDBC_URL.substring(TEST_JDBC_URL.indexOf("//") + 2, TEST_JDBC_URL.indexOf(":", TEST_JDBC_URL.indexOf("//") + 2))
+                    def database = TEST_JDBC_URL.substring(TEST_JDBC_URL.indexOf("/", TEST_JDBC_URL.indexOf("//") + 2) + 1, TEST_JDBC_URL.indexOf("?"))
+                    def user = TEST_JDBC_URL.substring(TEST_JDBC_URL.indexOf("user=") + 5, TEST_JDBC_URL.indexOf("&"))
+                    def password = TEST_JDBC_URL.substring(TEST_JDBC_URL.indexOf("password=") + 9)
+                    env.DB_HOST = host
+                    env.DB_NAME = database
+                    env.DB_USER = user
+                    env.DB_PASSWORD = password
+                }
+            }
+        }
+        stage('Parallel Execution'){
+            parallel{
+                stage('MYSQL TO SPANNER') {
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                source env/bin/activate
+
+                                export GCS_STAGING_LOCATION=gs://dataproc-templates/integration-testing
+                                export JARS="gs://datproc_template_nk/jars/mysql-connector-java-8.0.29.jar,gs://datproc_template_nk/jars/postgresql-42.2.6.jar,gs://datproc_template_nk/jars/mssql-jdbc-6.4.0.jre8.jar"
+                                export SKIP_BUILD=true
+
+                                cd notebooks/mysql2spanner
+                                pip install -r requirements.txt
+                                cd ..
+
+                                wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O ./cloud_sql_proxy
+                                chmod +x cloud_sql_proxy
+                                nohup ./cloud_sql_proxy -instances=$ENV_TEST_MYSQL_INSTANCE_CONNECTION_NAME=tcp:3306 &
+
+                                python run_notebook.py --script=MYSQLTOSPANNER \
+                                                        --mysql.host="${DB_HOST}" \
+                                                        --mysql.port="3306" \
+                                                        --mysql.username="${DB_USER}" \
+                                                        --mysql.password="${DB_PASSWORD}" \
+                                                        --mysql.database="${DB_NAME}" \
+                                                        --mysql.table.list="employee" \
+                                                        --mysql.read.partition.columns="{}" \
+                                                        --use.cloud.sql.proxy="true" \
+                                                        --spanner.instance="dataproc-spark-test" \
+                                                        --spanner.database="spark-ci-db" \
+                                                        --spanner.table.primary.keys="{\\"employee\\":\\"empno\\"}"
+
+                                kill $(pgrep cloud_sql_proxy)
+
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always{
+            script {
+                if( env.GIT_BRANCH_LOCAL == 'main' ){
+                    googlechatnotification url: DATAPROC_TELEPORT_WEBHOOK_URL,
+                    message: 'Jenkins: ${JOB_NAME}\nBuild status is ${BUILD_STATUS}\nSee ${BUILD_URL}\n',
+                    notifyFailure: 'true',
+                    notifyAborted: 'true',
+                    notifyUnstable: 'true',
+                    notifyNotBuilt: 'true',
+                    notifyBackToNormal: 'true'
+                }
+            }
+        }
+    }
+}
