@@ -11,6 +11,8 @@
 # Dataproc Templates
 Dataproc templates are designed to address various in-cloud data tasks, including data import/export/backup/restore and bulk API operations. These templates leverage the power of [Google Cloud's Dataproc](https://cloud.google.com/dataproc/), supporting both Dataproc Serverless and Dataproc clusters.
 
+Some of these templates are tested nightly on version 1.2 of [Serverless for Apache Spark](https://docs.cloud.google.com/dataproc-serverless/docs/overview). If a different version is being used or if the specific template does not suit your needs, the recommended approach is to develop the Spark code with assistance from Google Gemini. This is elaborated further in [Develop with Gemini](./gemini-codegen/README.md).
+
 Google provides this collection of pre-implemented Dataproc templates as a reference and for easy customization. (Video [Link](https://www.youtube.com/watch?v=ZQIaY0pNlmI))
 
 [![Open in Cloud Shell](http://gstatic.com/cloudssh/images/open-btn.svg)](https://console.cloud.google.com/cloudshell/editor)

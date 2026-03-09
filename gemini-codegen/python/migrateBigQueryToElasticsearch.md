@@ -19,9 +19,17 @@ Gemini generated the Pyspark script, specifically the file `transform_bigquery_t
     --es_api_key=<ES_API_KEY> --es_ssl=true --es_wan_only=true \
     --bq_temp_gcs_bucket=<temporary-bucket>
 ```
-The `batches` command required updates, such as replacing `--packages` with `--jars`. To facilitate a secure SSL handshake between Spark containers and Elasticsearch, the truststore must include the Elasticsearch self-signed certificate. Additionally, it must incorporate the Spark container's default truststore to maintain SSL compatibility with BigQuery and the spark environment.
+The `batches` command required updates, such as replacing `--packages` with `--jars`. To establish a secure SSL/TLS handshake between Spark containers and Elasticsearch, the Spark JVM truststore must be configured with the Elasticsearch root CA certificate.
 
-A recommended approach is to use a PySpark script to export the default container truststore to Google Cloud Storage (GCS). The Elasticsearch certificate can then be added as a trusted CA using the Java `keytool` utility. Finally, the unified truststore is passed to the Spark runtime via the `-Djavax.net.ssl.trustStore` argument.
+Additionally, the Spark truststore must retain the standard Java default certificates (found in cacerts) to ensure uninterrupted SSL communication with GCP services and other public APIs.
+
+The standard procedure involves the following steps:
+
+* Clone the Default Truststore: Create a local copy of the default Java cacerts file.
+
+* Import Custom Certificates: Add the Elasticsearch self-signed or internal CA certificate to this copy using the Java keytool utility.
+
+* Inject into Runtime: Pass the path of the updated truststore to the Spark driver and executors using the `--files`, `-Djavax.net.ssl.trustStore` and `-Djavax.net.ssl.trustStorePassword` System Properties.
 
 ---
 
