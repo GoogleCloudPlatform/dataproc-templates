@@ -61,6 +61,18 @@
             <version>9.5.0</version>
         </dependency>
 
+        <!-- Cassandra and BigQuery connectors -->
+        <dependency>
+            <groupId>com.datastax.spark</groupId>
+            <artifactId>spark-cassandra-connector_2.13</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud.spark</groupId>
+            <artifactId>spark-bigquery-with-dependencies_2.13</artifactId>
+            <version>0.41.0</version>
+        </dependency>
+
         <!-- Google Cloud Secret Manager -->
         <dependency>
             <groupId>com.google.cloud</groupId>
