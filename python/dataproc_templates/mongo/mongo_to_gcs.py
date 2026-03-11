@@ -133,4 +133,7 @@ class MongoToGCSTemplate(BaseTemplate):
 
         # Write
         writer: DataFrameWriter = input_data.write.mode(output_mode)
-        persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "mongo.gcs.output.")
+        if not input_data.tail(1): # More efficient than .count() == 0
+            logger.info(f"No data in collection {input_collection}, database: {input_database}")
+        else:
+            persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "mongo.gcs.output.")
