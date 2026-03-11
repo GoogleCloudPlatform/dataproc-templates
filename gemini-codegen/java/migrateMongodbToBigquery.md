@@ -1,7 +1,19 @@
 # Migrating Data from MongoDB to BigQuery
 
 This document provides instructions on how to run a Spark job in Java to migrate a collection from MongoDB to BigQuery using Dataproc Serverless.
+---
+The text between the line above and line below was written by a human. The rest of the document was created by Gemini. The initial prompt to Gemini was:
+```
+Create Spark job in Java to to migrate a collection from mongodb to BigQuery. Provide instructions to run this job on serverless spark in migrateMongodbToBigquery.md and provide a summary of the session in migrateMongodbToBigqueryREADME.md.
 
+```
+Gemini generated the Java app, specifically the file `MongoToBigQuery.java` and the README file. A small change was required to Gemini updated `pom.xml` specifying the BigQuery connector version and the scope. No changes were needed to the Java code. The working gcloud command is:
+```
+gcloud dataproc batches submit spark --project dataproc-templates --region us-central1 \
+   --batch="mongodb-to-bigquery-$(date +%s)" --class com.customer.app.MongoToBigQuery --version=2.2 \
+   --jars=<JARS> -- <MONGODB_URI> <DATABASE> <COLLECTION> <BQDATASET.TABLE> <TEMP_GCS_BUCKET>
+```
+---
 ## Prerequisites
 
 1.  **Google Cloud Project:** A project with the Dataproc and BigQuery APIs enabled.
