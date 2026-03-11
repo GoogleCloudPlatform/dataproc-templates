@@ -1,6 +1,16 @@
 # Kafka to Iceberg Migration on Serverless Spark
 
 This guide provides instructions on how to load data from a CSV file into a Kafka topic and then migrate that data into a GCS-based Iceberg table using Dataproc Serverless for Spark.
+---
+The text between the line above and line below was written by a human. The rest of the document was created by Gemini. The initial prompt to Gemini was:
+```
+Create a java program to load a csv file onto a kafka topic. Create Spark job in Java to to migrate data from the kafka topic to a GCS Iceberg table. Provide instructions to run this job on serverless spark in migrateKafkaToIceberg.md and provide a summary of the session in migrateKafkaToIcebergREADME.md
+```
+Gemini generated the Java app, specifically the file `KafkaToIceberg.java` and the README file. Gemini appears to have followed the pattern in `DeltaLakeToIceberg.java` correctly including the Iceberg Spark extensions required. One code change was needed to deal with a NullPointerException specific to Dataproc, naming the query. Gemini updated the existing `pom.xml`. A hive metastore URI is specified for the Serverless Spark job. The working gcloud command is:
+```
+gcloud dataproc batches submit spark --project=PROJECT_ID --region=REGION --batch="kafka-to-iceberg-$(date +%s)" --class com.customer.app.KafkaToIceberg --version=2.2 --properties=spark.hadoop.hive.metastore.uris=<HIVE_METASTORE_URI> --jars=<JARS in GCS> -- <kafka-bootstrap-serveres> <table_name> <CHECKPOINT_LOCATION> <JSON_SCHEMA>
+```
+---
 
 ## Prerequisites
 
