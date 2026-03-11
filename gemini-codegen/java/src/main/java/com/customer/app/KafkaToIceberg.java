@@ -50,6 +50,7 @@ public class KafkaToIceberg {
         // Write to Iceberg
         try {
             parsedDf.writeStream()
+                    .queryName("kafka_to_iceberg_write")
                     .format("iceberg")
                     .outputMode("append")
                     .trigger(Trigger.AvailableNow())
