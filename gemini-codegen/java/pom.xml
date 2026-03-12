@@ -64,6 +64,19 @@
             <version>3.1.0</version>
         </dependency>
 
+        <!-- MongoDB and BigQuery connectors -->
+        <dependency>
+            <groupId>org.mongodb.spark</groupId>
+            <artifactId>mongo-spark-connector_2.13</artifactId>
+            <version>10.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud.spark</groupId>
+            <artifactId>spark-3.5-bigquery</artifactId>
+            <version>0.36.4</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- JDBC Drivers -->
         <dependency>
             <groupId>org.postgresql</groupId>
