@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.1.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v2.0.0-beta...v2.1.0-beta) (2026-03-12)
+
+
+### Features
+
+* Deltalake to iceberg transfer ([#1058](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1058)) ([887b07d](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/887b07d0307adec58b8759b9de94d3fcc579febd))
+* Demonstrate creating code using Gemini CLI to migrate BigQuery to Elasticsearch. ([#1098](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1098)) ([7f6f7e9](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/7f6f7e91d28da9c92e9a3127d3e9d53aa9ebbda4))
+* Demonstrate creating code using Gemini CLI to migrate Cassandra to BigQuery ([#1102](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1102)) ([a96800f](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/a96800f0c23373d99665869179f3ca1718ec1765))
+* Demonstrate creating code using Gemini CLI to migrate Kafka to Iceberg tables ([#1100](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1100)) ([00af66b](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/00af66b6f874e55d9dca015c463e3fb4aae05d6a))
+* Demonstrate creating code using Gemini CLI to migrate mongo to bigquery ([#1101](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1101)) ([eeaea20](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/eeaea201e2161c46ab07a4dbabfdf282111117f5))
+* Samples showing Gemini generating code and minor changes to get the code working ([#1095](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1095)) ([c9ade53](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c9ade53b6d2c393663b6a65fcca550ae83bb92ef))
+
+
+### Bug Fixes
+
+* Adding Cloud Build Python Integration Tests  ([#1082](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1082)) ([2d12000](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/2d12000ebf9e971db88476eb9d8a5fa792a37aee))
+* Migrate UI tests ([#1076](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1076)) ([be4a25e](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/be4a25e3340ab6508b1d85b278a4ed77104985c1))
+* Mongodb to GCS template has an intermittent failure  ([#1099](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1099)) ([be8b48c](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/be8b48c3a71639dc353b8e2d1a97d8187130531d))
+* python readme fix ([#1075](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1075)) ([ad592e1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/ad592e1000499ea9a286e28566b479d46504efba))
+* python start.sh and typo ([#1064](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1064)) ([541c270](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/541c2709867608ec7b7df0d496805f8501265274))
+* remove deprecated templates ([#1066](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1066)) ([c49046a](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/c49046ad069bbf1e634f2026d1161358aff11a97))
+* remove deprecated templates ([#1074](https://github.com/GoogleCloudPlatform/dataproc-templates/issues/1074)) ([62410a1](https://github.com/GoogleCloudPlatform/dataproc-templates/commit/62410a1e4953071ffc60fec5d315212863d36f89))
+
 ## [2.0.0-beta](https://github.com/GoogleCloudPlatform/dataproc-templates/compare/v1.0.2-beta...v2.0.0-beta) (2025-06-23)
 
 
