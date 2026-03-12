@@ -111,7 +111,7 @@
     <glassfish.expressly.version>5.0.0</glassfish.expressly.version>
 
     <!-- jackson yaml parsing of config, and ensure related jackson libraries use same version -->
-    <jackson.version>2.15.2</jackson.version>
+    <jackson.version>2.18.6</jackson.version>
 
     <!-- Logging Dependencies -->
     <logback.classic.version>1.5.8</logback.classic.version>
