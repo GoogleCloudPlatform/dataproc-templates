@@ -1,7 +1,20 @@
 # Migrating Data from Cassandra to BigQuery using a Serverless Spark Job
 
 This document provides instructions on how to run a Spark job to migrate data from a Cassandra table to a BigQuery table using Google Cloud Dataproc Serverless.
+---
+The text between the line above and line below was written by a human. The rest of the document was created by Gemini. The initial prompt to Gemini was:
+```
+Create Spark job in Java to to migrate a table from Cassandra to BigQuery. Provide instructions to run this job on serverless spark in migrateCassandraToBigquery.md and provide a summary of the session in migrateCassandraToBigqueryREADME.md 
 
+```
+Gemini generated the Java app, specifically the file `CassandraToBigquery.java` and the README file. Minor changes were required to accomodate that Bigquery .jar is included in Serverless Spark and jnr-posix is required by Cassandra. The working gcloud command is:
+```
+gcloud dataproc batches submit spark --project dataproc-templates --region us-central1 \
+    --batch="cassandra-to-bigquery-$(date +%s)" --class com.customer.app.CassandraToBigQuery --version=2.2 \
+    --jars=<REQUIRED_JARS> -- <CASSANDRA_HOST> <CASSANDRA_KEYSPACE> <CASSANDRA_KEYSPACE> \
+    <DATASET.TABLE> <TEMP_BUCKET> <WRITE_MODE>
+```
+---
 ## Prerequisites
 
 1.  **Google Cloud SDK:** Ensure you have the Google Cloud SDK installed and configured.
