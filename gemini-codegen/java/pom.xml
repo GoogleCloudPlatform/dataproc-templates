@@ -74,6 +74,24 @@
             <version>9.5.0</version>
         </dependency>
 
+        <!-- Cassandra and BigQuery connectors -->
+        <dependency>
+            <groupId>com.datastax.spark</groupId>
+            <artifactId>spark-cassandra-connector_2.13</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.cloud.spark</groupId>
+            <artifactId>spark-3.5-bigquery</artifactId>
+            <version>0.36.4</version>
+            <scope>provided</scope>
+        </dependency>
+	<dependency>
+            <groupId>com.github.jnr</groupId>
+            <artifactId>jnr-posix</artifactId>
+            <version>3.1.21</version>
+        </dependency>
+
         <!-- Google Cloud Secret Manager -->
         <dependency>
             <groupId>com.google.cloud</groupId>
