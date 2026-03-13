@@ -7,6 +7,7 @@
 ![Python Dataproc Serverless Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-python&&subject=python-serverless-integration-tests)
 ![Python Dataproc Cluster Integration Tests Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fcluster-integration-tests-python&&subject=python-cluster-integration-tests)
 
+![Notebooks Integration Test Status](https://dataproctemplatesci.com/buildStatus/icon?job=dataproc-templates-build%2Fintegration-tests-notebooks&&subject=integration-tests-notebooks)
 
 # Dataproc Templates
 Dataproc templates are designed to address various in-cloud data tasks, including data import/export/backup/restore and bulk API operations. These templates leverage the power of [Google Cloud's Dataproc](https://cloud.google.com/dataproc/), supporting both Dataproc Serverless and Dataproc clusters.
