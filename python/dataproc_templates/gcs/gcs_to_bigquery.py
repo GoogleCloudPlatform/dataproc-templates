@@ -206,7 +206,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
         # output_data.show(3, False)
 
         if write_method == 'direct':
-            # Write direct method
+            # BQ Write direct method
             output_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
@@ -214,7 +214,7 @@ class GCSToBigQueryTemplate(BaseTemplate):
             .mode(output_mode) \
             .save()
         else:
-            # Write Indirect method
+            # BQ Write Indirect method
             output_data.write \
                 .format(constants.FORMAT_BIGQUERY) \
                 .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
