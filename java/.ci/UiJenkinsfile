@@ -99,7 +99,7 @@ pipeline {
 
                     LOCAL_JAR_Path=./target/${JAR_FILE}
 
-                    gsutil cp ${LOCAL_JAR_Path} ${jarPath}
+                    gcloud storage cp ${LOCAL_JAR_Path} ${jarPath}
                 '''
 
                 }
@@ -121,7 +121,7 @@ pipeline {
             catchError {
                 sh '''
                 if [ $GIT_BRANCH_LOCAL != "main" ];then
-                    gsutil rm -r $jarPath 2> /dev/null || true
+                    gcloud storage rm --recursive $jarPath 2> /dev/null || true
                 fi
                 '''
             }

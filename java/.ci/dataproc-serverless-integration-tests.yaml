@@ -49,7 +49,7 @@ steps:
       cd java
       mvn install spotless:check
       echo "copying the build into staging location:" ${_GCS_STAGING_LOCATION}   
-      gsutil cp target/$_JAR_FILE ${_GCS_STAGING_LOCATION}/$_JAR_FILE
+      gcloud storage cp target/$_JAR_FILE ${_GCS_STAGING_LOCATION}/$_JAR_FILE
       
       cat > /tmp/employeecatalog.json << EOF
         {
@@ -64,7 +64,7 @@ steps:
         }
       EOF
       cat /tmp/employeecatalog.json
-      gsutil cp /tmp/employeecatalog.json gs://dataproc-templates_cloudbuild/integration-testing/bigtable/employeecatalog.json
+      gcloud storage cp /tmp/employeecatalog.json gs://dataproc-templates_cloudbuild/integration-testing/bigtable/employeecatalog.json
 
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'

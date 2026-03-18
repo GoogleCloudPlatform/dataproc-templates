@@ -66,7 +66,7 @@ export SUBNET=projects/<project id>/regions/<region name>/subnetworks/<subnetwor
 Create a config file and upload it to Cloud Storage:
 
 ```
-gsutil cp config.yaml gs://bucket/path/config.yaml
+gcloud storage cp config.yaml gs://bucket/path/config.yaml
 ```
 
 Start the template, and provide the "submit spark" option `--files` so that it will be made locally
@@ -173,5 +173,4 @@ output:
     path: gs://bucket/output/results2_avro/
     mode: Overwrite 
 ```
-
 

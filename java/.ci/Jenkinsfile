@@ -68,9 +68,9 @@ pipeline {
                     steps {
                             catchError {
                                 sh '''
-                                    gsutil rm -r gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
-                                    gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
-                                    gsutil rm -r gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream 2> /dev/null || true
+                                    gcloud storage rm --recursive gs://dataproc-templates/integration-testing/checkpoint/KAFKATOBQ 2> /dev/null || true
+                                    gcloud storage rm --recursive gs://dataproc-templates/integration-testing/output/KAFKATOGCS 2> /dev/null || true
+                                    gcloud storage rm --recursive gs://dataproc-templates/integration-testing/output/KAFKATOGCS_DStream 2> /dev/null || true
 
 cat > /tmp/employeecatalog.json << EOF
 {
@@ -86,7 +86,7 @@ cat > /tmp/employeecatalog.json << EOF
 EOF
 
                                     cat /tmp/employeecatalog.json
-                                    gsutil cp /tmp/employeecatalog.json gs://dataproc-templates/conf/
+                                    gcloud storage cp /tmp/employeecatalog.json gs://dataproc-templates/conf/
 
                                 '''
                             }
@@ -193,7 +193,7 @@ EOF
             catchError {
                 sh '''
                 if [ $GIT_BRANCH_LOCAL != "main" ];then
-                    gsutil rm -r $GCS_STAGING_LOCATION 2> /dev/null || true
+                    gcloud storage rm --recursive $GCS_STAGING_LOCATION 2> /dev/null || true
                 fi
                 '''
             }

@@ -18,6 +18,7 @@ import argparse
 import pprint
 
 from pyspark.sql import SparkSession, DataFrameWriter
+from pyspark.sql.types import StructType, StructField, StringType
 
 from dataproc_templates import BaseTemplate
 from dataproc_templates.util.argument_parsing import add_spark_options
@@ -99,6 +100,11 @@ class MongoToGCSTemplate(BaseTemplate):
 
     def run(self, spark: SparkSession, args: Dict[str, Any]) -> None:
 
+        # Define your expected schema
+        schema = StructType([
+            StructField("_id", StringType(), True),
+            StructField("ename", StringType(), True)
+        ])
         logger: Logger = self.get_logger(spark=spark)
 
         # Arguments
@@ -119,6 +125,7 @@ class MongoToGCSTemplate(BaseTemplate):
         # Read
         input_data = spark.read \
             .format(constants.FORMAT_MONGO) \
+            .schema(schema) \
             .option(constants.MONGO_INPUT_URI, input_uri) \
             .option(constants.MONGO_DATABASE, input_database) \
             .option(constants.MONGO_COLLECTION, input_collection) \
@@ -126,4 +133,7 @@ class MongoToGCSTemplate(BaseTemplate):
 
         # Write
         writer: DataFrameWriter = input_data.write.mode(output_mode)
-        persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "mongo.gcs.output.")
+        if not input_data.tail(1): # More efficient than .count() == 0
+            logger.info(f"No data in collection {input_collection}, database: {input_database}")
+        else:
+            persist_dataframe_to_cloud_storage(writer, args, output_location, output_format, "mongo.gcs.output.")
