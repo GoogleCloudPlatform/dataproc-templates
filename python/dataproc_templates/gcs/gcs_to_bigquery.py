@@ -15,8 +15,8 @@
 from typing import Dict, Sequence, Optional, Any
 from logging import Logger
 import argparse
+import sys
 import pprint
-
 from pyspark.sql import SparkSession
 
 from dataproc_templates import BaseTemplate
@@ -92,9 +92,34 @@ class GCSToBigQueryTemplate(BaseTemplate):
                 constants.OUTPUT_MODE_ERRORIFEXISTS
             ]
         )
+        parser.add_argument(
+            f'--{constants.GCS_TO_BQ_TEMP_VIEW_NAME}',
+            dest=constants.GCS_TO_BQ_TEMP_VIEW_NAME,
+            required=False,
+            default="",
+            help='Temp view name for creating a spark sql view on source data. This name has to match with the table name that will be used in the SQL query'
+        )
+        parser.add_argument(
+            f'--{constants.GCS_TO_BQ_SQL_QUERY}',
+            dest=constants.GCS_TO_BQ_SQL_QUERY,
+            required=False,
+            default="",
+            help='SQL query for data transformation. This must use the temp view name as the table to query from.'
+        )
+
+        parser.add_argument(
+            f'--{constants.GCS_TO_BQ_DIRECT_WRITE_METHOD}',
+            dest=constants.GCS_TO_BQ_DIRECT_WRITE_METHOD,
+            required=False,
+            default="",
+            help='Pass Direct write method to use Storage Write API'
+        )
 
         known_args: argparse.Namespace
         known_args, _ = parser.parse_known_args(args)
+
+        if getattr(known_args, constants.GCS_TO_BQ_SQL_QUERY) and not getattr(known_args, constants.GCS_TO_BQ_TEMP_VIEW_NAME):
+            sys.exit('ArgumentParser Error: Temp view name cannot be null if you want to do data transformations with query')
 
         return vars(known_args)
 
@@ -109,6 +134,9 @@ class GCSToBigQueryTemplate(BaseTemplate):
         big_query_table: str = args[constants.GCS_BQ_OUTPUT_TABLE]
         bq_temp_bucket: str = args[constants.GCS_BQ_LD_TEMP_BUCKET_NAME]
         output_mode: str = args[constants.GCS_BQ_OUTPUT_MODE]
+        bq_temp_view: str = args[constants.GCS_TO_BQ_TEMP_VIEW_NAME]
+        sql_query: str = args[constants.GCS_TO_BQ_SQL_QUERY]
+        write_method: str = args[constants.GCS_TO_BQ_DIRECT_WRITE_METHOD]
 
         logger.info(
             "Starting Cloud Storage to BigQuery Spark job with parameters:\n"
@@ -120,10 +148,76 @@ class GCSToBigQueryTemplate(BaseTemplate):
             spark, args, input_location, input_format, "gcs.bigquery.input."
         )
 
-        # Write
-        input_data.write \
+        if sql_query:
+            print("------- RUNNING OVERRIDE SQL QUERY -------")
+            print("sql_query : ", sql_query)
+            input_data.createOrReplaceTempView(bq_temp_view)
+            # Execute SQL
+            transformed_data = spark.sql(sql_query)
+        else:
+            transformed_data = input_data
+
+
+        def datatype_mapping(source_schema_map, df):
+            """
+            Generates a SQL SELECT clause with column and datatype transformations
+            based on the source schema map. This is used to build a SQL query.
+            """  
+            transformed_columns = []
+            # Loop through each (column_name, datatype) pair from the source DataFrame
+            for column_name, source_type in source_schema_map.items():
+                source_type = source_type.lower() # 
+                # --- Apply Datatype Mappings based on user logic ---
+                if "map" in source_type:
+                    transformed_column_expression = f"to_json({column_name}) AS {column_name}"
+                # Handle ARRAY: Convert to a JSON string
+                elif "array" in source_type:
+                    # transformed_column_expression = f"to_json({column_name}) AS {column_name}"
+                    transformed_column_expression = f"COALESCE({column_name}, ARRAY()) AS {column_name}"
+                else:
+                    # Default case: Keep the column as is (e.g., string, int, boolean)
+                    transformed_column_expression = column_name
+
+                transformed_columns.append(transformed_column_expression)
+            
+            # Build the final SQL query: "SELECT col1, CAST(col2...), to_json(col3...)"
+            query = "SELECT " + ",\n       ".join(transformed_columns) + "\n  FROM TEMP_DF"
+            print("------- GENERATED SQL QUERY -------")
+            print(query)
+            
+            # Register the original DataFrame as a temporary table to query it
+            df.createOrReplaceTempView("TEMP_DF")
+            # Run the SQL query to get the new, transformed DataFrame
+            override_df = spark.sql(query)
+            return override_df
+        
+
+        # --- Call the function ---
+        # Get the schema from the source DataFrame as a dictionary
+        source_schema_map = dict(transformed_data.dtypes)
+
+        # Run the mapping function to get the transformed DataFrame
+        if input_format == "delta":
+            output_data = datatype_mapping(source_schema_map, transformed_data)
+        else:
+            output_data = transformed_data
+
+        # output_data.printSchema()
+        # output_data.show(3, False)
+
+        if write_method == 'direct':
+            # BQ Write direct method
+            output_data.write \
             .format(constants.FORMAT_BIGQUERY) \
             .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
-            .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
+            .option(constants.BQ_WRITE_METHOD, constants.BQ_DIRECT_WRITE_METHOD) \
             .mode(output_mode) \
             .save()
+        else:
+            # BQ Write Indirect method
+            output_data.write \
+                .format(constants.FORMAT_BIGQUERY) \
+                .option(constants.TABLE, big_query_dataset + "." + big_query_table) \
+                .option(constants.GCS_BQ_TEMP_BUCKET, bq_temp_bucket) \
+                .mode(output_mode) \
+                .save()
