@@ -1,5 +1,5 @@
 > NOTE:
-> This repository has been archived (starting from Apr 30, 2026). Templates are still available to use.
+> This repository has been archived (starting from Apr 30, 2026). Templates are still available to use.    
 > Some of these templates are tested nightly on version 1.2 of [Serverless for Apache Spark](https://docs.cloud.google.com/dataproc-serverless/docs/overview). If a different version is being used or if the specific template does not suit your needs, the recommended approach is to develop the Spark code with assistance from Google Gemini. This is elaborated further in [Develop with Gemini](./gemini-codegen/README.md).
 
 
