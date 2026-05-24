@@ -45,7 +45,7 @@
 
     <!-- Spark Version Aligned with Dataproc Serverless Spark Runtime 1.2 -->
     <spark.major.version>3.5</spark.major.version>
-    <spark.version>3.5.1</spark.version>
+    <spark.version>3.5.7</spark.version>
 
     <!-- GCP Dependencies. Only change when it is aligned with Spark -->
     <aopalliance.version>1.0</aopalliance.version>
