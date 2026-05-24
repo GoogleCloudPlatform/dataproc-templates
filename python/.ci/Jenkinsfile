@@ -890,6 +890,40 @@ EOF
                         }
                     }
                 }
+                stage('BigQuery to Elasticsearch'){
+                    steps{
+                        retry(count: stageRetryCount) {
+                            sh '''
+                                $PYTHON_EXECUTABLE -m pip install --user virtualenv    
+
+                                $PYTHON_EXECUTABLE -m venv env
+
+                                source env/bin/activate
+
+                                gcloud storage cp gs://dataproc-templates/conf/elastic.jks /tmp/
+                                
+                                export GCS_STAGING_LOCATION="gs://python-dataproc-templates-temp"
+                                export SKIP_BUILD=true
+                                export JARS="gs://dataproc-templates/jars/elasticsearch-spark-20_2.12-8.15.3.jar"
+                                export FILES="/tmp/elastic.jks"
+
+                                cd python
+                                
+                                ./bin/start.sh \
+                                    --properties=spark.driver.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit',spark.executor.extraJavaOptions='-Djavax.net.ssl.trustStore=./elastic.jks -Djavax.net.ssl.trustStorePassword=changeit' \
+                                    -- --template=BIGQUERYTOELASTICSEARCH \
+                                    --bigquery.elasticsearch.input.table="bigquery-public-data:github_repos.files" \
+                                    --bigquery.elasticsearch.output.node=${ELASTIC_INPUT_NODE} \
+                                    --bigquery.elasticsearch.output.index="bigquery-to-elasticsearch-template-test-index" \
+                                    --bigquery.elasticsearch.output.user=${ENV_ELASTIC_USER} \
+                                    --bigquery.elasticsearch.output.password=${ELASTIC_PASSWORD} \
+                                    --bigquery.elasticsearch.output.mode="overwrite" \
+                                    --bigquery.elasticsearch.output.es.net.ssl="true" \
+                                    --bigquery.elasticsearch.output.es.net.ssl.cert.allow.self.signed="true"
+                            '''
+                        }
+                    }
+                }
             }
         }
     }
